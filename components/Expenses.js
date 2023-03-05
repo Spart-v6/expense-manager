@@ -12,6 +12,9 @@ const Expenses = ({ item }) => {
     >
       <View style={{width:"100%", height: 70}}>
         <Text>{item.name}</Text>
+        <Text>{item.amount}</Text>
+        <Text>{item.date}</Text>
+        <Text>{item.account}</Text>
       </View>
     </View>
   );

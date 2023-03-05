@@ -1,120 +1,58 @@
-const formatWeekly = dateStr => {
-    var date = new Date(dateStr);
-
-    var day = date.getUTCDate().toString().padStart(2, '0');
-    var month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); 
-    var year = date.getUTCFullYear();
-
-    var newDateStr = day + '/' + month + '/' + year;
-    return newDateStr;
-}
-
-const formatMonthly = dateStr => {
-    var date = new Date(dateStr);
-    console.log('asdasdsad')
-  
-    var day = date.getDate().toString().padStart(2, '0');
-    var month = (date.getMonth() + 1).toString().padStart(2, '0'); 
-    var year = date.getFullYear();
-    
-    var newDateStr = day + '/' + month + '/' + year;
-    
-    return newDateStr;
-}
+import moment from 'moment';
 
 const getToday = () => {
-    var dateStr = new Date().toLocaleDateString("en", {year:"numeric", day:"2-digit", month:"2-digit"});
-    var dateParts = dateStr.split('/');
-  
-    var [month, day, year] = dateParts;
-    
-    var newDateStr = day.padStart(2, '0') + '/' + month.padStart(2, '0') + '/' + year;
-    
-    return newDateStr;
+    const today = moment().format('DD/MM/YYYY');
+    const date = moment(today, 'DD/MM/YYYY');
+    const formattedStartDate = date.format('Do MMMM YYYY');
+    return {
+        today: today,
+        formattedStartDate: formattedStartDate
+    }
 }
 
 const getWeekOfTheYear = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    const now = moment();
+    const weekNumber = now.week();
+    const startOfWeek = now.clone().startOf('week');
+    const endOfWeek = now.clone().endOf('week');
+    const formattedStartDate = startOfWeek.format('DD/MM/YYYY');
+    const formattedEndDate = endOfWeek.format('DD/MM/YYYY');
 
-    const firstDayOfYear = new Date(year, 0, 1);
-    const daysSinceFirstDayOfYear = Math.floor((today - firstDayOfYear) / (1000 * 60 * 60 * 24));
-    const currentWeekNum = Math.floor(daysSinceFirstDayOfYear / 7) + 1;
-    
-    // To and from Dates of current week
-    var curr = new Date;
-    var first = curr.getDate() - curr.getDay(); 
-    var last = first + 6; 
-    
-    const fromDate = new Date(curr.setDate(first)).toUTCString();
-    const toDate = new Date(curr.setDate(last)).toUTCString();
-
-    return result = {
-        currentWeekNum: currentWeekNum,
-        fromDate: formatWeekly(fromDate),
-        toDate: formatWeekly(toDate)
+    return {
+        currentWeekNum: weekNumber,
+        fromDate: formattedStartDate,
+        toDate: formattedEndDate
     }
 }
 
 const getMonthOfTheYear = () => {
-    const today = new Date();
+    const now = moment();
+    const monthName = now.format('MMMM');
+    const startOfMonth = now.clone().startOf('month');
+    const endOfMonth = now.clone().endOf('month');
+    const formattedStartDate = startOfMonth.format('DD/MM/YYYY');
+    const formattedEndDate = endOfMonth.format('DD/MM/YYYY');
 
-    const monthName = today.toLocaleString('default', { month: 'long' });
-
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    const formattedStartDate = startDate.toLocaleString('default', { month: 'short' }) + '. ' + startDate.getDate() + ', ' + startDate.getFullYear();
-
-    const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    const formattedEndDate = endDate.toLocaleString('default', { month: 'short' }) + '. ' + endDate.getDate() + ', ' + endDate.getFullYear();
-
-    return result = {
+    return {
         monthName: monthName,
-        fromDate: formatMonthly(formattedStartDate),
-        toDate: formatMonthly(formattedEndDate)
+        fromDate: formattedStartDate,
+        toDate: formattedEndDate
     }
 }
 
 const getCurrentFullYear = () => {
-    const today = new Date();
+    const now = moment();
+    const year = now.format('YYYY');
+    const startOfYear = now.clone().startOf('year');
+    const endOfYear = now.clone().endOf('year');
+    const formattedStartDate = startOfYear.format('DD/MM/YYYY');
+    const formattedEndDate = endOfYear.format('DD/MM/YYYY');
 
-    const year = today.getFullYear();
-
-    const startDate = new Date(year, 0, 1);
-    const formattedStartDate = startDate.toLocaleString('default', { month: 'short' }) + '. ' + startDate.getDate() + ', ' + startDate.getFullYear();
-
-    const endDate = new Date(year, 11, 31);
-    const formattedEndDate = endDate.toLocaleString('default', { month: 'short' }) + '. ' + endDate.getDate() + ', ' + endDate.getFullYear();
-
-    return result = {
+    return {
         year: year,
         fromDate: formattedStartDate,
         toDate: formattedEndDate
     }
 }
 
-const formattedStartDate = () => {
-    const today = new Date();
-
-    const dayOfMonth = today.getDate();
-
-    const monthName = today.toLocaleString('default', { month: 'long' });
-
-    const year = today.getFullYear();
-
-    let suffix = '';
-    if (dayOfMonth === 1 || dayOfMonth === 21 || dayOfMonth === 31) {
-        suffix = 'st';
-    } else if (dayOfMonth === 2 || dayOfMonth === 22) {
-        suffix = 'nd';
-    } else if (dayOfMonth === 3 || dayOfMonth === 23) {
-        suffix = 'rd';
-    } else {
-        suffix = 'th';
-    }
-
-    return dayOfMonth + suffix + ' ' + monthName + ' ' + year;
-}
-
-
-export { getToday, getWeekOfTheYear, getMonthOfTheYear, getCurrentFullYear, formattedStartDate };
+export { getToday, getWeekOfTheYear, getMonthOfTheYear, getCurrentFullYear };
