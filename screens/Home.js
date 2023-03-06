@@ -15,6 +15,8 @@ import {
   getMonthOfTheYear,
   getCurrentFullYear,
 } from "../helper";
+import moment from "moment";
+import { useTheme } from 'react-native-paper';
 
 const List1 = ({ heading, fromDate, toDate }) => {
   const [filteredData, setFilteredData] = useState(obj);
@@ -22,8 +24,10 @@ const List1 = ({ heading, fromDate, toDate }) => {
   useEffect(() => {
     const filtered = obj.filter((item) => {
       if(fromDate && toDate){
-        const date = item.date;
-        return date >= fromDate && date <= toDate;
+        const date = moment(item.date, "DD/MM/YYYY");
+        const from = moment(fromDate, "DD/MM/YYYY");
+        const to = moment(toDate, "DD/MM/YYYY");
+        return date.isSameOrAfter(from) && date.isSameOrBefore(to);
       }
       return true;
     });
@@ -53,6 +57,7 @@ const List1 = ({ heading, fromDate, toDate }) => {
 };
 
 const Home = () => {
+  const theme = useTheme();
   const [listToShow, setListToShow] = useState(
     <List1
       heading={getToday().formattedStartDate}
@@ -60,6 +65,9 @@ const Home = () => {
       toDate={getToday().today}
     />
   );
+
+  const [incomeArray, setIncomeArray] = useState([]);
+  const [expenseArray, setExpenseArray] = useState([]);
 
   const handleListButtonPress = (nameOfDate) => {
     let heading = "";
@@ -101,14 +109,22 @@ const Home = () => {
     { name: "All" },
   ];
 
+  useEffect(() => {
+    const newIncomeArray = obj.filter(item => item.type === 'income').map(item => item.amount);
+    const newExpenseArray = obj.filter(item => item.type === 'expense').map(item => item.amount);
+
+    setIncomeArray(newIncomeArray);
+    setExpenseArray(newExpenseArray);
+  }, [obj]);
+
   return (
     <View style={{ flex: 1 }}>
-      <FocusedStatusBar headerColor={"#14caff"} />
-      <HomeHeader />
+      <FocusedStatusBar headerColor={theme.colors.primary} />
+      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray}/>
       <SafeAreaView>
         <ScrollView>
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            {datesNames.map((date, index) => (
+            {datesNames.map(date => (
               <TouchableOpacity
                 onPress={() => handleListButtonPress(date.name)}
               >
