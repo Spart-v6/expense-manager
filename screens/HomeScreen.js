@@ -1,69 +1,31 @@
 import {
   View,
   SafeAreaView,
-  FlatList,
   Text,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { useState, useEffect } from "react";
-import { FocusedStatusBar, HomeHeader, Expenses } from "../components";
-import obj from "./dummy";
-import { v4 as uuidv4 } from "uuid";
+import { FAB } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { FocusedStatusBar, HomeHeader, ExpensesList } from "../components";
 import {
   getToday,
   getWeekOfTheYear,
   getMonthOfTheYear,
   getCurrentFullYear,
-} from "../helper";
-import moment from "moment";
-import { useTheme } from 'react-native-paper';
+} from "../helper/dateHelper";
+import obj from "../helper/dummy";
+import { v4 as uuidv4 } from "uuid";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addData } from "../redux/actions";
 
-const List1 = ({ heading, fromDate, toDate }) => {
-  const [filteredData, setFilteredData] = useState(obj);
-
-  useEffect(() => {
-    const filtered = obj.filter((item) => {
-      if(fromDate && toDate){
-        const date = moment(item.date, "DD/MM/YYYY");
-        const from = moment(fromDate, "DD/MM/YYYY");
-        const to = moment(toDate, "DD/MM/YYYY");
-        return date.isSameOrAfter(from) && date.isSameOrBefore(to);
-      }
-      return true;
-    });
-    setFilteredData(filtered);
-  }, [heading]);
-
-  return (
-    <>
-      <View style={{ backgroundColor: "green" }}>
-        <Text>{heading}</Text>
-        <Text>==========</Text>
-        <Text>{fromDate}</Text>
-        <Text>==========</Text>
-        <Text>{toDate}</Text>
-      </View>
-      <>
-        <FlatList
-          data={filteredData}
-          renderItem={({ item }) => <Expenses item={item} />}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ backgroundColor: "blue" }}
-          scrollEnabled={false}
-        />
-      </>
-    </>
-  );
-};
-
-const Home = () => {
-  const theme = useTheme();
+const HomeScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const [listToShow, setListToShow] = useState(
-    <List1
+    <ExpensesList
       heading={getToday().formattedStartDate}
       fromDate={getToday().today}
       toDate={getToday().today}
@@ -97,11 +59,11 @@ const Home = () => {
       (fromDate = getCurrentFullYear().fromDate),
         (toDate = getCurrentFullYear().toDate);
     }
-    if(nameOfDate === "All"){
+    if (nameOfDate === "All") {
       heading = "All Expenses";
     }
     setListToShow(
-      <List1 heading={heading} fromDate={fromDate} toDate={toDate} />
+      <ExpensesList heading={heading} fromDate={fromDate} toDate={toDate} />
     );
   };
 
@@ -114,8 +76,12 @@ const Home = () => {
   ];
 
   useEffect(() => {
-    const newIncomeArray = obj.filter(item => item.type === 'income').map(item => item.amount);
-    const newExpenseArray = obj.filter(item => item.type === 'expense').map(item => item.amount);
+    const newIncomeArray = obj
+      .filter((item) => item.type === "income")
+      .map((item) => item.amount);
+    const newExpenseArray = obj
+      .filter((item) => item.type === "expense")
+      .map((item) => item.amount);
 
     setIncomeArray(newIncomeArray);
     setExpenseArray(newExpenseArray);
@@ -125,12 +91,12 @@ const Home = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <FocusedStatusBar/>
-      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray}/>
+      <FocusedStatusBar />
+      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
       <SafeAreaView>
         <ScrollView>
           <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            {datesNames.map(date => (
+            {datesNames.map((date) => (
               <TouchableOpacity
                 onPress={() => handleListButtonPress(date.name)}
               >
@@ -141,8 +107,19 @@ const Home = () => {
           {listToShow}
         </ScrollView>
       </SafeAreaView>
+      <FAB
+        icon="plus"
+        onPress={() => navigation.navigate("AddUpdateExpenseScreen")}
+        mode="flat"
+        style={{
+          position: 'absolute',
+          margin: 16,
+          right: 0,
+          bottom: 0,
+        }}
+      />
     </View>
   );
 };
 
-export default Home;
+export default HomeScreen;

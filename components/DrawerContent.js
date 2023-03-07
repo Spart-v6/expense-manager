@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Navbar = () => {
+const DrawerContent = () => {
   return (
     <View>
-      <Text>Navbar</Text>
+      <Text>DrawerContent</Text>
     </View>
   )
 }
 
-export default Navbar
+export default DrawerContent
