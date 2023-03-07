@@ -9,6 +9,7 @@ import {
 import { useState, useEffect } from "react";
 import { FocusedStatusBar, HomeHeader, Expenses } from "../components";
 import obj from "./dummy";
+import { v4 as uuidv4 } from "uuid";
 import {
   getToday,
   getWeekOfTheYear,
@@ -17,6 +18,8 @@ import {
 } from "../helper";
 import moment from "moment";
 import { useTheme } from 'react-native-paper';
+import { useDispatch } from "react-redux";
+import { addData } from "../redux/actions";
 
 const List1 = ({ heading, fromDate, toDate }) => {
   const [filteredData, setFilteredData] = useState(obj);
@@ -58,6 +61,7 @@ const List1 = ({ heading, fromDate, toDate }) => {
 
 const Home = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [listToShow, setListToShow] = useState(
     <List1
       heading={getToday().formattedStartDate}
@@ -117,9 +121,11 @@ const Home = () => {
     setExpenseArray(newExpenseArray);
   }, [obj]);
 
+  // dispatch(addData("Hii!!"));
+
   return (
     <View style={{ flex: 1 }}>
-      <FocusedStatusBar headerColor={theme.colors.primary} />
+      <FocusedStatusBar/>
       <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray}/>
       <SafeAreaView>
         <ScrollView>

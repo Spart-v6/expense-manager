@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet  } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import { LineChart } from "react-native-chart-kit";
 
 const styles = StyleSheet.create({
