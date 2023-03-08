@@ -11,16 +11,16 @@ const theme = {
 
 const AppHeader = ({ title, isParent, navigation }) => {
   return (
-    <Appbar.Header theme={{ colors: { primary: theme.colors.surface } }}>
+    <Appbar.Header style={{backgroundColor: theme.colors.primaryContainer}}>
       {
         isParent ? 
-        <Button icon="menu" onPress={() => navigation.openDrawer()}/>
+        <Button icon="menu" onPress={() => navigation.openDrawer()} textColor={theme.colors.primary}/>
         :
-        <Button icon="arrow-left" onPress={() => navigation.goBack()}/>
+        <Button icon="arrow-left" onPress={() => navigation.goBack()} textColor={theme.colors.primary}/>
       }
       
-      <Appbar.Content title={title} />
-      <Appbar.Action icon="magnify" onPress={() => {}} />
+      <Appbar.Content title={title} color={theme.colors.primary}/>
+      <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/>
     </Appbar.Header>
   );
 };

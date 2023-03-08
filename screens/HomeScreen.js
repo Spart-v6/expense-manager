@@ -1,19 +1,7 @@
-import {
-  View,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, SafeAreaView, Text, TouchableOpacity, ScrollView } from "react-native";
 import { FAB } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import { FocusedStatusBar, HomeHeader, ExpensesList } from "../components";
-import {
-  getToday,
-  getWeekOfTheYear,
-  getMonthOfTheYear,
-  getCurrentFullYear,
-} from "../helper/dateHelper";
+import { HomeHeader, ExpensesList } from "../components";
+import { getToday, getWeekOfTheYear, getMonthOfTheYear, getCurrentFullYear } from "../helper/dateHelper";
 import obj from "../helper/dummy";
 import { v4 as uuidv4 } from "uuid";
 import { useState, useEffect } from "react";
@@ -22,24 +10,7 @@ import { addData } from "../redux/actions";
 import AppHeader from "../components/AppHeader";
 
 const HomeScreen = ({ navigation }) => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <AppHeader title="Home" isParent={true} navigation={navigation}/>
-      <View>
-        <Text>Home screen</Text>
-      </View>
-      <TouchableOpacity onPress={() => navigation.navigate("PlusMoreHome")}>
-        <Text>Add or update expense</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-};
-
-export default HomeScreen;
-
-/*
   const dispatch = useDispatch();
-  const navigation = useNavigation();
 
   const [listToShow, setListToShow] = useState(
     <ExpensesList
@@ -104,5 +75,37 @@ export default HomeScreen;
     setExpenseArray(newExpenseArray);
   }, [obj]);
 
-  // dispatch(addData("Hii!!"));
-*/
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <AppHeader title="Home" isParent={true} navigation={navigation}/>
+      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
+      <View>
+        <ScrollView>
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            {datesNames.map((date) => (
+              <TouchableOpacity
+                onPress={() => handleListButtonPress(date.name)}
+              >
+                <Text>{date.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {listToShow}
+        </ScrollView>
+      </View>
+      <FAB
+        icon="plus"
+        onPress={() => navigation.navigate("PlusMoreHome")}
+        mode="flat"
+        style={{
+          position: 'absolute',
+          margin: 16,
+          right: 0,
+          bottom: 0,
+        }}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default HomeScreen;

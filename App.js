@@ -1,18 +1,18 @@
-import 'react-native-gesture-handler';
-import { NavigationContainer } from "@react-navigation/native";
+import "react-native-gesture-handler";
 import {
   MD3DarkTheme as DefaultTheme,
   Provider as PaperProvider,
 } from "react-native-paper";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 
-import DrawerNav from "./navigation/DrawerNav";
-import AppStack from './navigation/AppStack';
+import AppStack from "./navigation/AppStack";
+import { View } from "react-native";
 
 const theme = {
   ...DefaultTheme,
+  version: 3,
+  mode: 'adaptive',
   colors: {
     ...DefaultTheme.colors,
   },
