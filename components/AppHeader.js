@@ -1,4 +1,4 @@
-import { Appbar } from "react-native-paper";
+import { Appbar, Button } from "react-native-paper";
 import { MD3DarkTheme as DefaultTheme } from "react-native-paper";
 import React from "react";
 
@@ -9,10 +9,18 @@ const theme = {
   },
 };
 
-const AppHeader = ({ options, route }) => {
+const AppHeader = ({ title, isParent, navigation }) => {
   return (
     <Appbar.Header theme={{ colors: { primary: theme.colors.surface } }}>
-      <Appbar.Content title={options?.headerTitle || "Home"} />
+      {
+        isParent ? 
+        <Button icon="menu" onPress={() => navigation.openDrawer()}/>
+        :
+        <Button icon="arrow-left" onPress={() => navigation.goBack()}/>
+      }
+      
+      <Appbar.Content title={title} />
+      <Appbar.Action icon="magnify" onPress={() => {}} />
     </Appbar.Header>
   );
 };

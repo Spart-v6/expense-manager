@@ -19,8 +19,25 @@ import { v4 as uuidv4 } from "uuid";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addData } from "../redux/actions";
+import AppHeader from "../components/AppHeader";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <AppHeader title="Home" isParent={true} navigation={navigation}/>
+      <View>
+        <Text>Home screen</Text>
+      </View>
+      <TouchableOpacity onPress={() => navigation.navigate("PlusMoreHome")}>
+        <Text>Add or update expense</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
+
+export default HomeScreen;
+
+/*
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -88,38 +105,4 @@ const HomeScreen = () => {
   }, [obj]);
 
   // dispatch(addData("Hii!!"));
-
-  return (
-    <View style={{ flex: 1 }}>
-      <FocusedStatusBar />
-      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
-      <SafeAreaView>
-        <ScrollView>
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            {datesNames.map((date) => (
-              <TouchableOpacity
-                onPress={() => handleListButtonPress(date.name)}
-              >
-                <Text>{date.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          {listToShow}
-        </ScrollView>
-      </SafeAreaView>
-      <FAB
-        icon="plus"
-        onPress={() => navigation.navigate("AddUpdateExpenseScreen")}
-        mode="flat"
-        style={{
-          position: 'absolute',
-          margin: 16,
-          right: 0,
-          bottom: 0,
-        }}
-      />
-    </View>
-  );
-};
-
-export default HomeScreen;
+*/

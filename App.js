@@ -9,6 +9,7 @@ import store from "./redux/store";
 import { Provider } from "react-redux";
 
 import DrawerNav from "./navigation/DrawerNav";
+import AppStack from './navigation/AppStack';
 
 const theme = {
   ...DefaultTheme,
@@ -21,9 +22,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <DrawerNav />
-        </NavigationContainer>
+        <AppStack />
       </PaperProvider>
     </Provider>
   );

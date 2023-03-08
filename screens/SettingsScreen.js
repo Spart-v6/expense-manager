@@ -1,11 +1,15 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, SafeAreaView } from 'react-native'
+import AppHeader from '../components/AppHeader'
 
-const SettingsScreen = () => {
+const SettingsScreen = ({navigation}) => {
   return (
-    <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-      <Text>Settings Screen</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <AppHeader title="Settings" navigation={navigation} />
+      <View style={{flex :1, justifyContent: 'center', alignItems: "center"}}>
+        <Text> Settings </Text>
+      </View>
+    </SafeAreaView>
   )
 }
 

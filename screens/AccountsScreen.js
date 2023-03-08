@@ -1,13 +1,18 @@
-import { Text, View } from "react-native";
+import { Text, View, SafeAreaView, TouchableOpacity } from "react-native";
 import { FAB } from "react-native-paper";
+import AppHeader from "../components/AppHeader";
 
-const AccountsScreen = () => {
+const AccountsScreen = ({ navigation }) => {
   return (
-    <View style={{ flex: 1 }}>
-      <Text>
-          jnj
-      </Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <AppHeader title="Accounts" isParent={true} navigation={navigation}/>
+      <View>
+        <Text>Accounts screen</Text>
+      </View>
+      <TouchableOpacity onPress={() => navigation.navigate("PlusMoreAccount")}>
+        <Text>Add card</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 
