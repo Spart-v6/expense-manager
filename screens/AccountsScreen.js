@@ -1,5 +1,5 @@
-import { Text, View, SafeAreaView, TouchableOpacity } from "react-native";
-import { FAB } from "react-native-paper";
+import { View, SafeAreaView, TouchableOpacity } from "react-native";
+import { FAB, Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 
 const AccountsScreen = ({ navigation }) => {

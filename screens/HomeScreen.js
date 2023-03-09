@@ -1,9 +1,13 @@
-import { View, SafeAreaView, Text, TouchableOpacity, ScrollView } from "react-native";
-import { FAB } from "react-native-paper";
+import { View, SafeAreaView , ScrollView } from "react-native";
+import { FAB, Text, Button, useTheme } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
-import { getToday, getWeekOfTheYear, getMonthOfTheYear, getCurrentFullYear } from "../helper/dateHelper";
+import {
+  getToday,
+  getWeekOfTheYear,
+  getMonthOfTheYear,
+  getCurrentFullYear,
+} from "../helper/dateHelper";
 import obj from "../helper/dummy";
-import { v4 as uuidv4 } from "uuid";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addData } from "../redux/actions";
@@ -11,7 +15,7 @@ import AppHeader from "../components/AppHeader";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const theme = useTheme();
   const [listToShow, setListToShow] = useState(
     <ExpensesList
       heading={getToday().formattedStartDate}
@@ -77,17 +81,15 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <AppHeader title="Home" isParent={true} navigation={navigation}/>
+      <AppHeader title="Home" isParent={true} navigation={navigation} />
       <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
       <View>
         <ScrollView>
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 10, marginLeft: 15 }}>
             {datesNames.map((date) => (
-              <TouchableOpacity
-                onPress={() => handleListButtonPress(date.name)}
-              >
+              <Button onPress={() => handleListButtonPress(date.name)} mode="contained" compact dark buttonColor={theme.colors.onPrimary} style={{borderRadius: 10, paddingLeft: 5, paddingRight: 5 }}>
                 <Text>{date.name}</Text>
-              </TouchableOpacity>
+              </Button>
             ))}
           </View>
           {listToShow}
@@ -98,7 +100,7 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("PlusMoreHome")}
         mode="flat"
         style={{
-          position: 'absolute',
+          position: "absolute",
           margin: 16,
           right: 0,
           bottom: 0,

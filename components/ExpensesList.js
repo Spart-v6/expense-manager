@@ -1,4 +1,5 @@
-import { View, Text, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
+import { Text } from "react-native-paper";
 import { useState, useEffect } from "react";
 import obj from "../helper/dummy";
 import moment from "moment";

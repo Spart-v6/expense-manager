@@ -1,4 +1,5 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { View, SafeAreaView } from "react-native";
+import { Text } from "react-native-paper";
 import React from "react";
 import AppHeader from "../components/AppHeader";
 

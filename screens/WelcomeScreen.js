@@ -1,4 +1,5 @@
-import { View, Text, SafeAreaView, TouchableOpacity } from "react-native";
+import { View, SafeAreaView, TouchableOpacity } from "react-native";
+import { Text } from "react-native-paper";
 import React from "react";
 
 const WelcomeScreen = ({ navigation }) => {

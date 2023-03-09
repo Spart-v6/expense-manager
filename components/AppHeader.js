@@ -9,7 +9,7 @@ const theme = {
   },
 };
 
-const AppHeader = ({ title, isParent, navigation }) => {
+const AppHeader = ({ title, isParent, navigation, isPlus }) => {
   return (
     <Appbar.Header style={{backgroundColor: theme.colors.primaryContainer}}>
       {
@@ -20,7 +20,7 @@ const AppHeader = ({ title, isParent, navigation }) => {
       }
       
       <Appbar.Content title={title} color={theme.colors.primary}/>
-      <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/>
+      { !isPlus &&  <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/> }
     </Appbar.Header>
   );
 };

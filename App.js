@@ -7,7 +7,6 @@ import store from "./redux/store";
 import { Provider } from "react-redux";
 
 import AppStack from "./navigation/AppStack";
-import { View } from "react-native";
 
 const theme = {
   ...DefaultTheme,
