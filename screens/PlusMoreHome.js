@@ -4,10 +4,13 @@ import { TextInput, Button, Text } from "react-native-paper";
 import React, { useState, useCallback, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTheme } from "react-native-paper";
+import { useDispatch } from "react-redux";
+import { addData } from "../redux/actions";
 import moment from "moment";
 
 const PlusMoreHome = ({ navigation }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const [expenseName, setExpenseName] = useState("");
   const [amountValue, setAmountValue] = useState("");
   const [selectedButton, setSelectedButton] = useState("Income");
@@ -49,9 +52,9 @@ const PlusMoreHome = ({ navigation }) => {
   const commonTextInput = (name, setter, placeholder, style = {}) => {
     const defaultPlaceholder = "";
     const resolvedPlaceholder = placeholder === "Income"
-    ? "Add Income"
+    ? "Income name"
     : placeholder === "Expense"
-      ? "Add Expense"
+      ? "Expense name"
       : placeholder || defaultPlaceholder;
 
     return (
@@ -76,7 +79,7 @@ const PlusMoreHome = ({ navigation }) => {
         placeholder={resolvedPlaceholder}
         onChangeText={(val) => setter(val)}
         keyboardType={placeholder === "Amount" ? "phone-pad" : "default"}
-      />
+        />
     );
   };
 
@@ -102,6 +105,18 @@ const PlusMoreHome = ({ navigation }) => {
       </Button>
     );
   };
+
+  const handleAddNewExpense = () => {
+    const expense = {
+      id: Math.random()+10+Math.random(),
+      type: selectedButton,
+      name: expenseName,
+      amount: amountValue,
+      date: moment(date).format('DD/MM/YYYY')
+    }
+    dispatch(addData(expense));
+    navigation.navigate("Home");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -139,7 +154,7 @@ const PlusMoreHome = ({ navigation }) => {
       </View>
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>
         <Button
-          onPress={() => {}}
+          onPress={handleAddNewExpense}
           mode="contained"
           labelStyle={{ fontSize: 15 }}
           textColor={theme.colors.primary}

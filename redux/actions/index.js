@@ -1,19 +1,19 @@
-import * as constants from './constants';
+import { constants as types } from "../actionTypes";
 
 export const addData = payload => ({
-  type: constants.ADD_DATA,
+  type: types.ADD_DATA,
   payload,
 });
 
 export const updateData = payload => ({
-  type: constants.UPDATE_DATA,
+  type: types.UPDATE_DATA,
   payload,
 });
 
 export const deleteData = payload => ({
-  type: constants.DELETE_DATA,
+  type: types.DELETE_DATA,
   payload,
 });
 export const getData = () => ({
-  type: constants.GET_DATA,
+  type: types.GET_DATA,
 });

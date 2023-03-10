@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import obj from "../helper/dummy";
 import moment from "moment";
 import Expenses from "./Expenses";
+import { useSelector } from "react-redux";
 
 const ExpensesList = ({ heading, fromDate, toDate }) => {
   const [filteredData, setFilteredData] = useState(obj);
@@ -21,6 +22,8 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
     setFilteredData(filtered);
   }, [heading]);
 
+  const expensesData = useSelector(state => state.expenseReducer.expenses);
+
   return (
     <>
       <View style={{ backgroundColor: "green" }}>
@@ -32,7 +35,7 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
       </View>
       <>
         <FlatList
-          data={filteredData}
+          data={expensesData}
           renderItem={({ item }) => <Expenses item={item} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ backgroundColor: "blue" }}

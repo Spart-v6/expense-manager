@@ -1,28 +1,26 @@
-import * as constants from "../actions/constants";
+import { constants as types } from "../actionTypes";
 
 const initialState = {
-    expenses: []
-}
+  expenses: [],
+};
 
-const transactionsReducer = (state = initialState, action) => {
+const expenseReducer = (state = initialState, action) => {
   switch (action.type) {
-    case constants.ADD_DATA:
-      console.log("adding", action, " ", state);
-      return { 
-        ...state, 
-        expenses: action.payload
-      }
-    case constants.UPDATE_DATA:
+    case types.ADD_DATA:
+      return {
+        expenses: [...state.expenses, action.payload],
+      };
+    case types.UPDATE_DATA:
       return state.map((item) =>
         item.key === action.payload.key ? action.payload : item
       );
-    case constants.DELETE_DATA:
+    case types.DELETE_DATA:
       return state.filter((item) => item.key !== action.payload);
-    case constants.GET_DATA:
+    case types.GET_DATA:
       return state;
     default:
       return state;
   }
 };
 
-export default transactionsReducer;
+export default expenseReducer;

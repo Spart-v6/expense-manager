@@ -1,4 +1,4 @@
-import { View, SafeAreaView , ScrollView } from "react-native";
+import { View, SafeAreaView, ScrollView } from "react-native";
 import { FAB, Text, Button, useTheme } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
 import {
@@ -9,12 +9,9 @@ import {
 } from "../helper/dateHelper";
 import obj from "../helper/dummy";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { addData } from "../redux/actions";
 import AppHeader from "../components/AppHeader";
 
 const HomeScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const theme = useTheme();
   const [listToShow, setListToShow] = useState(
     <ExpensesList
@@ -82,19 +79,33 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Home" isParent={true} navigation={navigation} />
-      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
-      <View>
-        <ScrollView>
-          <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 10, marginLeft: 15 }}>
+      <ScrollView>
+        <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              gap: 10,
+              marginLeft: 15,
+            }}
+          >
             {datesNames.map((date) => (
-              <Button onPress={() => handleListButtonPress(date.name)} mode="contained" compact dark buttonColor={theme.colors.onPrimary} style={{borderRadius: 10, paddingLeft: 5, paddingRight: 5 }}>
+              <Button
+                onPress={() => handleListButtonPress(date.name)}
+                mode="contained"
+                compact
+                dark
+                buttonColor={theme.colors.onPrimary}
+                style={{ borderRadius: 10, paddingLeft: 5, paddingRight: 5 }}
+              >
                 <Text>{date.name}</Text>
               </Button>
             ))}
           </View>
           {listToShow}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
       <FAB
         icon="plus"
         onPress={() => navigation.navigate("PlusMoreHome")}
