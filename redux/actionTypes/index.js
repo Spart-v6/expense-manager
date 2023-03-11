@@ -1,6 +1,6 @@
 export const constants = {
   ADD_DATA: "ADD_DATA",
-  GET_DATA: "GET_DATA",
+  STORE_DATA: "STORE_DATA",
   DELETE_DATA: "DELETE_DATA",
   UPDATE_DATA: "UPDATE_DATA",
 };

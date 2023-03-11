@@ -5,15 +5,19 @@ export const addData = payload => ({
   payload,
 });
 
-export const updateData = payload => ({
-  type: types.UPDATE_DATA,
-  payload,
-});
+export const updateData = (sameId, updatedObj) => {
+  return {
+    type: types.UPDATE_DATA,
+    payload: { sameId, updatedObj }
+  }
+}
 
 export const deleteData = payload => ({
   type: types.DELETE_DATA,
   payload,
 });
-export const getData = () => ({
-  type: types.GET_DATA,
+
+export const storeData = (payload) => ({
+  type: types.STORE_DATA,
+  payload
 });

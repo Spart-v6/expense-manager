@@ -1,12 +1,17 @@
-import { View, FlatList } from "react-native";
+import { View, FlatList, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Text } from "react-native-paper";
-import { useState, useEffect } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useState, useEffect, useCallback } from "react";
 import obj from "../helper/dummy";
 import moment from "moment";
 import Expenses from "./Expenses";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { storeData } from "../redux/actions";
 
 const ExpensesList = ({ heading, fromDate, toDate }) => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [filteredData, setFilteredData] = useState(obj);
 
   useEffect(() => {
@@ -22,7 +27,31 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
     setFilteredData(filtered);
   }, [heading]);
 
-  const expensesData = useSelector(state => state.expenseReducer.expenses);
+  const expensesData = useSelector(state => state.expenseReducer.allExpenses);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExpensesData();
+    }, [])
+  );
+
+  const fetchExpensesData = async () => {
+    try{
+      const res = await AsyncStorage.getItem("ALL_EXPENSES");
+      let newData = JSON.parse(res);
+      if(newData !== null) dispatch(storeData(newData));
+    }
+    catch(e) {
+      console.log("error: ", e);
+    }
+  }
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity onPress={() => navigation.navigate("PlusMoreHome", {updateItem: item}) }>
+      <Expenses item={item} />
+    </TouchableOpacity>
+  );
+
 
   return (
     <>
@@ -33,15 +62,15 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
         <Text>==========</Text>
         <Text>{toDate}</Text>
       </View>
-      <>
+      <View style={{marginBottom: 80}}>
         <FlatList
           data={expensesData}
-          renderItem={({ item }) => <Expenses item={item} />}
+          renderItem={renderItem} 
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ backgroundColor: "blue" }}
           scrollEnabled={false}
         />
-      </>
+      </View>
     </>
   );
 };

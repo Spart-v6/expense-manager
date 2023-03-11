@@ -9,7 +9,12 @@ const theme = {
   },
 };
 
-const AppHeader = ({ title, isParent, navigation, isPlus }) => {
+const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePressed }) => {
+
+  const handleDeleteExpense = () => {
+    isDeletePressed(true);
+  }
+
   return (
     <Appbar.Header style={{backgroundColor: theme.colors.primaryContainer}}>
       {
@@ -19,8 +24,9 @@ const AppHeader = ({ title, isParent, navigation, isPlus }) => {
         <Button icon="arrow-left" onPress={() => navigation.goBack()} textColor={theme.colors.primary}/>
       }
       
-      <Appbar.Content title={title} color={theme.colors.primary}/>
-      { !isPlus &&  <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/> }
+      <Appbar.Content title={isUpdate ? "Update Expense" : title} color={theme.colors.primary}/>
+      { !isPlus && !isUpdate && <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/> }
+      { isPlus && isUpdate && <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={theme.colors.primary}/> }
     </Appbar.Header>
   );
 };
