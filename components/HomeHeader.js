@@ -1,13 +1,12 @@
-import { View, StyleSheet  } from "react-native";
-import { Text } from "react-native-paper";
+import { View, StyleSheet, PlatformColor } from "react-native";
+import { Text, Card, useTheme } from "react-native-paper";
 import React from "react";
 import { LineChart } from "react-native-chart-kit";
 
-const styles = StyleSheet.create({
+const makeStyles = (colors) => StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: PlatformColor('@android:color/system_accent1_500'),
     borderRadius: 4,
-    elevation: 4,
     margin: 16,
     padding: 16,
   },
@@ -99,14 +98,15 @@ const MyBezierLineChart = (colors, chartData) => {
 };
 
 const DashboardCard = () => {
+  
+  const theme = useTheme();
+  const styles = makeStyles(theme.colors)
+
   return (
-    <View style={styles.card}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Total balance</Text>
-        <Text style={styles.title}>- $1,111</Text>
-      </View>
-      <View style={{ marginTop: 20 }}>
-        <Text>March</Text>
+    <Card style={[styles.card]}>
+      <Card.Title title="Total balance" subtitle="- $1,111" titleStyle={{color:PlatformColor('@android:color/system_accent1_200')}}/>
+      <Card.Content>
+        <Text variant="titleLarge">March month</Text>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
             <Text>Income</Text>
@@ -117,8 +117,8 @@ const DashboardCard = () => {
             <Text>- $12,222</Text>
           </View>
         </View>
-      </View>
-    </View>
+      </Card.Content>
+    </Card>
   );
 };
 
@@ -156,8 +156,8 @@ const HomeHeader = ({ incomeArray, expenseArray }) => {
     <View>
       <DashboardCard />
       <View style={{ flexDirection: "row" }}>
-        <IncomeCard incomeArray={incomeArray} />
-        <ExpenseCard expenseArray={expenseArray} />
+        {/* <IncomeCard incomeArray={incomeArray} />
+        <ExpenseCard expenseArray={expenseArray} /> */}
       </View>
     </View>
   );

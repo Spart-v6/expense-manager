@@ -1,4 +1,4 @@
-import { View, SafeAreaView, ScrollView } from "react-native";
+import { View, SafeAreaView, ScrollView, StatusBar, PlatformColor } from "react-native";
 import { FAB, Text, Button, useTheme } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
 import {
@@ -78,6 +78,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar translucent backgroundColor={"transparent"}/>
       <AppHeader title="Home" isParent={true} navigation={navigation} />
       <ScrollView>
         <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />

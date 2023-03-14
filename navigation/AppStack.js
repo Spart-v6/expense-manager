@@ -12,6 +12,7 @@ import DrawerContent from "../components/DrawerContent";
 import WelcomeScreen from '../screens/WelcomeScreen';
 import { useTheme } from 'react-native-paper';
 import { Easing, TouchableWithoutFeedback } from 'react-native';
+import allColors from "../commons/allColors.js";
 
 const customEasing = Easing.bezier(0.42, 0, 0.58, 1);
 
@@ -38,8 +39,8 @@ const HomeTabs = () => {
             sceneAnimationType="shifting"
             sceneAnimationEasing={customEasing}
             shifting={true}
-            barStyle={{ backgroundColor: '#694fad',  }}
-            renderTouchable
+            barStyle={{ backgroundColor: allColors.backgroundColorSecondary, }}
+            inactiveColor={"gray"}
             compact
         >
             <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: "home" }} />
@@ -74,7 +75,7 @@ const AppStack = () => {
 
     return (
         // gotta change this color to some global color
-        <NavigationContainer theme={{ colors: { background: theme.colors.primary } }}>
+        <NavigationContainer theme={{ colors: { background: allColors.backgroundColorPrimary } }}>
             <StackApp.Navigator initialRouteName={flag ? 'HomeApp' :'WelcomeScreen'}>
                 <StackApp.Screen name="HomeApp" component={DrawerNavigator} options={navOptions}/>
                 <StackApp.Screen name="WelcomeScreen" component={WelcomeScreen} options={navOptions}/>

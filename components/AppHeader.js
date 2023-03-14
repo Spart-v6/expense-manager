@@ -1,13 +1,6 @@
-import { Appbar, Button } from "react-native-paper";
-import { MD3DarkTheme as DefaultTheme } from "react-native-paper";
+import { Appbar, Button, MD3DarkTheme as DefaultTheme } from "react-native-paper";
 import React from "react";
-
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-  },
-};
+import allColors from "../commons/allColors";
 
 const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePressed }) => {
 
@@ -16,17 +9,17 @@ const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePres
   }
 
   return (
-    <Appbar.Header style={{backgroundColor: theme.colors.primaryContainer}}>
+    <Appbar.Header style={{backgroundColor: allColors.backgroundColorPrimary}}>
       {
         isParent ? 
-        <Button icon="menu" onPress={() => navigation.openDrawer()} textColor={theme.colors.primary}/>
+        <Button icon="menu" onPress={() => navigation.openDrawer()} />
         :
-        <Button icon="arrow-left" onPress={() => navigation.goBack()} textColor={theme.colors.primary}/>
+        <Button icon="arrow-left" onPress={() => navigation.goBack()} />
       }
       
-      <Appbar.Content title={isUpdate ? "Update Expense" : title} color={theme.colors.primary}/>
-      { !isPlus && !isUpdate && <Appbar.Action icon="magnify" onPress={() => {}} color={theme.colors.primary}/> }
-      { isPlus && isUpdate && <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={theme.colors.primary}/> }
+      <Appbar.Content title={isUpdate ? "Update Expense" : title} />
+      { !isPlus && !isUpdate && <Appbar.Action icon="magnify" onPress={() => {}} /> }
+      { isPlus && isUpdate && <Appbar.Action icon="delete" onPress={handleDeleteExpense} /> }
     </Appbar.Header>
   );
 };
