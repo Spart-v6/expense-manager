@@ -1,4 +1,4 @@
-import { View, SafeAreaView } from "react-native";
+import { View, SafeAreaView, StyleSheet } from "react-native";
 import AppHeader from "../components/AppHeader";
 import {
   TextInput,
@@ -10,41 +10,67 @@ import {
 } from "react-native-paper";
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  AndroidDateInputMode,
+  AndroidDatePickerType,
+  AndroidPickerMode,
+  MaterialDatetimePickerAndroid,
+} from "react-native-material-datetime-picker";
 import { useDispatch } from "react-redux";
 import { addData, deleteData, updateData } from "../redux/actions";
 import moment from "moment";
+import allColors from "../commons/allColors";
+
+const styles = StyleSheet.create({
+  btn: {
+    borderColor: "transparent",
+    borderRadius: 10,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+  },
+  selected: {
+    borderRadius: 20,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    backgroundColor: allColors.backgroundColorQuaternary,
+    text: {
+      color: allColors.textColorTertiary,
+      fontWeight: 700,
+    },
+  },
+});
 
 const PlusMoreHome = ({ navigation, route }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  
+
   // Update screen variables
   const [isUpdatePressed, setIsUpdatePressed] = useState(false);
   const [valuesToChange, setValuesToChange] = useState({});
   const [btnName, setBtnName] = useState("Add");
-  const [modifiedDate, setModifiedDate] = useState("");
-
 
   const [expenseName, setExpenseName] = useState(() => {
-    if(route.params) return route.params.updateItem.name;
+    if (route.params) return route.params.updateItem.name;
     return "";
   });
   const [amountValue, setAmountValue] = useState(() => {
-    if(route.params) return route.params.updateItem.amount;
+    if (route.params) return route.params.updateItem.amount;
     return "";
   });
   const [selectedButton, setSelectedButton] = useState(() => {
-    if(route.params) return route.params.updateItem.type;
-    return "Income"
+    if (route.params) return route.params.updateItem.type;
+    return "Income";
   });
   const [dateValue, setDateValue] = useState(() => {
-    if(route.params) { 
-      return moment(route.params.updateItem.date, 'DD/MM/YYYY').format("Do MMMM YYYY");
-    };
-    return moment().format("Do MMMM YYYY")
+    if (route.params) {
+      return moment(route.params.updateItem.date, "DD/MM/YYYY").format(
+        "Do MMMM YYYY"
+      );
+    }
+    return moment().format("Do MMMM YYYY");
   });
   const [date, setDate] = useState(() => {
-    if(route.params) {
+    if (route.params) {
       const dateString = route.params.updateItem.date;
       const dateParts = dateString.split("/");
       const dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
@@ -73,7 +99,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     [setOpen, setDate]
   );
 
-  const incomeExpenseBtns = name => {
+  const incomeExpenseBtns = (name) => {
     return (
       <Button
         onPress={() =>
@@ -82,17 +108,14 @@ const PlusMoreHome = ({ navigation, route }) => {
             : setSelectedButton("Expense")
         }
         mode="contained"
+        buttonColor={allColors.backgroundColorTertiary}
         labelStyle={{ fontSize: 15 }}
-        textColor={theme.colors.primary}
-        style={{
-          borderColor: "transparent",
-          backgroundColor: theme.colors.primaryContainer,
-          borderRadius: 15,
-          borderTopRightRadius: 15,
-          borderTopLeftRadius: 15,
-        }}
+        style={[styles.btn, selectedButton === name && styles.selected]}
       >
-        {name}
+        <Text style={selectedButton === name && styles.selected.text}>
+          {" "}
+          {name}{" "}
+        </Text>
       </Button>
     );
   };
@@ -112,9 +135,9 @@ const PlusMoreHome = ({ navigation, route }) => {
           borderRadius: 15,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
-          borderColor: theme.colors.onPrimary,
+          borderColor: "black",
           borderWidth: 2,
-          backgroundColor: theme.colors.onPrimaryContainer,
+          backgroundColor: allColors.backgroundColorQuinary,
           ...style,
         }}
         selectionColor={theme.colors.onPrimary}
@@ -132,16 +155,16 @@ const PlusMoreHome = ({ navigation, route }) => {
     );
   };
 
-  const dateTextInput = name => {
+  const dateTextInput = (name) => {
     return (
       <Button
         style={{
           borderRadius: 15,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
-          borderColor: theme.colors.onPrimary,
+          borderColor: "black",
           borderWidth: 2,
-          backgroundColor: theme.colors.onPrimaryContainer,
+          backgroundColor: allColors.backgroundColorQuinary,
           flex: 1,
           justifyContent: "center",
           alignItems: "flex-start",
@@ -161,18 +184,17 @@ const PlusMoreHome = ({ navigation, route }) => {
       type: selectedButton,
       name: expenseName,
       amount: amountValue,
-      date: moment(date).format('DD/MM/YYYY')
+      date: moment(date).format("DD/MM/YYYY"),
     };
     const updateExpense = {
       type: selectedButton,
       name: expenseName,
       amount: amountValue,
-      date: moment(date).format('DD/MM/YYYY')
+      date: moment(date).format("DD/MM/YYYY"),
     };
-    if(isUpdatePressed) {
+    if (isUpdatePressed) {
       dispatch(updateData(valuesToChange.id, updateExpense));
-    }
-    else{
+    } else {
       dispatch(addData(expense));
     }
     navigation.navigate("Home");
@@ -192,7 +214,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     setIsDeleteBtnPressed(false);
     dispatch(deleteData(valuesToChange.id));
     navigation.navigate("Home");
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -228,7 +250,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             mode="outlined"
             icon="calendar"
             labelStyle={{ fontSize: 35 }}
-            textColor={theme.colors.onPrimary}
+            textColor={"red"}
             style={{ borderColor: "transparent" }}
           />
         </View>
@@ -239,6 +261,12 @@ const PlusMoreHome = ({ navigation, route }) => {
             mode="date"
             display="default"
             onChange={(e) => onDateChange(e)}
+            style={{
+              shadowColor: "#fff",
+              shadowRadius: 0,
+              shadowOpacity: 1,
+              shadowOffset: { height: 0, width: 0 },
+            }}
           />
         )}
       </View>
@@ -248,17 +276,17 @@ const PlusMoreHome = ({ navigation, route }) => {
           onPress={handleAddOrUpdateExpense}
           mode="contained"
           labelStyle={{ fontSize: 15 }}
-          textColor={theme.colors.primary}
+          textColor={"black"}
           style={{
             borderColor: "transparent",
-            backgroundColor: theme.colors.primaryContainer,
+            backgroundColor: allColors.backgroundColorLessPrimary,
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
             margin: 10,
           }}
         >
-          {btnName}
+          <Text style={{color: allColors.textColorPrimary, fontWeight: 700, fontSize: 18}}> {btnName} </Text>
         </Button>
       </View>
 

@@ -1,12 +1,16 @@
 import { PlatformColor } from "react-native";
 
 const colors = {
-    backgroundColorPrimary: PlatformColor('@android:color/system_accent1_800'),
-    backgroundColorSecondary: PlatformColor('@android:color/system_accent1_900'),
-    backgroundColorTertiary: PlatformColor('@android:color/system_accent'),
+    backgroundColorPrimary: PlatformColor('@android:color/system_neutral2_900'),
+    backgroundColorLessPrimary: PlatformColor('@android:color/system_neutral2_800'),
+    backgroundColorSecondary: PlatformColor('@android:color/system_accent1_700'),
+    backgroundColorTertiary: PlatformColor('@android:color/system_neutral2_600'),
+    backgroundColorQuaternary: PlatformColor('@android:color/system_accent1_200'),
+    backgroundColorQuinary: PlatformColor('@android:color/system_neutral2_200'),
+    bottomTabColor: PlatformColor('@android:color/system_neutral2_800'),
     textColorPrimary: PlatformColor('@android:color/system_accent1_100'),
-    textColorSecondary: PlatformColor('@android:color/system_accent2_800'),
-    textColorTertiary: PlatformColor('@android:color/system_accent')
+    textColorSecondary: PlatformColor('@android:color/system_accent2_50'),
+    textColorTertiary: PlatformColor('@android:color/system_neutral1_900')
 }
 
 export default colors;

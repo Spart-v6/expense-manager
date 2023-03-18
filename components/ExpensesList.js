@@ -1,4 +1,4 @@
-import { View, FlatList, TouchableOpacity } from "react-native";
+import { View, FlatList, TouchableOpacity, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -46,32 +46,27 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
     }
   }
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => navigation.navigate("PlusMoreHome", {updateItem: item}) }>
-      <Expenses item={item} />
+      <Expenses item={item} index={index}/>
     </TouchableOpacity>
   );
 
 
   return (
-    <>
-      <View style={{ backgroundColor: "green" }}>
-        <Text>{heading}</Text>
-        <Text>==========</Text>
-        <Text>{fromDate}</Text>
-        <Text>==========</Text>
-        <Text>{toDate}</Text>
+    <SafeAreaView style={{margin: 20}}>
+      <View>
+        <Text variant="titleMedium">{heading}</Text>
       </View>
       <View style={{marginBottom: 80}}>
         <FlatList
           data={expensesData}
           renderItem={renderItem} 
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ backgroundColor: "blue" }}
           scrollEnabled={false}
         />
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

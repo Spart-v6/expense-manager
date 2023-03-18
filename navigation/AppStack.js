@@ -13,6 +13,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import { useTheme } from 'react-native-paper';
 import { Easing, TouchableWithoutFeedback } from 'react-native';
 import allColors from "../commons/allColors.js";
+import * as NavigationBar from "expo-navigation-bar";
 
 const customEasing = Easing.bezier(0.42, 0, 0.58, 1);
 
@@ -39,8 +40,9 @@ const HomeTabs = () => {
             sceneAnimationType="shifting"
             sceneAnimationEasing={customEasing}
             shifting={true}
-            barStyle={{ backgroundColor: allColors.backgroundColorSecondary, }}
+            barStyle={{ backgroundColor: allColors.bottomTabColor, }}
             inactiveColor={"gray"}
+            activeColor={"white"}
             compact
         >
             <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: "home" }} />
@@ -60,8 +62,8 @@ const TabNavigator = () => (
 const DrawerNavigator = () => (
     <Drawer.Navigator initialRouteName='MenuTab' drawerContent={props => DrawerContent(props)} screenOptions={{
         drawerStyle: {
-          backgroundColor: '#c6cbef',
-          width: 240,
+          backgroundColor: allColors.backgroundColorPrimary,
+          width: 200,
         },
       }}>
         <Drawer.Screen name='MenuTab' component={TabNavigator} options={navOptions}/>
@@ -70,6 +72,7 @@ const DrawerNavigator = () => (
 )
 
 const AppStack = () => {
+    NavigationBar.setBackgroundColorAsync("#000");
     const theme = useTheme();
     const flag = true;
 
