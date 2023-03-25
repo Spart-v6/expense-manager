@@ -110,7 +110,7 @@ const DashboardCard = () => {
     <Card style={[styles.card]}>
       <Card.Title
         title="Total balance"
-        subtitle="- $1,111"
+        subtitle="-$43,000"
         titleStyle={{ color: allColors.textColorPrimary, fontSize: 17 }}
         subtitleStyle={{
           fontSize: 30,

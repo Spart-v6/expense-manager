@@ -216,102 +216,103 @@ const PlusMoreHome = ({ navigation, route }) => {
     navigation.navigate("Home");
   };
 
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <AppHeader
-        title="Add Expenses"
-        navigation={navigation}
-        isPlus={true}
-        isUpdate={isUpdatePressed}
-        isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
-      />
-      <View>
-        <View
-          style={{
-            flexDirection: "row",
-            marginLeft: 20,
-            marginTop: 20,
-            gap: 10,
-          }}
-        >
-          {incomeExpenseBtns("Income")}
-          {incomeExpenseBtns("Expense")}
-        </View>
-
-        <View style={{ margin: 20, marginBottom: 0, gap: 20 }}>
-          {commonTextInput(expenseName, setExpenseName, selectedButton)}
-          {commonTextInput(amountValue, setAmountValue, "Amount")}
-        </View>
-
-        <View style={{ flexDirection: "row", margin: 20, marginRight: 0 }}>
-          {dateTextInput(dateValue)}
-          <Button
-            onPress={() => setOpen(true)}
-            mode="outlined"
-            icon="calendar"
-            labelStyle={{ fontSize: 35 }}
-            textColor={"red"}
-            style={{ borderColor: "transparent" }}
-          />
-        </View>
-
-        {open && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={(e) => onDateChange(e)}
+        <AppHeader
+          title="Add Expenses"
+          navigation={navigation}
+          isPlus={true}
+          isUpdate={isUpdatePressed}
+          isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
+        />
+        <View>
+          <View
             style={{
-              shadowColor: "#fff",
-              shadowRadius: 0,
-              shadowOpacity: 1,
-              shadowOffset: { height: 0, width: 0 },
+              flexDirection: "row",
+              marginLeft: 20,
+              marginTop: 20,
+              gap: 10,
             }}
-          />
-        )}
-      </View>
+          >
+            {incomeExpenseBtns("Income")}
+            {incomeExpenseBtns("Expense")}
+          </View>
 
-      <View style={{ flex: 1, flexDirection: "column-reverse" }}>
-        <Button
-          onPress={handleAddOrUpdateExpense}
-          mode="contained"
-          labelStyle={{ fontSize: 15 }}
-          textColor={"black"}
-          style={{
-            borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
-            borderRadius: 15,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
-            margin: 10,
-          }}
-        >
-          <Text style={{color: allColors.textColorPrimary, fontWeight: 700, fontSize: 18}}> {btnName} </Text>
-        </Button>
-      </View>
+          <View style={{ margin: 20, marginBottom: 0, gap: 20 }}>
+            {commonTextInput(expenseName, setExpenseName, selectedButton)}
+            {commonTextInput(amountValue, setAmountValue, "Amount")}
+          </View>
 
-      <Portal>
-        <Dialog visible={isDeleteBtnPressed} onDismiss={hideDialog}>
-          <Dialog.Title>Delete expense?</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              The expense will be removed permanently
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
+          <View style={{ flexDirection: "row", margin: 20, marginRight: 0 }}>
+            {dateTextInput(dateValue)}
             <Button
-              onPress={deleteExpense}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={theme.colors.primary}
-              textColor={theme.colors.onPrimary}
-            >
-              Sure
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+              onPress={() => setOpen(true)}
+              mode="outlined"
+              icon="calendar"
+              labelStyle={{ fontSize: 35 }}
+              textColor={"red"}
+              style={{ borderColor: "transparent" }}
+            />
+          </View>
+
+          {open && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={(e) => onDateChange(e)}
+              style={{
+                shadowColor: "#fff",
+                shadowRadius: 0,
+                shadowOpacity: 1,
+                shadowOffset: { height: 0, width: 0 },
+              }}
+            />
+          )}
+        </View>
+
+        <View style={{ flex: 1, flexDirection: "column-reverse" }}>
+          <Button
+            onPress={handleAddOrUpdateExpense}
+            mode="contained"
+            labelStyle={{ fontSize: 15 }}
+            textColor={"black"}
+            style={{
+              borderColor: "transparent",
+              backgroundColor: allColors.backgroundColorLessPrimary,
+              borderRadius: 15,
+              borderTopRightRadius: 15,
+              borderTopLeftRadius: 15,
+              margin: 10,
+            }}
+          >
+            <Text style={{color: allColors.textColorPrimary, fontWeight: 700, fontSize: 18}}> {btnName} </Text>
+          </Button>
+        </View>
+
+        <Portal>
+          <Dialog visible={isDeleteBtnPressed} onDismiss={hideDialog}>
+            <Dialog.Title>Delete expense?</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                The expense will be removed permanently
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideDialog}>Cancel</Button>
+              <Button
+                onPress={deleteExpense}
+                mode="elevated"
+                contentStyle={{ width: 60 }}
+                buttonColor={theme.colors.primary}
+                textColor={theme.colors.onPrimary}
+              >
+                Sure
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
     </SafeAreaView>
   );
 };

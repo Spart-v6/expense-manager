@@ -15,6 +15,7 @@ import {
 } from "../helper/dateHelper";
 import obj from "../helper/dummy";
 import { useState, useEffect } from "react";
+import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 
@@ -26,11 +27,11 @@ const styles = StyleSheet.create({
   },
   selected: {
     backgroundColor: allColors.backgroundColorQuaternary,
-    borderRadius:20,
+    borderRadius: 20,
     text: {
       color: allColors.textColorTertiary,
       fontWeight: 700,
-    }
+    },
   },
 });
 
@@ -106,41 +107,41 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor={"transparent"} />
       <AppHeader title="Home" isParent={true} navigation={navigation} />
       <ScrollView>
-        <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
-        <View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              gap: 10,
-              marginLeft: 15,
-            }}
-          >
-            {datesNames.map((date, index) => (
-              <Button
-                onPress={() => handleListButtonPress(date.name)}
-                mode="contained"
-                key={index}
-                compact
-                dark
-                buttonColor={allColors.backgroundColorTertiary}
-                style={[
-                  styles.btn,
-                  selectedButton === date.name && styles.selected,
-                ]}
-              >
-                <Text
-                  style={
-                    selectedButton === date.name && styles.selected.text
-                  }
+        <AnimatedEntryScreen>
+          <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                gap: 10,
+                marginLeft: 15,
+              }}
+            >
+              {datesNames.map((date, index) => (
+                <Button
+                  onPress={() => handleListButtonPress(date.name)}
+                  mode="contained"
+                  key={index}
+                  compact
+                  dark
+                  buttonColor={allColors.backgroundColorTertiary}
+                  style={[
+                    styles.btn,
+                    selectedButton === date.name && styles.selected,
+                  ]}
                 >
-                  {date.name}
-                </Text>
-              </Button>
-            ))}
+                  <Text
+                    style={selectedButton === date.name && styles.selected.text}
+                  >
+                    {date.name}
+                  </Text>
+                </Button>
+              ))}
+            </View>
+            {listToShow}
           </View>
-          {listToShow}
-        </View>
+        </AnimatedEntryScreen>
       </ScrollView>
       <FAB
         icon="plus"
