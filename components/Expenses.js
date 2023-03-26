@@ -5,7 +5,7 @@ import moment from "moment";
 import allColors from "../commons/allColors";
 
 const Expenses = ({ item, index, onPress }) => {
-  var date = moment(item.date, "DD/MM/YYYY");
+  var date = moment(item.date, "YYYY/MM/DD");
   var dateFormat = date.format("DD");
   var dayOfWeekFormat = date.format("ddd");
 
@@ -14,7 +14,7 @@ const Expenses = ({ item, index, onPress }) => {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress} activeOpacity={1}>
       <View
         style={{
           borderRadius: 5,
