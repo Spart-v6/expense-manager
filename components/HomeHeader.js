@@ -1,8 +1,10 @@
 import { View, StyleSheet } from "react-native";
-import { Text, Card, useTheme } from "react-native-paper";
+import { Text, Card } from "react-native-paper";
 import React from "react";
 import allColors from "../commons/allColors";
 import { LineChart } from "react-native-chart-kit";
+import moment from "moment";
+import { useSelector } from "react-redux";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -103,14 +105,38 @@ const MyBezierLineChart = (colors, chartData) => {
 };
 
 const DashboardCard = () => {
-  const theme = useTheme();
+  const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
   const styles = makeStyles();
+
+  const totalValue = expenseData?.reduce((acc, curr) => {
+    if (curr.type === "Income") return acc + +curr.amount; 
+    else if (curr.type === "Expense") return acc - +curr.amount;
+    else return acc;
+  }, 0);
+
+  let overallExpense = totalValue?.toString();
+  if (totalValue >= 0) overallExpense = "$" + overallExpense;
+  else
+    overallExpense =
+      overallExpense?.slice(0, 1) + "$" + overallExpense?.slice(1);
+
+  const currentMonth = moment().month() + 1;
+  const filteredArr = expenseData.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
+
+  const { totalIncomeForMonth, totalExpenseForMonth } = filteredArr.reduce(
+    (acc, item) => {
+      if (item.type === "Income") acc.totalIncomeForMonth += (+item.amount);
+      else if (item.type === "Expense") acc.totalExpenseForMonth += (+item.amount);
+      return acc;
+    },
+    { totalIncomeForMonth: 0, totalExpenseForMonth: 0 }
+  );
 
   return (
     <Card style={[styles.card]}>
       <Card.Title
         title="Total balance"
-        subtitle="-$43,000"
+        subtitle={overallExpense}
         titleStyle={{ color: allColors.textColorPrimary, fontSize: 17 }}
         subtitleStyle={{
           fontSize: 30,
@@ -125,19 +151,19 @@ const DashboardCard = () => {
           variant="titleLarge"
           style={{ color: allColors.textColorPrimary }}
         >
-          March month
+           Month of {moment().format("MMMM")}
         </Text>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Income</Text>
             <Text style={{ color: allColors.textColorSecondary }}>
-              + $12,222
+              + ${totalIncomeForMonth}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Expense</Text>
             <Text style={{ color: allColors.textColorSecondary }}>
-              - $12,222
+              - ${totalExpenseForMonth}
             </Text>
           </View>
         </View>
@@ -148,13 +174,13 @@ const DashboardCard = () => {
 
 const IncomeCard = ({ incomeArray }) => {
   const styles = makeStyles();
-  const totalIncome = incomeArray.reduce((a, b) => a + b, 0) || 0;
+  const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;
 
   return (
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
         <Text>Income</Text>
-        <Text>+ ${totalIncome}</Text>
+        <Text style={{ color: "#4CAF50" }}>+ ${totalIncome}</Text>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
@@ -163,20 +189,37 @@ const IncomeCard = ({ incomeArray }) => {
 
 const ExpenseCard = ({ expenseArray }) => {
   const styles = makeStyles();
-  const totalExpense = expenseArray.reduce((a, b) => a + b, 0) || 0;
+  const totalExpense = expenseArray?.reduce((a, b) => a + b, 0) || 0;
 
   return (
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
         <Text>Expense</Text>
-        <Text>- ${totalExpense}</Text>
+        <Text style={{ color: "#EF9A9A" }}>- ${totalExpense}</Text>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>
   );
 };
 
-const HomeHeader = ({ incomeArray, expenseArray }) => {
+const HomeHeader = () => {
+  const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
+
+  const [incomeArray, setIncomeArray] = React.useState([]);
+  const [expenseArray, setExpenseArray] = React.useState([]);
+
+  React.useEffect(() => {
+    const newIncomeArray = expenseData
+      ?.filter((item) => item?.type === "Income")
+      ?.map((item) => +item?.amount);
+    const newExpenseArray = expenseData
+      ?.filter((item) => item.type === "Expense")
+      ?.map((item) => +item.amount);
+
+    setIncomeArray(newIncomeArray);
+    setExpenseArray(newExpenseArray);
+  }, [expenseData]);
+
   return (
     <View>
       <DashboardCard />

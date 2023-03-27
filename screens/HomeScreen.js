@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
+import { useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
   btn: {
@@ -45,9 +46,9 @@ const HomeScreen = ({ navigation }) => {
     />
   );
 
-  const [incomeArray, setIncomeArray] = useState([]);
-  const [expenseArray, setExpenseArray] = useState([]);
   const [selectedButton, setSelectedButton] = useState("Daily");
+
+  const expenseData = useSelector(state => state.expenseReducer.allExpenses)
 
   const handleListButtonPress = (nameOfDate) => {
     setSelectedButton(nameOfDate);
@@ -90,25 +91,13 @@ const HomeScreen = ({ navigation }) => {
     { name: "All" },
   ];
 
-  useEffect(() => {
-    const newIncomeArray = obj
-      .filter((item) => item.type === "income")
-      .map((item) => item.amount);
-    const newExpenseArray = obj
-      .filter((item) => item.type === "expense")
-      .map((item) => item.amount);
-
-    setIncomeArray(newIncomeArray);
-    setExpenseArray(newExpenseArray);
-  }, [obj]);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
       <AppHeader title="Home" isParent={true} navigation={navigation} />
       <ScrollView>
         <AnimatedEntryScreen>
-          <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
+          <HomeHeader />
           <View>
             <View
               style={{

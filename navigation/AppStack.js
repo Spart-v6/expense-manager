@@ -9,9 +9,11 @@ import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
 import SettingsScreen from "../screens/SettingsScreen";
 import DrawerContent from "../components/DrawerContent";
+import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { useTheme, Text } from "react-native-paper";
-import Icon from "react-native-vector-icons/Entypo";
+// import Icon from "react-native-vector-icons/Entypo";
+import { Icon } from "react-native-elements";
 import allColors from "../commons/allColors.js";
 import * as NavigationBar from "expo-navigation-bar";
 import { View, TouchableOpacity } from "react-native";
@@ -26,13 +28,26 @@ const navOptions = () => ({
 });
 
 const TabArr = [
-  { route: "Home", label: "Home", icon: "home", iconFilled: "home", component: HomeScreen },
+  {
+    route: "Home",
+    label: "Home",
+    icon: "home",
+    iconFilled: "home",
+    component: HomeScreen,
+  },
   {
     route: "Accounts",
     label: "Accounts",
     icon: "credit-card",
     iconFilled: "credit-card",
     component: AccountsScreen,
+  },
+  {
+    route: "Split money",
+    label: "Split money",
+    icon: "attach-money",
+    iconFilled: "attach-money",
+    component: SplitMoneyScreen,
   },
 ];
 
@@ -82,7 +97,7 @@ const TabButton = (props) => {
             <Icon
               type={item.type}
               name={item.icon}
-              color={focused ? allColors.iconColor : "white"}
+              color={"white"}
               size={20}
             />
           </View>
