@@ -47,9 +47,6 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
   }
 
   const renderItem = ({ item, index }) => (
-    // <TouchableOpacity onPress={() => navigation.navigate("PlusMoreHome", {updateItem: item}) }>
-    //   <Expenses item={item} index={index}/>
-    // </TouchableOpacity>
     <Expenses item={item} index={index} onPress={(item) => navigation.navigate("PlusMoreHome", { updateItem: item })} />
   );
 

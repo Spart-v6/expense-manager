@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  ScrollView
 } from "react-native";
 import AppHeader from "../components/AppHeader";
 import {
@@ -21,6 +22,7 @@ import { addData, deleteData, updateData } from "../redux/actions";
 import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import allColors from "../commons/allColors";
+import { AntDesign } from "@expo/vector-icons";
 
 DatePicker.prototype = false; //temporarily disabling warnings
 
@@ -64,6 +66,34 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  commonStyles: {
+    marginLeft: 20,
+    marginRight: 20,
+    gap: 20,
+    marginTop: 20,
+  },
+  commonTouchableStyle: {
+    marginRight: 20,
+  },
+  moreCardStyle: {
+    padding: 20,
+    borderRadius: 10,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    backgroundColor: allColors.backgroundColorLessPrimary,
+    height: 100,
+    width: 125,
+  },
+  highlightedCardStyle: {
+    backgroundColor: allColors.backgroundColorSecondary,
+    color: allColors.textColorPrimary,
+  },
+  commonCardIconStyle: {
+    padding: 5,
+    backgroundColor: allColors.backgroundColorQuaternary,
+    borderRadius: 50,
+  },
 });
 
 const PlusMoreHome = ({ navigation, route }) => {
@@ -87,6 +117,10 @@ const PlusMoreHome = ({ navigation, route }) => {
     if (route.params) return route.params.updateItem.type;
     return "Income";
   });
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const handlePress = (index) => setSelectedIndex(index);
+
 
   // Date variables
   const [dateValue, setDateValue] = useState(() => {
@@ -238,7 +272,11 @@ const PlusMoreHome = ({ navigation, route }) => {
     setIsDeleteBtnPressed(false);
     dispatch(deleteData(valuesToChange.id));
     navigation.navigate("Home");
-  };
+  };  
+  const obj = [
+    {name: "visa"}
+  ];
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -315,6 +353,52 @@ const PlusMoreHome = ({ navigation, route }) => {
             </SafeAreaView>
           </View>
         </Modal>
+
+        <View style={{ ...styles.commonStyles, height: 150 }}>
+          <Text>Payment network</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity
+              style={styles.commonTouchableStyle}
+              // onPress={showDialog}
+              activeOpacity={0.5}
+            >
+              <View style={styles.moreCardStyle}>
+                <AntDesign
+                  name="pluscircle"
+                  size={30}
+                  color={allColors.textColorPrimary}
+                />
+                <Text
+                  variant="bodyLarge"
+                  style={{ color: allColors.textColorFive }}
+                >
+                  Add new
+                </Text>
+              </View>
+            </TouchableOpacity>
+            {obj.length !== 0 &&
+              obj.map((e, index) => (
+                <TouchableOpacity
+                  style={styles.commonTouchableStyle}
+                  activeOpacity={0.5}
+                  onPress={() => handlePress(index)}
+                >
+                  <View
+                    style={[
+                      styles.moreCardStyle,
+                      selectedIndex === index && {
+                        ...styles.moreCardStyle,
+                        ...styles.highlightedCardStyle,
+                      },
+                    ]}
+                  >
+                    <Text style={{ color: allColors.textColorFive }}></Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+          </ScrollView>
+        </View>
+
       </View>
 
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>

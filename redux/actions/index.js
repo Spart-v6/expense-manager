@@ -1,5 +1,7 @@
 import { constants as types } from "../actionTypes";
 
+// For expenses
+
 export const addData = payload => ({
   type: types.ADD_DATA,
   payload,
