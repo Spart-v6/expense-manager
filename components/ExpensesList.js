@@ -59,7 +59,7 @@ const ExpensesList = ({ heading, fromDate, toDate }) => {
       <View>
         <Text variant="titleMedium">{heading}</Text>
       </View>
-      <View style={{marginBottom: 80}}>
+      <View style={{marginBottom: 120}}>
         <FlatList
           data={expensesData}
           renderItem={renderItem} 

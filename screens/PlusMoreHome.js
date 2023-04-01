@@ -339,8 +339,7 @@ const PlusMoreHome = ({ navigation, route }) => {
               fontSize: 18,
             }}
           >
-            {" "}
-            {btnName}{" "}
+            {btnName}
           </Text>
         </Button>
       </View>

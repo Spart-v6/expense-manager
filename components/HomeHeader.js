@@ -121,7 +121,7 @@ const DashboardCard = () => {
       overallExpense?.slice(0, 1) + "$" + overallExpense?.slice(1);
 
   const currentMonth = moment().month() + 1;
-  const filteredArr = expenseData.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
+  const filteredArr = expenseData?.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
 
   const { totalIncomeForMonth, totalExpenseForMonth } = filteredArr.reduce(
     (acc, item) => {
@@ -143,7 +143,7 @@ const DashboardCard = () => {
           textAlignVertical: "center",
           paddingTop: 20,
           paddingBottom: 10,
-          color: allColors.textColorSecondary,
+          color: allColors.textColorFive,
         }}
       />
       <Card.Content>
@@ -156,13 +156,13 @@ const DashboardCard = () => {
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Income</Text>
-            <Text style={{ color: allColors.textColorSecondary }}>
+            <Text style={{ color: allColors.textColorFive }}>
               + ${totalIncomeForMonth}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Expense</Text>
-            <Text style={{ color: allColors.textColorSecondary }}>
+            <Text style={{ color: allColors.textColorFive }}>
               - ${totalExpenseForMonth}
             </Text>
           </View>

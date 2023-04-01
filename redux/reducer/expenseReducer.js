@@ -28,7 +28,7 @@ const expenseReducer = (state = initialState, action) => {
       return state;
     case types.DELETE_DATA:
       const id = action.payload;
-      const updatedArray = state.allExpenses.filter((obj) => obj.id !== id);
+      const updatedArray = state.allExpenses?.filter((obj) => obj.id !== id);
 
       AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedArray));
       return { ...state, allExpenses: updatedArray };

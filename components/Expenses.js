@@ -18,12 +18,13 @@ const Expenses = ({ item, index, onPress }) => {
       <View
         style={{
           borderRadius: 5,
-          marginTop: 20
+          marginTop: 20,
         }}
       >
         <View style={{height: 70, flexDirection: "row", justifyContent: "space-between", alignItems:"center"}}>
           <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
-            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 20}}>
+
+            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 15, flex: 0.20}}>
               <Text variant="titleLarge">
                 {dateFormat}
               </Text>
@@ -31,13 +32,16 @@ const Expenses = ({ item, index, onPress }) => {
                 {dayOfWeekFormat}
               </Text>
             </View>
-            <View>
-              <Text variant="titleLarge">{item.name}</Text>
-              <Text>Account</Text>
+
+            <View style={{flex: 1,}}>
+              <Text variant="titleLarge" style={{width: 200}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+              <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">Description</Text>
             </View>
-          </View>
-          <View style={{alignItems: "center", marginRight: 20}}>
-            <Text variant="titleMedium">{item.amount}</Text>
+
+            <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
+              <Text variant="titleSmall" numberOfLines={1}>{item.amount}</Text>
+              <Text variant="titleSmall" numberOfLines={1}>Account</Text>
+            </View>
           </View>
         </View>
       </View>

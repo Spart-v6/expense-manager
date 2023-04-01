@@ -21,7 +21,7 @@ import { View, TouchableOpacity } from "react-native";
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
 const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
+const Drawer = createDrawerNavigator(); // TODO: gotta remove this
 
 const navOptions = () => ({
   headerShown: false,
