@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
+import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import DrawerContent from "../components/DrawerContent";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
@@ -151,6 +152,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="PlusMoreAccount"
       component={PlusMoreAccount}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="CardDetailsScreen"
+      component={CardDetailsScreen}
       options={navOptions}
     />
   </Stack.Navigator>

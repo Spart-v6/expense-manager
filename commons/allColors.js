@@ -15,6 +15,8 @@ const colors = {
     textColorFive: PlatformColor('@android:color/system_accent1_50'),
 
     iconColor : PlatformColor('@android:color/system_neutral1_100'),
+
+    warningColor : "#F44336"
 }
 
 export default colors;

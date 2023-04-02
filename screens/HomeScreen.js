@@ -18,7 +18,6 @@ import { useState, useEffect } from "react";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
-import { useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
   btn: {
@@ -37,7 +36,6 @@ const styles = StyleSheet.create({
 });
 
 const HomeScreen = ({ navigation }) => {
-  const theme = useTheme();
   const [listToShow, setListToShow] = useState(
     <ExpensesList
       heading={getToday().formattedStartDate}
@@ -47,8 +45,6 @@ const HomeScreen = ({ navigation }) => {
   );
 
   const [selectedButton, setSelectedButton] = useState("Daily");
-
-  const expenseData = useSelector(state => state.expenseReducer.allExpenses)
 
   const handleListButtonPress = (nameOfDate) => {
     setSelectedButton(nameOfDate);

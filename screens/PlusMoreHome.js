@@ -17,7 +17,7 @@ import {
 } from "react-native-paper";
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import DatePicker from "react-native-modern-datepicker";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addData, deleteData, updateData } from "../redux/actions";
 import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -117,10 +117,16 @@ const PlusMoreHome = ({ navigation, route }) => {
     if (route.params) return route.params.updateItem.type;
     return "Income";
   });
-  const [selectedIndex, setSelectedIndex] = useState(null);
 
-  const handlePress = (index) => setSelectedIndex(index);
-
+  // cards
+  const [selectedCardInExpense, setSelectedCardInExpense] = useState(() => {
+    if(route.params) return route.params.updateItem.selectedCard;
+    return "";
+  });
+  const handlePress = e => {
+    setSelectedCardInExpense(e.paymentNetwork);
+  }
+  const cardsData = useSelector(state => state.cardReducer.allCards);
 
   // Date variables
   const [dateValue, setDateValue] = useState(() => {
@@ -243,12 +249,14 @@ const PlusMoreHome = ({ navigation, route }) => {
       name: expenseName,
       amount: amountValue,
       date: tempDate,
+      selectedCard: selectedCardInExpense
     };
     const updateExpense = {
       type: selectedButton,
       name: expenseName,
       amount: amountValue,
       date: tempDate,
+      selectedCard: selectedCardInExpense
     };
     if (isUpdatePressed) {
       dispatch(updateData(valuesToChange.id, updateExpense));
@@ -272,11 +280,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     setIsDeleteBtnPressed(false);
     dispatch(deleteData(valuesToChange.id));
     navigation.navigate("Home");
-  };  
-  const obj = [
-    {name: "visa"}
-  ];
-
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -359,7 +363,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               style={styles.commonTouchableStyle}
-              // onPress={showDialog}
+              onPress={() => navigation.navigate("PlusMoreAccount")}
               activeOpacity={0.5}
             >
               <View style={styles.moreCardStyle}>
@@ -376,23 +380,24 @@ const PlusMoreHome = ({ navigation, route }) => {
                 </Text>
               </View>
             </TouchableOpacity>
-            {obj.length !== 0 &&
-              obj.map((e, index) => (
+            {cardsData?.length !== 0 &&
+              cardsData?.filter(item => item?.paymentNetwork).map((e,index) => (
                 <TouchableOpacity
                   style={styles.commonTouchableStyle}
                   activeOpacity={0.5}
-                  onPress={() => handlePress(index)}
+                  onPress={() => handlePress(e)}
+                  key={index}
                 >
                   <View
                     style={[
                       styles.moreCardStyle,
-                      selectedIndex === index && {
+                      selectedCardInExpense === e.paymentNetwork && {
                         ...styles.moreCardStyle,
                         ...styles.highlightedCardStyle,
                       },
                     ]}
                   >
-                    <Text style={{ color: allColors.textColorFive }}></Text>
+                    <Text style={{ color: allColors.textColorFive }}>{e.paymentNetwork}</Text>
                   </View>
                 </TouchableOpacity>
               ))}

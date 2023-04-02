@@ -91,6 +91,7 @@ const PlusMoreAccount = ({ navigation }) => {
 
   const handleAddOrUpdateCard = () => {
     const cardDetails = {
+      id: Math.random() + 10 + Math.random(),
       cardHolderName: cardHolderName,
       paymentNetwork: paymentNetwork,
       month: month,
@@ -98,7 +99,7 @@ const PlusMoreAccount = ({ navigation }) => {
       checked
     };
     dispatch(addCard(cardDetails));
-    navigation.navigate("Accounts");
+    navigation.goBack();
   };
 
   return (

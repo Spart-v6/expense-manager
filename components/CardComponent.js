@@ -1,7 +1,13 @@
 import { View, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
-import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { storeCard } from "../redux/actions";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from "react-native";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -20,55 +26,111 @@ const makeStyles = () =>
 
 const CardComponent = () => {
   const styles = makeStyles();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const allCards = useSelector(state => state.cardReducer.allCards);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
+
+  const fetchAllCardsData = async () => {
+    try{
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if(newData !== null) dispatch(storeCard(newData));
+    }
+    catch(e) {
+      console.log("error: ", e);
+    }
+  }
+
   return (
     <>
-      <Card style={[styles.card]}>
-        <Card.Title
-          title="VISA"
-          titleStyle={{
-            color: allColors.textColorFive,
-            fontSize: 24,
-            textAlign: "right",
-            paddingTop: 15,
-            paddingBottom: 10,
-            textAlignVertical: "center",
-          }}
-        />
-        <Card.Content>
-          <View style={{gap: 6}}>
-            <Text variant="titleMedium">Total Expenditure</Text>
-            <Text
-              variant="headlineLarge"
-              style={{ color: allColors.textColorPrimary }}
-            >
-              $ 1123213123
-            </Text>
-          </View>
-          <View style={styles.content}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}
-            >
+    {
+      allCards?.length > 0 ? (
+      allCards?.map(crd => (
+        <Card style={[styles.card]} key={Math.random()} onPress={() => navigation.navigate("CardDetailsScreen", {card: crd})}>
+          <Card.Title
+            title={crd?.paymentNetwork}
+            titleStyle={{
+              color: allColors.textColorFive,
+              fontSize: 24,
+              textAlign: "right",
+              paddingTop: 15,
+              paddingBottom: 10,
+              textAlignVertical: "center",
+            }}
+          />
+          <Card.Content>
+            <View style={{gap: 6}}>
+              <Text variant="titleMedium">Total Expenditure</Text>
               <Text
-                variant="headlineSmall"
+                variant="headlineLarge"
                 style={{ color: allColors.textColorPrimary }}
               >
-                ANKUR SINGH
-              </Text>
-              <Text
-                variant="titleSmall"
-                style={{ color: allColors.textColorPrimary }}
-              >
-                Valid Forever
+                $ 1123213123
               </Text>
             </View>
+            <View style={styles.content}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <View style={{}}>
+                  <Text variant="titleMedium">Card Holder name</Text>
+                  <Text
+                    variant="headlineSmall"
+                    style={{ color: allColors.textColorPrimary }}
+                    >
+                    {crd?.cardHolderName.toUpperCase()}
+                  </Text>
+                </View>
+                <View>
+                  {
+                    crd?.month === "" || crd?.year === "" ?
+                    <Text
+                      variant="titleSmall"
+                      style={{ color: allColors.textColorPrimary }}
+                    >
+                      Valid Forever
+                    </Text>
+                    :
+                    <View style={{flexDirection:"column", justifyContent:"center", alignItems:"flex-start"}}>
+                      <Text variant="titleMedium">Expiry</Text>
+                      <View style={{flexDirection:"row", gap: 5}}>
+                        <Text variant="headlineSmall"
+                        style={{ color: allColors.textColorPrimary }}>{crd?.month}</Text>
+                        <Text variant="headlineSmall"
+                        style={{ color: allColors.textColorPrimary }}>/</Text>
+                        <Text variant="headlineSmall"
+                        style={{ color: allColors.textColorPrimary }}>{crd?.year}</Text>
+                      </View>
+
+                    </View>
+                  }
+                </View>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
+      )))
+      : 
+      (
+        <>
+          <View style={{justifyContent: "center", alignItems:"center", flex: 1, height: 700}}>
+            <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.backgroundColorSecondary} />
+            <Text variant="titleMedium">You don't have cards yet.</Text>
           </View>
-        </Card.Content>
-      </Card>
+        </>
+      )
+    }
     </>
   );
 };
