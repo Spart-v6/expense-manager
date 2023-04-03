@@ -31,10 +31,10 @@ export const addCard = payload => ({
   payload
 });
 
-export const updateCard = (id, updatedCard) => {
+export const updateCard = (sameId, updatedCard) => {
   return {
     type: types.UPDATE_CARD,
-    payload: {id, updatedCard}
+    payload: {sameId, updatedCard}
   }
 };
 

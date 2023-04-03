@@ -1,10 +1,14 @@
-import { Appbar, Button, MD3DarkTheme as DefaultTheme } from "react-native-paper";
+import { Appbar, Button } from "react-native-paper";
 import React from "react";
 import allColors from "../commons/allColors";
 
-const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePressed, isAccountScreenMore, isUpdateCardScreen=false }) => {
+const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePressed, isCardEditPressed, isAccountScreenMore, isUpdateCardScreen=false }) => {
   const handleDeleteExpense = () => {
     isDeletePressed(true);
+  }
+
+  const handleCardEdit = () => {
+    isCardEditPressed(true);
   }
 
   return (
@@ -19,6 +23,7 @@ const AppHeader = ({ title, isParent, navigation, isPlus, isUpdate, isDeletePres
       <Appbar.Content title={isUpdate ? "Update Expense" : title} />
       { !isPlus && !isUpdate && isAccountScreenMore && <Appbar.Action icon="magnify" onPress={() => {}} /> }
       { isPlus && isUpdate && <Appbar.Action icon="delete" onPress={handleDeleteExpense} /> }
+      { isUpdateCardScreen && <Appbar.Action icon="pencil" onPress={handleCardEdit} /> }
       { isUpdateCardScreen && <Appbar.Action icon="delete" onPress={handleDeleteExpense} /> }
     </Appbar.Header>
   );

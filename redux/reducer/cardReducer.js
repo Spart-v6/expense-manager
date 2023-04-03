@@ -18,11 +18,11 @@ const cardReducer = (state = initialState, action) => {
       };
 
     case types.UPDATE_CARD:
-      const { sameId, updatedObj } = action.payload;
+      const { sameId, updatedCard } = action.payload;
       const index = state.allCards.findIndex(obj => obj.id === sameId);
       if (index !== -1) {
         const updatedObjects = [...state.allCards];
-        updatedObjects[index] = { ...updatedObjects[index], ...updatedObj };
+        updatedObjects[index] = { ...updatedObjects[index], ...updatedCard };
         AsyncStorage.setItem("ALL_CARDS", JSON.stringify(updatedObjects));
         return { ...state, allCards: updatedObjects };
       }

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { View, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, TextInput, Button } from "react-native-paper";
 import React from "react";
@@ -6,7 +6,7 @@ import RadioButton from "../components/RadioButton";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import { useDispatch } from "react-redux";
-import { addCard } from "../redux/actions";
+import { addCard, updateCard } from "../redux/actions";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -37,14 +37,40 @@ const makeStyles = () =>
     },
   });
 
-const PlusMoreAccount = ({ navigation }) => {
+const PlusMoreAccount = ({ navigation, route }) => {
   const styles = makeStyles();
   const dispatch = useDispatch();
-  const [cardHolderName, setCardHolderName] = useState("");
-  const [paymentNetwork, setPaymentNetwork] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [checked, setChecked] = useState("debit");
+  const [isUpdateCardPressed, setIsUpdateCardPressed] = useState(false);
+  const [valuesToChangeInCard, setValuesToChangeInCard] = useState({});
+  const [btnName] = useState(() => {
+    if(route.params) return "Update Card";
+    return "Add Card";
+  });
+  const [cardHolderName, setCardHolderName] = useState(() => {
+    if(route.params) return route.params.updateCard.cardHolderName;
+    return "";
+  });
+  const [paymentNetwork, setPaymentNetwork] = useState(() => {
+    if(route.params) return route.params.updateCard.paymentNetwork;
+    return "";
+  });
+  const [month, setMonth] = useState(() => {
+    if(route.params) return route.params.updateCard.month;
+    return "";
+  });
+  const [year, setYear] = useState(() => {
+    if(route.params) return route.params.updateCard.year;
+    return "";
+  });
+  const [checked, setChecked] = useState(() => {
+    if(route.params) return route.params.updateCard.checked;
+    return "debit";
+  });
+
+  const memoizedCardObj = useMemo(
+    () => route?.params?.updateCard,
+    [route?.params?.updateCard]
+  );
 
   const yearInputRef = useRef(null);
 
@@ -89,6 +115,13 @@ const PlusMoreAccount = ({ navigation }) => {
     );
   };
 
+  useEffect(() => {
+    if (route.params) {
+      setValuesToChangeInCard(memoizedCardObj);
+      setIsUpdateCardPressed(true);
+    }
+  }, [memoizedCardObj]);
+
   const handleAddOrUpdateCard = () => {
     const cardDetails = {
       id: Math.random() + 10 + Math.random(),
@@ -98,14 +131,22 @@ const PlusMoreAccount = ({ navigation }) => {
       year: year,
       checked
     };
-    dispatch(addCard(cardDetails));
+    const updatedCardDetails = {
+      cardHolderName: cardHolderName,
+      paymentNetwork: paymentNetwork,
+      month: month,
+      year: year,
+      checked
+    };
+    if(route.params) dispatch(updateCard(valuesToChangeInCard.id, updatedCardDetails));
+    else dispatch(addCard(cardDetails));
     navigation.goBack();
   };
 
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeView}>
-        <AppHeader title="Add Card" navigation={navigation} />
+        <AppHeader title={btnName} navigation={navigation} />
         <View style={{ ...styles.commonStyles, marginTop: 0 }}>
           {textInput(cardHolderName, setCardHolderName, "Cardholder name")}
         </View>
@@ -221,7 +262,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 fontSize: 18,
               }}
             >
-              Add Card
+              {btnName}
             </Text>
           </Button>
         </View>

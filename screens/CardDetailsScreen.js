@@ -64,10 +64,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const [card, setCard] = React.useState({});
   const [isDeleteBtnPressed, setIsDeleteBtnPressed] = React.useState(false);
-
-  React.useEffect(() => {
-    setCard(route.params.card);
-  }, [route.params.card]);
+  const [isCardEditBtnPressed, setIsCardEditBtnPressed] = React.useState(false);
 
   const hideDialog = () => setIsDeleteBtnPressed(false);
 
@@ -81,6 +78,17 @@ const CardDetailsScreen = ({ navigation, route }) => {
   const filteredArray = expensesData.filter(
     (expense) => expense?.selectedCard === card?.paymentNetwork
   );
+  
+  React.useEffect(() => {
+    setCard(route.params.card);
+  }, [route.params.card]);
+
+  React.useEffect(() => {
+    if(isCardEditBtnPressed) {
+      navigation.navigate("PlusMoreAccount", {updateCard: card});
+    }
+    setIsCardEditBtnPressed(false);
+  }, [isCardEditBtnPressed]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -88,6 +96,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
         title={card?.paymentNetwork}
         navigation={navigation}
         isUpdateCardScreen={true}
+        isCardEditPressed={val => setIsCardEditBtnPressed(val)}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
       <View style={styles.listView}>
