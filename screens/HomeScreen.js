@@ -5,16 +5,9 @@ import {
   StatusBar,
   StyleSheet,
 } from "react-native";
-import { FAB, Text, Button, useTheme } from "react-native-paper";
+import { FAB, Text, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
-import {
-  getToday,
-  getWeekOfTheYear,
-  getMonthOfTheYear,
-  getCurrentFullYear,
-} from "../helper/dateHelper";
-import obj from "../helper/dummy";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
@@ -36,47 +29,15 @@ const styles = StyleSheet.create({
 });
 
 const HomeScreen = ({ navigation }) => {
-  const [listToShow, setListToShow] = useState(
-    <ExpensesList
-      heading={getToday().formattedStartDate}
-      fromDate={getToday().today}
-      toDate={getToday().today}
-    />
-  );
-
   const [selectedButton, setSelectedButton] = useState("Daily");
+
+  const [listToShow, setListToShow] = useState(
+    <ExpensesList filter={selectedButton} />
+  );
 
   const handleListButtonPress = (nameOfDate) => {
     setSelectedButton(nameOfDate);
-    let heading = "";
-    let fromDate = null;
-    let toDate = null;
-    if (nameOfDate === "Daily") {
-      heading = getToday().formattedStartDate;
-      fromDate = getToday().today;
-      toDate = getToday().today;
-    }
-    if (nameOfDate === "Weekly") {
-      heading = getWeekOfTheYear().currentWeekNum;
-      (fromDate = getWeekOfTheYear().fromDate),
-        (toDate = getWeekOfTheYear().toDate);
-    }
-    if (nameOfDate === "Monthly") {
-      heading = getMonthOfTheYear().monthName;
-      (fromDate = getMonthOfTheYear().fromDate),
-        (toDate = getMonthOfTheYear().toDate);
-    }
-    if (nameOfDate === "Yearly") {
-      heading = getCurrentFullYear().year;
-      (fromDate = getCurrentFullYear().fromDate),
-        (toDate = getCurrentFullYear().toDate);
-    }
-    if (nameOfDate === "All") {
-      heading = "All Expenses";
-    }
-    setListToShow(
-      <ExpensesList heading={heading} fromDate={fromDate} toDate={toDate} />
-    );
+    setListToShow(<ExpensesList filter={nameOfDate} />);
   };
 
   const datesNames = [

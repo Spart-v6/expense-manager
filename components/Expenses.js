@@ -17,8 +17,7 @@ const Expenses = ({ item, index, onPress }) => {
     <TouchableOpacity onPress={handlePress} activeOpacity={1}>
       <View
         style={{
-          borderRadius: 5,
-          marginTop: 20,
+          borderRadius: 5
         }}
       >
         <View style={{height: 70, flexDirection: "row", justifyContent: "space-between", alignItems:"center"}}>

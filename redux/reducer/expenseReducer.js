@@ -9,12 +9,14 @@ const initialState = {
 const expenseReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_DATA:
+      const allExpenses = state.allExpenses || [];
       AsyncStorage.setItem(
         "ALL_EXPENSES",
-        JSON.stringify([...state.allExpenses, action.payload])
+        JSON.stringify([...allExpenses, action.payload])
       );
       return {
-        expenses: [...state.expenses, action.payload],
+        ...state,
+        allExpenses: [...allExpenses, action.payload],
       };
     case types.UPDATE_DATA:
       const { sameId, updatedObj } = action.payload;
@@ -31,11 +33,11 @@ const expenseReducer = (state = initialState, action) => {
       const updatedArray = state.allExpenses?.filter((obj) => obj.id !== id);
 
       AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedArray));
-      return { ...state, allExpenses: updatedArray };
+      return { ...state, allExpenses: updatedArray || [] };
     case types.STORE_DATA:
       return {
         ...state,
-        allExpenses: action.payload,
+        allExpenses: action.payload || [],
       };
     default:
       return state;

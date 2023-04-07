@@ -124,7 +124,7 @@ const DashboardCard = () => {
   const filteredArr = expenseData?.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
 
   const {totalIncomeForMonth, totalExpenseForMonth} = filteredArr?.length > 0
-  ? filteredArr.reduce((acc, item) => {
+  ? filteredArr?.reduce((acc, item) => {
       if (item.type === "Income") acc.totalIncomeForMonth += (+item.amount);
       else if (item.type === "Expense") acc.totalExpenseForMonth += (+item.amount);
       return acc;
