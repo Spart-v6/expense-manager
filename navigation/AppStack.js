@@ -13,7 +13,6 @@ import DrawerContent from "../components/DrawerContent";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { useTheme, Text } from "react-native-paper";
-// import Icon from "react-native-vector-icons/Entypo";
 import { Icon } from "react-native-elements";
 import allColors from "../commons/allColors.js";
 import * as NavigationBar from "expo-navigation-bar";
@@ -73,9 +72,9 @@ const TabButton = (props) => {
               position: "absolute",
               bottom: 0,
               top: 0,
-              left: 0,
-              width: 100,
-              height: 30,
+              left: 10,
+              width: 80,
+              height: 28,
               opacity: 0.4,
               backgroundColor: allColors.backgroundColorQuaternary, // TODO: Add Icon background and text color
               zIndex: 1,

@@ -16,7 +16,8 @@ const colors = {
 
     iconColor : PlatformColor('@android:color/system_neutral1_100'),
 
-    warningColor : "#F44336"
+    warningColor : "#F44336",
+    successColor : "#4CAF50"
 }
 
 export default colors;

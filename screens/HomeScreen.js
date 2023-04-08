@@ -7,7 +7,11 @@ import {
 } from "react-native";
 import { FAB, Text, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
-import { useState } from "react";
+import { useFocusEffect } from "@react-navigation/native"
+import { useState, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { storeCard } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
@@ -48,10 +52,30 @@ const HomeScreen = ({ navigation }) => {
     { name: "All" },
   ];
 
+  // =========== Fetching card details here only (coz it's the initial screen), no need to fetch it when user clicks on Accounts page
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
+
+  const fetchAllCardsData = async () => {
+    try{
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if(newData !== null) dispatch(storeCard(newData));
+    }
+    catch(e) {
+      console.log("error: ", e);
+    }
+  }
+  // =========== End
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
-      <AppHeader title="Home" isParent={true} navigation={navigation} />
+      <AppHeader title="Home" isParent={true} navigation={navigation} needSearch={true}/>
       <ScrollView>
         <AnimatedEntryScreen>
           <HomeHeader />
@@ -100,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
           bottom: 0,
           backgroundColor: allColors.backgroundColorSecondary,
         }}
-        size="large"
+        customSize={70}
       />
     </SafeAreaView>
   );

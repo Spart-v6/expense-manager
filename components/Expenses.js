@@ -15,11 +15,7 @@ const Expenses = ({ item, index, onPress }) => {
 
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={1}>
-      <View
-        style={{
-          borderRadius: 5
-        }}
-      >
+      <View style={{ borderRadius: 5 }} >
         <View style={{height: 70, flexDirection: "row", justifyContent: "space-between", alignItems:"center"}}>
           <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
 
@@ -34,12 +30,16 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{flex: 1,}}>
               <Text variant="titleLarge" style={{width: 200}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-              <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">Description</Text>
+              <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">
+                {item.desc === "" ? "No description" : item.desc}
+              </Text>
             </View>
 
             <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
-              <Text variant="titleSmall" numberOfLines={1}>{item.amount}</Text>
-              <Text variant="titleSmall" numberOfLines={1}>Account</Text>
+              <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? 'green' : 'red'}}>
+                {item.type === "Income" ? `+${item.amount}`: `-${item.amount}`}
+              </Text>
+              <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>
             </View>
           </View>
         </View>

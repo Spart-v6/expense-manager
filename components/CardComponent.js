@@ -7,7 +7,6 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { storeCard } from "../redux/actions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { SafeAreaView } from "react-native";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -29,23 +28,6 @@ const CardComponent = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const allCards = useSelector(state => state.cardReducer.allCards);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchAllCardsData();
-    }, [])
-  );
-
-  const fetchAllCardsData = async () => {
-    try{
-      const res = await AsyncStorage.getItem("ALL_CARDS");
-      let newData = JSON.parse(res);
-      if(newData !== null) dispatch(storeCard(newData));
-    }
-    catch(e) {
-      console.log("error: ", e);
-    }
-  }
 
   return (
     <>

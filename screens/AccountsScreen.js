@@ -13,7 +13,7 @@ const AccountsScreen = ({ navigation }) => {
         title="Accounts"
         isParent={true}
         navigation={navigation}
-        isAccountScreenMore={true}
+        needSearch={true}
       />
       <StatusBar translucent backgroundColor={"transparent"} />
       <AnimatedEntryScreen>
@@ -34,7 +34,7 @@ const AccountsScreen = ({ navigation }) => {
           bottom: 0,
           backgroundColor: allColors.backgroundColorSecondary,
         }}
-        size="large"
+        customSize={70}
       />
     </SafeAreaView>
   );

@@ -5,6 +5,7 @@ import allColors from "../commons/allColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -144,7 +145,7 @@ const DashboardCard = () => {
           textAlignVertical: "center",
           paddingTop: 20,
           paddingBottom: 10,
-          color: allColors.textColorFive,
+          color: totalValue < 0 ? allColors.warningColor : allColors.successColor,
         }}
       />
       <Card.Content>
@@ -152,20 +153,26 @@ const DashboardCard = () => {
           variant="titleLarge"
           style={{ color: allColors.textColorPrimary }}
         >
-           Month of {moment().format("MMMM")}
+           {moment().format("MMMM")} month
         </Text>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Income</Text>
-            <Text style={{ color: allColors.textColorFive }}>
-              + ${totalIncomeForMonth}
-            </Text>
+            <View style={{flexDirection:"row", gap: 2}}>
+              <AntDesign name="caretup" size={10} color={'green'} style={{alignSelf:"center"}}/>
+              <Text style={{ color: allColors.textColorFive }}>
+                + ${totalIncomeForMonth}
+              </Text>
+            </View>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ color: allColors.textColorPrimary }}>Expense</Text>
-            <Text style={{ color: allColors.textColorFive }}>
-              - ${totalExpenseForMonth}
-            </Text>
+            <View style={{flexDirection:"row", gap: 2}}>
+              <AntDesign name="caretdown" size={10} color={'red'} style={{alignSelf:"center"}}/>
+              <Text style={{ color: allColors.textColorFive }}>
+                - ${totalExpenseForMonth}
+              </Text>
+            </View>
           </View>
         </View>
       </Card.Content>
@@ -181,7 +188,7 @@ const IncomeCard = ({ incomeArray }) => {
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
         <Text>Income</Text>
-        <Text style={{ color: "#4CAF50" }}>+ ${totalIncome}</Text>
+          <Text style={{ color: "#4CAF50" }}>+ ${totalIncome}</Text>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
@@ -196,7 +203,7 @@ const ExpenseCard = ({ expenseArray }) => {
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
         <Text>Expense</Text>
-        <Text style={{ color: "#EF9A9A" }}>- ${totalExpense}</Text>
+          <Text style={{ color: "#EF9A9A" }}>- ${totalExpense}</Text>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>

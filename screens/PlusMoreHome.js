@@ -18,7 +18,9 @@ import {
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import DatePicker from "react-native-modern-datepicker";
 import { useDispatch, useSelector } from "react-redux";
-import { addData, deleteData, updateData } from "../redux/actions";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addData, deleteData, updateData, storeCard } from "../redux/actions";
 import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import allColors from "../commons/allColors";
@@ -115,7 +117,12 @@ const PlusMoreHome = ({ navigation, route }) => {
   });
   const [selectedButton, setSelectedButton] = useState(() => {
     if (route.params) return route.params.updateItem.type;
-    return "Income";
+    return "Expense";
+  });
+
+  const [description, setDescription] = useState(() => {
+    if (route.params) return route.params.updateItem.desc;
+    return "";
   });
 
   // cards
@@ -126,6 +133,26 @@ const PlusMoreHome = ({ navigation, route }) => {
   const handlePress = e => {
     setSelectedCardInExpense(e.paymentNetwork);
   }
+
+    // =========== Fetching card details here also (coz it's when updating it returns back)
+    useFocusEffect(
+      useCallback(() => {
+        fetchAllCardsData();
+      }, [])
+    );
+  
+    const fetchAllCardsData = async () => {
+      try{
+        const res = await AsyncStorage.getItem("ALL_CARDS");
+        let newData = JSON.parse(res);
+        if(newData !== null) dispatch(storeCard(newData));
+      }
+      catch(e) {
+        console.log("error: ", e);
+      }
+    }
+    // =========== End
+
   const cardsData = useSelector(state => state.cardReducer.allCards);
 
   // Date variables
@@ -245,9 +272,11 @@ const PlusMoreHome = ({ navigation, route }) => {
   const handleAddOrUpdateExpense = () => {
     const expense = {
       id: Math.random() + 10 + Math.random(),
+      time: moment().format("HH:mm:ss"),
       type: selectedButton,
       name: expenseName,
       amount: amountValue,
+      desc: description,
       date: tempDate,
       selectedCard: selectedCardInExpense
     };
@@ -255,6 +284,7 @@ const PlusMoreHome = ({ navigation, route }) => {
       type: selectedButton,
       name: expenseName,
       amount: amountValue,
+      desc: description,
       date: tempDate,
       selectedCard: selectedCardInExpense
     };
@@ -307,6 +337,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         <View style={{ margin: 20, marginBottom: 0, gap: 20 }}>
           {commonTextInput(expenseName, setExpenseName, selectedButton)}
           {commonTextInput(amountValue, setAmountValue, "Amount")}
+          {commonTextInput(description, setDescription, "Description")}
         </View>
 
         <View style={{ flexDirection: "row", margin: 20, marginRight: 10 }}>
