@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
+import SearchScreen from "../screens/SearchScreen";
 import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import DrawerContent from "../components/DrawerContent";
@@ -94,12 +95,7 @@ const TabButton = (props) => {
           }}
         >
           <View style={{ marginBottom: 5 }}>
-            <Icon
-              type={item.type}
-              name={item.icon}
-              color={"white"}
-              size={20}
-            />
+            <Icon type={item.type} name={item.icon} color={"white"} size={20} />
           </View>
           <Text style={{ color: "white" }}>{item.label}</Text>
         </View>
@@ -156,6 +152,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="CardDetailsScreen"
       component={CardDetailsScreen}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
       options={navOptions}
     />
   </Stack.Navigator>

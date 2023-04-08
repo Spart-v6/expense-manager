@@ -4,8 +4,10 @@ import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import CardComponent from "../components/CardComponent";
+import { useState } from "react";
 
 const AccountsScreen = ({ navigation }) => {
+  const [isSearchAccount, setIsSearchAccounts ] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -13,7 +15,7 @@ const AccountsScreen = ({ navigation }) => {
         title="Accounts"
         isParent={true}
         navigation={navigation}
-        needSearch={true}
+        isSearch={val => setIsSearchAccounts(val)}
       />
       <StatusBar translucent backgroundColor={"transparent"} />
       <AnimatedEntryScreen>

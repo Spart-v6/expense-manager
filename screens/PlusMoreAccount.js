@@ -11,7 +11,13 @@ import { addCard, updateCard } from "../redux/actions";
 const makeStyles = () =>
   StyleSheet.create({
     safeView: {
-      flex: 1,
+      flex: 1
+    }, 
+    commonStyles: {
+      marginLeft: 20,
+      marginRight: 20,
+      gap: 20,
+      marginTop: 20,
     },
     wholeRadioBtnStyle: {
       flexDirection: "row",
@@ -31,9 +37,7 @@ const makeStyles = () =>
       position: "absolute",
       bottom: 0,
       left: 0,
-      right: 0,
-      paddingHorizontal: 20,
-      paddingVertical: 10,
+      right: 0
     },
   });
 
@@ -98,7 +102,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
           borderTopLeftRadius: 15,
           borderColor: "black",
           borderWidth: 2,
-          backgroundColor: allColors.backgroundColorQuinary,
+          backgroundColor: allColors.backgroundColorQuinary
         }}
         selectionColor={allColors.textColorFour}
         textColor={allColors.textColorFour}

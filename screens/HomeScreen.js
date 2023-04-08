@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import { FAB, Text, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
-import { useFocusEffect } from "@react-navigation/native"
-import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { storeCard } from "../redux/actions";
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
   const [selectedButton, setSelectedButton] = useState("Daily");
 
   const [listToShow, setListToShow] = useState(
@@ -61,22 +61,25 @@ const HomeScreen = ({ navigation }) => {
   );
 
   const fetchAllCardsData = async () => {
-    try{
+    try {
       const res = await AsyncStorage.getItem("ALL_CARDS");
       let newData = JSON.parse(res);
-      if(newData !== null) dispatch(storeCard(newData));
-    }
-    catch(e) {
+      if (newData !== null) dispatch(storeCard(newData));
+    } catch (e) {
       console.log("error: ", e);
     }
-  }
+  };
   // =========== End
 
-  // TODO: Gotta do sorting acc. to time
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
-      <AppHeader title="Home" isParent={true} navigation={navigation} needSearch={true}/>
+      <AppHeader
+        title="Home"
+        isParent={true}
+        navigation={navigation}
+        needSearch={true}
+      />
       <ScrollView>
         <AnimatedEntryScreen>
           <HomeHeader />
