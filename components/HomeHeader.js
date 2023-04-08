@@ -188,7 +188,7 @@ const IncomeCard = ({ incomeArray }) => {
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
         <Text>Income</Text>
-          <Text style={{ color: "#4CAF50" }}>+ ${totalIncome}</Text>
+          <Text style={{ color: allColors.successColor }}>+ ${totalIncome}</Text>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
@@ -203,7 +203,7 @@ const ExpenseCard = ({ expenseArray }) => {
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
         <Text>Expense</Text>
-          <Text style={{ color: "#EF9A9A" }}>- ${totalExpense}</Text>
+          <Text style={{ color: allColors.warningColor }}>- ${totalExpense}</Text>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>

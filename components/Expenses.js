@@ -28,7 +28,7 @@ const Expenses = ({ item, index, onPress }) => {
               </Text>
             </View>
 
-            <View style={{flex: 1,}}>
+            <View style={{flex: 1}}>
               <Text variant="titleLarge" style={{width: 200}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
               <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">
                 {item.desc === "" ? "No description" : item.desc}
@@ -36,7 +36,7 @@ const Expenses = ({ item, index, onPress }) => {
             </View>
 
             <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
-              <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? 'green' : 'red'}}>
+              <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor}}>
                 {item.type === "Income" ? `+${item.amount}`: `-${item.amount}`}
               </Text>
               <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>

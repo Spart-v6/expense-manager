@@ -34,7 +34,9 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
             }}
           >
             <Text variant="headlineSmall">{exp.name}</Text>
-            <Text variant="headlineSmall">{exp.amount}</Text>
+            <Text variant="headlineSmall" style={{color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
+              {exp.type === "Income" ? `+${exp.amount}` : `-${exp.amount}`}
+            </Text>
           </View>
         }
         titleStyle={{ paddingTop: 10 }}
@@ -53,7 +55,9 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
             color={"white"}
             style={{ paddingLeft: 5, paddingRight: 5 }}
           />
-          <Text variant="bodyMedium">Description</Text>
+          <Text variant="bodyMedium">
+            {exp.desc === "" ? "No Description" : exp.desc}
+          </Text>
         </View>
       </Card.Content>
     </Card>
@@ -78,14 +82,14 @@ const CardDetailsScreen = ({ navigation, route }) => {
   const filteredArray = expensesData.filter(
     (expense) => expense?.selectedCard === card?.paymentNetwork
   );
-  
+
   React.useEffect(() => {
     setCard(route.params.card);
   }, [route.params.card]);
 
   React.useEffect(() => {
-    if(isCardEditBtnPressed) {
-      navigation.navigate("PlusMoreAccount", {updateCard: card});
+    if (isCardEditBtnPressed) {
+      navigation.navigate("PlusMoreAccount", { updateCard: card });
     }
     setIsCardEditBtnPressed(false);
   }, [isCardEditBtnPressed]);
@@ -96,7 +100,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
         title={card?.paymentNetwork}
         navigation={navigation}
         isUpdateCardScreen={true}
-        isCardEditPressed={val => setIsCardEditBtnPressed(val)}
+        isCardEditPressed={(val) => setIsCardEditBtnPressed(val)}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
       <View style={styles.listView}>
@@ -116,17 +120,15 @@ const CardDetailsScreen = ({ navigation, route }) => {
               The card will be removed permanently
             </Text>
           </Dialog.Content>
-          <Dialog.Actions style={{ gap: 10 }}>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Cancel</Button>
             <Button
-              onPress={hideDialog}
-              buttonColor={allColors.backgroundColorQuinary}
+              onPress={deleteCardForever}
+              mode="elevated"
+              contentStyle={{ width: 60 }}
+              buttonColor={allColors.warningColor}
             >
-              <Text style={{ color: allColors.backgroundColorLessPrimary }}>
-                Cancel
-              </Text>
-            </Button>
-            <Button onPress={deleteCardForever} buttonColor={allColors.warningColor}>
-              <Text style={{ color: allColors.textColorFive }}>Sure</Text>
+              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>

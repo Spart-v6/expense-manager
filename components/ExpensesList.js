@@ -44,7 +44,20 @@ const ExpensesList = ({ filter }) => {
       console.log("error: ", e);
     }
   };
+
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
+
+  const sortedData = expensesData.sort((a, b) => {
+    const aMoment = moment(`${a.date} ${a.time}`, 'YYYY/MM/DD HH:mm:ss');
+    const bMoment = moment(`${b.date} ${b.time}`, 'YYYY/MM/DD HH:mm:ss');
+  
+    if (aMoment.isSame(bMoment)) {
+      return moment(a.date, 'YYYY/MM/DD').isBefore(moment(b.date, 'YYYY/MM/DD')) ? 1 : -1;
+    }
+  
+    return aMoment.isBefore(bMoment) ? 1 : -1;
+  });
+
 
   const renderItem = ({ item, index }) => (
     <Expenses
@@ -148,7 +161,7 @@ const ExpensesList = ({ filter }) => {
     return groupedData;
   };
 
-  const groupedData = groupByCategory(expensesData, currentFilter);
+  const groupedData = groupByCategory(sortedData, currentFilter);
   const sectionListData = JSON.parse(JSON.stringify(groupedData));
 
   return (

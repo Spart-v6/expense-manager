@@ -72,6 +72,7 @@ const HomeScreen = ({ navigation }) => {
   }
   // =========== End
 
+  // TODO: Gotta do sorting acc. to time
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />

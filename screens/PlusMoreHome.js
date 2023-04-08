@@ -465,7 +465,7 @@ const PlusMoreHome = ({ navigation, route }) => {
       </View>
 
       <Portal>
-        <Dialog visible={isDeleteBtnPressed} onDismiss={hideDialog}>
+        <Dialog visible={isDeleteBtnPressed} onDismiss={hideDialog} style={{ backgroundColor: allColors.backgroundColorLessPrimary }}>
           <Dialog.Title>Delete expense?</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
@@ -478,10 +478,9 @@ const PlusMoreHome = ({ navigation, route }) => {
               onPress={deleteExpense}
               mode="elevated"
               contentStyle={{ width: 60 }}
-              buttonColor={theme.colors.primary}
-              textColor={theme.colors.onPrimary}
+              buttonColor={allColors.warningColor}
             >
-              Sure
+               <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>

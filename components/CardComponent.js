@@ -26,8 +26,8 @@ const makeStyles = () =>
 const CardComponent = () => {
   const styles = makeStyles();
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const allCards = useSelector(state => state.cardReducer.allCards);
+  const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   return (
     <>
@@ -53,7 +53,18 @@ const CardComponent = () => {
                 variant="headlineLarge"
                 style={{ color: allColors.textColorPrimary }}
               >
-                $ 1123213123
+                {expensesData
+                      .filter((exp) => exp.selectedCard === crd.paymentNetwork)
+                      ?.reduce((acc, card) => {
+                        if (card.type === "Income") {
+                          return acc + +card.amount;
+                        } else if (card.type === "Expense") {
+                          return acc - +card.amount;
+                        } else {
+                          return acc;
+                        }
+                      }, 0)
+                  }
               </Text>
             </View>
             <View style={styles.content}>
