@@ -12,6 +12,7 @@ import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import DrawerContent from "../components/DrawerContent";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
+import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { useTheme, Text } from "react-native-paper";
 import { Icon } from "react-native-elements";
@@ -44,11 +45,18 @@ const TabArr = [
     component: AccountsScreen,
   },
   {
-    route: "Split money",
-    label: "Split money",
-    icon: "attach-money",
-    iconFilled: "attach-money",
+    route: "SplitMoney",
+    label: "Divvy",
+    icon: "people",
+    iconFilled: "people",
     component: SplitMoneyScreen,
+  },
+  {
+    route: "RecurrenceScreen",
+    label: "Recurrence",
+    icon: "repeat",
+    iconFilled: "repeat",
+    component: RecurrenceScreen,
   },
 ];
 
@@ -62,7 +70,7 @@ const TabButton = (props) => {
       activeOpacity={1}
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
-      <View style={{ position: "relative", width: 90, height: 40 }}>
+      <View style={{ position: "relative", width: 100, height: 40 }}>
         {focused && (
           <View
             style={{
@@ -113,7 +121,7 @@ const HomeTabs = () => {
         tabBarActiveTintColor: "red",
         tabBarStyle: {
           backgroundColor: allColors.backgroundColorLessPrimary,
-          height: 75,
+          height: 80,
         },
         unmountOnBlur: true,
       }}

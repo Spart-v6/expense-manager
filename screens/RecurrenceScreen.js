@@ -3,27 +3,18 @@ import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import React from "react";
 
-const SplitMoneyScreen = ({ navigation }) => {
+const RecurrenceScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <StatusBar translucent backgroundColor={"transparent"} />
-      <AppHeader title="Split Money" isParent={true} navigation={navigation} />
+      <AppHeader title="Recurring Expenses" isParent={true} navigation={navigation} />
       <AnimatedEntryScreen>
-
-        <View>
-          
-        </View>
-
-        <View style={{justifyContent:"center", alignItems:"center", backgroundColor:"red"}}>
-          <Text>Individual</Text>
-          <Text>Group</Text>
-        </View>
         <ScrollView>
-          <Text>SplitMoneyScreen</Text>
+          <Text>RecurrenceScreen</Text>
         </ScrollView>
       </AnimatedEntryScreen>
     </SafeAreaView>
   );
 };
 
-export default SplitMoneyScreen;
+export default RecurrenceScreen;

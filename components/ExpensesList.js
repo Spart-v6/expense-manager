@@ -15,7 +15,7 @@ const Separator = () => (
       height: 1,
       width: "80%",
       backgroundColor: allColors.backgroundColorTertiary,
-      alignSelf: "center"
+      alignSelf: "center",
     }}
   />
 );
@@ -48,16 +48,17 @@ const ExpensesList = ({ filter }) => {
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   const sortedData = expensesData.sort((a, b) => {
-    const aMoment = moment(`${a.date} ${a.time}`, 'YYYY/MM/DD HH:mm:ss');
-    const bMoment = moment(`${b.date} ${b.time}`, 'YYYY/MM/DD HH:mm:ss');
-  
+    const aMoment = moment(`${a.date} ${a.time}`, "YYYY/MM/DD HH:mm:ss");
+    const bMoment = moment(`${b.date} ${b.time}`, "YYYY/MM/DD HH:mm:ss");
+
     if (aMoment.isSame(bMoment)) {
-      return moment(a.date, 'YYYY/MM/DD').isBefore(moment(b.date, 'YYYY/MM/DD')) ? 1 : -1;
+      return moment(a.date, "YYYY/MM/DD").isBefore(moment(b.date, "YYYY/MM/DD"))
+        ? 1
+        : -1;
     }
-  
+
     return aMoment.isBefore(bMoment) ? 1 : -1;
   });
-
 
   const renderItem = ({ item, index }) => (
     <Expenses
@@ -164,25 +165,61 @@ const ExpensesList = ({ filter }) => {
   const groupedData = groupByCategory(sortedData, currentFilter);
   const sectionListData = JSON.parse(JSON.stringify(groupedData));
 
+  // checking if user has already created today's expense or not
+  const today = moment().format("YYYY/MM/DD");
+  const foundDate = expensesData.find((obj) => {
+    return moment(obj.date, 'YYYY/MM/DD').format('YYYY/MM/DD') === today;
+  });
+  
+  const DATA = [
+    {
+      title: moment().format("Do MMMM, YYYY"),
+      data: ["You havent added any expense for today"],
+    },
+  ];
+
   return (
     <SafeAreaView style={{ margin: 20 }}>
       <View style={{ marginBottom: 120 }}>
         {sectionListData && (
-          <SectionList
-            scrollEnabled={false}
-            sections={sectionListData}
-            keyExtractor={(item, index) => item.id + index}
-            renderItem={renderItem}
-            renderSectionHeader={({ section: { title } }) => (
-              <Text
-                variant="titleMedium"
-                style={{ marginTop: 7, marginBottom: 7 }}
-              >
-                {title}
-              </Text>
+          <>
+            {!foundDate && (
+              <SectionList
+                scrollEnabled={false}
+                sections={DATA}
+                keyExtractor={(item, index) => item.id + index}
+                renderItem={({ item }) => (
+                  <View style={{ alignItems: "center" }}>
+                    <Text variant="titleMedium">{item}</Text>
+                  </View>
+                )}
+                renderSectionHeader={({ section: { title } }) => (
+                  <Text
+                    variant="titleMedium"
+                    style={{ marginTop: 7, marginBottom: 7 }}
+                  >
+                    {title}
+                  </Text>
+                )}
+                ItemSeparatorComponent={Separator}
+              />
             )}
-            ItemSeparatorComponent={Separator}
-          />
+            <SectionList
+              scrollEnabled={false}
+              sections={sectionListData}
+              keyExtractor={(item, index) => item.id + index}
+              renderItem={renderItem}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text
+                  variant="titleMedium"
+                  style={{ marginTop: 7, marginBottom: 7 }}
+                >
+                  {title}
+                </Text>
+              )}
+              ItemSeparatorComponent={Separator}
+            />
+          </>
         )}
       </View>
     </SafeAreaView>
