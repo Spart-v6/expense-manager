@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import AppHeader from "../components/AppHeader";
 import {
@@ -23,10 +23,55 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addData, deleteData, updateData, storeCard } from "../redux/actions";
 import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon1 from "react-native-vector-icons/AntDesign";
 import allColors from "../commons/allColors";
 import { AntDesign } from "@expo/vector-icons";
+import { NavigationContainer } from "@react-navigation/native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import IconPickerModal from "../components/IconPickerModal";
+import { IconComponent } from "../components/IconPickerModal";
 
 DatePicker.prototype = false; //temporarily disabling warnings
+
+const FrequentCategories = ({ handleSelectedCategory }) => {
+  const [selectedIcon, setSelectedIcon] = useState(null);
+  const handleSelectIcon = ({ iconName, iconCategory }) => {
+    setSelectedIcon(iconName);
+    handleSelectedCategory({ iconName, iconCategory });
+  };
+
+  return (
+    <View
+      style={{
+        alignItems: "flex-start",
+        padding: 10,
+        paddingTop: 30,
+        backgroundColor: allColors.backgroundColorLessPrimary,
+      }}
+    >
+      <View>
+        <IconPickerModal onSelectIcon={handleSelectIcon} />
+      </View>
+    </View>
+  );
+};
+
+const AllCategories = () => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: allColors.backgroundColorLessPrimary,
+      }}
+    >
+      <Text>All icons!</Text>
+    </View>
+  );
+};
+
+const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
   btn: {
@@ -102,6 +147,20 @@ const PlusMoreHome = ({ navigation, route }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
+  // #region
+
+  //  states for the icon picker dialog
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (route.params) return route.params.updateItem.selectedCategory;
+    return null;
+  });
+
+  const handleSelectedCategory = (category) => {
+    setSelectedCategory(category);
+    setOpenCategoryDialog(false);
+  };
+
   // Update screen variables
   const [isUpdatePressed, setIsUpdatePressed] = useState(false);
   const [valuesToChange, setValuesToChange] = useState({});
@@ -127,33 +186,32 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   // cards
   const [selectedCardInExpense, setSelectedCardInExpense] = useState(() => {
-    if(route.params) return route.params.updateItem.selectedCard;
+    if (route.params) return route.params.updateItem.selectedCard;
     return "";
   });
-  const handlePress = e => {
+  const handlePress = (e) => {
     setSelectedCardInExpense(e.paymentNetwork);
-  }
+  };
 
-    // =========== Fetching card details here also (coz it's when updating it returns back)
-    useFocusEffect(
-      useCallback(() => {
-        fetchAllCardsData();
-      }, [])
-    );
-  
-    const fetchAllCardsData = async () => {
-      try{
-        const res = await AsyncStorage.getItem("ALL_CARDS");
-        let newData = JSON.parse(res);
-        if(newData !== null) dispatch(storeCard(newData));
-      }
-      catch(e) {
-        console.log("error: ", e);
-      }
+  // =========== Fetching card details here also (coz it's when updating it returns back)
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
+
+  const fetchAllCardsData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeCard(newData));
+    } catch (e) {
+      console.log("error: ", e);
     }
-    // =========== End
+  };
+  // =========== End
 
-  const cardsData = useSelector(state => state.cardReducer.allCards);
+  const cardsData = useSelector((state) => state.cardReducer.allCards);
 
   // Date variables
   const [dateValue, setDateValue] = useState(() => {
@@ -181,6 +239,9 @@ const PlusMoreHome = ({ navigation, route }) => {
     () => route?.params?.updateItem,
     [route?.params?.updateItem]
   );
+
+  // for icons
+  // TODO: Do chips and Icon Picker + Tabs in modal
 
   const changeDate = useCallback(
     (params) => {
@@ -221,28 +282,61 @@ const PlusMoreHome = ({ navigation, route }) => {
         : placeholder || defaultPlaceholder;
 
     return (
-      <TextInput
-        style={{
-          borderRadius: 15,
-          borderTopRightRadius: 15,
-          borderTopLeftRadius: 15,
-          borderColor: "black",
-          borderWidth: 2,
-          backgroundColor: allColors.backgroundColorQuinary,
-          ...style,
-        }}
-        selectionColor={allColors.textColorFour}
-        textColor={allColors.textColorFour}
-        underlineColor="transparent"
-        activeUnderlineColor="transparent"
-        placeholderTextColor={allColors.textColorFour}
-        autoComplete="off"
-        textContentType="none"
-        value={name}
-        placeholder={resolvedPlaceholder}
-        onChangeText={(val) => setter(val)}
-        keyboardType={placeholder === "Amount" ? "phone-pad" : "default"}
-      />
+      <View
+        style={
+          (placeholder === "Expense" || placeholder === "Income") && {
+            flexDirection: "row",
+          }
+        }
+      >
+        <TextInput
+          style={[
+            {
+              borderRadius: 15,
+              borderTopRightRadius: 15,
+              borderTopLeftRadius: 15,
+              borderColor: "black",
+              borderWidth: 2,
+              backgroundColor: allColors.backgroundColorQuinary,
+              ...style,
+            },
+            (placeholder === "Expense" || placeholder === "Income") && {
+              flex: 1,
+            },
+          ]}
+          selectionColor={allColors.textColorFour}
+          textColor={allColors.textColorFour}
+          underlineColor="transparent"
+          activeUnderlineColor="transparent"
+          placeholderTextColor={allColors.textColorFour}
+          autoComplete="off"
+          textContentType="none"
+          value={name}
+          placeholder={resolvedPlaceholder}
+          onChangeText={(val) => setter(val)}
+          keyboardType={placeholder === "Amount" ? "phone-pad" : "default"}
+        />
+        {(placeholder === "Expense" || placeholder === "Income") && (
+          <TouchableOpacity
+            onPress={() => setOpenCategoryDialog(true)}
+            style={{ margin: 12 }}
+            activeOpacity={1}
+          >
+            {selectedCategory === null || selectedCategory === undefined ? (
+              <Icon1
+                name={"select1"}
+                color={allColors.backgroundColorQuinary}
+                size={30}
+              />
+            ) : (
+              <IconComponent
+                name={selectedCategory?.iconName}
+                category={selectedCategory?.iconCategory}
+              />
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
     );
   };
 
@@ -278,7 +372,8 @@ const PlusMoreHome = ({ navigation, route }) => {
       amount: amountValue,
       desc: description,
       date: tempDate,
-      selectedCard: selectedCardInExpense
+      selectedCard: selectedCardInExpense,
+      selectedCategory: selectedCategory
     };
     const updateExpense = {
       type: selectedButton,
@@ -286,7 +381,8 @@ const PlusMoreHome = ({ navigation, route }) => {
       amount: amountValue,
       desc: description,
       date: tempDate,
-      selectedCard: selectedCardInExpense
+      selectedCard: selectedCardInExpense,
+      selectedCategory: selectedCategory
     };
     if (isUpdatePressed) {
       dispatch(updateData(valuesToChange.id, updateExpense));
@@ -312,6 +408,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     navigation.navigate("Home");
   };
 
+  // #endregion
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
@@ -344,7 +441,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           {dateTextInput(dateValue)}
           <TouchableOpacity
             onPress={() => setOpen(true)}
-            style={{ margin: 20 }}
+            style={{ margin: 12 }}
             activeOpacity={1}
           >
             <Icon
@@ -412,29 +509,77 @@ const PlusMoreHome = ({ navigation, route }) => {
               </View>
             </TouchableOpacity>
             {cardsData?.length !== 0 &&
-              cardsData?.filter(item => item?.paymentNetwork).map((e,index) => (
-                <TouchableOpacity
-                  style={styles.commonTouchableStyle}
-                  activeOpacity={0.5}
-                  onPress={() => handlePress(e)}
-                  key={index}
-                >
-                  <View
-                    style={[
-                      styles.moreCardStyle,
-                      selectedCardInExpense === e.paymentNetwork && {
-                        ...styles.moreCardStyle,
-                        ...styles.highlightedCardStyle,
-                      },
-                    ]}
+              cardsData
+                ?.filter((item) => item?.paymentNetwork)
+                .map((e, index) => (
+                  <TouchableOpacity
+                    style={styles.commonTouchableStyle}
+                    activeOpacity={0.5}
+                    onPress={() => handlePress(e)}
+                    key={index}
                   >
-                    <Text style={{ color: allColors.textColorFive }}>{e.paymentNetwork}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                    <View
+                      style={[
+                        styles.moreCardStyle,
+                        selectedCardInExpense === e.paymentNetwork && {
+                          ...styles.moreCardStyle,
+                          ...styles.highlightedCardStyle,
+                        },
+                      ]}
+                    >
+                      <Text style={{ color: allColors.textColorFive }}>
+                        {e.paymentNetwork}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
           </ScrollView>
         </View>
 
+        {/* Dialog box for viewing icons */}
+        <Dialog
+          visible={openCategoryDialog}
+          onDismiss={() => setOpenCategoryDialog(false)}
+          style={{
+            height: 600,
+            backgroundColor: allColors.backgroundColorLessPrimary,
+          }}
+        >
+          <Dialog.Title>Choose a category</Dialog.Title>
+          <NavigationContainer independent>
+            <Tab.Navigator
+              initialRouteName="Frequent"
+              screenOptions={{
+                tabBarActiveTintColor: "#fff",
+                tabBarLabelStyle: { fontSize: 12 },
+                tabBarIndicatorStyle: {
+                  backgroundColor: allColors.textColorPrimary,
+                },
+                tabBarStyle: {
+                  backgroundColor: "transparent",
+                  shadowColor: "transparent",
+                },
+              }}
+            >
+              <Tab.Screen
+                name="Frequent"
+                options={{ tabBarLabel: "Frequently used" }}
+              >
+                {() => (
+                  <FrequentCategories
+                    handleSelectedCategory={handleSelectedCategory}
+                  />
+                )}
+              </Tab.Screen>
+              <Tab.Screen
+                name="Everything"
+                component={AllCategories}
+                options={{ tabBarLabel: "All Categories" }}
+              />
+            </Tab.Navigator>
+          </NavigationContainer>
+          <Dialog.Title></Dialog.Title>
+        </Dialog>
       </View>
 
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>
@@ -465,7 +610,11 @@ const PlusMoreHome = ({ navigation, route }) => {
       </View>
 
       <Portal>
-        <Dialog visible={isDeleteBtnPressed} onDismiss={hideDialog} style={{ backgroundColor: allColors.backgroundColorLessPrimary }}>
+        <Dialog
+          visible={isDeleteBtnPressed}
+          onDismiss={hideDialog}
+          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+        >
           <Dialog.Title>Delete expense?</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
@@ -480,7 +629,7 @@ const PlusMoreHome = ({ navigation, route }) => {
               contentStyle={{ width: 60 }}
               buttonColor={allColors.warningColor}
             >
-               <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
+              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>

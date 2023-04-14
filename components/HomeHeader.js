@@ -137,7 +137,7 @@ const DashboardCard = () => {
   return (
     <Card style={[styles.card]}>
       <Card.Title
-        title="Total balance"
+        title="My balance"
         subtitle={overallExpense}
         titleStyle={{ color: allColors.textColorPrimary, fontSize: 17 }}
         subtitleStyle={{
@@ -145,7 +145,7 @@ const DashboardCard = () => {
           textAlignVertical: "center",
           paddingTop: 20,
           paddingBottom: 10,
-          color: totalValue < 0 ? allColors.warningColor : allColors.successColor,
+          color: allColors.textColorSecondary,
         }}
       />
       <Card.Content>

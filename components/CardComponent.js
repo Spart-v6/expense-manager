@@ -6,6 +6,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { storeCard } from "../redux/actions";
+import { FontAwesome5 } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const makeStyles = () =>
@@ -26,6 +27,25 @@ const makeStyles = () =>
 const CardComponent = () => {
   const styles = makeStyles();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
+
+  const fetchAllCardsData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeCard(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+  // =========== End
+
   const allCards = useSelector(state => state.cardReducer.allCards);
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
@@ -36,15 +56,22 @@ const CardComponent = () => {
       allCards?.map(crd => (
         <Card style={[styles.card]} key={Math.random()} onPress={() => navigation.navigate("CardDetailsScreen", {card: crd})}>
           <Card.Title
-            title={crd?.paymentNetwork}
-            titleStyle={{
-              color: allColors.textColorFive,
-              fontSize: 24,
-              textAlign: "right",
-              paddingTop: 15,
-              paddingBottom: 10,
-              textAlignVertical: "center",
-            }}
+            title={
+              // TODO: Add dynamic full width
+              <View style={{ flexDirection: 'row', width: 360, justifyContent: 'space-between'}}>
+                <View style={{flexDirection:"row", alignItems:"center", gap: 10}}>
+                <FontAwesome5
+                    name="credit-card"
+                    size={20}
+                    color={allColors.textColorPrimary}
+                    type="font-awesome-5"
+                    solid={crd?.checked === "credit"}
+                  />
+                  <Text>{crd?.checked?.charAt(0)?.toUpperCase() + crd?.checked?.slice(1)} Card</Text>
+                </View>
+              <Text variant="titleMedium">{crd?.paymentNetwork}</Text>
+            </View>
+            }
           />
           <Card.Content>
             <View style={{gap: 6}}>

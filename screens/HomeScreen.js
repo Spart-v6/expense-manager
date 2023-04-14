@@ -118,6 +118,7 @@ const HomeScreen = ({ navigation, route }) => {
         </AnimatedEntryScreen>
       </ScrollView>
       <FAB
+        animated
         icon="plus"
         onPress={() => navigation.navigate("PlusMoreHome")}
         mode="flat"

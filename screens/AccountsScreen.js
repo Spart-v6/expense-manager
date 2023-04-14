@@ -26,6 +26,7 @@ const AccountsScreen = ({ navigation }) => {
         </ScrollView>
       </AnimatedEntryScreen>
       <FAB
+        animated
         icon="plus"
         onPress={() => navigation.navigate("PlusMoreAccount")}
         mode="flat"

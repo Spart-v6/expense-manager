@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
+import PlusMoreRecurrence from "../screens/PlusMoreRecurrence";
 import SearchScreen from "../screens/SearchScreen";
 import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
@@ -160,6 +161,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="CardDetailsScreen"
       component={CardDetailsScreen}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="PlusMoreRecurrence"
+      component={PlusMoreRecurrence}
       options={navOptions}
     />
     <Stack.Screen
