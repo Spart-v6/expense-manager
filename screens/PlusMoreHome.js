@@ -593,8 +593,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             backgroundColor: allColors.backgroundColorLessPrimary,
             borderRadius: 15,
             borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
-            margin: 10,
+            borderTopLeftRadius: 15
           }}
         >
           <Text

@@ -27,9 +27,9 @@ const getIconLibrary = (category) => {
   return iconLibraryMap[category] || Icon;
 };
 
-export const IconComponent = ({ name, category }) => {
+export const IconComponent = ({ name, category, size=30 }) => {
   const IconLibrary = getIconLibrary(category);
-  return <IconLibrary name={name} size={30} color={allColors.textColorSecondary} />;
+  return <IconLibrary name={name} size={size} color={allColors.textColorSecondary} />;
 };
 
 const ITEM_WIDTH = 95; // Width of each item in the grid

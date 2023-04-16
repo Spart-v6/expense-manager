@@ -7,6 +7,8 @@ const colors = {
     backgroundColorTertiary: PlatformColor('@android:color/system_neutral2_600'),
     backgroundColorQuaternary: PlatformColor('@android:color/system_accent2_200'),
     backgroundColorQuinary: PlatformColor('@android:color/system_neutral2_200'),
+
+    backgroundColorRecurrence: PlatformColor('@android:color/system_accent2_500'),
     bottomTabColor: PlatformColor('@android:color/system_neutral2_800'),
     textColorPrimary: PlatformColor('@android:color/system_accent1_200'),
     textColorSecondary: PlatformColor('@android:color/system_accent2_50'),
