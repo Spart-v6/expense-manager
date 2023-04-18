@@ -13,7 +13,7 @@ import allColors from "../commons/allColors";
 import Chip from "../components/Chip";
 import { IconComponent } from "../components/IconPickerModal";
 import { useSelector } from "react-redux";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const obj = [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }];
 
@@ -61,6 +61,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
   const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
   const [clickedIndex, setClickedIndex] = React.useState(null);
+  const [chipName, setChipName] = useState("");
   const [needRepeat, setNeedRepeat] = React.useState(false);
   const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [addNewRecurrenceName, setAddNewRecurrenceName] = useState("");
@@ -68,29 +69,82 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
   const [recName, setRecName] = useState("");
   const [amount, setAmount] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
 
-  const yearInputRef = useRef(null);
+  // #region Date stuff
+  const [startDate, setStartDate] = useState("");
+  const [startMonth, setStartMonth] = useState("");
+  const [startYear, setStartYear] = useState("");
 
-  const handleMonthChange = (text) => {
-    if (text.length <= 2) {
-      setMonth(text);
-    }
+  const [endDate, setEndDate] = useState("");
+  const [endMonth, setEndMonth] = useState("");
+  const [endYear, setEndYear] = useState("");
+
+  const dateStartInputRef = useRef(null);
+  const monthStartInputRef = useRef(null);
+  const yearStartInputRef = useRef(null);
+
+  const dateEndInputRef = useRef(null);
+  const monthEndInputRef = useRef(null);
+  const yearEndInputRef = useRef(null);
+
+  const handleDateStartChange = (text) => {
+    if (text.length <= 2) setStartDate(text);
     if (text.length === 2) {
-      yearInputRef.current.focus();
+      if (startMonth.length === 0) monthStartInputRef.current.focus();
     }
   };
-  const handleYearChange = (text) => {
-    if (text.length <= 2) {
-      setYear(text);
+  const handleMonthStartChange = (text) => {
+    if (text.length <= 2) setStartMonth(text);
+    if (text.length === 2) {
+      if (startYear.length === 0) yearStartInputRef.current.focus();
+    }
+    if (text.length === 0) {
+      if (startDate.length === 2) dateStartInputRef.current.focus();
     }
   };
+  const handleYearStartChange = (text) => {
+    if (text.length <= 2) setStartYear(text);
+    if (text.length === 0) {
+      if (startMonth.length === 2) monthStartInputRef.current.focus();
+      else {
+        if (startDate.length === 2) dateStartInputRef.current.focus();
+      }
+    }
+  };
+
+  const handleDateEndChange = (text) => {
+    if (text.length <= 2) setEndDate(text);
+    if (text.length === 2) {
+      if (endMonth.length === 0) monthEndInputRef.current.focus();
+    }
+  };
+  const handleMonthEndChange = (text) => {
+    if (text.length <= 2) setEndMonth(text);
+    if (text.length === 2) {
+      if (endYear.length === 0) yearEndInputRef.current.focus();
+    }
+    if (text.length === 0) {
+      if (endDate.length === 2) dateEndInputRef.current.focus();
+    }
+  };
+  const handleYearEndChange = (text) => {
+    if (text.length <= 2) setEndYear(text);
+    if (text.length === 0) {
+      if (endMonth.length === 2) monthEndInputRef.current.focus();
+      else {
+        if (endDate.length === 2) dateEndInputRef.current.focus();
+      }
+    }
+  };
+  // #endregion
+
+  const checkEndDate = () => endDate.length > 0 || endMonth.length > 0 || endYear.length > 0
 
   const cardsData = useSelector((state) => state.cardReducer.allCards);
 
-  const handleChipPress = (index) => {
+  const handleChipPress = (index, text) => {
     setClickedIndex(index);
+    setChipName(text);
   };
 
   const handlePress = (e) => {
@@ -121,10 +175,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
     />
   );
 
-  const dateInput = (title) => (
-    <View style={{ flexDirection: "column", flex: 0.5, justifyContent: "center" }}>
+  const dateInput = ( title, dateName, monthName, yearName, handler1, handler2, handler3 ) => (
+    <View
+      style={{ flexDirection: "column", flex: 0.5, justifyContent: "center" }}
+    >
       <Text variant="titleSmall" style={{ marginTop: 10 }}>
-        Starting Date
+        {title === "Ending Date" ? title + `  (optional)` : title}
       </Text>
       <View
         style={{
@@ -135,57 +191,60 @@ const PlusMoreRecurrence = ({ navigation }) => {
       >
         <TextInput
           style={{ backgroundColor: "transparent" }}
-          contentStyle={{ paddingLeft: 12, paddingRight: 12 }}
+          contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
           selectionColor={allColors.textColorFour}
           textColor={allColors.textColorFour}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
+          placeholder="DD"
           placeholderTextColor={allColors.textColorFour}
+          ref={title === "Starting Date" ? dateStartInputRef : dateEndInputRef}
+          value={dateName}
+          onChangeText={handler1}
+          keyboardType="numeric"
+          maxLength={2}
+        />
+        <Text
+          variant="headlineSmall"
+          style={{ color: allColors.textColorFour }}
+        >
+          /
+        </Text>
+        <TextInput
+          style={{ backgroundColor: "transparent" }}
+          contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
+          selectionColor={allColors.textColorFour}
+          textColor={allColors.textColorFour}
+          underlineColor="transparent"
+          activeUnderlineColor="transparent"
           placeholder="MM"
-          value={month}
-          onChangeText={handleMonthChange}
+          placeholderTextColor={allColors.textColorFour}
+          ref={
+            title === "Starting Date" ? monthStartInputRef : monthEndInputRef
+          }
+          value={monthName}
+          onChangeText={handler2}
           keyboardType="numeric"
           maxLength={2}
         />
         <Text
-          variant="headlineLarge"
-          style={{ color: allColors.textColorTertiary }}
+          variant="headlineSmall"
+          style={{ color: allColors.textColorFour }}
         >
           /
         </Text>
         <TextInput
           style={{ backgroundColor: "transparent" }}
-          contentStyle={{ paddingLeft: 12, paddingRight: 12 }}
+          contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
           selectionColor={allColors.textColorFour}
           textColor={allColors.textColorFour}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
-          placeholderTextColor={allColors.textColorFour}
-          ref={yearInputRef}
           placeholder="YY"
-          value={year}
-          onChangeText={handleYearChange}
-          keyboardType="numeric"
-          maxLength={2}
-        />
-        <Text
-          variant="headlineLarge"
-          style={{ color: allColors.textColorTertiary }}
-        >
-          /
-        </Text>
-        <TextInput
-          style={{ backgroundColor: "transparent" }}
-          contentStyle={{ paddingLeft: 12, paddingRight: 12 }}
-          selectionColor={allColors.textColorFour}
-          textColor={allColors.textColorFour}
-          underlineColor="transparent"
-          activeUnderlineColor="transparent"
           placeholderTextColor={allColors.textColorFour}
-          ref={yearInputRef}
-          placeholder="YY"
-          value={year}
-          onChangeText={handleYearChange}
+          ref={title === "Starting Date" ? yearStartInputRef : yearEndInputRef}
+          value={yearName}
+          onChangeText={handler3}
           keyboardType="numeric"
           maxLength={2}
         />
@@ -193,16 +252,28 @@ const PlusMoreRecurrence = ({ navigation }) => {
     </View>
   );
 
-  /*Recurrence Name: 
-AMOUNT!
-Recurrence Type: Subscriptions / rent / income
-Payment Type: Gpay, paytm etc. (cards)
-Payment interval: day, week, month, year, custom
-Start date, frequency and end date (optional)
-checkbox for repeateance 
+  const decideColor = () => {
+    if (checkEndDate()) return "transparent";
+    return allColors.textColorPrimary;
+  };
 
 
-*/
+  const handleAddRecurrence = () => {
+    const recurrenceDetails = {
+      id: Math.random() + 10 + Math.random(),
+      recurrenceName: recName,
+      recurrenceAmount: amount,
+      recurrenceStartDate: startDate + " " + startMonth + " " + startYear,
+      recurrenceEndDate: checkEndDate() ? endDate + " " + endMonth + " " + endYear : "",
+      repeatRecurrrence: needRepeat,
+      frequency: !checkEndDate() && selectedFrequency?.text,
+      recurrenceType: chipName,
+      paymentNetwork: selectedCardInExpense
+    };
+    console.log(recurrenceDetails);
+  }
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
@@ -216,14 +287,19 @@ checkbox for repeateance
         {commonText(amount, setAmount, "Amount")}
         <View>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            {dateInput()}
-            {dateInput()}
+            {dateInput("Starting Date", startDate, startMonth, startYear, handleDateStartChange, handleMonthStartChange, handleYearStartChange)}
+            {dateInput("Ending Date", endDate, endMonth, endYear, handleDateEndChange, handleMonthEndChange, handleYearEndChange)}
+
             {/* Repeat button */}
-            <View style={{ flexDirection: "column", gap: 20, justifyContent:"center", alignItems:"center" }}>
-              <Text
-                variant="titleSmall"
-                style={{ color: "white" }}
-              >
+            <View
+              style={{
+                flexDirection: "column",
+                gap: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text variant="titleSmall" style={{ color: "white" }}>
                 Repeat
               </Text>
               <BouncyCheckbox
@@ -247,7 +323,9 @@ checkbox for repeateance
                   textStyle: { textDecorationLine: "none" },
                   textContainerStyle: { marginLeft: 5 },
                   innerIconStyle: { borderColor: "grey" },
-                  fillColor: allColors.textColorPrimary,
+                  fillColor: "transparent",
+                  iconImageStyle: { tintColor: decideColor() },
+                  disabled: checkEndDate(),
                 }}
                 onChange={setSelectedFrequency}
               />
@@ -349,7 +427,7 @@ checkbox for repeateance
         {/* Add button */}
         <View style={{ flexDirection: "column-reverse", flex: 1 }}>
           <Button
-            onPress={() => {}}
+            onPress={handleAddRecurrence}
             mode="contained"
             labelStyle={{ fontSize: 15 }}
             textColor={"black"}

@@ -4,7 +4,7 @@ import React from "react";
 
 const Chip = ({ index, onPress, isClicked, text }) => {
   const handlePress = () => {
-    onPress(index);
+    onPress(index, text);
   };
 
   return (
