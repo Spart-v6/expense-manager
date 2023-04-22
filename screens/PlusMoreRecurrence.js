@@ -9,11 +9,15 @@ import { Portal, TextInput, Text, Dialog, Button } from "react-native-paper";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import BouncyCheckboxGroup from "react-native-bouncy-checkbox-group";
 import AppHeader from "../components/AppHeader";
+import moment from "moment";
 import allColors from "../commons/allColors";
 import Chip from "../components/Chip";
 import { IconComponent } from "../components/IconPickerModal";
-import { useSelector } from "react-redux";
-import React, { useState, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useRef, useCallback } from "react";
+import { addRecurrences, deleteRecurrences, storeCard } from "../redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const obj = [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }];
 
@@ -24,9 +28,14 @@ const datesObj = [
   { id: 3, text: "Yearly" },
 ];
 
+const typeOfPayment = [
+  { id: 0, name: "Income" },
+  { id: 1, name: "Expense" },
+]
+
 const styles = StyleSheet.create({
   commonStyles: {
-    gap: 20,
+    gap: 5,
     marginTop: 20,
   },
   commonTouchableStyle: {
@@ -57,12 +66,14 @@ const styles = StyleSheet.create({
 });
 
 const PlusMoreRecurrence = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [selectedCardInExpense, setSelectedCardInExpense] = useState(null);
 
   const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
   const [clickedIndex, setClickedIndex] = React.useState(null);
   const [chipName, setChipName] = useState("");
   const [needRepeat, setNeedRepeat] = React.useState(false);
+  const [typePayment, setTypePayment] = useState(null);
   const [selectedFrequency, setSelectedFrequency] = useState(null);
   const [addNewRecurrenceName, setAddNewRecurrenceName] = useState("");
   const [openNewRecurrence, setOpenNewRecurrence] = useState(false);
@@ -138,7 +149,26 @@ const PlusMoreRecurrence = ({ navigation }) => {
   };
   // #endregion
 
-  const checkEndDate = () => endDate.length > 0 || endMonth.length > 0 || endYear.length > 0
+  const checkEndDate = () =>
+    endDate.length > 0 || endMonth.length > 0 || endYear.length > 0;
+
+  // #region cards stuff
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
+
+  const fetchAllCardsData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeCard(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+  // #endregion =========== End
 
   const cardsData = useSelector((state) => state.cardReducer.allCards);
 
@@ -175,11 +205,24 @@ const PlusMoreRecurrence = ({ navigation }) => {
     />
   );
 
-  const dateInput = ( title, dateName, monthName, yearName, handler1, handler2, handler3 ) => (
+  const dateInput = (
+    title,
+    dateName,
+    monthName,
+    yearName,
+    handler1,
+    handler2,
+    handler3
+  ) => (
     <View
-      style={{ flexDirection: "column", flex: 0.5, justifyContent: "center" }}
+      style={{
+        flexDirection: "column",
+        flex: 0.5,
+        justifyContent: "center",
+        gap: 5,
+      }}
     >
-      <Text variant="titleSmall" style={{ marginTop: 10 }}>
+      <Text variant="titleSmall">
         {title === "Ending Date" ? title + `  (optional)` : title}
       </Text>
       <View
@@ -257,22 +300,26 @@ const PlusMoreRecurrence = ({ navigation }) => {
     return allColors.textColorPrimary;
   };
 
-
   const handleAddRecurrence = () => {
     const recurrenceDetails = {
       id: Math.random() + 10 + Math.random(),
+      time: moment().format("HH:mm:ss"),
       recurrenceName: recName,
       recurrenceAmount: amount,
       recurrenceStartDate: startDate + " " + startMonth + " " + startYear,
-      recurrenceEndDate: checkEndDate() ? endDate + " " + endMonth + " " + endYear : "",
+      recurrenceEndDate: checkEndDate()
+        ? endDate + " " + endMonth + " " + endYear
+        : "",
       repeatRecurrrence: needRepeat,
+      paymentType: typePayment?.text,
       frequency: !checkEndDate() && selectedFrequency?.text,
       recurrenceType: chipName,
-      paymentNetwork: selectedCardInExpense
+      paymentNetwork: selectedCardInExpense,
     };
-    console.log(recurrenceDetails);
-  }
-
+    dispatch(addRecurrences(recurrenceDetails));
+    // dispatch(deleteRecurrences(11.052253453083257))
+    navigation.goBack();
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -283,58 +330,100 @@ const PlusMoreRecurrence = ({ navigation }) => {
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
       <View style={{ margin: 20, gap: 10, flex: 1 }}>
-        {commonText(recName, setRecName, "Recurrence Name")}
-        {commonText(amount, setAmount, "Amount")}
-        <View>
-          <View style={{ flexDirection: "row", gap: 20 }}>
-            {dateInput("Starting Date", startDate, startMonth, startYear, handleDateStartChange, handleMonthStartChange, handleYearStartChange)}
-            {dateInput("Ending Date", endDate, endMonth, endYear, handleDateEndChange, handleMonthEndChange, handleYearEndChange)}
+        <View style={{ gap: 10 }}>
+          {commonText(recName, setRecName, "Recurrence Name")}
+          {commonText(amount, setAmount, "Amount")}
+        </View>
 
-            {/* Repeat button */}
-            <View
-              style={{
-                flexDirection: "column",
-                gap: 20,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text variant="titleSmall" style={{ color: "white" }}>
-                Repeat
-              </Text>
-              <BouncyCheckbox
-                onPress={() => setNeedRepeat(true)}
-                fillColor={allColors.textColorPrimary}
-                innerIconStyle={{ borderRadius: 0, borderColor: "grey" }}
-                iconStyle={{ borderRadius: 0 }}
-              />
-            </View>
+        {/* Start and end date */}
+        <View style={{ flexDirection: "row", gap: 20, marginTop: 10 }}>
+          {dateInput(
+            "Starting Date",
+            startDate,
+            startMonth,
+            startYear,
+            handleDateStartChange,
+            handleMonthStartChange,
+            handleYearStartChange
+          )}
+          {dateInput(
+            "Ending Date",
+            endDate,
+            endMonth,
+            endYear,
+            handleDateEndChange,
+            handleMonthEndChange,
+            handleYearEndChange
+          )}
+
+          {/* Repeat button */}
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "space-between",
+              paddingBottom: 18,
+            }}
+          >
+            <Text variant="titleSmall" style={{ color: "white" }}>
+              Repeat
+            </Text>
+            <BouncyCheckbox
+              onPress={() => setNeedRepeat((prevState) => !prevState)}
+              fillColor={allColors.textColorPrimary}
+              innerIconStyle={{ borderRadius: 0, borderColor: "grey", }}
+              iconStyle={{ borderRadius: 0, }}
+              style={{paddingLeft: 5}}
+            />
           </View>
-          <View style={{ marginTop: 10 }}>
-            <Text variant="titleSmall">Frequency</Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <BouncyCheckboxGroup
-                data={datesObj.map((item) => ({
-                  id: item.id.toString(),
-                  text: item.text,
-                  style: { marginRight: 15 },
-                }))}
-                checkboxProps={{
-                  textStyle: { textDecorationLine: "none" },
-                  textContainerStyle: { marginLeft: 5 },
-                  innerIconStyle: { borderColor: "grey" },
-                  fillColor: "transparent",
-                  iconImageStyle: { tintColor: decideColor() },
-                  disabled: checkEndDate(),
-                }}
-                onChange={setSelectedFrequency}
-              />
-            </View>
+        </View>
+
+        {/* Type of payment */}
+        <View style={{ marginTop: 10, gap: 5 }}>
+          <Text variant="titleSmall">Type</Text>
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <BouncyCheckboxGroup
+              data={typeOfPayment.map(item => ({
+                id: item.id.toString(),
+                text: item.name,
+                style: { marginRight: 15 },
+              }))}
+              checkboxProps={{
+                textStyle: { textDecorationLine: "none" },
+                textContainerStyle: { marginLeft: 5 },
+                innerIconStyle: { borderColor: "grey" },
+                fillColor: "transparent",
+                iconImageStyle: { tintColor: decideColor() }
+              }}
+              onChange={setTypePayment}
+            />
+          </View>
+        </View>
+
+        {/* Frequency */}
+        <View style={{ marginTop: 10, gap: 5 }}>
+          <Text variant="titleSmall">Frequency</Text>
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <BouncyCheckboxGroup
+              data={datesObj.map((item) => ({
+                id: item.id.toString(),
+                text: item.text,
+                style: { marginRight: 15 },
+              }))}
+              checkboxProps={{
+                textStyle: { textDecorationLine: "none" },
+                textContainerStyle: { marginLeft: 5 },
+                innerIconStyle: { borderColor: "grey" },
+                fillColor: "transparent",
+                iconImageStyle: { tintColor: decideColor() },
+                disabled: checkEndDate(),
+              }}
+              onChange={setSelectedFrequency}
+            />
           </View>
         </View>
 
         {/* Recurrence type scroll */}
-        <View>
+        <View style={{ marginTop: 10, gap: 5 }}>
           <Text variant="titleSmall" style={{ marginTop: 10 }}>
             Recurrence Type
           </Text>

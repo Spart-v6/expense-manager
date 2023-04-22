@@ -10,13 +10,15 @@ const expenseReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_DATA:
       const allExpenses = state.allExpenses || [];
-      AsyncStorage.setItem(
-        "ALL_EXPENSES",
-        JSON.stringify([...allExpenses, action.payload])
-      );
+      let updatedExpenses = [];
+
+      if (Array.isArray(action.payload)) updatedExpenses = [...allExpenses, ...action.payload];
+      else updatedExpenses = [...allExpenses, action.payload];
+
+      AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedExpenses));
       return {
         ...state,
-        allExpenses: [...allExpenses, action.payload],
+        allExpenses: updatedExpenses,
       };
     case types.UPDATE_DATA:
       const { sameId, updatedObj } = action.payload;

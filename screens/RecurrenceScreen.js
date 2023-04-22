@@ -8,12 +8,21 @@ import {
 } from "react-native";
 import { FAB, Card, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
+import { useSelector } from "react-redux";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import React from "react";
 import obj from "../helper/dummy";
+import { useDispatch } from "react-redux";
+import { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { storeRecurrences } from "../redux/actions";
 
 const RecurrenceScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  // TODO: for repeatability of recurrences, check if repeat is enabled at end date, if yes, add the same end date to current start date (today) else delete the recurrence via it's id 
 
   const renderItem = ({ item }) => (
     <Card style={styles.card}>
@@ -23,6 +32,24 @@ const RecurrenceScreen = ({ navigation }) => {
       </Card.Content>
     </Card>
   );
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRecurrencesData();
+    }, [])
+  );
+
+  const fetchRecurrencesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_RECURRENCES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeRecurrences(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+
+  const recurrencesData = useSelector(state => state.recurrenceReducer.allRecurrences);
 
 
   return (

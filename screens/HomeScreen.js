@@ -52,7 +52,7 @@ const HomeScreen = ({ navigation, route }) => {
     { name: "All" },
   ];
 
-  // =========== Fetching card details here only (coz it's the initial screen), no need to fetch it when user clicks on Accounts page
+  // #region =========== Fetching card details here only (coz it's the initial screen), no need to fetch it when user clicks on Accounts page
   const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
@@ -69,7 +69,7 @@ const HomeScreen = ({ navigation, route }) => {
       console.log("error: ", e);
     }
   };
-  // =========== End
+  // #endregion =========== End
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -114,8 +114,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   commonStyles: {
-    marginLeft: 20,
-    marginRight: 20,
     gap: 20,
     marginTop: 20,
   },
@@ -418,12 +416,10 @@ const PlusMoreHome = ({ navigation, route }) => {
         isUpdate={isUpdatePressed}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <View>
+      <View style={{ margin: 20, gap: 10, flex: 1 }}>
         <View
           style={{
             flexDirection: "row",
-            marginLeft: 20,
-            marginTop: 20,
             gap: 10,
           }}
         >
@@ -431,13 +427,13 @@ const PlusMoreHome = ({ navigation, route }) => {
           {incomeExpenseBtns("Expense")}
         </View>
 
-        <View style={{ margin: 20, marginBottom: 0, gap: 20 }}>
+        <View style={{ marginTop: 10, gap: 20 }}>
           {commonTextInput(expenseName, setExpenseName, selectedButton)}
           {commonTextInput(amountValue, setAmountValue, "Amount")}
           {commonTextInput(description, setDescription, "Description")}
         </View>
 
-        <View style={{ flexDirection: "row", margin: 20, marginRight: 10 }}>
+        <View style={{ flexDirection: "row", marginRight: 10 }}>
           {dateTextInput(dateValue)}
           <TouchableOpacity
             onPress={() => setOpen(true)}
@@ -580,32 +576,32 @@ const PlusMoreHome = ({ navigation, route }) => {
           </NavigationContainer>
           <Dialog.Title></Dialog.Title>
         </Dialog>
-      </View>
-
-      <View style={{ flex: 1, flexDirection: "column-reverse" }}>
-        <Button
-          onPress={handleAddOrUpdateExpense}
-          mode="contained"
-          labelStyle={{ fontSize: 15 }}
-          textColor={"black"}
-          style={{
-            borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
-            borderRadius: 15,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15
-          }}
-        >
-          <Text
+        
+        <View style={{ flex: 1, flexDirection: "column-reverse" }}>
+          <Button
+            onPress={handleAddOrUpdateExpense}
+            mode="contained"
+            labelStyle={{ fontSize: 15 }}
+            textColor={"black"}
             style={{
-              color: allColors.textColorPrimary,
-              fontWeight: 700,
-              fontSize: 18,
+              borderColor: "transparent",
+              backgroundColor: allColors.backgroundColorLessPrimary,
+              borderRadius: 15,
+              borderTopRightRadius: 15,
+              borderTopLeftRadius: 15
             }}
           >
-            {btnName}
-          </Text>
-        </Button>
+            <Text
+              style={{
+                color: allColors.textColorPrimary,
+                fontWeight: 700,
+                fontSize: 18,
+              }}
+            >
+              {btnName}
+            </Text>
+          </Button>
+        </View>
       </View>
 
       <Portal>

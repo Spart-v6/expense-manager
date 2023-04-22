@@ -47,3 +47,27 @@ export const storeCard = payload => ({
   type: types.STORE_CARD,
   payload
 })
+
+// For recurrences
+
+export const addRecurrences = payload => ({
+  type: types.ADD_RECURRENCE,
+  payload
+});
+
+export const updateRecurrences = (sameId, updatedRecurrence) => {
+  return {
+    type: types.UPDATE_RECURRENCE,
+    payload: {sameId, updatedRecurrence}
+  }
+};
+
+export const deleteRecurrences = payload => ({
+  type: types.DELETE_RECURRENCE,
+  payload
+});
+
+export const storeRecurrences = payload => ({
+  type: types.STORE_RECURRENCE,
+  payload
+})

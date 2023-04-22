@@ -7,7 +7,8 @@ import moment from "moment";
 import allColors from "../commons/allColors";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
-import { storeData } from "../redux/actions";
+import { addData, updateRecurrences } from "../redux/actions";
+import { storeData, storeRecurrences, deleteRecurrences } from "../redux/actions";
 
 const Separator = () => (
   <View
@@ -168,15 +169,97 @@ const ExpensesList = ({ filter }) => {
   // checking if user has already created today's expense or not
   const today = moment().format("YYYY/MM/DD");
   const foundDate = expensesData.find((obj) => {
-    return moment(obj.date, 'YYYY/MM/DD').format('YYYY/MM/DD') === today;
+    return moment(obj.date, "YYYY/MM/DD").format("YYYY/MM/DD") === today;
   });
-  
+
   const DATA = [
     {
       title: moment().format("Do MMMM, YYYY"),
       data: ["You havent added any expense for today"],
     },
   ];
+
+  // #region checking and adding recurrence expenses in home screen
+  useFocusEffect(
+    useCallback(() => {
+      fetchRecurrencesData();
+    }, [])
+  );
+
+  const fetchRecurrencesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_RECURRENCES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeRecurrences(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+
+  const recurrencesData = useSelector(
+    (state) => state.recurrenceReducer.allRecurrences
+  );
+
+  const addRecurringExpenses = useCallback(() => {
+    const today = moment();
+
+    const expenses = [];
+
+    for (const expense of recurrencesData) {
+      const {
+        frequency,
+        recurrenceStartDate,
+        recurrenceEndDate,
+        repeatRecurrrence,
+      } = expense;
+      let fre = "";
+      if (frequency === "Daily") fre = "days";
+      if (frequency === "Weekly") fre = "weeks";
+      if (frequency === "Monthly") fre = "months";
+      if (frequency === "Yearly") fre = "years";
+
+      const startDate = moment(recurrenceStartDate, "DD MM YY");
+      if (repeatRecurrrence) {
+        let nextDate = startDate.clone();
+        while (nextDate.isSameOrBefore(today, "day")) {
+          expenses.push({
+            ...expense,
+            recurrenceStartDate: nextDate.format("DD MM YY"),
+          });
+          nextDate = nextDate.add(1, fre);
+          dispatch(updateRecurrences(expense.id, nextDate.format("DD MM YY")));
+        }
+      }
+      if (!repeatRecurrrence && startDate.add(1, fre).isSameOrBefore(today, "day")) {
+        expenses.push({
+          ...expense,
+          recurrenceStartDate: startDate.format("DD MM YY"),
+        });
+        dispatch(deleteRecurrences(expense.id))
+      }
+    }
+    const updatedExpenses = expenses.map(expense => {
+      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time } = expense;
+    
+      return {
+        amount: recurrenceAmount,
+        desc: `${recurrenceName} recurrence`,
+        id: Math.random() * 10,
+        date: moment(recurrenceStartDate, "DD MM YY").format("YYYY/MM/DD"),
+        name: recurrenceName,
+        selectedCard: paymentNetwork,
+        selectedCategory: { iconCategory: "FontAwesome", iconName: "repeat" },
+        time: time,
+        type: paymentType
+      };
+    });
+    if (updatedExpenses.length > 0) dispatch(addData(updatedExpenses));
+  }, [recurrencesData, dispatch]);
+
+  useEffect(() => {
+    addRecurringExpenses();
+  }, [addRecurringExpenses]);
+  // #endregion
 
   return (
     <SafeAreaView style={{ margin: 20 }}>
