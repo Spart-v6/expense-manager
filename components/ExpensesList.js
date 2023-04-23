@@ -217,8 +217,11 @@ const ExpensesList = ({ filter }) => {
       if (frequency === "Weekly") fre = "weeks";
       if (frequency === "Monthly") fre = "months";
       if (frequency === "Yearly") fre = "years";
-
+      // TODO: U forgot about recurrenceEndDate when frequency won't be given
       const startDate = moment(recurrenceStartDate, "DD MM YY");
+      const endDate = moment(recurrenceEndDate, "DD MM YY");
+      const daysDifference = endDate.diff(startDate, "days");
+
       if (repeatRecurrrence) {
         let nextDate = startDate.clone();
         while (nextDate.isSameOrBefore(today, "day")) {
@@ -226,11 +229,12 @@ const ExpensesList = ({ filter }) => {
             ...expense,
             recurrenceStartDate: nextDate.format("DD MM YY"),
           });
+          if (endDate) nextDate = nextDate.add(daysDifference, "days");
           nextDate = nextDate.add(1, fre);
           dispatch(updateRecurrences(expense.id, nextDate.format("DD MM YY")));
         }
       }
-      if (!repeatRecurrrence && startDate.add(1, fre).isSameOrBefore(today, "day")) {
+      if (!repeatRecurrrence && (endDate ? startDate.add(daysDifference, "days") : startDate.add(1, fre)).isSameOrBefore(today, "day")) {
         expenses.push({
           ...expense,
           recurrenceStartDate: startDate.format("DD MM YY"),

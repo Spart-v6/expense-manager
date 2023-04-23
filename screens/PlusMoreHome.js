@@ -453,10 +453,10 @@ const PlusMoreHome = ({ navigation, route }) => {
             <SafeAreaView style={styles.modalView}>
               <DatePicker
                 options={{
-                  backgroundColor: allColors.backgroundColorLessPrimary,
-                  mainColor: allColors.backgroundColorQuaternary,
+                  backgroundColor: 'transparent',
+                  mainColor: '#d6d6d6',
                   selectedTextColor: "black",
-                  textHeaderColor: allColors.textColorPrimary,
+                  textHeaderColor: 'white',
                   borderColor: "transparent",
                   textDefaultColor: "white",
                   textSecondaryColor: "white",

@@ -392,7 +392,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
                 textContainerStyle: { marginLeft: 5 },
                 innerIconStyle: { borderColor: "grey" },
                 fillColor: "transparent",
-                iconImageStyle: { tintColor: decideColor() }
+                iconImageStyle: { tintColor: allColors.textColorPrimary }
               }}
               onChange={setTypePayment}
             />
@@ -453,6 +453,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
             {obj.length > 0 &&
               obj.map((item, index) => (
                 <Chip
+                  key={index}
                   index={index}
                   onPress={handleChipPress}
                   isClicked={clickedIndex === index}
