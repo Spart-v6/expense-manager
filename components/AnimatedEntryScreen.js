@@ -1,26 +1,21 @@
-import React from "react";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
+import React, { useRef, useEffect } from "react";
+import { Animated, Easing } from "react-native";
 
-const AnimatedEntryScreen = props => {
-  const fadeAnim = useSharedValue(0.9);
+const AnimatedEntryScreen = (props) => {
+  const fadeAnim = useRef(new Animated.Value(0.9)).current;
 
-  React.useEffect(() => {
-    fadeAnim.value = withTiming(1, {
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
       duration: 350,
       easing: Easing.bezier(0.42, 0, 0.58, 1),
-    });
+      useNativeDriver: true,
+    }).start();
   }, [fadeAnim]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: fadeAnim.value }],
-    };
-  });
+  const animatedStyle = {
+    transform: [{ scale: fadeAnim }],
+  };
 
   return (
     <Animated.View style={[animatedStyle, { flex: 1 }]}>

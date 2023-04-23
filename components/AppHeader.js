@@ -11,34 +11,41 @@ const AppHeader = ({
   isDeletePressed,
   isCardEditPressed,
   needSearch,
-  isUpdateCardScreen = false
+  isUpdateCardScreen = false,
 }) => {
   const handleDeleteExpense = () => {
     isDeletePressed(true);
-  }
+  };
 
   const handleCardEdit = () => {
     isCardEditPressed(true);
-  }
+  };
 
   const searchExpense = () => {
-    navigation.navigate("SearchScreen", {comingFrom: title});
-  }
+    navigation.navigate("SearchScreen", { comingFrom: title });
+  };
 
   return (
-    <Appbar.Header style={{backgroundColor: allColors.backgroundColorPrimary}}>
-      {
-        isParent ? 
-        <Button icon="menu" onPress={() => navigation.openDrawer()} />
-        :
+    <Appbar.Header
+      style={{ backgroundColor: allColors.backgroundColorPrimary }}
+    >
+      {!isParent && (
         <Button icon="arrow-left" onPress={() => navigation.goBack()} />
-      }
-      
+      )}
+
       <Appbar.Content title={isUpdate ? "Update Expense" : title} />
-      { !isPlus && !isUpdate && needSearch && <Appbar.Action icon="magnify" onPress={searchExpense} /> }
-      { isPlus && isUpdate && <Appbar.Action icon="delete" onPress={handleDeleteExpense} /> }
-      { isUpdateCardScreen && <Appbar.Action icon="pencil" onPress={handleCardEdit} /> }
-      { isUpdateCardScreen && <Appbar.Action icon="delete" onPress={handleDeleteExpense} /> }
+      {!isPlus && !isUpdate && needSearch && (
+        <Appbar.Action icon="magnify" onPress={searchExpense} />
+      )}
+      {isPlus && isUpdate && (
+        <Appbar.Action icon="delete" onPress={handleDeleteExpense} />
+      )}
+      {isUpdateCardScreen && (
+        <Appbar.Action icon="pencil" onPress={handleCardEdit} />
+      )}
+      {isUpdateCardScreen && (
+        <Appbar.Action icon="delete" onPress={handleDeleteExpense} />
+      )}
     </Appbar.Header>
   );
 };

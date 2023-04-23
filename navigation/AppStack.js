@@ -2,7 +2,6 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from "../screens/HomeScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
@@ -11,7 +10,6 @@ import PlusMoreRecurrence from "../screens/PlusMoreRecurrence";
 import SearchScreen from "../screens/SearchScreen";
 import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import DrawerContent from "../components/DrawerContent";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
@@ -24,7 +22,6 @@ import { View, TouchableOpacity } from "react-native";
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
 const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator(); // TODO: gotta remove this
 
 const navOptions = () => ({
   headerShown: false,
@@ -176,30 +173,6 @@ const TabNavigator = () => (
   </Stack.Navigator>
 );
 
-const DrawerNavigator = () => (
-  <Drawer.Navigator
-    initialRouteName="MenuTab"
-    drawerContent={(props) => DrawerContent(props)}
-    screenOptions={{
-      drawerStyle: {
-        backgroundColor: allColors.backgroundColorPrimary,
-        width: 200,
-      },
-    }}
-  >
-    <Drawer.Screen
-      name="MenuTab"
-      component={TabNavigator}
-      options={navOptions}
-    />
-    <Drawer.Screen
-      name="SettingsScreen"
-      component={SettingsScreen}
-      options={navOptions}
-    />
-  </Drawer.Navigator>
-);
-
 const AppStack = () => {
   NavigationBar.setBackgroundColorAsync("#000");
   const theme = useTheme();
@@ -212,7 +185,7 @@ const AppStack = () => {
       <StackApp.Navigator initialRouteName={flag ? "HomeApp" : "WelcomeScreen"}>
         <StackApp.Screen
           name="HomeApp"
-          component={DrawerNavigator}
+          component={TabNavigator}
           options={navOptions}
         />
         <StackApp.Screen

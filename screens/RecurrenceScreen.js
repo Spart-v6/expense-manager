@@ -101,7 +101,6 @@ const RecurrenceScreen = ({ navigation }) => {
   const recurrencesData = useSelector(
     (state) => state.recurrenceReducer.allRecurrences
   );
-  console.log(recurrencesData);
 
   //#region Finding the total sum of all recurrences
   const totalRecurrenceSum = recurrencesData?.reduce((acc, curr) => {
