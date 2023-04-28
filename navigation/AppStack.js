@@ -10,6 +10,9 @@ import PlusMoreRecurrence from "../screens/PlusMoreRecurrence";
 import SearchScreen from "../screens/SearchScreen";
 import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import PlusMoreGroup from "../screens/PlusMoreGroup";
+import SplitSection from "../screens/SplitSection";
+import PlusMoreSplitSection from "../screens/PlusMoreSplitSection";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
@@ -168,6 +171,22 @@ const TabNavigator = () => (
     <Stack.Screen
       name="SearchScreen"
       component={SearchScreen}
+      options={navOptions}
+    />
+    {/* For split screen */}
+    <Stack.Screen
+      name="PlusMoreGroup"
+      component={PlusMoreGroup}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="SplitSection"
+      component={SplitSection}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="PlusMoreSplitSection"
+      component={PlusMoreSplitSection}
       options={navOptions}
     />
   </Stack.Navigator>

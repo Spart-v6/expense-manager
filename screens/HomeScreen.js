@@ -71,6 +71,10 @@ const HomeScreen = ({ navigation, route }) => {
   };
   // #endregion =========== End
 
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // },[])
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />

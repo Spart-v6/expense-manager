@@ -217,7 +217,6 @@ const ExpensesList = ({ filter }) => {
       if (frequency === "Weekly") fre = "weeks";
       if (frequency === "Monthly") fre = "months";
       if (frequency === "Yearly") fre = "years";
-      // TODO: U forgot about recurrenceEndDate when frequency won't be given
       const startDate = moment(recurrenceStartDate, "DD MM YY");
       const endDate = moment(recurrenceEndDate, "DD MM YY");
       const daysDifference = endDate.diff(startDate, "days");

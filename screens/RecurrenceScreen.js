@@ -50,7 +50,6 @@ const RecurrenceScreen = ({ navigation }) => {
     setSelectedItemToDelete(item);
     setDeleteDialogVisible(true);
     Vibration.vibrate(1);
-
   };
 
   const handleDelete = () => {

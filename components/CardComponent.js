@@ -144,7 +144,7 @@ const CardComponent = () => {
       : 
       (
         <>
-          <View style={{justifyContent: "center", alignItems:"center", flex: 1, height: 700}}>
+          <View style={{justifyContent: "center", alignItems:"center", flex: 1, height: 700 }}>
             <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.backgroundColorSecondary} />
             <Text variant="titleMedium">You don't have cards yet.</Text>
           </View>

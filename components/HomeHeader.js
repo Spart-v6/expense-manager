@@ -179,7 +179,7 @@ const DashboardCard = () => {
     </Card>
   );
 };
-
+//  TODO: Sort the graph by date
 const IncomeCard = ({ incomeArray }) => {
   const styles = makeStyles();
   const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;
@@ -219,11 +219,14 @@ const HomeHeader = () => {
   React.useEffect(() => {
     const newIncomeArray = expenseData
       ?.filter((item) => item?.type === "Income")
+      ?.sort((a, b) => moment(a.date, "YYYY/MM/DD") - moment(b.date, "YYYY/MM/DD"))
       ?.map((item) => +item?.amount);
+  
     const newExpenseArray = expenseData
       ?.filter((item) => item.type === "Expense")
+      ?.sort((a, b) => moment(a.date, "YYYY/MM/DD") - moment(b.date, "YYYY/MM/DD"))
       ?.map((item) => +item.amount);
-
+  
     setIncomeArray(newIncomeArray);
     setExpenseArray(newExpenseArray);
   }, [expenseData]);

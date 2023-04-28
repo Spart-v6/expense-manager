@@ -71,3 +71,20 @@ export const storeRecurrences = payload => ({
   type: types.STORE_RECURRENCE,
   payload
 })
+
+// For groups
+
+export const addGroups = payload => ({
+  type: types.ADD_GROUPS,
+  payload: payload
+});
+
+export const deleteGroups = payload => ({
+  type: types.DELETE_GROUPS,
+  payload
+});
+
+export const storeGroups = payload => ({
+  type: types.STORE_GROUPS,
+  payload
+})
