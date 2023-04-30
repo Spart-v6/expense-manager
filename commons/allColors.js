@@ -1,4 +1,4 @@
-import { PlatformColor } from "react-native";
+import { PlatformColor, useColorScheme } from "react-native";
 
 const colors = {
     backgroundColorPrimary: PlatformColor('@android:color/system_neutral2_900'),

@@ -88,3 +88,20 @@ export const storeGroups = payload => ({
   type: types.STORE_GROUPS,
   payload
 })
+
+// For sections inside groups
+
+export const addSections = payload => ({
+  type: types.ADD_SECTIONS,
+  payload: payload
+});
+
+export const deleteSections = payload => ({
+  type: types.DELETE_SECTIONS,
+  payload
+});
+
+export const storeSections = payload => ({
+  type: types.STORE_SECTIONS,
+  payload
+})

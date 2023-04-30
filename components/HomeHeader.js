@@ -179,7 +179,7 @@ const DashboardCard = () => {
     </Card>
   );
 };
-//  TODO: Sort the graph by date
+
 const IncomeCard = ({ incomeArray }) => {
   const styles = makeStyles();
   const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;

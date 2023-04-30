@@ -14,6 +14,7 @@ import PlusMoreGroup from "../screens/PlusMoreGroup";
 import SplitSection from "../screens/SplitSection";
 import PlusMoreSplitSection from "../screens/PlusMoreSplitSection";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
+import SplitDetailScreen from "../screens/SplitDetailScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { useTheme, Text } from "react-native-paper";
@@ -187,6 +188,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="PlusMoreSplitSection"
       component={PlusMoreSplitSection}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="SplitDetailScreen"
+      component={SplitDetailScreen}
       options={navOptions}
     />
   </Stack.Navigator>
