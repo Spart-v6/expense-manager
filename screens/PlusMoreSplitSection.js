@@ -100,18 +100,14 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         return {
           name,
           amount,
-          isChecked: true,
-          id: Math.random() * 10,
+          isChecked: true
         };
       });
-    const finalRes = result.concat({ sectionName, totalAmountSpent });
-    console.log("Added result! ", finalRes);
-    // dispatch(addSections(finalRes));
+    const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10 });
+    // console.log("Added result! ", finalRes);
+    dispatch(addSections(finalRes));
     navigation.goBack();
   };
-
-  const validateInput = (value) =>
-    value && divideByPercent && value?.includes(".") ? 5 : 3;
 
   // Calculating the left over percentage and total amount left after spending it
   React.useEffect(() => {
@@ -154,6 +150,14 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           autoCorrect={false}
         />
 
+        <TextInput 
+          label="Who paid (leave this empty if you have paid)"
+          value={whoPaid}
+          onChangeText={text => setWhoPaid(text)}
+          style={{backgroundColor: 'transparent'}}
+          keyboardType="default"
+        />
+
         <Text>Select members for this section</Text>
         <View
           style={{
@@ -187,14 +191,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
             <Text>Divide by percent</Text>
           </View>
         </View>
-
-        <TextInput 
-          label="Who paid"
-          value={whoPaid}
-          onChangeText={() => {}}
-          style={{backgroundColor: 'transparent'}}
-          keyboardType="default"
-        />
 
         {divideByPercent && (
           <View
@@ -240,7 +236,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                       flex: 1,
                       height: 50,
                     }}
-                    maxLength={validateInput(amountOfEachMember[name])}
                     value={amountOfEachMember[name] || ""}
                     onChangeText={(value) => handleInputChange(name, value)}
                     disabled={!isChecked[name]}

@@ -26,7 +26,9 @@ const sectionReducer = (state = initialState, action) => {
 
     case types.DELETE_SECTIONS:
       const id = action.payload;
-      const updatedArray = state.allSections?.filter((obj) => obj.id !== id);
+      const updatedArray = state.allSections?.filter(
+        (arr) => !arr.some((obj) => obj.id === id)
+      );
 
       AsyncStorage.setItem("ALL_SECTIONS", JSON.stringify(updatedArray));
       return { ...state, allSections: updatedArray };

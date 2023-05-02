@@ -8,6 +8,8 @@ const SplitDetailScreen = ({ navigation, route }) => {
     route.params.subArray
   );
 
+  // console.log(currentSectionData);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
@@ -21,5 +23,13 @@ const SplitDetailScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+
+/* 
+
+Section name in middle
+Who paid and how much 
+list of members with their amount paid
+
+*/
 
 export default SplitDetailScreen;
