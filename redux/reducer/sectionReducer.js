@@ -33,6 +33,22 @@ const sectionReducer = (state = initialState, action) => {
       AsyncStorage.setItem("ALL_SECTIONS", JSON.stringify(updatedArray));
       return { ...state, allSections: updatedArray };
 
+    case types.DELETE_GROUP_AND_SECTIONS:
+      const idToDelete = action.payload;
+
+      const updatedSections = state.allSections?.filter(
+        (arr) => !arr.some((obj) => idToDelete.includes(obj.id))
+      );
+
+      if (updatedSections && updatedSections.length > 0) {
+        AsyncStorage.setItem("ALL_SECTIONS", JSON.stringify(updatedSections));
+      }
+
+      return {
+        ...state,
+        allSections: updatedSections,
+      };
+
     case types.STORE_SECTIONS:
       return {
         ...state,

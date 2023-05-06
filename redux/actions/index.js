@@ -101,6 +101,11 @@ export const deleteSections = payload => ({
   payload
 });
 
+export const deleteGroupAndSections = payload => ({
+  type: types.DELETE_GROUP_AND_SECTIONS,
+  payload
+});
+
 export const storeSections = payload => ({
   type: types.STORE_SECTIONS,
   payload

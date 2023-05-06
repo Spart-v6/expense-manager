@@ -23,6 +23,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
     route.params.currGrpMems
   );
+  const [groupIdentity, setGroupIdentity] = React.useState(route.params.grpIdentity);
 
   const [amountOfEachMember, setAmountOfEachMember] = React.useState({});
   // Setting isChecked true initially ( all members are checked intially )
@@ -103,7 +104,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           isChecked: true
         };
       });
-    const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10 });
+    const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10, groupIdentity });
     // console.log("Added result! ", finalRes);
     dispatch(addSections(finalRes));
     navigation.goBack();

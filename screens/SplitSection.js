@@ -36,8 +36,13 @@ const SplitSection = ({ navigation, route }) => {
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
   const sectionsData = useSelector((state) => state.sectionReducer.allSections);
+  const specificGroupSection = sectionsData?.filter(
+    (innerArray) =>
+      innerArray.length >= 1 &&
+      innerArray[innerArray.length - 1].groupIdentity === identity
+  );
   // TODO: while deleteing a group, delete it's all sections
-
+  //  console.log(specificGroupSection, "specific group section");
   const handleDeleteSection = (identity) => {
     setSelectedSectionToDelete(identity);
     setDeleteDialogVisible(true);
@@ -47,7 +52,7 @@ const SplitSection = ({ navigation, route }) => {
   const handleDelete = () => {
     setDeleteDialogVisible(false);
     dispatch(deleteSections(selectedSectionToDelete));
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -83,11 +88,11 @@ const SplitSection = ({ navigation, route }) => {
         <View style={{ marginTop: 20 }}>
           <Text>Sections</Text>
           <ScrollView>
-            {sectionsData?.map((subArray, index) => {
+            {specificGroupSection?.map((subArray, index) => {
               const { sectionName, totalAmountSpent } =
                 subArray[subArray.length - 1];
               const objectCount = subArray.slice(0, -1).length;
-              const { id } = subArray.find(obj => obj.id);
+              const { id } = subArray.find((obj) => obj.id);
 
               return (
                 <TouchableOpacity
@@ -148,7 +153,10 @@ const SplitSection = ({ navigation, route }) => {
         animated
         icon="plus"
         onPress={() =>
-          navigation.navigate("PlusMoreSplitSection", { currGrpMems: value })
+          navigation.navigate("PlusMoreSplitSection", {
+            currGrpMems: value,
+            grpIdentity: identity,
+          })
         }
         mode="flat"
         style={{

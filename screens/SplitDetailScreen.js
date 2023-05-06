@@ -1,14 +1,36 @@
-import { View, SafeAreaView } from "react-native";
+import { View, SafeAreaView, FlatList } from "react-native";
 import { Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
-import React from "react";
+import allColors from "../commons/allColors";
+import React, { useState } from "react";
+
+const Item = ({ item }) => (
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: 10,
+    }}
+  >
+    <Text>{item.name}</Text>
+    <Text>{item.amount}</Text>
+  </View>
+);
 
 const SplitDetailScreen = ({ navigation, route }) => {
-  const [currentSectionData, setCurrentSectionData] = React.useState(
+  // Works when u go inside a section
+  const [currentSectionData, setCurrentSectionData] = useState(
     route.params.subArray
   );
 
-  // console.log(currentSectionData);
+  const filteredData = currentSectionData?.filter(
+    (obj) => obj.hasOwnProperty("amount") && obj.hasOwnProperty("name")
+  );
+
+  const data = filteredData?.map((obj) => parseFloat(obj.amount));
+  const totalAmount = data?.reduce((acc, curr) => acc + curr, 0);
+
+  const renderItem = ({ item }) => <Item item={item} />;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -17,8 +39,14 @@ const SplitDetailScreen = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <View>
-        <Text>SplitDetailScreen</Text>
+      <View style={{ margin: 20 }}>
+        <View>
+          <FlatList
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

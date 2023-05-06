@@ -15,7 +15,12 @@ import React, { useCallback, useState } from "react";
 import { FAB, Card, Dialog, Button } from "react-native-paper";
 import allColors from "../commons/allColors";
 import { useSelector, useDispatch } from "react-redux";
-import { storeGroups, deleteGroups } from "../redux/actions";
+import {
+  storeGroups,
+  deleteGroups,
+  storeSections,
+  deleteGroupAndSections,
+} from "../redux/actions";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "react-native-vector-icons";
@@ -51,7 +56,27 @@ const SplitMoneyScreen = ({ navigation }) => {
   };
   // #endregion =========== End
 
+  // #region getting sections of groups for delete group+section stuff
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllSections();
+    }, [])
+  );
+
+  const fetchAllSections = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_SECTIONS");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeSections(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+  // #endregion =========== End
+
   const groupsData = useSelector((state) => state.groupsReducer.allGroups);
+  const sectionsData = useSelector((state) => state.sectionReducer.allSections);
+
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
@@ -60,10 +85,21 @@ const SplitMoneyScreen = ({ navigation }) => {
     setDeleteDialogVisible(true);
     Vibration.vibrate(1);
   };
-
+  console.log(sectionsData);
   const handleDelete = () => {
+    const itemsToDelete = sectionsData
+      .filter(
+        (innerArray) =>
+          innerArray.length >= 1 &&
+          innerArray[innerArray.length - 1].groupIdentity ===
+            selectedItemToDelete
+      )
+      .map((innerArray) => innerArray[innerArray.length - 1])
+      .map(({ id }) => id);
+
     setDeleteDialogVisible(false);
     dispatch(deleteGroups(selectedItemToDelete));
+    if (itemsToDelete.length > 0) dispatch(deleteGroupAndSections(itemsToDelete));
   };
 
   return (
@@ -71,8 +107,8 @@ const SplitMoneyScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor={"transparent"} />
       <AppHeader title="Split Money" isParent={true} navigation={navigation} />
       <AnimatedEntryScreen>
-        <ScrollView style={{flex : 1}}>
-          <View style={{flex: 1}}>
+        <ScrollView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
             {groupsData?.length > 0 ? (
               groupsData.map((innerArray, index) => {
                 const { identity, nameOfGrp } = innerArray.find(
@@ -85,7 +121,13 @@ const SplitMoneyScreen = ({ navigation }) => {
                   <TouchableOpacity
                     key={index}
                     onLongPress={() => handleLongDeleteGroup(identity)}
-                    onPress={() => navigation.navigate("SplitSection", {identity, nameOfGrp, values})}
+                    onPress={() =>
+                      navigation.navigate("SplitSection", {
+                        identity,
+                        nameOfGrp,
+                        values,
+                      })
+                    }
                     style={{ gap: 20 }}
                     activeOpacity={0.8}
                   >
@@ -99,9 +141,23 @@ const SplitMoneyScreen = ({ navigation }) => {
                 );
               })
             ) : (
-              <View style={{justifyContent: "center", alignItems:"center", flex: 1, height: 700, gap: 20 }}>
-                <FontAwesome name="ban" size={60} color={allColors.backgroundColorSecondary} />
-                <Text variant="titleMedium" style={{color:"white"}}>You don't have groups yet.</Text>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flex: 1,
+                  height: 700,
+                  gap: 20,
+                }}
+              >
+                <FontAwesome
+                  name="ban"
+                  size={60}
+                  color={allColors.backgroundColorSecondary}
+                />
+                <Text variant="titleMedium" style={{ color: "white" }}>
+                  You don't have groups yet.
+                </Text>
               </View>
             )}
           </View>
