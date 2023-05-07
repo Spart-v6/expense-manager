@@ -113,7 +113,6 @@ const RecurrenceScreen = ({ navigation }) => {
   else
     overallRec =
       overallRec?.slice(0, 1) + "$" + overallRec?.slice(1);
-  // TODO: Add the recurrences for frequency too / recurrenceEndDate meaning if one recurrence starts two weeks before then add it twice in anticipated balancee
   // #endregion
 
   return (

@@ -1,10 +1,14 @@
-import { Appbar, Button } from "react-native-paper";
+import { Appbar, Button, Text } from "react-native-paper";
+import { View } from "react-native";
 import React from "react";
 import allColors from "../commons/allColors";
+import username from "../helper/constants";
+import moment from "moment";
 
 const AppHeader = ({
   title,
   isParent,
+  isHome,
   navigation,
   isPlus,
   isUpdate,
@@ -13,17 +17,20 @@ const AppHeader = ({
   needSearch,
   isUpdateCardScreen = false,
 }) => {
-  const handleDeleteExpense = () => {
-    isDeletePressed(true);
-  };
+  const [greeting, setGreeting] = React.useState("");
 
-  const handleCardEdit = () => {
-    isCardEditPressed(true);
-  };
-
-  const searchExpense = () => {
+  const handleDeleteExpense = () => isDeletePressed(true);
+  const handleCardEdit = () => isCardEditPressed(true);
+  const searchExpense = () =>
     navigation.navigate("SearchScreen", { comingFrom: title });
-  };
+
+  React.useEffect(() => {
+    const currentHour = moment().hour();
+    if (currentHour >= 5 && currentHour < 12) setGreeting("Good morning");
+    else if (currentHour >= 12 && currentHour < 17)
+      setGreeting("Good afternoon");
+    else setGreeting("Good evening");
+  }, []);
 
   return (
     <Appbar.Header
@@ -32,8 +39,21 @@ const AppHeader = ({
       {!isParent && (
         <Button icon="arrow-left" onPress={() => navigation.goBack()} />
       )}
-
-      <Appbar.Content title={isUpdate ? "Update Expense" : title} />
+      {isHome ? (
+        <Appbar.Content
+          title={
+            <View style={{ marginLeft: 6 }}>
+              <Text variant="titleMedium">{`Hi ${username}`}</Text>
+              <Text variant="bodySmall">{greeting}</Text>
+            </View>
+          }
+        />
+      ) : (
+        <Appbar.Content
+          title={isUpdate ? "Update Expense" : title}
+          titleStyle={isParent && { marginLeft: 6 }}
+        />
+      )}
       {!isPlus && !isUpdate && needSearch && (
         <Appbar.Action icon="magnify" onPress={searchExpense} />
       )}

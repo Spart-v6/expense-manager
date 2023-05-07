@@ -5,6 +5,7 @@ import allColors from "../commons/allColors";
 import AppHeader from "../components/AppHeader";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
+import username from "../helper/constants";
 import React from "react";
 
 const PlusMoreSplitSection = ({ navigation, route }) => {
@@ -88,7 +89,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const handleSubmit = () => {
     const helper = (values) => {
       const vals = Array.isArray(values) ? values : [values];
-      return vals.map((val) => (val / 100) * totalAmountSpent);
+      return divideByPercent
+        ? vals.map((val) => (val / 100) * totalAmountSpent)
+        : vals.map((val) => (val / 1) * 1);
     };
 
     const result = currentGroupMembers
@@ -105,7 +108,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         };
       });
     const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10, groupIdentity });
-    // console.log("Added result! ", finalRes);
     dispatch(addSections(finalRes));
     navigation.goBack();
   };
@@ -212,6 +214,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
                 style={{ paddingLeft: 5, flex: 0.1 }}
+                disabled={username.toLowerCase() === whoPaid.toLowerCase()}
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>

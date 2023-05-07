@@ -85,7 +85,7 @@ const SplitMoneyScreen = ({ navigation }) => {
     setDeleteDialogVisible(true);
     Vibration.vibrate(1);
   };
-  console.log(sectionsData);
+
   const handleDelete = () => {
     const itemsToDelete = sectionsData
       .filter(

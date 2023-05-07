@@ -52,7 +52,7 @@ const HomeScreen = ({ navigation, route }) => {
     { name: "All" },
   ];
 
-  // #region =========== Fetching card details here only (coz it's the initial screen), no need to fetch it when user clicks on Accounts page
+  // #region =========== Fetching card details here only (coz it's the initial screen)
   const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
@@ -71,10 +71,6 @@ const HomeScreen = ({ navigation, route }) => {
   };
   // #endregion =========== End
 
-  // useEffect(() => {
-  //   AsyncStorage.clear();
-  // },[])
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
@@ -82,6 +78,7 @@ const HomeScreen = ({ navigation, route }) => {
         title="Home"
         isParent={true}
         navigation={navigation}
+        isHome
         needSearch={true}
       />
       <ScrollView>

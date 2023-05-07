@@ -7,12 +7,13 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import AppHeader from "../components/AppHeader";
-import { Text, TextInput, Button } from "react-native-paper";
+import { Text, TextInput, Button, Portal, Dialog } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
 import allColors from "../commons/allColors";
 import { useDispatch } from "react-redux";
 import { addGroups } from "../redux/actions/index";
+import username from "../helper/constants";
 
 const PlusMoreGroup = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -23,6 +24,10 @@ const PlusMoreGroup = ({ navigation }) => {
     { id: 0, value: "", showCross: true },
   ]);
   const [idCounter, setIdCounter] = useState(1);
+  const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
+  const [urself, setUrself] = useState(true);
+
+  const hideDialog = () => setIsDeleteBtnPressed(false);
 
   const handleAddTextInput = () => {
     setTextInputs((prevState) => [
@@ -51,20 +56,25 @@ const PlusMoreGroup = ({ navigation }) => {
   const handleAddGroups = () => {
     let flag1 = false;
     let flag2 = true;
-    textInputs.forEach(group => {
-      if(group.value.length > 0 && groupName.length > 0) 
-        flag1 = true;
+    textInputs.forEach((group) => {
+      if (group.value.length > 0 && groupName.length > 0) flag1 = true;
       else flag1 = false;
-      if(!flag1) flag2 = false;
-    })
+      if (!flag1) flag2 = false;
+    });
+    // adding urself
+    textInputs.push({"id": idCounter, "showCross": true, "value": username})
 
     if (textInputs.length > 0 && flag2) {
-      textInputs.push({"nameOfGrp": groupName, "identity": Math.random() * 10})
-      // console.log(textInputs);
+      textInputs.push({ nameOfGrp: groupName, identity: Math.random() * 10 });
       dispatch(addGroups(textInputs));
       navigation.goBack();
     }
   };
+
+  const handleDeleteUrSelf = () => {
+    setUrself(false);
+    setIsDeleteBtnPressed(false);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -102,6 +112,36 @@ const PlusMoreGroup = ({ navigation }) => {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text>Add names</Text>
+          {urself && (
+            <View style={[styles.rowContainer]}>
+              <TextInput
+                style={styles.textInput}
+                selectionColor={allColors.textColorFour}
+                textColor={allColors.textColorFour}
+                underlineColor="transparent"
+                activeUnderlineColor="transparent"
+                placeholderTextColor={allColors.textColorFour}
+                autoComplete="off"
+                textContentType="none"
+                disabled
+                placeholder={username}
+              />
+              {(
+                <TouchableOpacity
+                  onPress={() => setIsDeleteBtnPressed(true)}
+                  style={styles.iconContainer}
+                >
+                  <MaterialIcons
+                    name="close"
+                    size={30}
+                    color={allColors.warningColor}
+                    style={{ alignSelf: "center" }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
           {textInputs.map((input, index) => (
             <View style={[styles.rowContainer]} key={input.id}>
               <TextInput
@@ -173,6 +213,31 @@ const PlusMoreGroup = ({ navigation }) => {
           </Text>
         </Button>
       </View>
+
+      <Portal>
+        <Dialog
+          visible={isDeleteBtnPressed}
+          onDismiss={hideDialog}
+          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+        >
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Are you sure you want to remove yourself from the group?
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Cancel</Button>
+            <Button
+              onPress={handleDeleteUrSelf}
+              mode="elevated"
+              contentStyle={{ width: 60 }}
+              buttonColor={allColors.warningColor}
+            >
+              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };
