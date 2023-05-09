@@ -4,12 +4,151 @@ import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { storeSections, deleteSections } from "../redux/actions";
 import { ScrollView } from "react-native-gesture-handler";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import username from "../helper/constants";
+
+const Tab = createMaterialTopTabNavigator();
+
+const AllSections = ({
+  specificGroupSection,
+  handleDeleteSection,
+  navigation,
+}) => {
+  return (
+    <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
+      {specificGroupSection.length > 0 ? (
+        specificGroupSection?.map((subArray, index) => {
+          const { sectionName, totalAmountSpent, whoPaid } =
+            subArray[subArray.length - 1];
+          const { id } = subArray.find((obj) => obj.id);
+
+          let payBack = 0,
+            receive = 0;
+          if (
+            whoPaid.length === 0 ||
+            whoPaid.toLowerCase() === username.toLowerCase()
+          ) {
+            const { amount } = subArray.find((obj) => obj.name === username);
+            receive = (totalAmountSpent - +amount).toFixed(2);
+          } else {
+            const { amount } = subArray.find((obj) => obj.name === username);
+            payBack = parseInt(amount).toFixed(2);
+          }
+
+          return (
+            <TouchableOpacity
+              key={index}
+              onLongPress={() => handleDeleteSection(id)}
+              onPress={() =>
+                navigation.navigate("SplitDetailScreen", { subArray })
+              }
+              style={{ marginTop: 20 }}
+              activeOpacity={0.8}
+            >
+              <Card
+                key={index}
+                style={{
+                  backgroundColor: allColors.backgroundColorLessPrimary,
+                }}
+              >
+                <Card.Title
+                  title={
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        width: 380,
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text variant="titleMedium">{sectionName}</Text>
+                      <Text variant="titleLarge">${totalAmountSpent}</Text>
+                    </View>
+                  }
+                  titleStyle={{marginTop: 10}}
+                />
+                <Card.Content>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text variant="titleMedium" style={{ color: allColors.textColorPrimary, maxWidth: 180, width: 180 }} numberOfLines={1} ellipsizeMode="tail">
+                    {`${whoPaid === '' || whoPaid.toLowerCase() === username.toLowerCase() ? 'You' : whoPaid} paid`}
+                  </Text>
+                  <View style={{ alignSelf: 'center' }}>
+                    {payBack !== 0 ? (
+                      <AntDesign name="arrowright" size={25} color="red" />
+                    ) : (
+                      <AntDesign name="arrowleft" size={25} color="green" />
+                    )}
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', maxWidth: 180, width: 180 }}>
+                    {payBack !== 0 ? (
+                      <>
+                        <Text style={{ color: allColors.warningColor, textAlign: 'right' }}>
+                          Pay:
+                        </Text>
+                        <Text style={{ textAlign: 'right' }} numberOfLines={1} ellipsizeMode="tail">
+                          ${payBack}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                      <Text style={{ color: allColors.successColor, textAlign: 'right' }}>
+                        Receive:
+                      </Text>
+                        <Text style={{ textAlign: 'right' }} numberOfLines={1} ellipsizeMode="tail">
+                          ${receive}
+                        </Text>
+                      </>
+                    )}
+                  </View>
+
+                </View>
+                </Card.Content>
+              </Card>
+            </TouchableOpacity>
+          );
+        })
+      ) : (
+        <>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              height: 700,
+            }}
+          >
+            <MaterialCommunityIcons
+              name="playlist-plus"
+              size={60}
+              color={allColors.backgroundColorSecondary}
+            />
+            <Text variant="titleMedium">
+              Go ahead and create sections for this group.
+            </Text>
+          </View>
+        </>
+      )}
+    </ScrollView>
+  );
+};
+
+const AllMembers = ({ allMembers }) => {
+  return (
+    <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
+      <View style={{ margin: 20 }}>
+        {allMembers.map((e, index) => (
+          <View key={index}>
+            <Text>{e}</Text>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
+};
 
 const SplitSection = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -34,8 +173,10 @@ const SplitSection = ({ navigation, route }) => {
   const [identity, setIdentity] = useState(route.params.identity);
   const [nameOfGrp, setNameOfGrp] = useState(route.params.nameOfGrp);
   const [value, setValue] = useState(route.params.values);
+  const [namesSet, setNamesSet] = useState(new Set());
   const [selectedSectionToDelete, setSelectedSectionToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
+
   const [totalReceive, setTotalReceive] = useState(0);
   const [totalPay, setTotalPay] = useState(0);
 
@@ -66,7 +207,10 @@ const SplitSection = ({ navigation, route }) => {
       const { totalAmountSpent, whoPaid } = innerArray[innerArray.length - 1];
       totalSpent += +totalAmountSpent;
 
-      if (whoPaid.length === 0) {
+      if (
+        whoPaid.length === 0 ||
+        whoPaid.toLowerCase() === username.toLowerCase()
+      ) {
         const obj = innerArray.find((obj) => obj.name === username);
         if (obj) totalReceived += parseFloat(obj.amount);
       } else {
@@ -107,100 +251,35 @@ const SplitSection = ({ navigation, route }) => {
           </View>
         </View>
 
-        <View style={{ marginTop: 20 }}>
-          <Text>Sections</Text>
-          <ScrollView>
-            {specificGroupSection.length > 0 ? (
-              specificGroupSection?.map((subArray, index) => {
-                const { sectionName, totalAmountSpent, whoPaid } =
-                  subArray[subArray.length - 1];
-                const { id } = subArray.find((obj) => obj.id);
-
-                let payBack = 0,
-                  receive = 0;
-                if (whoPaid.length === 0) {
-                  const { amount } = subArray.find(
-                    (obj) => obj.name === username
-                  );
-                  receive = (totalAmountSpent - +amount).toFixed(2);
-                } else {
-                  const { amount } = subArray.find(
-                    (obj) => obj.name === username
-                  );
-                  payBack = parseInt(amount).toFixed(2);
-                }
-
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onLongPress={() => handleDeleteSection(id)}
-                    onPress={() =>
-                      navigation.navigate("SplitDetailScreen", { subArray })
-                    }
-                    style={{ marginTop: 20 }}
-                    activeOpacity={0.8}
-                  >
-                    <Card
-                      key={index}
-                      style={{
-                        backgroundColor: allColors.backgroundColorLessPrimary,
-                      }}
-                    >
-                      <Card.Title
-                        title={
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              width: 380,
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Text>{sectionName}</Text>
-                            <Text>${totalAmountSpent}</Text>
-                          </View>
-                        }
-                      />
-                      <Card.Content>
-                        <Text>{`${
-                          whoPaid === "" ? "You" : whoPaid
-                        } paid`}</Text>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Text>Pay: ${payBack}</Text>
-                          <Text>Receive: ${receive}</Text>
-                        </View>
-                      </Card.Content>
-                    </Card>
-                  </TouchableOpacity>
-                );
-              })
-            ) : (
-              <>
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1,
-                    height: 700,
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="playlist-plus"
-                    size={60}
-                    color={allColors.backgroundColorSecondary}
-                  />
-                  <Text variant="titleMedium">
-                    Go ahead and create sections for this group.
-                  </Text>
-                </View>
-              </>
-            )}
-          </ScrollView>
+        <View style={{ flex: 1 }}>
+          <Tab.Navigator
+            initialRouteName="Sections"
+            screenOptions={{
+              tabBarActiveTintColor: "#fff",
+              tabBarLabelStyle: { fontSize: 12 },
+              tabBarIndicatorStyle: {
+                backgroundColor: allColors.textColorPrimary,
+              },
+              tabBarStyle: {
+                backgroundColor: "transparent",
+                shadowColor: "transparent",
+              },
+              tabBarPressOpacity: 1,
+            }}
+          >
+            <Tab.Screen name="Sections">
+              {() => (
+                <AllSections
+                  specificGroupSection={specificGroupSection}
+                  handleDeleteSection={handleDeleteSection}
+                  navigation={navigation}
+                />
+              )}
+            </Tab.Screen>
+            <Tab.Screen name="Members">
+              {() => <AllMembers allMembers={value} />}
+            </Tab.Screen>
+          </Tab.Navigator>
         </View>
       </View>
 
