@@ -18,6 +18,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { addRecurrences, deleteRecurrences, storeCard } from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import SnackbarComponent from "../commons/snackbar";
 
 const obj = [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }];
 
@@ -67,6 +68,11 @@ const styles = StyleSheet.create({
 
 const PlusMoreRecurrence = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("Please fill all the fields");
+  const timeoutRef = useRef(null);
+
   const [selectedCardInExpense, setSelectedCardInExpense] = useState(null);
 
   const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
@@ -316,8 +322,56 @@ const PlusMoreRecurrence = ({ navigation }) => {
       recurrenceType: chipName,
       paymentNetwork: selectedCardInExpense,
     };
+
+    const checkError = () => {
+      if (recName.length === 0) {
+        setErrorMsg("Please enter a recurrence name");
+        return true;
+      }
+      if (amount.length === 0) {
+        setErrorMsg("Please enter a amount value");
+        return true;
+      }
+      const formattedStartDate = `${startDate} ${startMonth} ${startYear}`;
+      const isValidStartDate = moment(formattedStartDate, 'DD MM YY', true).isValid();
+      if (!isValidStartDate) {
+        setErrorMsg("Invalid start date");
+        return true;
+      }
+
+      const formattedEndDate = `${endDate} ${endMonth} ${endYear}`;
+      if (formattedEndDate.trim().length > 0) {
+        const isValidEndDate = moment(formattedEndDate, 'DD MM YY', true).isValid();
+        if (!isValidEndDate) {
+          setErrorMsg("Invalid end date");
+          return true;
+        }
+      }
+      if (typePayment === null) {
+        setErrorMsg("Please choose a payment type");
+        return true;
+      }
+      if (!selectedFrequency) {
+        setErrorMsg("Please choose a payment frequency");
+        return true;
+      }
+      if (chipName.length === 0) {
+        setErrorMsg("Please select a recurrence type");
+        return true;
+      }
+      if (selectedCardInExpense === null) {
+        setErrorMsg("Please choose or create a payment network");
+        return true;
+      }
+      return false;
+    }
+    if (checkError()) {
+      setError(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setError(false), 2000);
+      return;
+    }
     dispatch(addRecurrences(recurrenceDetails));
-    // dispatch(deleteRecurrences(11.052253453083257))
     navigation.goBack();
   };
 
@@ -591,6 +645,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+      {error && <SnackbarComponent errorMsg={errorMsg}/>}
     </SafeAreaView>
   );
 };

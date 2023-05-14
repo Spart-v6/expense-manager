@@ -1,5 +1,5 @@
 import { View, SafeAreaView, TouchableOpacity, Vibration } from "react-native";
-import { Text, FAB, Card, Dialog, Button } from "react-native-paper";
+import { Text, FAB, Card, Dialog, Button, Avatar } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import React, { useState, useCallback, useEffect } from "react";
@@ -19,26 +19,86 @@ const AllSections = ({
   handleDeleteSection,
   navigation,
 }) => {
+  const renderPayAndReceive = (payBack, receive) => {
+    if (parseInt(payBack) === 0 && receive === 0) return <></>;
+    return payBack !== 0 ? (
+      <View style={{ flexDirection: "row", gap: 5 }}>
+        <Text
+          style={{
+            color: allColors.warningColor,
+            textAlign: "right",
+          }}
+        >
+          Pay:
+        </Text>
+        <Text
+          style={{
+            textAlign: "right",
+            color: allColors.warningColor,
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          ${payBack}
+        </Text>
+      </View>
+    ) : (
+      <View style={{ flexDirection: "row", gap: 5 }}>
+        <Text
+          style={{
+            color: allColors.successColor,
+            textAlign: "right",
+          }}
+        >
+          Receive:
+        </Text>
+        <Text
+          style={{
+            textAlign: "right",
+            color: allColors.successColor,
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          ${receive}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderArrow = (payBack, receive) => {
+    if (parseInt(payBack) === 0 && receive === 0) return <></>;
+    return payBack !== 0 ? (
+      <AntDesign name="arrowright" size={25} color="red" />
+    ) : (
+      <AntDesign name="arrowleft" size={25} color="green" />
+    );
+  };
+
   return (
-    <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
+    <ScrollView
+      style={{
+        backgroundColor: allColors.backgroundColorPrimary,
+        marginBottom: 100,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
       {specificGroupSection.length > 0 ? (
         specificGroupSection?.map((subArray, index) => {
           const { sectionName, totalAmountSpent, whoPaid } =
             subArray[subArray.length - 1];
           const { id } = subArray.find((obj) => obj.id);
+          const tempAmount = subArray.find((obj) => obj.name === username);
+          const amount = tempAmount ? tempAmount.amount : 0;
 
           let payBack = 0,
             receive = 0;
           if (
             whoPaid.length === 0 ||
             whoPaid.toLowerCase() === username.toLowerCase()
-          ) {
-            const { amount } = subArray.find((obj) => obj.name === username);
+          )
             receive = (totalAmountSpent - +amount).toFixed(2);
-          } else {
-            const { amount } = subArray.find((obj) => obj.name === username);
-            payBack = parseInt(amount).toFixed(2);
-          }
+          else payBack = parseInt(amount).toFixed(2);
 
           return (
             <TouchableOpacity
@@ -69,43 +129,47 @@ const AllSections = ({
                       <Text variant="titleLarge">${totalAmountSpent}</Text>
                     </View>
                   }
-                  titleStyle={{marginTop: 10}}
+                  titleStyle={{ marginTop: 10 }}
                 />
                 <Card.Content>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text variant="titleMedium" style={{ color: allColors.textColorPrimary, maxWidth: 180, width: 180 }} numberOfLines={1} ellipsizeMode="tail">
-                    {`${whoPaid === '' || whoPaid.toLowerCase() === username.toLowerCase() ? 'You' : whoPaid} paid`}
-                  </Text>
-                  <View style={{ alignSelf: 'center' }}>
-                    {payBack !== 0 ? (
-                      <AntDesign name="arrowright" size={25} color="red" />
-                    ) : (
-                      <AntDesign name="arrowleft" size={25} color="green" />
-                    )}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      variant="titleMedium"
+                      style={{
+                        color: allColors.textColorPrimary,
+                        maxWidth: 180,
+                        width: 180,
+                      }}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {`${
+                        whoPaid === "" ||
+                        whoPaid.toLowerCase() === username.toLowerCase()
+                          ? "You"
+                          : whoPaid
+                      } paid`}
+                    </Text>
+                    <View style={{ alignSelf: "center" }}>
+                      {renderArrow(payBack, receive)}
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        maxWidth: 180,
+                        width: 180,
+                      }}
+                    >
+                      {renderPayAndReceive(payBack, receive)}
+                    </View>
                   </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', maxWidth: 180, width: 180 }}>
-                    {payBack !== 0 ? (
-                      <>
-                        <Text style={{ color: allColors.warningColor, textAlign: 'right' }}>
-                          Pay:
-                        </Text>
-                        <Text style={{ textAlign: 'right' }} numberOfLines={1} ellipsizeMode="tail">
-                          ${payBack}
-                        </Text>
-                      </>
-                    ) : (
-                      <>
-                      <Text style={{ color: allColors.successColor, textAlign: 'right' }}>
-                        Receive:
-                      </Text>
-                        <Text style={{ textAlign: 'right' }} numberOfLines={1} ellipsizeMode="tail">
-                          ${receive}
-                        </Text>
-                      </>
-                    )}
-                  </View>
-
-                </View>
                 </Card.Content>
               </Card>
             </TouchableOpacity>
@@ -138,15 +202,24 @@ const AllSections = ({
 
 const AllMembers = ({ allMembers }) => {
   return (
-    <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
-      <View style={{ margin: 20 }}>
-        {allMembers.map((e, index) => (
-          <View key={index}>
-            <Text>{e}</Text>
-          </View>
-        ))}
+    <>
+      <View style={{marginLeft: 20, marginTop: 20}}>
+        <Text>{allMembers?.length} Members</Text>
       </View>
-    </ScrollView>
+      <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
+        <View style={{ margin: 20, gap: 15 }}>
+          {allMembers.map((e, index) => {
+            const words = e.split(' ').map(word => word[0]).join('');
+            return (
+              <View key={index} style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
+                <Avatar.Text size={30} label={words} style={{backgroundColor: allColors.textColorPrimary}} labelStyle={{color: allColors.textColorFour}}/>
+                <Text>{e}</Text>
+              </View>
+            )}
+          )}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 

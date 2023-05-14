@@ -41,6 +41,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
       />
       <View style={{ margin: 20 }}>
         <View>
+          <Text>Who Paid</Text>
           <FlatList
             data={filteredData}
             renderItem={renderItem}

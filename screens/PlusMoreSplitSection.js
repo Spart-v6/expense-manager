@@ -6,11 +6,15 @@ import AppHeader from "../components/AppHeader";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
 import username from "../helper/constants";
+import SnackbarComponent from "../commons/snackbar";
 import React from "react";
 
 const PlusMoreSplitSection = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
+  const [error, setError] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("Please fill all the fields");
+  const timeoutRef = React.useRef(null);
   const [sectionName, setSectionName] = React.useState("");
   const [totalAmountSpent, setTotalAmountSpent] = React.useState(null);
   const [whoPaid, setWhoPaid] = React.useState("");
@@ -35,6 +39,11 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = React.useState(initialIsChecked);
 
   const handleInputChange = (name, value) => {
+    // preventing > two decimals in a number
+    const sanitizedValue = value.replace(".", "");
+    if (sanitizedValue.includes(".")) {
+      return;
+    }
     setAmountOfEachMember({ ...amountOfEachMember, [name]: value });
   };
   const handleCheckboxChange = (name, value) => {
@@ -108,7 +117,38 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         };
       });
     const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10, groupIdentity });
+
+    const checkError = () => {
+      if (sectionName.length === 0) { setErrorMsg("Please fill the section name"); return true; }
+      if (totalAmountSpent === null || totalAmountSpent.length === 0) {setErrorMsg("Please fill total amount spent"); return true;}
+
+      // checks for whoPaid, whoPaid really exists inn the array
+      const lastObject = finalRes[finalRes.length - 1];
+      const restObjects = finalRes.slice(0, finalRes.length - 1);
+      const isWhoPaidValid = restObjects.some(obj => obj.name === lastObject.whoPaid);
+      const doesWhoPaidReallyExists = restObjects.slice(0, restObjects.length - 1).find(obj => obj.whoPaid === whoPaid);
+      if (!isWhoPaidValid && !doesWhoPaidReallyExists) {
+        if (whoPaid !== "") {
+          setErrorMsg("The member is not selected or it does not exist");
+          return true; 
+        }
+      }
+      const isAmountNan = restObjects.some(obj => obj.amount === "NaN")
+      if (isAmountNan) {
+        setErrorMsg("Please enter correct amount or percentage for the members");
+        console.log(restObjects);
+        return true;
+      }
+      return false;
+    }
+    if (checkError()) {
+      setError(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setError(false), 2000);
+      return;
+    }
     dispatch(addSections(finalRes));
+    // console.log(finalRes);
     navigation.goBack();
   };
 
@@ -199,8 +239,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           <View
             style={{ flexDirection: "row", justifyContent: "center", gap: 30 }}
           >
-            <Text>{percentageLeft.toFixed(2)}% left</Text>
-            <Text>{totalAmountLeft.toFixed(2)} left</Text>
+            <Text style={percentageLeft < 0 && {color: allColors.errorColor}}>{percentageLeft.toFixed(2)}% left</Text>
+            <Text style={totalAmountLeft < 0 && {color: allColors.errorColor}}>{totalAmountLeft.toFixed(2)} left</Text>
           </View>
         )}
 
@@ -277,6 +317,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           </Text>
         </Button>
       </View>
+      {error && <SnackbarComponent errorMsg={errorMsg}/>}
     </SafeAreaView>
   );
 };

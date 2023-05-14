@@ -25,13 +25,10 @@ import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon1 from "react-native-vector-icons/AntDesign";
 import allColors from "../commons/allColors";
+import SnackbarComponent from "../commons/snackbar";
 import { AntDesign } from "@expo/vector-icons";
-import { NavigationContainer } from "@react-navigation/native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
-
-DatePicker.prototype = false; //temporarily disabling warnings
 
 const FrequentCategories = ({ handleSelectedCategory }) => {
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -43,10 +40,9 @@ const FrequentCategories = ({ handleSelectedCategory }) => {
   return (
     <View
       style={{
-        alignItems: "flex-start",
-        padding: 10,
+        paddingLeft: 10,
         paddingTop: 30,
-        backgroundColor: allColors.backgroundColorLessPrimary,
+        backgroundColor: allColors.backgroundColorLessPrimary
       }}
     >
       <View>
@@ -55,23 +51,6 @@ const FrequentCategories = ({ handleSelectedCategory }) => {
     </View>
   );
 };
-
-const AllCategories = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: allColors.backgroundColorLessPrimary,
-      }}
-    >
-      <Text>All icons!</Text>
-    </View>
-  );
-};
-
-const Tab = createMaterialTopTabNavigator();
 
 const styles = StyleSheet.create({
   btn: {
@@ -146,6 +125,10 @@ const PlusMoreHome = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   // #region
+  // error states
+  const [error, setError] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("Please fill all the fields");
+  const timeoutRef = React.useRef(null);
 
   //  states for the icon picker dialog
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
@@ -382,6 +365,27 @@ const PlusMoreHome = ({ navigation, route }) => {
       selectedCard: selectedCardInExpense,
       selectedCategory: selectedCategory
     };
+    const checkError = () => {
+      if (expenseName.length === 0) {
+        setErrorMsg("Please enter a expense name");
+        return true;
+      }
+      if (amountValue.length === 0) {
+        setErrorMsg("Please enter a amount value");
+        return true;
+      }
+      if (selectedCardInExpense.length === 0) {
+        setErrorMsg("Please choose or create a payment network");
+        return true;
+      }
+      return false;
+    }
+    if (checkError()) {
+      setError(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setError(false), 2000);
+      return;
+    }
     if (isUpdatePressed) {
       dispatch(updateData(valuesToChange.id, updateExpense));
     } else {
@@ -532,51 +536,6 @@ const PlusMoreHome = ({ navigation, route }) => {
           </ScrollView>
         </View>
 
-        {/* Dialog box for viewing icons */}
-        <Dialog
-          visible={openCategoryDialog}
-          onDismiss={() => setOpenCategoryDialog(false)}
-          style={{
-            height: 600,
-            backgroundColor: allColors.backgroundColorLessPrimary,
-          }}
-        >
-          <Dialog.Title>Choose a category</Dialog.Title>
-          <NavigationContainer independent>
-            <Tab.Navigator
-              initialRouteName="Frequent"
-              screenOptions={{
-                tabBarActiveTintColor: "#fff",
-                tabBarLabelStyle: { fontSize: 12 },
-                tabBarIndicatorStyle: {
-                  backgroundColor: allColors.textColorPrimary,
-                },
-                tabBarStyle: {
-                  backgroundColor: "transparent",
-                  shadowColor: "transparent",
-                },
-              }}
-            >
-              <Tab.Screen
-                name="Frequent"
-                options={{ tabBarLabel: "Frequently used" }}
-              >
-                {() => (
-                  <FrequentCategories
-                    handleSelectedCategory={handleSelectedCategory}
-                  />
-                )}
-              </Tab.Screen>
-              <Tab.Screen
-                name="Everything"
-                component={AllCategories}
-                options={{ tabBarLabel: "All Categories" }}
-              />
-            </Tab.Navigator>
-          </NavigationContainer>
-          <Dialog.Title></Dialog.Title>
-        </Dialog>
-        
         <View style={{ flex: 1, flexDirection: "column-reverse" }}>
           <Button
             onPress={handleAddOrUpdateExpense}
@@ -629,6 +588,24 @@ const PlusMoreHome = ({ navigation, route }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      <Portal>
+        {/* Dialog box for viewing icons */}
+        <Dialog
+          visible={openCategoryDialog}
+          onDismiss={() => setOpenCategoryDialog(false)}
+          style={{
+            height: 400,
+            backgroundColor: allColors.backgroundColorLessPrimary,
+          }}
+        >
+          <Dialog.Title>Choose a category</Dialog.Title>
+          <FrequentCategories
+            handleSelectedCategory={handleSelectedCategory}
+          />
+        </Dialog>
+      </Portal>
+      {error && <SnackbarComponent errorMsg={errorMsg}/>}
     </SafeAreaView>
   );
 };

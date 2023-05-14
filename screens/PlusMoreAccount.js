@@ -6,7 +6,9 @@ import RadioButton from "../components/RadioButton";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import { useDispatch } from "react-redux";
+import moment from "moment";
 import { addCard, updateCard } from "../redux/actions";
+import SnackbarComponent from "../commons/snackbar";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -44,6 +46,11 @@ const makeStyles = () =>
 const PlusMoreAccount = ({ navigation, route }) => {
   const styles = makeStyles();
   const dispatch = useDispatch();
+
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("Please fill all the fields");
+  const timeoutRef = useRef(null);
+
   const [isUpdateCardPressed, setIsUpdateCardPressed] = useState(false);
   const [valuesToChangeInCard, setValuesToChangeInCard] = useState({});
   const [btnName] = useState(() => {
@@ -142,6 +149,36 @@ const PlusMoreAccount = ({ navigation, route }) => {
       year: year,
       checked
     };
+
+    const checkError = () => {
+      if (cardHolderName.length === 0) {
+        setErrorMsg("Please enter a card holder name");
+        return true;
+      }
+      if (paymentNetwork.length === 0) {
+        setErrorMsg("Please enter a payment network");
+        return true;
+      }
+      const parsedMonth = moment(month, 'M', true);
+      const parsedYear = moment(year, 'YY', true);
+      if (year.length > 0 || month.length > 0) {
+        const isValidMonth = parsedMonth.isValid() && parsedMonth.month() < 12;
+        const isValidYear = parsedYear.isValid();
+        if (!isValidMonth || !isValidYear) {
+          setErrorMsg("Invalid month or year");
+          return true;
+        }
+      }
+      return false;
+    }
+    if (checkError()) {
+      setError(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setError(false), 2000);
+      return;
+    }
+
+
     if(route.params) dispatch(updateCard(valuesToChangeInCard.id, updatedCardDetails));
     else dispatch(addCard(cardDetails));
     navigation.goBack();
@@ -271,6 +308,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
           </Button>
         </View>
       </SafeAreaView>
+      {error && <SnackbarComponent errorMsg={errorMsg}/>}
     </View>
   );
 };
