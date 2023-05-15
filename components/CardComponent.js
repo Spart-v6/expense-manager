@@ -3,7 +3,7 @@ import { Card, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback } from "react";
+import React, { Fragment, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { storeCard } from "../redux/actions";
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -50,14 +50,13 @@ const CardComponent = () => {
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   return (
-    <>
+    <View style={{ flex :1 }}>
     {
       allCards?.length > 0 ? (
       allCards?.map(crd => (
         <Card style={[styles.card]} key={Math.random()} onPress={() => navigation.navigate("CardDetailsScreen", {card: crd})}>
           <Card.Title
             title={
-              // TODO: Add dynamic full width
               <View style={{ flexDirection: 'row', width: 360, justifyContent: 'space-between'}}>
                 <View style={{flexDirection:"row", alignItems:"center", gap: 10}}>
                 <FontAwesome5
@@ -143,15 +142,13 @@ const CardComponent = () => {
       )))
       : 
       (
-        <>
-          <View style={{justifyContent: "center", alignItems:"center", flex: 1, height: 700 }}>
-            <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.backgroundColorSecondary} />
-            <Text variant="titleMedium">You don't have cards yet.</Text>
-          </View>
-        </>
+        <View style={{justifyContent: "center", alignItems:"center", height: 700, flex: 1, marginBottom: 0}}>
+          <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.backgroundColorSecondary} />
+          <Text variant="titleMedium">You don't have cards yet.</Text>
+        </View> 
       )
     }
-    </>
+    </View>
   );
 };
 

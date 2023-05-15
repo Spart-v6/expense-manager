@@ -13,10 +13,15 @@ import Octicons from "react-native-vector-icons/Octicons";
 import allColors from "../commons/allColors";
 import { useDispatch } from "react-redux";
 import { addGroups } from "../redux/actions/index";
+import SnackbarComponent from "../commons/snackbar";
 import username from "../helper/constants";
 
 const PlusMoreGroup = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const [error, setError] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("Please fill all the fields");
+  const timeoutRef = React.useRef(null);
 
   const [groupName, setGroupName] = useState("");
 
@@ -54,27 +59,32 @@ const PlusMoreGroup = ({ navigation }) => {
   };
 
   const handleAddGroups = () => {
-    let flag1 = false;
-    let flag2 = true;
-    textInputs.forEach((group) => {
-      if (group.value.length > 0 && groupName.length > 0) flag1 = true;
-      else flag1 = false;
-      if (!flag1) flag2 = false;
-    });
-    // adding urself
-    textInputs.push({"id": idCounter, "showCross": true, "value": username})
-
-    if (textInputs.length > 0 && flag2) {
-      textInputs.push({ nameOfGrp: groupName, identity: Math.random() * 10 });
-      dispatch(addGroups(textInputs));
-      navigation.goBack();
+    const checkError = () => {
+      if (textInputs.some(item => item.value === "")) {
+        setErrorMsg("Add at least one member to the group");
+        return true;
+      }
+      return false;
+    };
+    if (checkError()) {
+      setError(true);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setError(false), 2000);
+      return;
     }
+
+    const newArr = [...textInputs];
+    newArr.push({ id: idCounter, showCross: true, value: username });
+    setIdCounter((prevId) => prevId + 1);
+    newArr.push({ nameOfGrp: groupName, identity: Math.random() * 10 });
+    dispatch(addGroups(newArr));
+    navigation.goBack();
   };
 
   const handleDeleteUrSelf = () => {
     setUrself(false);
     setIsDeleteBtnPressed(false);
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -96,15 +106,15 @@ const PlusMoreGroup = ({ navigation }) => {
             }}
             selectionColor={allColors.textColorFour}
             textColor={allColors.textColorFour}
-            underlineColor="transparent"
+            underlineColorAndroid="transparent"
             activeUnderlineColor="transparent"
+            underlineColor="transparent"
             placeholderTextColor={allColors.textColorFour}
-            autoComplete="off"
-            textContentType="none"
+            autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
             onChangeText={(val) => setGroupName(val)}
-            keyboardType={"default"}
+            keyboardType="default"
           />
         </View>
 
@@ -118,15 +128,14 @@ const PlusMoreGroup = ({ navigation }) => {
                 style={styles.textInput}
                 selectionColor={allColors.textColorFour}
                 textColor={allColors.textColorFour}
-                underlineColor="transparent"
-                activeUnderlineColor="transparent"
                 placeholderTextColor={allColors.textColorFour}
-                autoComplete="off"
-                textContentType="none"
-                disabled
+                underlineColorAndroid="transparent"
+                activeUnderlineColor="transparent"
+                underlineColor="transparent"
+                editable={false}
                 placeholder={username}
               />
-              {(
+              {urself && (
                 <TouchableOpacity
                   onPress={() => setIsDeleteBtnPressed(true)}
                   style={styles.iconContainer}
@@ -141,19 +150,18 @@ const PlusMoreGroup = ({ navigation }) => {
               )}
             </View>
           )}
-
           {textInputs.map((input, index) => (
             <View style={[styles.rowContainer]} key={input.id}>
               <TextInput
                 style={styles.textInput}
                 selectionColor={allColors.textColorFour}
                 textColor={allColors.textColorFour}
-                underlineColor="transparent"
+                underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
+                underlineColor="transparent"
                 autoFocus={index > 0}
                 placeholderTextColor={allColors.textColorFour}
-                autoComplete="off"
-                textContentType="none"
+                autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
                 onChangeText={(value) => handleChangeTextInput(input.id, value)}
@@ -193,7 +201,6 @@ const PlusMoreGroup = ({ navigation }) => {
           onPress={handleAddGroups}
           mode="contained"
           labelStyle={{ fontSize: 15 }}
-          textColor={"black"}
           style={{
             borderColor: "transparent",
             backgroundColor: allColors.backgroundColorLessPrimary,
@@ -205,7 +212,7 @@ const PlusMoreGroup = ({ navigation }) => {
           <Text
             style={{
               color: allColors.textColorPrimary,
-              fontWeight: 700,
+              fontWeight: "bold",
               fontSize: 18,
             }}
           >
@@ -238,6 +245,7 @@ const PlusMoreGroup = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+      {error && <SnackbarComponent errorMsg={errorMsg} />}
     </SafeAreaView>
   );
 };

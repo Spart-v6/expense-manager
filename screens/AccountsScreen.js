@@ -20,7 +20,7 @@ const AccountsScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor={"transparent"} />
       <AnimatedEntryScreen>
         <ScrollView>
-          <View style={{marginBottom: 120}}>
+          <View>
             <CardComponent navigation={navigation}/>
           </View>
         </ScrollView>

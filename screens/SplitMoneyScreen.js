@@ -207,16 +207,3 @@ const SplitMoneyScreen = ({ navigation }) => {
 };
 
 export default SplitMoneyScreen;
-
-/*
-plus more groups
-* Create groups and add people in the main screen thru add button (group name and group members names)
-plus more section
-* Upon clicking the group u can view different sections for the split of the money, like Little Chef restaurant or Ice Cream or Movie  ( a dashboard which display how much u need to pay and how much they [in total] need to pay and section name )  or (a pie chart or wheterver chart suits best for displaying all the sections total amount and sections of course)
-
-! Also when creating a new section inside a group, all the members should have a chcekbox like which n which guy should be added to that section !
-// view sections
-* Upon clicking the sections u can see all members of the group with their money owed and what u have to pay them for (also a dashboard dislaying wht u need to pay and vice versa with a flatlist displaying each members money owed or need to pay)
-
-
-*/

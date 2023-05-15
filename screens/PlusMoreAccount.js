@@ -18,7 +18,7 @@ const makeStyles = () =>
     commonStyles: {
       marginLeft: 20,
       marginRight: 20,
-      gap: 20,
+      gap: 10,
       marginTop: 20,
     },
     wholeRadioBtnStyle: {
@@ -36,10 +36,7 @@ const makeStyles = () =>
       backgroundColor: allColors.backgroundColorQuinary,
     },
     addCardBtn: {
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0
+      margin: 20, marginTop: 0
     },
   });
 
@@ -185,103 +182,120 @@ const PlusMoreAccount = ({ navigation, route }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <SafeAreaView style={styles.safeView}>
         <AppHeader title={btnName} navigation={navigation} />
-        <View style={{ ...styles.commonStyles, marginTop: 0 }}>
-          {textInput(cardHolderName, setCardHolderName, "Cardholder name")}
-        </View>
+        <View style={{flex: 1}}>
+          <View style={{ ...styles.commonStyles, marginTop: 0 }}>
+            {textInput(cardHolderName, setCardHolderName, "Cardholder name")}
+          </View>
 
-        <View style={{ ...styles.commonStyles }}>
-          <TextInput
+          <View style={{ ...styles.commonStyles }}>
+            <TextInput
+              style={{
+                borderRadius: 15,
+                borderTopRightRadius: 15,
+                borderTopLeftRadius: 15,
+                backgroundColor: allColors.backgroundColorQuinary,
+              }}
+              selectionColor={allColors.textColorFour}
+              textColor={allColors.textColorFour}
+              underlineColor="transparent"
+              activeUnderlineColor="transparent"
+              placeholderTextColor={allColors.textColorFour}
+              autoComplete="off"
+              textContentType="none"
+              value={paymentNetwork}
+              placeholder={"Payment network like VISA, Google Pay"}
+              onChangeText={(val) => setPaymentNetwork(val)}
+              keyboardType={"default"}
+            />
+          </View>
+          <View
             style={{
-              borderRadius: 15,
-              borderTopRightRadius: 15,
-              borderTopLeftRadius: 15,
-              backgroundColor: allColors.backgroundColorQuinary,
+              flexDirection: "column",
+              ...styles.commonStyles,
             }}
-            selectionColor={allColors.textColorFour}
-            textColor={allColors.textColorFour}
-            underlineColor="transparent"
-            activeUnderlineColor="transparent"
-            placeholderTextColor={allColors.textColorFour}
-            autoComplete="off"
-            textContentType="none"
-            value={paymentNetwork}
-            placeholder={"Payment network like VISA, Google Pay"}
-            onChangeText={(val) => setPaymentNetwork(val)}
-            keyboardType={"default"}
-          />
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 5,
-            ...styles.commonStyles,
-          }}
-        >
-          <TextInput
-            style={styles.monthAndYearInput}
-            selectionColor={allColors.textColorFour}
-            textColor={allColors.textColorFour}
-            underlineColor="transparent"
-            activeUnderlineColor="transparent"
-            placeholderTextColor={allColors.textColorFour}
-            placeholder="MM"
-            value={month}
-            onChangeText={handleMonthChange}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-          <Text variant="headlineLarge">/</Text>
-          <TextInput
-            style={styles.monthAndYearInput}
-            selectionColor={allColors.textColorFour}
-            textColor={allColors.textColorFour}
-            underlineColor="transparent"
-            activeUnderlineColor="transparent"
-            placeholderTextColor={allColors.textColorFour}
-            ref={yearInputRef}
-            placeholder="YY"
-            value={year}
-            onChangeText={handleYearChange}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-          <Text>(Optional)</Text>
-        </View>
-
-        <View
-          style={{
-            ...styles.commonStyles,
-            flexDirection: "row",
-            marginRight: 0,
-          }}
-        >
-          <TouchableOpacity
-            style={styles.wholeRadioBtnStyle}
-            onPress={() => setChecked("debit")}
-            activeOpacity={1}
           >
-            <RadioButton
-              isSelected={checked === "debit"}
+            <Text variant="titleSmall">
+              Expiry Date (optional)
+            </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  width: "30%",
+                  ...styles.monthAndYearInput,
+                }}
+              >
+                <TextInput
+                  style={{ backgroundColor: "transparent" }}
+                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
+                  selectionColor={allColors.textColorFour}
+                  textColor={allColors.textColorFour}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                  placeholder="MM"
+                  placeholderTextColor={allColors.textColorFour}
+                  value={month}
+                  onChangeText={handleMonthChange}
+                  keyboardType="numeric"
+                  maxLength={2}
+                />
+                <Text
+                  variant="headlineSmall"
+                  style={{ color: allColors.textColorFour }}
+                >
+                  /
+                </Text>
+                <TextInput
+                  style={{ backgroundColor: "transparent" }}
+                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
+                  selectionColor={allColors.textColorFour}
+                  textColor={allColors.textColorFour}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                  placeholder="YY"
+                  placeholderTextColor={allColors.textColorFour}
+                  ref={yearInputRef}
+                  value={year}
+                  onChangeText={handleYearChange}
+                  keyboardType="numeric"
+                  maxLength={2}
+                />
+              </View>
+          </View>
+ 
+          <View
+            style={{
+              ...styles.commonStyles,
+              flexDirection: "row",
+              marginRight: 0,
+            }}
+          >
+            <TouchableOpacity
+              style={styles.wholeRadioBtnStyle}
               onPress={() => setChecked("debit")}
-            />
-            <Text>Debit Card</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.wholeRadioBtnStyle}
-            onPress={() => setChecked("credit")}
-            activeOpacity={1}
-          >
-            <RadioButton
-              isSelected={checked === "credit"}
+              activeOpacity={1}
+            >
+              <RadioButton
+                isSelected={checked === "debit"}
+                onPress={() => setChecked("debit")}
+              />
+              <Text>Debit Card</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.wholeRadioBtnStyle}
               onPress={() => setChecked("credit")}
-            />
-            <Text>Credit Card</Text>
-          </TouchableOpacity>
+              activeOpacity={1}
+            >
+              <RadioButton
+                isSelected={checked === "credit"}
+                onPress={() => setChecked("credit")}
+              />
+              <Text>Credit Card</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.addCardBtn}>
@@ -291,8 +305,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
               backgroundColor: allColors.backgroundColorLessPrimary,
               borderRadius: 15,
               borderTopRightRadius: 15,
-              borderTopLeftRadius: 15,
-              margin: 10,
+              borderTopLeftRadius: 15
             }}
             onPress={handleAddOrUpdateCard}
           >
@@ -309,7 +322,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
         </View>
       </SafeAreaView>
       {error && <SnackbarComponent errorMsg={errorMsg}/>}
-    </View>
+    </>
   );
 };
 
