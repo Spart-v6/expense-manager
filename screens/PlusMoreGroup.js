@@ -71,6 +71,10 @@ const PlusMoreGroup = ({ navigation }) => {
 
   const handleAddGroups = () => {
     const checkError = () => {
+      if (groupName.length < 1) {
+        setErrorMsg("Please write a group name");
+        return true;
+      }
       if (textInputs.some((item) => item.value === "")) {
         setErrorMsg("Add at least one member to the group");
         return true;

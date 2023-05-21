@@ -7,8 +7,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const WelcomeScreen1 = ({ navigation }) => {
   const [username, setUsername] = React.useState("");
 
+  const [error, setError] = React.useState(false);
+  const timeoutRef = React.useRef(null);
+
   const handleNext = async () => {
     try {
+      const checkError = () => {
+        if (username.length < 1) {
+          return true;
+        }
+        return false;
+      };
+      if (checkError()) {
+        setError(true);
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => setError(false), 2000);
+        return;
+      }
+
       await AsyncStorage.setItem("username", username);
       navigation.navigate("WelcomeScreen");
     } catch (error) {
@@ -29,10 +45,10 @@ const WelcomeScreen1 = ({ navigation }) => {
         <View style={{gap: 10, margin: 20 }}>
           <TextInput
             label="Your name"
-            style={{ backgroundColor: "transparent",  }}
+            style={{ backgroundColor: "transparent" }}
             value={username}
-            underlineColor={allColors.textColorPrimary}
-            activeUnderlineColor={allColors.textColorPrimary}
+            underlineColor={error ? 'red' : allColors.textColorPrimary}
+            activeUnderlineColor={error ? 'red' : allColors.textColorPrimary}
             onChangeText={(text) => setUsername(text)}
           />
 

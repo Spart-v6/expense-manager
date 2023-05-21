@@ -74,12 +74,14 @@ const SplitMoneyScreen = ({ navigation }) => {
   // #endregion =========== End
 
   const groupsData = useSelector((state) => state.groupsReducer.allGroups);
+  console.log("groupsData: ", groupsData);
   const sectionsData = useSelector((state) => state.sectionReducer.allSections);
 
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
   const handleLongDeleteGroup = (identity) => {
+    console.log("Identity in handleLongDeleteGroup", identity);
     setSelectedItemToDelete(identity);
     setDeleteDialogVisible(true);
     Vibration.vibrate(1);
@@ -111,7 +113,7 @@ const SplitMoneyScreen = ({ navigation }) => {
             {groupsData?.length > 0 ? (
               groupsData.map((innerArray, index) => {
                 const { identity, nameOfGrp } = innerArray.find(
-                  (obj) => obj.nameOfGrp
+                  obj => obj.hasOwnProperty('identity') && obj.hasOwnProperty('nameOfGrp')
                 );
                 const otherObjects = innerArray.filter((obj) => !obj.nameOfGrp);
                 const values = otherObjects.map((obj) => obj.value);
