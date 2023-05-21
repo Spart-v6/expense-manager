@@ -96,10 +96,8 @@ const HomeScreen = ({ navigation, route }) => {
               {datesNames.map((date, index) => (
                 <Button
                   onPress={() => handleListButtonPress(date.name)}
-                  mode="contained"
                   key={index}
                   compact
-                  dark
                   buttonColor={allColors.backgroundColorTertiary}
                   style={[
                     styles.btn,

@@ -50,7 +50,7 @@ const TabArr = [
   },
   {
     route: "SplitMoney",
-    label: "Divvy",
+    label: "Split",
     icon: "people",
     iconFilled: "people",
     component: SplitMoneyScreen,

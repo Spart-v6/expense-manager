@@ -103,22 +103,10 @@ const SearchScreen = ({ navigation, route }) => {
         <Appbar.Content
           title={
             <TextInput
-              underlineColor="transparent"
-              mode="flat"
-              style={{
-                borderBottomWidth: 1,
-                borderColor: "white",
-                borderWidth: 0,
-                borderLeftWidth: 0,
-                borderRightWidth: 0,
-                borderTopWidth: 0,
-                backgroundColor: "transparent",
-                width: "90%",
-                alignSelf: "center",
-              }}
+              label="Search your expenses"
+              style={{ backgroundColor: "transparent" }}
               value={text}
               onChangeText={setText}
-              placeholder="Search your expenses"
             />
           }
         />
