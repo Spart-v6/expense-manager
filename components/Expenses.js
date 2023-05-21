@@ -50,7 +50,7 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
               <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-                {item.type === "Income" ? `+${currency.curr}{item.amount}`: `-${currency.curr}{item.amount}`}
+                {item.type === "Income" ? `+${currency.curr}${item.amount}`: `-${currency.curr}${item.amount}`}
               </Text>
               <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>
             </View>

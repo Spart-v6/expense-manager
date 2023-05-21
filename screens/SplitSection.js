@@ -41,7 +41,7 @@ const AllSections = ({
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          ${payBack}
+          {currency}{payBack}
         </Text>
       </View>
     ) : (
@@ -62,7 +62,7 @@ const AllSections = ({
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          ${receive}
+          {currency}{receive}
         </Text>
       </View>
     );
