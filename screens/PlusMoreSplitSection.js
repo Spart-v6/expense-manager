@@ -5,11 +5,21 @@ import allColors from "../commons/allColors";
 import AppHeader from "../components/AppHeader";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
-import username from "../helper/constants";
+import { getUsernameFromStorage } from "../helper/constants";
 import SnackbarComponent from "../commons/snackbar";
 import React from "react";
 
 const PlusMoreSplitSection = ({ navigation, route }) => {
+  const [username, setUsername] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      const storedUsername = await getUsernameFromStorage();
+      setUsername(storedUsername);
+    };
+    fetchUsername();
+  }, []);
+
   const dispatch = useDispatch();
 
   const [error, setError] = React.useState(false);
@@ -136,7 +146,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       const isAmountNan = restObjects.some(obj => obj.amount === "NaN")
       if (isAmountNan) {
         setErrorMsg("Please enter correct amount or percentage for the members");
-        console.log(restObjects);
         return true;
       }
       return false;
@@ -254,7 +263,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
                 style={{ paddingLeft: 5, flex: 0.1 }}
-                disabled={username.toLowerCase() === whoPaid.toLowerCase()}
+                disabled={username?.toLowerCase() === whoPaid.toLowerCase()}
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>

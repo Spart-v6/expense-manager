@@ -22,8 +22,20 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storeRecurrences, deleteRecurrences } from "../redux/actions";
+import { getCurrencyFromStorage } from "../helper/constants";
 
 const RecurrenceScreen = ({ navigation }) => {
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
 
   // #region Fetching expenses information for displaying current balance
   const expenseData = useSelector(state => state.expenseReducer.allExpenses);
@@ -34,10 +46,10 @@ const RecurrenceScreen = ({ navigation }) => {
   }, 0);
 
   let overallExpense = totalValue?.toString();
-  if (totalValue >= 0) overallExpense = "$" + overallExpense;
+  if (totalValue >= 0) overallExpense = currency.curr + overallExpense;
   else
     overallExpense =
-      overallExpense?.slice(0, 1) + "$" + overallExpense?.slice(1);
+      overallExpense?.slice(0, 1) + currency.curr + overallExpense?.slice(1);
   // #endregion End
 
 
@@ -63,7 +75,7 @@ const RecurrenceScreen = ({ navigation }) => {
         <Card.Content style={{gap: 10}}>
           <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
             <Text variant="titleLarge">{item.recurrenceName}</Text>
-            <Text variant="titleLarge">{`$${item.recurrenceAmount}`}</Text>
+            <Text variant="titleLarge">{`${currency.curr}${item.recurrenceAmount}`}</Text>
           </View>
           <View style={styles.container}>
             <View style={styles.textContainer}>
@@ -109,10 +121,10 @@ const RecurrenceScreen = ({ navigation }) => {
   }, 0);
 
   let overallRec = totalRecurrenceSum?.toString();
-  if (totalRecurrenceSum >= 0) overallRec = "$" + overallRec;
+  if (totalRecurrenceSum >= 0) overallRec = currency.curr + overallRec;
   else
     overallRec =
-      overallRec?.slice(0, 1) + "$" + overallRec?.slice(1);
+      overallRec?.slice(0, 1) + currency.curr + overallRec?.slice(1);
   // #endregion
 
   return (
@@ -146,7 +158,7 @@ const RecurrenceScreen = ({ navigation }) => {
               }}
             />
             <Card.Content>
-              <Text variant="headlineSmall">{`Current balance  ${overallExpense}`}</Text>
+              <Text variant="headlineSmall">{`Current balance: ${overallExpense}`}</Text>
             </Card.Content>
           </Card>
         </View>

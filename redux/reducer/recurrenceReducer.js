@@ -18,20 +18,6 @@ const expenseReducer = (state = initialState, action) => {
         ...state,
         allRecurrences: [...allRecurrences, action.payload],
       };
-    // case types.UPDATE_RECURRENCE:
-    //   const { sameId, updatedRecurrence } = action.payload;
-    //   console.log(sameId, updatedRecurrence, " REducer");
-    //   const index = state.allRecurrences.findIndex((obj) => obj.id === sameId);
-    //   if (index !== -1) {
-    //     const updatedObjects = [...state.allRecurrences];
-    //     updatedObjects[index] = {
-    //       ...updatedObjects[index],
-    //       recurrenceStartDate: updatedRecurrence,
-    //     };
-    //     AsyncStorage.setItem("ALL_RECURRENCES", JSON.stringify(updatedObjects));
-    //     return { ...state, allRecurrences: updatedObjects };
-    //   }
-    //   return state;
     case types.UPDATE_RECURRENCE:
       const { sameId, updatedRecurrence } = action.payload;
       const updatedObjects = state.allRecurrences.map((obj) => {

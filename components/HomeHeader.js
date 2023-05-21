@@ -6,6 +6,7 @@ import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { getCurrencyFromStorage } from "../helper/constants";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -105,7 +106,7 @@ const MyBezierLineChart = (colors, chartData) => {
   );
 };
 
-const DashboardCard = () => {
+const DashboardCard = ({ currency }) => {
   const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
   const styles = makeStyles();
 
@@ -116,10 +117,10 @@ const DashboardCard = () => {
   }, 0);
 
   let overallExpense = totalValue?.toString();
-  if (totalValue >= 0) overallExpense = "$" + overallExpense;
+  if (totalValue >= 0) overallExpense = currency + overallExpense;
   else
     overallExpense =
-      overallExpense?.slice(0, 1) + "$" + overallExpense?.slice(1);
+      overallExpense?.slice(0, 1) + currency + overallExpense?.slice(1);
 
   const currentMonth = moment().month() + 1;
   const filteredArr = expenseData?.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
@@ -161,7 +162,7 @@ const DashboardCard = () => {
             <View style={{flexDirection:"row", gap: 2}}>
               <AntDesign name="caretup" size={10} color={'green'} style={{alignSelf:"center"}}/>
               <Text style={{ color: allColors.textColorFive }}>
-                + ${totalIncomeForMonth}
+                + {currency}{totalIncomeForMonth}
               </Text>
             </View>
           </View>
@@ -170,7 +171,7 @@ const DashboardCard = () => {
             <View style={{flexDirection:"row", gap: 2}}>
               <AntDesign name="caretdown" size={10} color={'red'} style={{alignSelf:"center"}}/>
               <Text style={{ color: allColors.textColorFive }}>
-                - ${totalExpenseForMonth}
+                - {currency}{totalExpenseForMonth}
               </Text>
             </View>
           </View>
@@ -180,7 +181,7 @@ const DashboardCard = () => {
   );
 };
 
-const IncomeCard = ({ incomeArray }) => {
+const IncomeCard = ({ incomeArray, currency }) => {
   const styles = makeStyles();
   const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;
 
@@ -188,14 +189,14 @@ const IncomeCard = ({ incomeArray }) => {
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
         <Text>Income</Text>
-          <Text style={{ color: allColors.successColor }}>+ ${totalIncome}</Text>
+          <Text style={{ color: allColors.successColor }}>+ {currency}{totalIncome}</Text>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
   );
 };
 
-const ExpenseCard = ({ expenseArray }) => {
+const ExpenseCard = ({ expenseArray, currency }) => {
   const styles = makeStyles();
   const totalExpense = expenseArray?.reduce((a, b) => a + b, 0) || 0;
 
@@ -203,7 +204,7 @@ const ExpenseCard = ({ expenseArray }) => {
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
         <Text>Expense</Text>
-          <Text style={{ color: allColors.warningColor }}>- ${totalExpense}</Text>
+          <Text style={{ color: allColors.warningColor }}>- {currency}{totalExpense}</Text>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>
@@ -211,6 +212,19 @@ const ExpenseCard = ({ expenseArray }) => {
 };
 
 const HomeHeader = () => {
+  //fetching currency
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
   const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
 
   const [incomeArray, setIncomeArray] = React.useState([]);
@@ -233,10 +247,10 @@ const HomeHeader = () => {
 
   return (
     <View>
-      <DashboardCard />
+      <DashboardCard currency={currency.curr}/>
       <View style={{ flexDirection: "row" }}>
-        <IncomeCard incomeArray={incomeArray} />
-        <ExpenseCard expenseArray={expenseArray} />
+        <IncomeCard incomeArray={incomeArray} currency={currency.curr}/>
+        <ExpenseCard expenseArray={expenseArray} currency={currency.curr}/>
       </View>
     </View>
   );

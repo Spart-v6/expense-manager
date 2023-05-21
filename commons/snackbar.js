@@ -16,11 +16,6 @@ const SnackbarComponent = ({errorMsg}) => {
       <Snackbar
         visible
         onDismiss={onDismissSnackBar}
-        action={{
-          onPress: () => {
-            console.log("Presed");
-          },
-        }}
         style={{backgroundColor: allColors.errorColor}}
       >
         <Text variant="bodyMedium"> {errorMsg} </Text>

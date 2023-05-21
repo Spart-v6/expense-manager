@@ -17,8 +17,10 @@ import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import SplitDetailScreen from "../screens/SplitDetailScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
+import WelcomeScreen1 from "../screens/WelcomeScreen1";
 import { useTheme, Text } from "react-native-paper";
 import { Icon } from "react-native-elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import allColors from "../commons/allColors.js";
 import * as NavigationBar from "expo-navigation-bar";
 import { View, TouchableOpacity } from "react-native";
@@ -198,25 +200,58 @@ const TabNavigator = () => (
   </Stack.Navigator>
 );
 
+const WelcomeNavigator = () => (
+  <Stack.Navigator initialRouteName="WelcomeScreen1" screenOptions={{headerShown: false}}>
+    <Stack.Screen name="WelcomeScreen1" component={WelcomeScreen1} options={navOptions} />
+    <Stack.Screen
+      name="WelcomeScreen"
+      component={WelcomeScreen}
+      options={navOptions}
+    />
+  </Stack.Navigator>
+)
+
 const AppStack = () => {
   NavigationBar.setBackgroundColorAsync("#000");
   const theme = useTheme();
-  const flag = true;
+  const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  // React.useEffect(() => {
+  //   const checkWelcomeScreen = async () => {
+  //     try {
+  //       const hasSeenWelcomeScreen = await AsyncStorage.getItem(
+  //         "hasSeenWelcomeScreen"
+  //       );
+  //       const flag = hasSeenWelcomeScreen === "true";
+  //       setInitialRoute(flag ? "HomeApp" : "WelcomeNavigator");
+  //     } catch (error) {
+  //       console.log("Error retrieving data from AsyncStorage:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   checkWelcomeScreen();
+  // }, []);
+
+  // if (isLoading) {
+  //   return null;
+  // }
 
   return (
     <NavigationContainer
       theme={{ colors: { background: allColors.backgroundColorPrimary } }}
     >
-      <StackApp.Navigator initialRouteName={flag ? "HomeApp" : "WelcomeScreen"}>
+      <StackApp.Navigator
+        initialRouteName={initialRoute}
+        screenOptions={{ headerShown: false }}
+      >
+        <StackApp.Screen name="HomeApp" component={TabNavigator} />
         <StackApp.Screen
-          name="HomeApp"
-          component={TabNavigator}
-          options={navOptions}
-        />
-        <StackApp.Screen
-          name="WelcomeScreen"
-          component={WelcomeScreen}
-          options={navOptions}
+          name="WelcomeNavigator"
+          component={WelcomeNavigator}
+          options={{ gestureEnabled: false }}
         />
       </StackApp.Navigator>
     </NavigationContainer>

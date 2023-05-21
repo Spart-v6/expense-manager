@@ -6,6 +6,7 @@ import moment from "moment";
 import Icon from "react-native-vector-icons/Entypo";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
+
 const DisplayEachExpense = ({ exp }) => {
   const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
   return (

@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome } from "@expo/vector-icons";
 import { deleteCard } from "../redux/actions";
 import moment from "moment";
+import { getCurrencyFromStorage } from "../helper/constants";
 
 const styles = StyleSheet.create({
   listView: {
@@ -20,6 +21,18 @@ const styles = StyleSheet.create({
 });
 
 const DisplayEachExpenseForSpecificCard = ({ exp }) => {
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
   const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
   return (
     <Card style={{ backgroundColor: allColors.backgroundColorLessPrimary }}>
@@ -35,7 +48,7 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
           >
             <Text variant="headlineSmall">{exp.name}</Text>
             <Text variant="headlineSmall" style={{color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {exp.type === "Income" ? `+${exp.amount}` : `-${exp.amount}`}
+              {exp.type === "Income" ? `+${currency}{exp.amount}` : `-${currency}{exp.amount}`}
             </Text>
           </View>
         }

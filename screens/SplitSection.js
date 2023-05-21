@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { storeSections, deleteSections } from "../redux/actions";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
-import username from "../helper/constants";
+import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -18,6 +18,8 @@ const AllSections = ({
   specificGroupSection,
   handleDeleteSection,
   navigation,
+  username,
+  currency
 }) => {
   const renderPayAndReceive = (payBack, receive) => {
     if (parseInt(payBack) === 0 && receive === 0) return <></>;
@@ -95,7 +97,7 @@ const AllSections = ({
             receive = 0;
           if (
             whoPaid.length === 0 ||
-            whoPaid.toLowerCase() === username.toLowerCase()
+            whoPaid.toLowerCase() === username?.toLowerCase()
           )
             receive = (totalAmountSpent - +amount).toFixed(2);
           else payBack = parseInt(amount).toFixed(2);
@@ -126,7 +128,7 @@ const AllSections = ({
                       }}
                     >
                       <Text variant="titleMedium">{sectionName}</Text>
-                      <Text variant="titleLarge">${totalAmountSpent}</Text>
+                      <Text variant="titleLarge">{currency + totalAmountSpent}</Text>
                     </View>
                   }
                   titleStyle={{ marginTop: 10 }}
@@ -151,7 +153,7 @@ const AllSections = ({
                     >
                       {`${
                         whoPaid === "" ||
-                        whoPaid.toLowerCase() === username.toLowerCase()
+                        whoPaid.toLowerCase() === username?.toLowerCase()
                           ? "You"
                           : whoPaid
                       } paid`}
@@ -224,6 +226,29 @@ const AllMembers = ({ allMembers }) => {
 };
 
 const SplitSection = ({ navigation, route }) => {
+  const [username, setUsername] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      const storedUsername = await getUsernameFromStorage();
+      setUsername(storedUsername);
+    };
+    fetchUsername();
+  }, []);
+
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
+
   const dispatch = useDispatch();
   // #region getting sections of groups stuff
   useFocusEffect(
@@ -282,7 +307,7 @@ const SplitSection = ({ navigation, route }) => {
 
       if (
         whoPaid.length === 0 ||
-        whoPaid.toLowerCase() === username.toLowerCase()
+        whoPaid.toLowerCase() === username?.toLowerCase()
       ) {
         const obj = innerArray.find((obj) => obj.name === username);
         if (obj) totalReceived += parseFloat(obj.amount);
@@ -306,7 +331,7 @@ const SplitSection = ({ navigation, route }) => {
             <Card style={{ backgroundColor: "darkgreen" }}>
               <Card.Title
                 title={"Receive"}
-                subtitle={`$${totalReceive}`}
+                subtitle={`${currency.curr}${totalReceive}`}
                 titleStyle={{ color: allColors.successColor }}
                 subtitleStyle={{ color: allColors.successColor }}
               />
@@ -316,7 +341,7 @@ const SplitSection = ({ navigation, route }) => {
             <Card style={{ backgroundColor: "darkred" }}>
               <Card.Title
                 title={"Pay"}
-                subtitle={`$${totalPay}`}
+                subtitle={`${currency.curr}${totalPay}`}
                 titleStyle={{ color: allColors.warningColor }}
                 subtitleStyle={{ color: allColors.warningColor }}
               />
@@ -346,6 +371,8 @@ const SplitSection = ({ navigation, route }) => {
                   specificGroupSection={specificGroupSection}
                   handleDeleteSection={handleDeleteSection}
                   navigation={navigation}
+                  username={username}
+                  currency={currency.curr}
                 />
               )}
             </Tab.Screen>

@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   Vibration,
   StyleSheet,

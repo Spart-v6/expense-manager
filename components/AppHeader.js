@@ -2,7 +2,7 @@ import { Appbar, Button, Text } from "react-native-paper";
 import { View } from "react-native";
 import React from "react";
 import allColors from "../commons/allColors";
-import username from "../helper/constants";
+import { getUsernameFromStorage } from "../helper/constants";
 import moment from "moment";
 
 const AppHeader = ({
@@ -18,6 +18,15 @@ const AppHeader = ({
   isUpdateCardScreen = false,
 }) => {
   const [greeting, setGreeting] = React.useState("");
+  const [username, setUsername] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      const storedUsername = await getUsernameFromStorage();
+      setUsername(storedUsername);
+    };
+    fetchUsername();
+  }, []);
 
   const handleDeleteExpense = () => isDeletePressed(true);
   const handleCardEdit = () => isCardEditPressed(true);

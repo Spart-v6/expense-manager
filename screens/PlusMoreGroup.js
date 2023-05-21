@@ -14,9 +14,20 @@ import allColors from "../commons/allColors";
 import { useDispatch } from "react-redux";
 import { addGroups } from "../redux/actions/index";
 import SnackbarComponent from "../commons/snackbar";
-import username from "../helper/constants";
+import { getUsernameFromStorage } from "../helper/constants";
 
 const PlusMoreGroup = ({ navigation }) => {
+  //fetching username
+  const [username, setUsername] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      const storedUsername = await getUsernameFromStorage();
+      setUsername(storedUsername);
+    };
+    fetchUsername();
+  }, []);
+
   const dispatch = useDispatch();
 
   const [error, setError] = React.useState(false);
@@ -60,7 +71,7 @@ const PlusMoreGroup = ({ navigation }) => {
 
   const handleAddGroups = () => {
     const checkError = () => {
-      if (textInputs.some(item => item.value === "")) {
+      if (textInputs.some((item) => item.value === "")) {
         setErrorMsg("Add at least one member to the group");
         return true;
       }

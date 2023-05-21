@@ -3,8 +3,21 @@ import { Text } from "react-native-paper";
 import React from "react";
 import moment from "moment";
 import allColors from "../commons/allColors";
+import { getCurrencyFromStorage } from "../helper/constants";
 
 const Expenses = ({ item, index, onPress }) => {
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
   var date = moment(item.date, "YYYY/MM/DD");
   var dateFormat = date.format("DD");
   var dayOfWeekFormat = date.format("ddd");
@@ -37,7 +50,7 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
               <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-                {item.type === "Income" ? `+${item.amount}`: `-${item.amount}`}
+                {item.type === "Income" ? `+${currency.curr}{item.amount}`: `-${currency.curr}{item.amount}`}
               </Text>
               <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>
             </View>
