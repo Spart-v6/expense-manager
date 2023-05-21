@@ -217,27 +217,27 @@ const AppStack = () => {
   const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // React.useEffect(() => {
-  //   const checkWelcomeScreen = async () => {
-  //     try {
-  //       const hasSeenWelcomeScreen = await AsyncStorage.getItem(
-  //         "hasSeenWelcomeScreen"
-  //       );
-  //       const flag = hasSeenWelcomeScreen === "true";
-  //       setInitialRoute(flag ? "HomeApp" : "WelcomeNavigator");
-  //     } catch (error) {
-  //       console.log("Error retrieving data from AsyncStorage:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+  React.useEffect(() => {
+    const checkWelcomeScreen = async () => {
+      try {
+        const hasSeenWelcomeScreen = await AsyncStorage.getItem(
+          "hasSeenWelcomeScreen"
+        );
+        const flag = hasSeenWelcomeScreen === "true";
+        setInitialRoute(flag ? "HomeApp" : "WelcomeNavigator");
+      } catch (error) {
+        console.log("Error retrieving data from AsyncStorage:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  //   checkWelcomeScreen();
-  // }, []);
+    checkWelcomeScreen();
+  }, []);
 
-  // if (isLoading) {
-  //   return null;
-  // }
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <NavigationContainer
