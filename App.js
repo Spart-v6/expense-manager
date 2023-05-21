@@ -19,10 +19,6 @@ const theme = {
 };
 
 const App = () => {
-  
-  useEffect(() => {
-    console.log("\tApp is refreshed\n\n")
-  }, [])
 
   return (
     <Provider store={store}>

@@ -74,14 +74,12 @@ const SplitMoneyScreen = ({ navigation }) => {
   // #endregion =========== End
 
   const groupsData = useSelector((state) => state.groupsReducer.allGroups);
-  console.log("groupsData: ", groupsData);
   const sectionsData = useSelector((state) => state.sectionReducer.allSections);
 
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
   const handleLongDeleteGroup = (identity) => {
-    console.log("Identity in handleLongDeleteGroup", identity);
     setSelectedItemToDelete(identity);
     setDeleteDialogVisible(true);
     Vibration.vibrate(1);

@@ -157,7 +157,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       return;
     }
     dispatch(addSections(finalRes));
-    // console.log(finalRes);
     navigation.goBack();
   };
 
