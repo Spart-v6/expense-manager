@@ -92,6 +92,7 @@ const WelcomeScreen = ({ navigation }) => {
   const handleContinue = async () => {
     try {
       await AsyncStorage.setItem("currency", JSON.stringify(clickedCurrency));
+      await AsyncStorage.setItem("hasSeenWelcomeScreen", "true");
       navigation.replace("HomeApp");
     } catch (error) {
       console.log("Error saving data to AsyncStorage:", error);
