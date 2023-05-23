@@ -1,70 +1,47 @@
 import {
   View,
   SafeAreaView,
-  Text,
-  TouchableOpacity,
   ScrollView,
+  StatusBar,
+  StyleSheet,
 } from "react-native";
-import { FAB } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import { FocusedStatusBar, HomeHeader, ExpensesList } from "../components";
-import {
-  getToday,
-  getWeekOfTheYear,
-  getMonthOfTheYear,
-  getCurrentFullYear,
-} from "../helper/dateHelper";
-import obj from "../helper/dummy";
-import { v4 as uuidv4 } from "uuid";
-import { useState, useEffect } from "react";
+import { FAB, Text, Button } from "react-native-paper";
+import { HomeHeader, ExpensesList } from "../components";
+import { useFocusEffect } from "@react-navigation/native";
+import { useState, useCallback, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { addData } from "../redux/actions";
+import { storeCard } from "../redux/actions";
+import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
+import AppHeader from "../components/AppHeader";
+import allColors from "../commons/allColors";
 
-const HomeScreen = () => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation();
+const styles = StyleSheet.create({
+  btn: {
+    borderRadius: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
+  selected: {
+    backgroundColor: allColors.backgroundColorQuaternary,
+    borderRadius: 20,
+    text: {
+      color: allColors.textColorTertiary,
+      fontWeight: 700,
+    },
+  },
+});
+
+const HomeScreen = ({ navigation, route }) => {
+  const [selectedButton, setSelectedButton] = useState("Daily");
 
   const [listToShow, setListToShow] = useState(
-    <ExpensesList
-      heading={getToday().formattedStartDate}
-      fromDate={getToday().today}
-      toDate={getToday().today}
-    />
+    <ExpensesList filter={selectedButton} />
   );
 
-  const [incomeArray, setIncomeArray] = useState([]);
-  const [expenseArray, setExpenseArray] = useState([]);
-
   const handleListButtonPress = (nameOfDate) => {
-    let heading = "";
-    let fromDate = null;
-    let toDate = null;
-    if (nameOfDate === "Daily") {
-      heading = getToday().formattedStartDate;
-      fromDate = getToday().today;
-      toDate = getToday().today;
-    }
-    if (nameOfDate === "Weekly") {
-      heading = getWeekOfTheYear().currentWeekNum;
-      (fromDate = getWeekOfTheYear().fromDate),
-        (toDate = getWeekOfTheYear().toDate);
-    }
-    if (nameOfDate === "Monthly") {
-      heading = getMonthOfTheYear().monthName;
-      (fromDate = getMonthOfTheYear().fromDate),
-        (toDate = getMonthOfTheYear().toDate);
-    }
-    if (nameOfDate === "Yearly") {
-      heading = getCurrentFullYear().year;
-      (fromDate = getCurrentFullYear().fromDate),
-        (toDate = getCurrentFullYear().toDate);
-    }
-    if (nameOfDate === "All") {
-      heading = "All Expenses";
-    }
-    setListToShow(
-      <ExpensesList heading={heading} fromDate={fromDate} toDate={toDate} />
-    );
+    setSelectedButton(nameOfDate);
+    setListToShow(<ExpensesList filter={nameOfDate} />);
   };
 
   const datesNames = [
@@ -75,50 +52,85 @@ const HomeScreen = () => {
     { name: "All" },
   ];
 
-  useEffect(() => {
-    const newIncomeArray = obj
-      .filter((item) => item.type === "income")
-      .map((item) => item.amount);
-    const newExpenseArray = obj
-      .filter((item) => item.type === "expense")
-      .map((item) => item.amount);
+  // #region =========== Fetching card details here only (coz it's the initial screen)
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllCardsData();
+    }, [])
+  );
 
-    setIncomeArray(newIncomeArray);
-    setExpenseArray(newExpenseArray);
-  }, [obj]);
-
-  // dispatch(addData("Hii!!"));
+  const fetchAllCardsData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_CARDS");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeCard(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+  // #endregion =========== End
 
   return (
-    <View style={{ flex: 1 }}>
-      <FocusedStatusBar />
-      <HomeHeader incomeArray={incomeArray} expenseArray={expenseArray} />
-      <SafeAreaView>
-        <ScrollView>
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            {datesNames.map((date) => (
-              <TouchableOpacity
-                onPress={() => handleListButtonPress(date.name)}
-              >
-                <Text>{date.name}</Text>
-              </TouchableOpacity>
-            ))}
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar translucent backgroundColor={"transparent"} />
+      <AppHeader
+        title="Home"
+        isParent={true}
+        navigation={navigation}
+        isHome
+        needSearch={true}
+      />
+      <ScrollView>
+        <AnimatedEntryScreen>
+          <HomeHeader />
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                gap: 10,
+                marginLeft: 15,
+              }}
+            >
+              {datesNames.map((date, index) => (
+                <Button
+                  onPress={() => handleListButtonPress(date.name)}
+                  key={index}
+                  compact
+                  buttonColor={allColors.backgroundColorTertiary}
+                  style={[
+                    styles.btn,
+                    selectedButton === date.name && styles.selected,
+                  ]}
+                >
+                  <Text
+                    style={selectedButton === date.name && styles.selected.text}
+                  >
+                    {date.name}
+                  </Text>
+                </Button>
+              ))}
+            </View>
+            {listToShow}
           </View>
-          {listToShow}
-        </ScrollView>
-      </SafeAreaView>
+        </AnimatedEntryScreen>
+      </ScrollView>
       <FAB
+        animated
         icon="plus"
-        onPress={() => navigation.navigate("AddUpdateExpenseScreen")}
+        onPress={() => navigation.navigate("PlusMoreHome")}
         mode="flat"
         style={{
-          position: 'absolute',
+          position: "absolute",
           margin: 16,
           right: 0,
           bottom: 0,
+          backgroundColor: allColors.backgroundColorSecondary,
         }}
+        customSize={70}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

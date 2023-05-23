@@ -1,28 +1,49 @@
-import * as constants from "../actions/constants";
+import { constants as types } from "../actionTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
-    expenses: []
-}
+  expenses: [],
+  allExpenses: [],
+};
 
-const transactionsReducer = (state = initialState, action) => {
+const expenseReducer = (state = initialState, action) => {
   switch (action.type) {
-    case constants.ADD_DATA:
-      console.log("adding", action, " ", state);
-      return { 
-        ...state, 
-        expenses: action.payload
+    case types.ADD_DATA:
+      const allExpenses = state.allExpenses || [];
+      let updatedExpenses = [];
+
+      if (Array.isArray(action.payload)) updatedExpenses = [...allExpenses, ...action.payload];
+      else updatedExpenses = [...allExpenses, action.payload];
+
+      AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedExpenses));
+      return {
+        ...state,
+        allExpenses: updatedExpenses,
+      };
+    case types.UPDATE_DATA:
+      const { sameId, updatedObj } = action.payload;
+      const index = state.allExpenses.findIndex(obj => obj.id === sameId);
+      if (index !== -1) {
+        const updatedObjects = [...state.allExpenses];
+        updatedObjects[index] = { ...updatedObjects[index], ...updatedObj };
+        AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedObjects));
+        return { ...state, allExpenses: updatedObjects };
       }
-    case constants.UPDATE_DATA:
-      return state.map((item) =>
-        item.key === action.payload.key ? action.payload : item
-      );
-    case constants.DELETE_DATA:
-      return state.filter((item) => item.key !== action.payload);
-    case constants.GET_DATA:
       return state;
+    case types.DELETE_DATA:
+      const id = action.payload;
+      const updatedArray = state.allExpenses?.filter((obj) => obj.id !== id);
+
+      AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedArray));
+      return { ...state, allExpenses: updatedArray || [] };
+    case types.STORE_DATA:
+      return {
+        ...state,
+        allExpenses: action.payload || [],
+      };
     default:
       return state;
   }
 };
 
-export default transactionsReducer;
+export default expenseReducer;
