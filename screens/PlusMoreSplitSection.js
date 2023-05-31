@@ -189,12 +189,16 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         <TextInput
           label="Section name"
           style={{ backgroundColor: "transparent" }}
+          underlineColor={allColors.textColorPrimary}
+          activeUnderlineColor={allColors.textColorPrimary}
           value={sectionName}
           onChangeText={(text) => setSectionName(text)}
         />
         <TextInput
           label="Total amount spent"
           style={{ backgroundColor: "transparent" }}
+          underlineColor={allColors.textColorPrimary}
+          activeUnderlineColor={allColors.textColorPrimary}
           value={totalAmountSpent}
           onChangeText={(text) => setTotalAmountSpent(text)}
           keyboardType="number-pad"
@@ -206,6 +210,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           value={whoPaid}
           onChangeText={text => setWhoPaid(text)}
           style={{backgroundColor: 'transparent'}}
+          underlineColor={allColors.textColorPrimary}
+          activeUnderlineColor={allColors.textColorPrimary}
           keyboardType="default"
         />
 

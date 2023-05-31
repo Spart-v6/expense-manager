@@ -48,7 +48,7 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
           >
             <Text variant="headlineSmall">{exp.name}</Text>
             <Text variant="headlineSmall" style={{color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {exp.type === "Income" ? `+${currency}{exp.amount}` : `-${currency}{exp.amount}`}
+              {exp.type === "Income" ? `+${currency.curr}${exp.amount}` : `-${currency.curr}${exp.amount}`}
             </Text>
           </View>
         }

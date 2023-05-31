@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "expense-manager",
+    "name": "Expense Manager",
     "slug": "expense-manager",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/money.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/money-splash.png",
+      "resizeMode": "native",
+      "backgroundColor": "#121212"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/adaptive-money-splash.png",
+        "backgroundColor": "#121212"
       },
       "package": "com.ankur24.expensemanager",
       "softwareKeyboardLayoutMode": "pan"

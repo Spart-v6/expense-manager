@@ -15,12 +15,10 @@ import Chip from "../components/Chip";
 import { IconComponent } from "../components/IconPickerModal";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useRef, useCallback } from "react";
-import { addRecurrences, deleteRecurrences, storeCard } from "../redux/actions";
+import { addRecurrences, storeCard, addNewRecurrType, storeRecurrType } from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import SnackbarComponent from "../commons/snackbar";
-
-const obj = [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }];
 
 const datesObj = [
   { id: 0, text: "Daily" },
@@ -306,6 +304,33 @@ const PlusMoreRecurrence = ({ navigation }) => {
     return allColors.textColorPrimary;
   };
 
+  // #region recurrence type stuff
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllRecurrTypes();
+    }, [])
+  );
+
+  const fetchAllRecurrTypes = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_RECURR_TYPES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeRecurrType(newData));
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+  // #endregion =========== End
+
+  const addRecurrType = () => {
+    setOpenNewRecurrence(false);
+    dispatch(addNewRecurrType({ name: addNewRecurrenceName }));
+    setAddNewRecurrenceName("");
+  };
+
+  const allRecurrTypes = useSelector(state => state.recurrTypeReducer.allRecurrTypes);
+
   // TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly
 
   const handleAddRecurrence = () => {
@@ -506,8 +531,8 @@ const PlusMoreRecurrence = ({ navigation }) => {
               />
               <Text>Add new</Text>
             </TouchableOpacity>
-            {obj.length > 0 &&
-              obj.map((item, index) => (
+            {allRecurrTypes.length > 0 &&
+              allRecurrTypes.map((item, index) => (
                 <Chip
                   key={index}
                   index={index}
@@ -607,26 +632,14 @@ const PlusMoreRecurrence = ({ navigation }) => {
         >
           <Dialog.Title>Add new Recurrence name</Dialog.Title>
           <Dialog.Content>
-            <TextInput
-              style={{
-                borderRadius: 15,
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
-                borderColor: "black",
-                borderWidth: 2,
-                backgroundColor: allColors.backgroundColorQuinary,
-              }}
-              selectionColor={allColors.textColorFour}
-              textColor={allColors.textColorFour}
-              underlineColor="transparent"
-              activeUnderlineColor="transparent"
-              placeholderTextColor={allColors.textColorFour}
-              autoComplete="off"
-              textContentType="none"
+            <TextInput 
+              label="Name"
               value={addNewRecurrenceName}
-              placeholder={""}
               onChangeText={(val) => setAddNewRecurrenceName(val)}
-              keyboardType={"default"}
+              style={{backgroundColor: 'transparent'}}
+              underlineColor={allColors.textColorPrimary}
+              activeUnderlineColor={allColors.textColorPrimary}
+              keyboardType="default"
             />
           </Dialog.Content>
           <Dialog.Actions>
@@ -639,10 +652,11 @@ const PlusMoreRecurrence = ({ navigation }) => {
               </Text>
             </Button>
             <Button
-              onPress={() => setOpenNewRecurrence(false)}
+              onPress={addRecurrType}
               contentStyle={{ width: 60 }}
+              disabled={addNewRecurrenceName.length < 1}
             >
-              <Text style={{ color: allColors.textColorPrimary }}>Okay</Text>
+              <Text style={{ color: allColors.textColorPrimary }}>Add</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>

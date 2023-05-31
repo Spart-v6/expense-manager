@@ -3,7 +3,7 @@ import { Card, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { Fragment, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { storeCard } from "../redux/actions";
 import { FontAwesome5 } from '@expo/vector-icons';

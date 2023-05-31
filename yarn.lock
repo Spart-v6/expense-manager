@@ -4686,6 +4686,14 @@
     "commander" "2.20.0"
     "update-check" "1.5.3"
 
+"expo-splash-screen@^0.18.2":
+  "integrity" "sha512-fsiKmyn/lbJtV6Uor6wSvl21fScOidFzmB/HHShQJJOu2TBN/vqMvhPu/r0bF5NVk8Wi64r98hiWY1EEsbW03w=="
+  "resolved" "https://registry.npmjs.org/expo-splash-screen/-/expo-splash-screen-0.18.2.tgz"
+  "version" "0.18.2"
+  dependencies:
+    "@expo/configure-splash-screen" "^0.6.0"
+    "@expo/prebuild-config" "6.0.1"
+
 "expo-splash-screen@~0.17.0":
   "integrity" "sha512-ejSO78hwHXz8T9u8kh8t4r6CR4h70iBvA65gX8GK+dYxZl6/IANPbIb2VnUpND9vqfW+JnkDw+ZFst+gDnkpcQ=="
   "resolved" "https://registry.npmjs.org/expo-splash-screen/-/expo-splash-screen-0.17.5.tgz"
@@ -8111,6 +8119,11 @@
   dependencies:
     "prop-types" "^15.7.2"
 
+"react-native-biometrics@^3.0.1":
+  "integrity" "sha512-Ru80gXRa9KG04sl5AB9HyjLjVbduhqZVjA+AiOSGqr+fNqCDmCu9y5WEksnjbnniNLmq1yGcw+qcLXmR1ddLDQ=="
+  "resolved" "https://registry.npmjs.org/react-native-biometrics/-/react-native-biometrics-3.0.1.tgz"
+  "version" "3.0.1"
+
 "react-native-bouncy-checkbox-group@^0.1.1":
   "integrity" "sha512-mWSkpQid+u7s6yqnKgWP7gr8hyyuGXzD3akqR51aKmHT3LM5MdE1qKgwb4ogDmMZ1YdPoHKCnw7T41Z6SMA4uA=="
   "resolved" "https://registry.npmjs.org/react-native-bouncy-checkbox-group/-/react-native-bouncy-checkbox-group-0.1.1.tgz"
@@ -8325,7 +8338,7 @@
     "postcss-value-parser" "^4.2.0"
     "styleq" "^0.1.2"
 
-"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.71 || 1000.0.0", "react-native@>= 0.50.0", "react-native@>= 0.55.x", "react-native@>=0.42.0", "react-native@>=0.48.4", "react-native@>=0.59", "react-native@>=0.65.0", "react-native@0.71.8":
+"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.71 || 1000.0.0", "react-native@>= 0.50.0", "react-native@>= 0.55.x", "react-native@>=0.42.0", "react-native@>=0.48.4", "react-native@>=0.59", "react-native@>=0.60.0", "react-native@>=0.65.0", "react-native@0.71.8":
   "integrity" "sha512-ftMAuhpgTkbHU9brrqsEyxcNrpYvXKeATY+if22Nfhhg1zW+6wn95w9otwTnA3xHkljPCbng8mUhmmERjGEl7g=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.71.8.tgz"
   "version" "0.71.8"
