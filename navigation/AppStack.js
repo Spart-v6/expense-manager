@@ -23,7 +23,7 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import allColors from "../commons/allColors.js";
 import * as NavigationBar from "expo-navigation-bar";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator  } from "react-native";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -213,7 +213,6 @@ const WelcomeNavigator = () => (
 
 const AppStack = () => {
   NavigationBar.setBackgroundColorAsync("#000");
-  const theme = useTheme();
   const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");
   const [isLoading, setIsLoading] = React.useState(true);
 
@@ -236,7 +235,11 @@ const AppStack = () => {
   }, []);
 
   if (isLoading) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: allColors.backgroundColorPrimary }}>
+        <ActivityIndicator size={50} color={allColors.textColorFive} />
+      </View>
+    );
   }
 
   return (

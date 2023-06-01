@@ -5,7 +5,6 @@ import {
 } from "react-native-paper";
 import store from "./redux/store";
 import { Provider } from "react-redux";
-import { useEffect } from "react";
 
 import AppStack from "./navigation/AppStack";
 
