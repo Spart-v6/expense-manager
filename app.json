@@ -4,10 +4,10 @@
     "slug": "expense-manager",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/money.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/money-splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "native",
       "backgroundColor": "#121212"
     },
