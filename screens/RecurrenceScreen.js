@@ -22,6 +22,7 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storeRecurrences, deleteRecurrences } from "../redux/actions";
+import formatNumberWithCurrency from "../helper/formatter";
 import { getCurrencyFromStorage } from "../helper/constants";
 
 const RecurrenceScreen = ({ navigation }) => {
@@ -45,14 +46,6 @@ const RecurrenceScreen = ({ navigation }) => {
     else return acc;
   }, 0);
 
-  let overallExpense = totalValue?.toString();
-  if (totalValue >= 0) overallExpense = currency.curr + overallExpense;
-  else
-    overallExpense =
-      overallExpense?.slice(0, 1) + currency.curr + overallExpense?.slice(1);
-  // #endregion End
-
-
   const dispatch = useDispatch();
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -75,7 +68,7 @@ const RecurrenceScreen = ({ navigation }) => {
         <Card.Content style={{gap: 10}}>
           <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
             <Text variant="titleLarge">{item.recurrenceName}</Text>
-            <Text variant="titleLarge">{`${currency.curr}${item.recurrenceAmount}`}</Text>
+            <Text variant="titleLarge">{formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}</Text>
           </View>
           <View style={styles.container}>
             <View style={styles.textContainer}>
@@ -87,7 +80,6 @@ const RecurrenceScreen = ({ navigation }) => {
             </View>
             <FontAwesome name="repeat" size={10} color={'white'} style={{alignSelf:"center"}}/>
           </View>
-          {/* <Text>{item.paymentNetwork}</Text> */}
         </Card.Content>
       </Card>
     </TouchableOpacity>
@@ -120,13 +112,6 @@ const RecurrenceScreen = ({ navigation }) => {
     else return acc;
   }, 0);
 
-  let overallRec = totalRecurrenceSum?.toString();
-  if (totalRecurrenceSum >= 0) overallRec = currency.curr + overallRec;
-  else
-    overallRec =
-      overallRec?.slice(0, 1) + currency.curr + overallRec?.slice(1);
-  // #endregion
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
@@ -143,7 +128,7 @@ const RecurrenceScreen = ({ navigation }) => {
           >
             <Card.Title
               title="Future Balance"
-              subtitle={overallRec}
+              subtitle={formatNumberWithCurrency(totalRecurrenceSum, currency.curr)}
               titleStyle={{
                 color: allColors.textColorPrimary,
                 fontSize: 30,
@@ -158,7 +143,7 @@ const RecurrenceScreen = ({ navigation }) => {
               }}
             />
             <Card.Content>
-              <Text variant="headlineSmall">{`Current balance: ${overallExpense}`}</Text>
+              <Text variant="headlineSmall">{`Current balance: ${formatNumberWithCurrency(totalValue, currency.curr)}`}</Text>
             </Card.Content>
           </Card>
         </View>
@@ -206,7 +191,9 @@ const RecurrenceScreen = ({ navigation }) => {
           <Text variant="bodyMedium">The recurring payment will be removed permanently</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
+          <Button onPress={() => setDeleteDialogVisible(false)}>
+            <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+          </Button>
           <Button
             onPress={handleDelete}
             mode="elevated"

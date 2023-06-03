@@ -1,4 +1,4 @@
-import { View, SafeAreaView, FlatList } from "react-native";
+import { View, SafeAreaView, FlatList, ScrollView } from "react-native";
 import { Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
@@ -39,26 +39,29 @@ const SplitDetailScreen = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <View style={{ margin: 20 }}>
-        <View>
-          <Text>Who Paid</Text>
-          <FlatList
-            data={filteredData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
+      <ScrollView showsHorizontalScrollIndicator={false}>
+        <View style={{ margin: 20 }}>
+          <View style={{gap: 15}}>
+            <Text>
+              Total amount is paid by
+              {
+                currentSectionData[currentSectionData.length - 1].whoPaid.length === 0 ? " you" 
+                : " " + currentSectionData[currentSectionData.length - 1].whoPaid
+              }
+            </Text>
+            <FlatList
+              scrollEnabled={false}
+              data={filteredData}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorLessPrimary }} />}
+              ListHeaderComponent={() => <Text variant="titleMedium">Summary</Text>}
+              />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
-
-/* 
-
-Section name in middle
-Who paid and how much 
-list of members with their amount paid
-
-*/
 
 export default SplitDetailScreen;

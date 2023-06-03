@@ -73,7 +73,7 @@ const currencyObj = [
   },
 ];
 
-const WelcomeScreen = ({ navigation }) => {
+const WelcomeScreen = ({ navigation, route }) => {
   const [clickedCurrency, setClickedCurrency] = React.useState({
     name: currencyObj[0].name,
     id: currencyObj[0].id,
@@ -81,12 +81,23 @@ const WelcomeScreen = ({ navigation }) => {
     iconName: currencyObj[0].iconName,
     iconType: currencyObj[0].iconType,
   });
-  const [isCurrencyClicked, setIsCurrencyClicked] = React.useState({
-    name: currencyObj[0].name,
-    id: currencyObj[0].id,
-    curr: currencyObj[0].curr,
-    iconName: currencyObj[0].iconName,
-    iconType: currencyObj[0].iconType,
+  const [isCurrencyClicked, setIsCurrencyClicked] = React.useState(() => {
+    if(route.params) {
+      return {
+        name: route.params.updatedCurr.name,
+        id: route.params.updatedCurr.id,
+        curr: route.params.updatedCurr.curr,
+        iconName: route.params.updatedCurr.iconName,
+        iconType: route.params.updatedCurr.iconType,
+      };
+    }
+    return {
+      name: currencyObj[0].name,
+      id: currencyObj[0].id,
+      curr: currencyObj[0].curr,
+      iconName: currencyObj[0].iconName,
+      iconType: currencyObj[0].iconType,
+    };
   });
 
   const handleContinue = async () => {

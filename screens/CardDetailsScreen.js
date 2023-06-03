@@ -8,6 +8,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { deleteCard } from "../redux/actions";
 import moment from "moment";
 import { getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   listView: {
@@ -47,8 +49,8 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
             }}
           >
             <Text variant="headlineSmall">{exp.name}</Text>
-            <Text variant="headlineSmall" style={{color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {exp.type === "Income" ? `+${currency.curr}${exp.amount}` : `-${currency.curr}${exp.amount}`}
+            <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail" style={{maxWidth: 200, color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
+              {exp.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(exp.amount, currency.curr)}
             </Text>
           </View>
         }
@@ -62,15 +64,19 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
           >
             {formattedDate}
           </Text>
-          <FontAwesome
-            name="circle"
-            size={7}
-            color={"white"}
-            style={{ paddingLeft: 5, paddingRight: 5 }}
-          />
-          <Text variant="bodyMedium">
-            {exp.desc === "" ? "No Description" : exp.desc}
-          </Text>
+          {exp.desc !== "" && (
+            <>
+              <FontAwesome
+                name="circle"
+                size={7}
+                color={"white"}
+                style={{ paddingLeft: 5, paddingRight: 5 }}
+              />
+              <Text variant="bodyMedium">
+                {exp.desc}
+              </Text>
+            </>
+          )}
         </View>
       </Card.Content>
     </Card>
@@ -117,9 +123,17 @@ const CardDetailsScreen = ({ navigation, route }) => {
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
       <View style={styles.listView}>
-        {filteredArray.map((exp) => (
-          <DisplayEachExpenseForSpecificCard exp={exp} key={Math.random()} />
-        ))}
+        {
+          filteredArray.length > 0 ?
+          filteredArray.map((exp) => (
+            <DisplayEachExpenseForSpecificCard exp={exp} key={Math.random()} />
+          ))
+          :
+          <View style={{justifyContent: "center", alignItems: 'center', height: 800, gap: 10}}>
+            <MaterialCommunityIcons name="cancel" size={60} color={allColors.textColorPrimary}/>        
+            <Text variant="titleMedium">Expenses will appear here once added to this card.</Text>
+          </View>
+        }
       </View>
       <Portal>
         <Dialog
@@ -134,7 +148,9 @@ const CardDetailsScreen = ({ navigation, route }) => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
+            <Button onPress={hideDialog}>
+              <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+            </Button>
             <Button
               onPress={deleteCardForever}
               mode="elevated"

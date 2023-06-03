@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { storeCard } from "../redux/actions";
 import { FontAwesome5 } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -22,9 +24,23 @@ const makeStyles = () =>
       alignItems: "center",
       marginTop: 30,
     },
-  });
+});
 
 const CardComponent = () => {
+  // #region fetching currency
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+  // #endregion
+
   const styles = makeStyles();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -79,7 +95,8 @@ const CardComponent = () => {
                 variant="headlineLarge"
                 style={{ color: allColors.textColorPrimary }}
               >
-                {expensesData
+                {formatNumberWithCurrency(
+                    expensesData
                       .filter((exp) => exp.selectedCard === crd.paymentNetwork)
                       ?.reduce((acc, card) => {
                         if (card.type === "Income") {
@@ -89,8 +106,9 @@ const CardComponent = () => {
                         } else {
                           return acc;
                         }
-                      }, 0)
-                  }
+                      }, 0),
+                    currency.curr
+                  )}
               </Text>
             </View>
             <View style={styles.content}>

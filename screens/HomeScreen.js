@@ -8,7 +8,7 @@ import {
 import { FAB, Text, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { storeCard } from "../redux/actions";
@@ -32,17 +32,25 @@ const styles = StyleSheet.create({
   },
 });
 
+const ButtonMemoized = React.memo(({ onPress, isSelected, name }) => (
+  <Button
+    onPress={onPress}
+    compact
+    buttonColor={allColors.backgroundColorTertiary}
+    style={[styles.btn, isSelected && styles.selected]}
+  >
+    <Text style={isSelected && styles.selected.text}>{name}</Text>
+  </Button>
+));
+
+const AppHeaderMemoized = React.memo(AppHeader);
+
 const HomeScreen = ({ navigation, route }) => {
   const [selectedButton, setSelectedButton] = useState("Daily");
 
-  const [listToShow, setListToShow] = useState(
-    <ExpensesList filter={selectedButton} />
-  );
-
-  const handleListButtonPress = (nameOfDate) => {
+  const handleListButtonPress = useCallback((nameOfDate) => {
     setSelectedButton(nameOfDate);
-    setListToShow(<ExpensesList filter={nameOfDate} />);
-  };
+  }, []);
 
   const datesNames = [
     { name: "Daily" },
@@ -51,6 +59,19 @@ const HomeScreen = ({ navigation, route }) => {
     { name: "Yearly" },
     { name: "All" },
   ];
+  
+  let listToShow;
+  if (selectedButton === "Daily") {
+    listToShow = <ExpensesList filter="Daily" />;
+  } else if (selectedButton === "Weekly") {
+    listToShow = <ExpensesList filter="Weekly" />;
+  } else if (selectedButton === "Monthly") {
+    listToShow = <ExpensesList filter="Monthly" />;
+  } else if (selectedButton === "Yearly") {
+    listToShow = <ExpensesList filter="Yearly" />;
+  } else {
+    listToShow = <ExpensesList filter="All" />;
+  }
 
   // #region =========== Fetching card details here only (coz it's the initial screen)
   const dispatch = useDispatch();
@@ -74,7 +95,7 @@ const HomeScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} />
-      <AppHeader
+      <AppHeaderMemoized
         title="Home"
         isParent={true}
         navigation={navigation}
@@ -94,22 +115,12 @@ const HomeScreen = ({ navigation, route }) => {
               }}
             >
               {datesNames.map((date, index) => (
-                <Button
-                  onPress={() => handleListButtonPress(date.name)}
+                <ButtonMemoized
                   key={index}
-                  compact
-                  buttonColor={allColors.backgroundColorTertiary}
-                  style={[
-                    styles.btn,
-                    selectedButton === date.name && styles.selected,
-                  ]}
-                >
-                  <Text
-                    style={selectedButton === date.name && styles.selected.text}
-                  >
-                    {date.name}
-                  </Text>
-                </Button>
+                  onPress={() => handleListButtonPress(date.name)}
+                  isSelected={selectedButton === date.name}
+                  name={date.name}
+                />
               ))}
             </View>
             {listToShow}

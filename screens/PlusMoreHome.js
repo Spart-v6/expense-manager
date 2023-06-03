@@ -576,7 +576,9 @@ const PlusMoreHome = ({ navigation, route }) => {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
+            <Button onPress={hideDialog}>
+              <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+            </Button>
             <Button
               onPress={deleteExpense}
               mode="elevated"

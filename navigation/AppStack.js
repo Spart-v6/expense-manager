@@ -197,6 +197,16 @@ const TabNavigator = () => (
       component={SplitDetailScreen}
       options={navOptions}
     />
+    <Stack.Screen
+      name="SettingsScreen"
+      component={SettingsScreen}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="WelcomeScreen"
+      component={WelcomeScreen}
+      options={navOptions}
+    />
   </Stack.Navigator>
 );
 

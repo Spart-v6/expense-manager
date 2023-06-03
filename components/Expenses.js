@@ -4,6 +4,7 @@ import React from "react";
 import moment from "moment";
 import allColors from "../commons/allColors";
 import { getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
 
 const Expenses = ({ item, index, onPress }) => {
   const [currency, setCurrency] = React.useState({
@@ -43,14 +44,16 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{flex: 1}}>
               <Text variant="titleLarge" style={{width: 200}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-              <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">
-                {item.desc === "" ? "No description" : item.desc}
-              </Text>
+              {item.desc !== "" && (
+                  <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">
+                    {item.desc}
+                  </Text>
+              )}
             </View>
 
             <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
               <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-                {item.type === "Income" ? `+${currency.curr}${item.amount}`: `-${currency.curr}${item.amount}`}
+              {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
               </Text>
               <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>
             </View>

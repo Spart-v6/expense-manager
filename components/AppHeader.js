@@ -1,8 +1,11 @@
-import { Appbar, Button, Text } from "react-native-paper";
-import { View } from "react-native";
+import { Appbar, Text, Button } from "react-native-paper";
+import { IconComponent } from "./IconPickerModal";
+import { View, Animated } from "react-native";
 import React from "react";
 import allColors from "../commons/allColors";
 import { getUsernameFromStorage } from "../helper/constants";
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import moment from "moment";
 
 const AppHeader = ({
@@ -17,6 +20,47 @@ const AppHeader = ({
   needSearch,
   isUpdateCardScreen = false,
 }) => {
+  const GreetAndSearch = ({greeting, username}) => {
+    const [showGreeting, setShowGreeting] = React.useState(true);
+    const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
+
+    const fadeAnimation = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+      const fadeIn = Animated.timing(fadeAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      });
+      const fadeOut = Animated.timing(fadeAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      });
+
+      const timer = setTimeout(() => {
+        fadeOut.start(() => {
+          setShowGreeting(false);
+          fadeIn.start();
+        });
+      }, 2000);
+
+      fadeIn.start();
+
+      return () => {
+        clearTimeout(timer);
+        fadeAnimation.setValue(0);
+      };
+    }, [fadeAnimation]);
+
+    return (
+      <Animated.View style={{ opacity: fadeAnimation }}>
+        <View style={{ marginLeft: 6 }}>
+          <Text variant="titleMedium">{greetingText}</Text>
+        </View>
+      </Animated.View>
+    );
+  };
   const [greeting, setGreeting] = React.useState("");
   const [username, setUsername] = React.useState(null);
 
@@ -46,25 +90,35 @@ const AppHeader = ({
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
     >
       {!isParent && (
-        <Button icon="arrow-left" onPress={() => navigation.goBack()} />
+        <Button onPress={() => navigation.goBack()}>
+          <IconComponent
+            name={"keyboard-backspace"}
+            category={"MaterialIcons"}
+            size={20}
+          />
+        </Button>
       )}
-      {isHome ? (
-        <Appbar.Content
-          title={
-            <View style={{ marginLeft: 6 }}>
-              <Text variant="titleMedium">{`Hi ${username}`}</Text>
-              <Text variant="bodySmall">{greeting}</Text>
-            </View>
-          }
-        />
+      {isHome || needSearch ? (
+        <>
+        <Appbar.Action icon="magnify" onPress={searchExpense} />
+        <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} onPress={searchExpense}/>
+        </>
       ) : (
         <Appbar.Content
           title={isUpdate ? "Update Expense" : title}
           titleStyle={isParent && { marginLeft: 6 }}
         />
       )}
-      {!isPlus && !isUpdate && needSearch && (
-        <Appbar.Action icon="magnify" onPress={searchExpense} />
+      {isHome && (
+        <Appbar.Action
+        icon={({ color, size }) => (
+          <View style={{ alignItems: 'center' }}>
+            <Feather name="circle" size={25} color={allColors.textColorPrimary} style={{ position: 'absolute' }}/>
+            <AntDesign name="user" size={18} color={allColors.textColorPrimary} style={{ marginTop: 4, marginLeft: 1 }}/>
+          </View>
+          )}
+          onPress={() => navigation.navigate("SettingsScreen")}
+        />
       )}
       {isPlus && isUpdate && (
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} />

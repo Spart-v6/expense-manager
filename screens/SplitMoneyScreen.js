@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   SafeAreaView,
   StatusBar,
   ScrollView,
@@ -11,7 +10,7 @@ import {
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import React, { useCallback, useState } from "react";
-import { FAB, Card, Dialog, Button } from "react-native-paper";
+import { FAB, Card, Dialog, Button, Portal, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -27,8 +26,8 @@ import { FontAwesome } from "react-native-vector-icons";
 const makeStyles = () =>
   StyleSheet.create({
     card: {
-      backgroundColor: allColors.backgroundColorLessPrimary,
-      borderRadius: 25,
+      backgroundColor: allColors.backgroundColorSecondary,
+      borderRadius: 10,
       margin: 16,
       padding: 16,
     },
@@ -133,7 +132,7 @@ const SplitMoneyScreen = ({ navigation }) => {
                     <Card style={styles.card}>
                       <Card.Title title={nameOfGrp} />
                       <Card.Content>
-                        <Text>{values.join(", ")}</Text>
+                        <Text variant="bodyMedium" style={{color: allColors.backgroundColorQuinary, fontWeight: 900}}>{values.join(", ")}</Text>
                       </Card.Content>
                     </Card>
                   </TouchableOpacity>
@@ -154,38 +153,40 @@ const SplitMoneyScreen = ({ navigation }) => {
                   size={60}
                   color={allColors.backgroundColorSecondary}
                 />
-                <Text variant="titleMedium" style={{ color: "white" }}>
+                <Text variant="titleMedium">
                   You don't have groups yet.
                 </Text>
               </View>
             )}
           </View>
         </ScrollView>
-        <Dialog
-          visible={isDeleteDialogVisible}
-          onDismiss={() => setDeleteDialogVisible(false)}
-          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-        >
-          <Dialog.Title>Delete group?</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium" style={{ color: "white" }}>
-              The group will be removed permanently
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>
-              Cancel
-            </Button>
-            <Button
-              onPress={handleDelete}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={allColors.warningColor}
-            >
-              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <Portal>
+          <Dialog
+            visible={isDeleteDialogVisible}
+            onDismiss={() => setDeleteDialogVisible(false)}
+            style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+          >
+            <Dialog.Title>Delete group?</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium" style={{ color: "white" }}>
+                The group will be removed permanently
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setDeleteDialogVisible(false)}>
+                <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+              </Button>
+              <Button
+                onPress={handleDelete}
+                mode="elevated"
+                contentStyle={{ width: 60 }}
+                buttonColor={allColors.warningColor}
+              >
+                <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </AnimatedEntryScreen>
       <FAB
         animated

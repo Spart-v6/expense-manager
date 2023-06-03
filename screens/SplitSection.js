@@ -11,6 +11,7 @@ import { storeSections, deleteSections } from "../redux/actions";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -37,11 +38,12 @@ const AllSections = ({
           style={{
             textAlign: "right",
             color: allColors.warningColor,
+            maxWidth: 100,
           }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {currency}{payBack}
+          {formatNumberWithCurrency(payBack, currency)}
         </Text>
       </View>
     ) : (
@@ -58,11 +60,12 @@ const AllSections = ({
           style={{
             textAlign: "right",
             color: allColors.successColor,
+            maxWidth: 100,
           }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {currency}{receive}
+          {formatNumberWithCurrency(receive, currency)}
         </Text>
       </View>
     );
@@ -128,7 +131,7 @@ const AllSections = ({
                       }}
                     >
                       <Text variant="titleMedium">{sectionName}</Text>
-                      <Text variant="titleLarge">{currency + totalAmountSpent}</Text>
+                      <Text variant="titleLarge" style={{maxWidth: 200}} ellipsizeMode="tail" numberOfLines={1}>{formatNumberWithCurrency(totalAmountSpent, currency)}</Text>
                     </View>
                   }
                   titleStyle={{ marginTop: 10 }}
@@ -331,20 +334,34 @@ const SplitSection = ({ navigation, route }) => {
             <Card style={{ backgroundColor: "darkgreen" }}>
               <Card.Title
                 title={"Receive"}
-                subtitle={`${currency.curr}${totalReceive}`}
                 titleStyle={{ color: allColors.successColor }}
-                subtitleStyle={{ color: allColors.successColor }}
               />
+                <Text style={{
+                  textAlignVertical: "center",
+                  padding: 16,
+                  paddingTop: 0,
+                  marginTop: -15,
+                  color: allColors.successColor,
+                }}>
+                  {formatNumberWithCurrency(totalReceive, currency.curr)}
+                </Text>
             </Card>
           </View>
           <View style={{ flex: 0.5 }}>
             <Card style={{ backgroundColor: "darkred" }}>
               <Card.Title
                 title={"Pay"}
-                subtitle={`${currency.curr}${totalPay}`}
                 titleStyle={{ color: allColors.warningColor }}
-                subtitleStyle={{ color: allColors.warningColor }}
               />
+              <Text style={{
+                  textAlignVertical: "center",
+                  padding: 16,
+                  paddingTop: 0,
+                  marginTop: -15,
+                  color: allColors.warningColor,
+                }}>
+                  {formatNumberWithCurrency(totalPay, currency.curr)}
+              </Text>
             </Card>
           </View>
         </View>
@@ -395,7 +412,9 @@ const SplitSection = ({ navigation, route }) => {
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
+          <Button onPress={() => setDeleteDialogVisible(false)}>
+            <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+          </Button>
           <Button
             onPress={handleDelete}
             mode="elevated"
