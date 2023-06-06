@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, SafeAreaView } from "react-native";
-import { Text, TouchableRipple, Dialog, Portal, Button, TextInput } from "react-native-paper";
+import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch  } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import { IconComponent } from "../components/IconPickerModal";
 import allColors from "../commons/allColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import * as Notifications from "expo-notifications";
 
 const SettingsScreen = ({ navigation }) => {
   // #region fetching username and currency
@@ -33,6 +34,8 @@ const SettingsScreen = ({ navigation }) => {
 
   const [updatedUsername, setUpdatedUsername] = React.useState(username);
   const [placeholderUsername, setPlaceholderUsername] = React.useState(updatedUsername);
+  const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
+
   React.useEffect(() => {
     setUpdatedUsername(username);
     setPlaceholderUsername(username);
@@ -48,6 +51,41 @@ const SettingsScreen = ({ navigation }) => {
       console.log("Error saving data to AsyncStorage:", error);
     }
   }
+  
+  const onToggleSwitch = async () => {
+    const newSwitchValue = !isSwitchOn;
+    setIsSwitchOn(newSwitchValue);
+  
+    try {
+      await AsyncStorage.setItem('isSwitchOn', JSON.stringify(newSwitchValue));
+    } catch (error) {
+      console.log('Error saving switch state to AsyncStorage:', error);
+    }
+
+    if (!isSwitchOn) await Notifications.cancelAllScheduledNotificationsAsync();
+    else scheduleDailyNotifications();
+  };
+
+  React.useEffect(() => {
+    const retrieveSwitchState = async () => {
+      try {
+        const switchState = await AsyncStorage.getItem('isSwitchOn');
+        setIsSwitchOn(JSON.parse(switchState));
+      } catch (error) {
+        console.log('Error retrieving switch state from AsyncStorage:', error);
+      }
+    };
+    retrieveSwitchState();
+  }, [isSwitchOn]);
+
+
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -77,8 +115,17 @@ const SettingsScreen = ({ navigation }) => {
             </View>
           </>
         </TouchableRipple>
+        <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
+          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
+            <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
+              <Text variant="bodyLarge">Notifications</Text>
+              <Text variant="bodySmall">A reminder for adding expenses will be sent</Text>
+            </View>
+          </View>
+          <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
+        </View>
       </View>
-
 
       <Portal>
         <Dialog visible={openChangeName} onDismiss={()=> setOpenChangeName(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>

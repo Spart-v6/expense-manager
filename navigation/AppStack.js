@@ -23,7 +23,7 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import allColors from "../commons/allColors.js";
 import * as NavigationBar from "expo-navigation-bar";
-import { View, TouchableOpacity, ActivityIndicator  } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -211,15 +211,22 @@ const TabNavigator = () => (
 );
 
 const WelcomeNavigator = () => (
-  <Stack.Navigator initialRouteName="WelcomeScreen1" screenOptions={{headerShown: false}}>
-    <Stack.Screen name="WelcomeScreen1" component={WelcomeScreen1} options={navOptions} />
+  <Stack.Navigator
+    initialRouteName="WelcomeScreen1"
+    screenOptions={{ headerShown: false }}
+  >
+    <Stack.Screen
+      name="WelcomeScreen1"
+      component={WelcomeScreen1}
+      options={navOptions}
+    />
     <Stack.Screen
       name="WelcomeScreen"
       component={WelcomeScreen}
       options={navOptions}
     />
   </Stack.Navigator>
-)
+);
 
 const AppStack = () => {
   NavigationBar.setBackgroundColorAsync("#000");
@@ -246,7 +253,14 @@ const AppStack = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: allColors.backgroundColorPrimary }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: allColors.backgroundColorPrimary,
+        }}
+      >
         <ActivityIndicator size={50} color={allColors.textColorFive} />
       </View>
     );

@@ -151,7 +151,7 @@ const SplitMoneyScreen = ({ navigation }) => {
                 <FontAwesome
                   name="ban"
                   size={60}
-                  color={allColors.backgroundColorSecondary}
+                  color={allColors.textColorPrimary}
                 />
                 <Text variant="titleMedium">
                   You don't have groups yet.

@@ -15,6 +15,7 @@ import { storeCard } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
+import * as Notifications from "expo-notifications";
 
 const styles = StyleSheet.create({
   btn: {
@@ -91,6 +92,14 @@ const HomeScreen = ({ navigation, route }) => {
     }
   };
   // #endregion =========== End
+
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

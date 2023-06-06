@@ -10,6 +10,7 @@ import moment from "moment";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Notifications from "expo-notifications";
 
 const styles = StyleSheet.create({
   listView: {
@@ -36,6 +37,17 @@ const DisplayEachExpenseForSpecificCard = ({ exp }) => {
   }, []);
 
   const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
+
+  // #region going to scr thru notifications
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
+
   return (
     <Card style={{ backgroundColor: allColors.backgroundColorLessPrimary }}>
       <Card.Title

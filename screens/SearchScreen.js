@@ -8,6 +8,7 @@ import Icon from "react-native-vector-icons/Entypo";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { getCurrencyFromStorage } from "../helper/constants";
+import * as Notifications from "expo-notifications";
 
 const DisplayEachExpense = ({ exp }) => {
   const [currency, setCurrency] = React.useState({
@@ -21,6 +22,16 @@ const DisplayEachExpense = ({ exp }) => {
     };
     fetchCurrency();
   }, []);
+
+  // #region going to scr thru notifications
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
 
   const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
   return (
@@ -85,7 +96,7 @@ const displaySearchedResults = (searchArray, text) => {
 
   if (searchArray(text).length === 0 && text.length > 2) {
     return (
-      <View style={{justifyContent:"center", alignItems:"center"}}>
+      <View style={{justifyContent:"center", alignItems:"center", gap: 10}}>
         <Icon
           name={"block"}
           color={allColors.backgroundColorQuinary}

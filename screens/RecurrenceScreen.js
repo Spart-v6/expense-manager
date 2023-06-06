@@ -18,12 +18,13 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React from "react";
 import { useDispatch } from "react-redux";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storeRecurrences, deleteRecurrences } from "../redux/actions";
 import formatNumberWithCurrency from "../helper/formatter";
 import { getCurrencyFromStorage } from "../helper/constants";
+import * as Notifications from "expo-notifications";
 
 const RecurrenceScreen = ({ navigation }) => {
   const [currency, setCurrency] = React.useState({
@@ -37,6 +38,16 @@ const RecurrenceScreen = ({ navigation }) => {
     };
     fetchCurrency();
   }, []);
+
+  // #region going to scr thru notifications
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
 
   // #region Fetching expenses information for displaying current balance
   const expenseData = useSelector(state => state.expenseReducer.allExpenses);
@@ -161,7 +172,7 @@ const RecurrenceScreen = ({ navigation }) => {
           </ScrollView>
           : 
           <View style={{justifyContent: "center", alignItems: 'center', flex: 1}}>
-            <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.backgroundColorSecondary}/>
+            <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>
             <Text variant="titleMedium">You haven't added any recurring payment.</Text>
           </View>
         }

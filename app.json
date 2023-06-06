@@ -23,7 +23,8 @@
         "backgroundColor": "#121212"
       },
       "package": "com.ankur24.expensemanager",
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": ["NOTIFICATIONS"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -3,6 +3,7 @@ import { Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import React, { useState } from "react";
+import * as Notifications from "expo-notifications";
 
 const Item = ({ item }) => (
   <View
@@ -31,6 +32,18 @@ const SplitDetailScreen = ({ navigation, route }) => {
   const totalAmount = data?.reduce((acc, curr) => acc + curr, 0);
 
   const renderItem = ({ item }) => <Item item={item} />;
+
+  
+  // #region going to scr thru notifications
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
