@@ -22,6 +22,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "react-native-vector-icons";
+import * as Notifications from "expo-notifications";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -71,6 +72,18 @@ const SplitMoneyScreen = ({ navigation }) => {
     }
   };
   // #endregion =========== End
+
+  
+  // #region going to scr thru notifications
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
+
 
   const groupsData = useSelector((state) => state.groupsReducer.allGroups);
   const sectionsData = useSelector((state) => state.sectionReducer.allSections);

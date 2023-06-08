@@ -132,8 +132,8 @@ const SettingsScreen = ({ navigation }) => {
 
   async function scheduleDailyNotifications() {
     const trigger = {
-      hour: 15,
-      minute: 10,
+      hour: 0,
+      minute: 45,
       repeats: true,
     };
 

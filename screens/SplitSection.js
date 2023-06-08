@@ -12,7 +12,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
-import * as Notifications from "expo-notifications";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -325,18 +324,6 @@ const SplitSection = ({ navigation, route }) => {
     setTotalReceive((totalSpent - totalReceived).toFixed(2));
     setTotalPay(totalPaid.toFixed(2));
   }, [specificGroupSection]);
-
-  
-  // #region going to scr thru notifications
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
-  // #endregion
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
