@@ -10,32 +10,6 @@ import AppStack from "./navigation/AppStack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
-async function scheduleDailyNotifications() {
-  const trigger = {
-    hour: 20,
-    minute: 15,
-    repeats: true,
-  };
-
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Expense Reminder 🪙",
-      body: 'Don\'t forget to add your expenses for the day!',
-      data: { headToThisScreen: 'PlusMoreHome' },
-    },
-    trigger,
-  });
-}
-
-
 const theme = {
   ...DefaultTheme,
   version: 3,
@@ -47,11 +21,26 @@ const theme = {
 
 const App = () => {
   // #region Notifications
-  const [isSwitchOn, setIsSwitchOn] = React.useState(false);
-  const [expoPushToken, setExpoPushToken] = React.useState("");
   const [notification, setNotification] = React.useState(false);
+  const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
+  const [expoPushToken, setExpoPushToken] = React.useState("");
   const notificationListener = React.useRef();
   const responseListener = React.useRef();
+
+  React.useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
+  
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   React.useEffect(() => {
     const retrieveSwitchState = async () => {
@@ -62,30 +51,15 @@ const App = () => {
         console.log('Error retrieving switch state from AsyncStorage:', error);
       }
     };
-
     retrieveSwitchState();
-
-    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
-  
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
-  
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
-    });
-  
-    if (isSwitchOn) {
-      scheduleDailyNotifications();
-    } else {
-      Notifications.cancelAllScheduledNotificationsAsync();
-    }
-  
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
   }, []);
+
+  React.useEffect(() => {
+    if (isSwitchOn) {
+      registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+    }
+  }, [isSwitchOn]);
+  
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -97,9 +71,24 @@ const App = () => {
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',
       });
-    }  
+    }
+  
+    const { status } = await Notifications.getPermissionsAsync();
+  
+    if (status !== 'granted') {
+      const { status: finalStatus } = await Notifications.requestPermissionsAsync();
+      if (finalStatus !== 'granted') {
+        setShowError(true);
+        setIsSwitchOn(false);
+        AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
+        return;
+      }
+    }
+  
+    token = (await Notifications.getExpoPushTokenAsync()).data;
     return token;
   }
+
   // #endregion
 
   return (

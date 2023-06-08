@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, SafeAreaView } from "react-native";
-import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch  } from "react-native-paper";
+import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snackbar } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import { IconComponent } from "../components/IconPickerModal";
 import allColors from "../commons/allColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const SettingsScreen = ({ navigation }) => {
   // #region fetching username and currency
@@ -33,8 +41,11 @@ const SettingsScreen = ({ navigation }) => {
   const [openChangeName, setOpenChangeName] = React.useState(false);
 
   const [updatedUsername, setUpdatedUsername] = React.useState(username);
+
   const [placeholderUsername, setPlaceholderUsername] = React.useState(updatedUsername);
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
+  const [expoPushToken, setExpoPushToken] = React.useState("");
+  const [showError, setShowError] = React.useState(false);
 
   React.useEffect(() => {
     setUpdatedUsername(username);
@@ -55,15 +66,19 @@ const SettingsScreen = ({ navigation }) => {
   const onToggleSwitch = async () => {
     const newSwitchValue = !isSwitchOn;
     setIsSwitchOn(newSwitchValue);
+    console.log("Switch value ", newSwitchValue);
   
     try {
       await AsyncStorage.setItem('isSwitchOn', JSON.stringify(newSwitchValue));
     } catch (error) {
       console.log('Error saving switch state to AsyncStorage:', error);
     }
+  
+    if (!newSwitchValue) {
+      console.log("Cancelling all notifications");
+      await Notifications.cancelAllScheduledNotificationsAsync();
+    }
 
-    if (!isSwitchOn) await Notifications.cancelAllScheduledNotificationsAsync();
-    else scheduleDailyNotifications();
   };
 
   React.useEffect(() => {
@@ -75,9 +90,62 @@ const SettingsScreen = ({ navigation }) => {
         console.log('Error retrieving switch state from AsyncStorage:', error);
       }
     };
+  
     retrieveSwitchState();
+  }, []);
+  
+  React.useEffect(() => {
+    if (isSwitchOn) {
+      registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+    }
   }, [isSwitchOn]);
+  
 
+  async function registerForPushNotificationsAsync() {
+    let token;
+  
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    const { status } = await Notifications.getPermissionsAsync();
+  
+    if (status !== 'granted') {
+      const { status: finalStatus } = await Notifications.requestPermissionsAsync();
+      if (finalStatus !== 'granted') {
+        setShowError(true);
+        setIsSwitchOn(false);
+        AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
+        return;
+      }
+    }
+  
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    scheduleDailyNotifications();
+    return token;
+  }
+
+  async function scheduleDailyNotifications() {
+    const trigger = {
+      hour: 15,
+      minute: 10,
+      repeats: true,
+    };
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Expense Reminder 🪙",
+        body: 'Don\'t forget to add your expenses for today!',
+        data: { headToThisScreen: 'PlusMoreHome' },
+      },
+      trigger,
+    });
+  }
 
   React.useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
@@ -115,6 +183,7 @@ const SettingsScreen = ({ navigation }) => {
             </View>
           </>
         </TouchableRipple>
+
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
           <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
             <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
@@ -151,6 +220,19 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      <Snackbar
+        visible={showError}
+        onDismiss={() => setShowError(false)}
+        duration={1200}
+        >
+          <Text variant="bodyMedium" style={{color: "black"}}>
+            Permission denied
+          </Text>
+          <Text variant="bodyMedium" style={{color: "black"}}>
+            Please enable permissions from settings
+          </Text>
+      </Snackbar>
 
     </SafeAreaView>
   );

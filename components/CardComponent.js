@@ -162,7 +162,12 @@ const CardComponent = () => {
       (
         <View style={{justifyContent: "center", alignItems:"center", height: 700, flex: 1, marginBottom: 0}}>
           <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.textColorPrimary} />
-          <Text variant="titleMedium">You don't have cards yet.</Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text variant="titleMedium">You don't have cards yet.</Text>
+            <Text variant="bodySmall">
+              Click on "+" button to start adding cards
+            </Text>
+          </View>
         </View> 
       )
     }

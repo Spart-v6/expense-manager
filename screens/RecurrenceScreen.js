@@ -171,7 +171,7 @@ const RecurrenceScreen = ({ navigation }) => {
             </View>
           </ScrollView>
           : 
-          <View style={{justifyContent: "center", alignItems: 'center', flex: 1}}>
+          <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
             <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>
             <Text variant="titleMedium">You haven't added any recurring payment.</Text>
           </View>

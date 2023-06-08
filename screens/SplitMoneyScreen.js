@@ -144,8 +144,7 @@ const SplitMoneyScreen = ({ navigation }) => {
                   justifyContent: "center",
                   alignItems: "center",
                   flex: 1,
-                  height: 700,
-                  gap: 20,
+                  height: 700
                 }}
               >
                 <FontAwesome
@@ -153,9 +152,14 @@ const SplitMoneyScreen = ({ navigation }) => {
                   size={60}
                   color={allColors.textColorPrimary}
                 />
-                <Text variant="titleMedium">
-                  You don't have groups yet.
-                </Text>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Text variant="titleMedium">
+                    You don't have groups yet.
+                  </Text>
+                  <Text variant="bodySmall">
+                    Click on "+" button to start adding groups
+                  </Text>
+                </View>
               </View>
             )}
           </View>
