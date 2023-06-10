@@ -7,6 +7,7 @@ import allColors from "../commons/allColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
+import * as LocalAuth from "expo-local-authentication";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -39,13 +40,15 @@ const SettingsScreen = ({ navigation }) => {
   // #endregion
 
   const [openChangeName, setOpenChangeName] = React.useState(false);
-
   const [updatedUsername, setUpdatedUsername] = React.useState(username);
-
   const [placeholderUsername, setPlaceholderUsername] = React.useState(updatedUsername);
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
   const [expoPushToken, setExpoPushToken] = React.useState("");
   const [showError, setShowError] = React.useState(false);
+
+  const [isLockEnabled, setIsLockEnabled] = useState(false);
+  const [biometricWarning, setBiometricWarning] = useState("");
+  const [openLockAppDialog, setOpenLockAppDialog] = useState(false);
 
   React.useEffect(() => {
     setUpdatedUsername(username);
@@ -63,11 +66,10 @@ const SettingsScreen = ({ navigation }) => {
     }
   }
   
+  // #region Notifications
   const onToggleSwitch = async () => {
     const newSwitchValue = !isSwitchOn;
     setIsSwitchOn(newSwitchValue);
-    console.log("Switch value ", newSwitchValue);
-  
     try {
       await AsyncStorage.setItem('isSwitchOn', JSON.stringify(newSwitchValue));
     } catch (error) {
@@ -75,7 +77,6 @@ const SettingsScreen = ({ navigation }) => {
     }
   
     if (!newSwitchValue) {
-      console.log("Cancelling all notifications");
       await Notifications.cancelAllScheduledNotificationsAsync();
     }
 
@@ -155,6 +156,72 @@ const SettingsScreen = ({ navigation }) => {
     return () => subscription.remove();
   }, []);
 
+  // #endregion
+
+
+  // #region Biometrics
+
+  React.useEffect(() => {
+    const retrieveLockState = async () => {
+      try {
+        const switchState = await AsyncStorage.getItem('isLockEnabled');
+        setIsLockEnabled(JSON.parse(switchState));
+      } catch (error) {
+        console.log('Error retrieving switch state from AsyncStorage:', error);
+      }
+    }
+    retrieveLockState();
+  }, []);
+
+  const lockAppHandler = async () => {
+    if (isLockEnabled) {
+      setIsLockEnabled(false);
+      await AsyncStorage.setItem('isLockEnabled', JSON.stringify(false));
+      return;
+    }
+    try {
+      const isBiometricAvl = await LocalAuth.hasHardwareAsync();
+      const supportedBiometrics = await LocalAuth.supportedAuthenticationTypesAsync();
+      const savedBiometrics = await LocalAuth.isEnrolledAsync();
+      let biometricAuth; 
+      if (isBiometricAvl) {
+        if (supportedBiometrics.includes(1)) {
+          if (savedBiometrics) {
+            biometricAuth = await LocalAuth.authenticateAsync({
+              promptMessage: "Confirm you identity",
+              cancelLabel: "Cancel",
+              disableDeviceFallback: true,
+            });
+            if (biometricAuth.success) {        
+              const newLockVal = !isLockEnabled;
+              setIsLockEnabled(newLockVal);
+              await AsyncStorage.setItem('isLockEnabled', JSON.stringify(newLockVal));
+            }
+            if (!biometricAuth.success) {
+              setOpenLockAppDialog(true);
+              setBiometricWarning(biometricAuth.warning);
+            }
+          }
+          else {
+            setOpenLockAppDialog(true);
+            setBiometricWarning("No saved fingerprints found, please enroll a fingerprint first");
+          }
+        }
+        else { 
+          setOpenLockAppDialog(true);
+          setBiometricWarning("Your device is not compatible with fingerprint authentication");
+        }
+      }
+      else { 
+        setOpenLockAppDialog(true);
+        setBiometricWarning("No fingerprint scanner found");
+      }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+  }
+  // #endregion
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Settings" navigation={navigation} />
@@ -194,6 +261,20 @@ const SettingsScreen = ({ navigation }) => {
           </View>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
         </View>
+
+        <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
+          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
+            <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
+              <Text variant="bodyLarge">Lock App</Text>
+              <Text variant="bodySmall">When enabled, you need to use fingerprint to unlock the app</Text>
+            </View>
+          </View>
+          <Switch value={isLockEnabled} onValueChange={lockAppHandler} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
+        </View>
+
+
+
       </View>
 
       <Portal>
@@ -216,6 +297,22 @@ const SettingsScreen = ({ navigation }) => {
             </Button>
             <Button onPress={updateUsername}>
               <Text style={{color: allColors.textColorPrimary}}> Update </Text>
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      <Portal>
+        <Dialog visible={openLockAppDialog} onDismiss={()=> setOpenLockAppDialog(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
+          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Content>
+            <Text>
+              {biometricWarning}
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={()=> setOpenLockAppDialog(false)}>
+              <Text style={{color: allColors.textColorPrimary}}> OK </Text>
             </Button>
           </Dialog.Actions>
         </Dialog>
