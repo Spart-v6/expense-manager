@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
 import allColors from "./commons/allColors";
-import { View, SafeAreaView, StatusBar, Image } from "react-native";
+import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
 
 const theme = {
   ...DefaultTheme,
@@ -97,78 +97,68 @@ const App = () => {
 
 
   // #region Biometrics
-  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [authorize, setAuthorize] = useState(false)
   const [authMsg, setAuthMsg] = useState("required");
   const [warningMsg, setWarningMsg] = useState("");
   const [savedBiometricsNotAvl, setSavedBiometricsNotAvl] = useState(false);
   const [isBiometricAuthOn, setIsBiometricAuthOn] = useState(false);
-  const [isLockStateRetrieved, setIsLockStateRetrieved] = useState(false);
 
-  // getting the switch value for lock app
   useEffect(() => {
     const retrieveLockState = async () => {
       try {
         const switchState = await AsyncStorage.getItem('isLockEnabled');
         setIsBiometricAuthOn(JSON.parse(switchState));
-        setIsLockStateRetrieved(true);
       } catch (error) {
         console.log('Error retrieving switch state from AsyncStorage:', error);
       }
     }
+  
+    const handleBiometricAuth = async () => {
+      if (!isBiometricAuthOn) {
+        setLoading(false);
+        return;
+      }
+
+      const isBiometricAvl = await LocalAuth.hasHardwareAsync();
+  
+      let supportedBiometrics;
+      if (isBiometricAvl) supportedBiometrics = await LocalAuth.supportedAuthenticationTypesAsync();
+  
+      const savedBiometrics = await LocalAuth.isEnrolledAsync();
+      if (!savedBiometrics) setSavedBiometricsNotAvl(true);
+  
+      const biometricAuth = await LocalAuth.authenticateAsync({
+        promptMessage: "Login with biometric",
+        cancelLabel: "Cancel",
+        disableDeviceFallback: true,
+      })
+  
+      // Log the user in on success
+      if (biometricAuth) setAuthorize(biometricAuth.success);
+  
+      if (!biometricAuth.success) {
+        setAuthMsg("failed");
+        setWarningMsg(biometricAuth.warning);
+      }
+      setLoading(false);
+    }
     retrieveLockState();
-  }, []);
-
-  const handleBiometricAuth = async () => {
-    if (!isLockStateRetrieved) {
-      return;
-    }
-
-    const isBiometricAvl = await LocalAuth.hasHardwareAsync();
-
-    let supportedBiometrics;
-    if (isBiometricAvl) {
-      supportedBiometrics = await LocalAuth.supportedAuthenticationTypesAsync();
-    }
-
-    const savedBiometrics = await LocalAuth.isEnrolledAsync();
-    if (!savedBiometrics) {
-      setSavedBiometricsNotAvl(true);
-    }
-
-    const biometricAuth = await LocalAuth.authenticateAsync({
-      promptMessage: "Login with biometric",
-      cancelLabel: "Cancel",
-      disableDeviceFallback: true,
-    })
-
-    // Log the user in on success
-    if (biometricAuth && isBiometricAuthOn) { 
-      console.log("Inn");
-      setAuthorize(biometricAuth.success);
-    }
-
-    if (!biometricAuth.success) {
-      setAuthMsg("failed");
-      setWarningMsg(biometricAuth.warning);
-    }
-
-    // printing stuff
-    console.log({isBiometricAvl});
-    console.log({supportedBiometrics});
-    console.log({savedBiometrics});
-    console.log({biometricAuth});
-
-  }
-
-  useEffect(() => {
-      handleBiometricAuth();
-  }, [isLockStateRetrieved])
+    handleBiometricAuth();
+  }, [isBiometricAuthOn]);
+  
 
   // #endregion
 
-
   const handleLogginIn = () => {
+    if (loading) {
+      return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary }}>
+          <ActivityIndicator size="large" color={allColors.textColorFive}/>
+        </SafeAreaView>
+      );
+    }
+  
     if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
@@ -186,10 +176,6 @@ const App = () => {
       </SafeAreaView>
     )
   };
-
-  // console.log("Authorize ", authorize);
-  console.log("IsBioMetricAuthOn", isBiometricAuthOn);
-  // console.log("SavedBioMetricNotAvl", savedBiometricsNotAvl);
 
   return (
     <Provider store={store}>
