@@ -20,7 +20,7 @@ const AppHeader = ({
   needSearch,
   isUpdateCardScreen = false,
 }) => {
-  const GreetAndSearch = ({greeting, username}) => {
+  const GreetAndSearch = React.memo(({greeting, username}) => {
     const [showGreeting, setShowGreeting] = React.useState(true);
     const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
 
@@ -60,7 +60,7 @@ const AppHeader = ({
         </View>
       </Animated.View>
     );
-  };
+  });
   const [greeting, setGreeting] = React.useState("");
   const [username, setUsername] = React.useState(null);
 
@@ -88,6 +88,7 @@ const AppHeader = ({
   return (
     <Appbar.Header
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
+      statusBarHeight={50}
     >
       {!isParent && (
         <Button onPress={() => navigation.goBack()}>

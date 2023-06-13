@@ -29,6 +29,7 @@ import SnackbarComponent from "../commons/snackbar";
 import { AntDesign } from "@expo/vector-icons";
 import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
+import MyDatePicker from "../components/DatePicker";
 
 const FrequentCategories = ({ handleSelectedCategory }) => {
   const [selectedIcon, setSelectedIcon] = useState(null);
@@ -452,39 +453,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
-        <Modal animationType="fade" transparent={true} visible={open}>
-          <View style={styles.centeredView}>
-            <SafeAreaView style={styles.modalView}>
-              <DatePicker
-                options={{
-                  backgroundColor: 'transparent',
-                  mainColor: '#d6d6d6',
-                  selectedTextColor: "black",
-                  textHeaderColor: 'white',
-                  borderColor: "transparent",
-                  textDefaultColor: "white",
-                  textSecondaryColor: "white",
-                }}
-                mode="calendar"
-                selected={tempDate}
-                onDateChange={changeDate}
-              />
-
-              <Button
-                onPress={() => setOpen(false)}
-                mode="elevated"
-                contentStyle={{ width: 100 }}
-                buttonColor={allColors.backgroundColorQuaternary}
-              >
-                <Text
-                  style={{ color: allColors.textColorFour, fontWeight: 800 }}
-                >
-                  Cancel
-                </Text>
-              </Button>
-            </SafeAreaView>
-          </View>
-        </Modal>
+        <MyDatePicker />
 
         <View style={{ ...styles.commonStyles, height: 150 }}>
           <Text>Payment network</Text>
@@ -562,6 +531,43 @@ const PlusMoreHome = ({ navigation, route }) => {
           </Button>
         </View>
       </View>
+
+      <Portal>
+        
+        <Modal animationType="fade" transparent={true} visible={open} onDismiss={() => setOpen(false)}>
+          <View style={styles.centeredView}>
+            <SafeAreaView style={styles.modalView}>
+              <DatePicker
+                options={{
+                  backgroundColor: allColors.backgroundColorLessPrimary.toString(),
+                  mainColor: '#d6d6d6',
+                  selectedTextColor: "black",
+                  textHeaderColor: 'white',
+                  borderColor: "transparent",
+                  textDefaultColor: "white",
+                  textSecondaryColor: "white",
+                }}
+                mode="calendar"
+                selected={tempDate}
+                onDateChange={changeDate}
+              />
+
+              <Button
+                onPress={() => setOpen(false)}
+                mode="elevated"
+                contentStyle={{ width: 100 }}
+                buttonColor={allColors.backgroundColorQuaternary}
+              >
+                <Text
+                  style={{ color: allColors.textColorFour, fontWeight: 800 }}
+                >
+                  Cancel
+                </Text>
+              </Button>
+            </SafeAreaView>
+          </View>
+        </Modal>
+      </Portal>
 
       <Portal>
         <Dialog
