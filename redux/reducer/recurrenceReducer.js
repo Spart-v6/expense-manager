@@ -34,7 +34,6 @@ const expenseReducer = (state = initialState, action) => {
       const updatedArray = state.allRecurrences?.filter((obj) => obj.id !== id);
 
       AsyncStorage.setItem("ALL_RECURRENCES", JSON.stringify(updatedArray));
-      // AsyncStorage.removeItem("ALL_RECURRENCES");
       return { ...state, allRecurrences: updatedArray || [] };
     case types.STORE_RECURRENCE:
       return {

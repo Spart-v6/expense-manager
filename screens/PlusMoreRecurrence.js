@@ -205,6 +205,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
     const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
     setNewEndDate(formattedDate);
     setNewEndDatePh(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
+    setSelectedFrequency(null);
   }
   const fetchStartDates = (obj) => {
     const { selectedDate, selectedMonth, selectedYear } = obj;
@@ -253,6 +254,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
     return allColors.textColorPrimary;
   };
 
+  const handleFrequencyChange = e => {
+    setSelectedFrequency(e);
+    setNewEndDate(null);
+    setNewEndDatePh(null);
+  }
+
   // #region recurrence type stuff
   
   useFocusEffect(
@@ -280,7 +287,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
   const allRecurrTypes = useSelector(state => state.recurrTypeReducer.allRecurrTypes);
 
-  // TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly
 
   const handleAddRecurrence = () => {
     const recurrenceDetails = {
@@ -288,13 +294,13 @@ const PlusMoreRecurrence = ({ navigation }) => {
       time: moment().format("HH:mm:ss"),
       recurrenceName: recName,
       recurrenceAmount: amount,
-      recurrenceStartDate: selectedStartDate.toString() + " " + moment().month(selectedStartMonth).format('MM').toString() + " " + selectedStartYear.toString(),
+      recurrenceStartDate: selectedStartDate.toString() + " " + moment().month(selectedStartMonth).format('MM').toString() + " " + selectedStartYear.toString().slice(-2),
       recurrenceEndDate: newEndDate !== null
-        ? selectedEndDate.toString() + " " + moment().month(selectedEndMonth).format('MM').toString() + " " + selectedEndYear.toString()
+        ? selectedEndDate.toString() + " " + moment().month(selectedEndMonth).format('MM').toString() + " " + selectedEndYear.toString().slice(-2)
         : "",
       repeatRecurrrence: needRepeat,
       paymentType: typePayment,
-      frequency: newEndDate && selectedFrequency?.text,
+      frequency: selectedFrequency?.text ? selectedFrequency.text : "",
       recurrenceType: chipName,
       paymentNetwork: selectedCardInExpense,
     };
@@ -318,7 +324,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
         setErrorMsg("Please enter a valid amount value");
         return true;
       }
-      // verify start date should be less than end date(if its there)
       if (!verifyStartAndEndDates()) {
         setErrorMsg("Please keep start date less than end date");
         return true;
@@ -327,10 +332,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
         setErrorMsg("Please select either end date or frequency");
         return true;
       }
-      // if (!selectedFrequency) {
-      //   setErrorMsg("Please choose a payment frequency");
-      //   return true;
-      // }
       if (chipName.length === 0) {
         setErrorMsg("Please select a recurrence type");
         return true;
@@ -348,32 +349,9 @@ const PlusMoreRecurrence = ({ navigation }) => {
       return;
     }
     console.log(recurrenceDetails);
-    // dispatch(addRecurrences(recurrenceDetails));
+    dispatch(addRecurrences(recurrenceDetails));
     navigation.goBack();
   };
-
-  useEffect(() => {
-    if (newEndDate !== null) {
-      setSelectedFrequency(null);
-    }
-    if (selectedFrequency !== null) {
-      // Delay the state updates using setTimeout
-      setTimeout(() => {
-        setNewEndDate(null);
-        setNewEndDatePh(null);
-      }, 10); // Adjust the delay as needed
-    }
-  }, [newEndDate, selectedFrequency]);
-
-  console.log("Selected End Date: ", newEndDate);
-  console.log("Selected Frequency: ", selectedFrequency);
-
-  // NEW TODO: 
-  // 1. If end date is selected (u can use newEndDate to know), the freq if selected should be de-selected and if freq is selected then end date should go back to null (probably setNewEndDate(null) and other states... ) , just a toggler between these two
-  // 2. Add a check in checkError() which should check the starting date should be less than ending date
-  // 3. Remove the disabled dates from DatePicker if component is Recurrence so that user can select future dates too
-  // 4. Add a menu or a dropdown smth for selecting + and - just beside the Amount text field for Income and expense resp.
-  // 5. Add a checkError() for amount too, it should only be a numeric value none other than that
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -423,22 +401,15 @@ const PlusMoreRecurrence = ({ navigation }) => {
                 id: item.id.toString(),
                 text: item.text,
                 style: { marginRight: 15 },
-                onPress: () => {
-                  if (newEndDate !== null) {
-                    setNewEndDate(null);
-                    setNewEndDatePh(null);
-                  }
-                },
               }))}
               checkboxProps={{
                 textStyle: { textDecorationLine: "none" },
                 textContainerStyle: { marginLeft: 5 },
                 innerIconStyle: { borderColor: "grey" },
                 fillColor: "transparent",
-                iconImageStyle: { tintColor: decideColor() },
+                iconImageStyle: { tintColor: decideColor() }
               }}
-              onChange={setSelectedFrequency}
-              
+              onChange={handleFrequencyChange}
             />
           </View>
         </View>
@@ -563,7 +534,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
         </View>
       </View>
       {endDateOpen ? <MyDatePicker open={endDateOpen} setOpen={setEndDateOpen} fetchDates={fetchEndDates}
-
       selectedDate={selectedEndDate} selectedMonth={selectedEndMonth} selectedYear={selectedEndYear} setSelectedDate={setSelectedEndDate} setSelectedMonth={setSelectedEndMonth} setSelectedYear={setSelectedEndYear} disableTheDates={false}
 
       /> 
@@ -614,3 +584,18 @@ const PlusMoreRecurrence = ({ navigation }) => {
 };
 
 export default PlusMoreRecurrence;
+
+
+
+
+  // TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly
+
+  // console.log("Selected End Date: ", newEndDate);
+  // console.log("Selected Frequency: ", selectedFrequency);
+
+  // NEW TODO: 
+  // 1. If end date is selected (u can use newEndDate to know), the freq if selected should be de-selected and if freq is selected then end date should go back to null (probably setNewEndDate(null) and other states... ) , just a toggler between these two
+  // 2. Add a check in checkError() which should check the starting date should be less than ending date
+  // 3. Remove the disabled dates from DatePicker if component is Recurrence so that user can select future dates too
+  // 4. Add a menu or a dropdown smth for selecting + and - just beside the Amount text field for Income and expense resp.
+  // 5. Add a checkError() for amount too, it should only be a numeric value none other than that
