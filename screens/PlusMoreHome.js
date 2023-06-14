@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
 });
 
 const PlusMoreHome = ({ navigation, route }) => {
-  const theme = useTheme();
   const dispatch = useDispatch();
 
   // #region
@@ -214,6 +213,29 @@ const PlusMoreHome = ({ navigation, route }) => {
     return moment().format("YYYY/MM/DD");
   });
 
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    if (route.params) {
+      const [year, month, day] = route.params.updateItem.date.split("/");
+      const newMonth = moment().month(month - 1).format('MMMM');
+      return newMonth;
+    }
+    return moment().format("MMMM")
+  });
+  const [selectedYear, setSelectedYear] = useState(() => {
+    if (route.params) {
+      const [year, month, day] = route.params.updateItem.date.split("/");
+      return year;
+    }
+    return moment().format("YYYY")
+  })
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (route.params) {
+      const [year, month, day] = route.params.updateItem.date.split("/");
+      return +day;
+    }
+    return moment().date();
+  });
+
   //Delete variables
   const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
 
@@ -224,15 +246,6 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   // for icons
   // TODO: Do chips and Icon Picker + Tabs in modal
-
-  const changeDate = useCallback(
-    (params) => {
-      setOpen(false);
-      setTempDate(params);
-      setDateValue(moment(params, "YYYY/MM/DD").format("Do MMMM YYYY"));
-    },
-    [setOpen, setTempDate]
-  );
 
   const incomeExpenseBtns = (name) => {
     return (
@@ -412,6 +425,16 @@ const PlusMoreHome = ({ navigation, route }) => {
   };
 
   // #endregion
+
+  const fetchDates = (obj) => {
+    const { selectedDate, selectedMonth, selectedYear } = obj;
+    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+    const month = moment().month(selectedMonth).format('MM');
+    const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
+    setTempDate(formattedDate);
+    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("Do MMMM YYYY"));
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
@@ -452,8 +475,6 @@ const PlusMoreHome = ({ navigation, route }) => {
             />
           </TouchableOpacity>
         </View>
-
-        <MyDatePicker />
 
         <View style={{ ...styles.commonStyles, height: 150 }}>
           <Text>Payment network</Text>
@@ -532,42 +553,18 @@ const PlusMoreHome = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Portal>
-        
-        <Modal animationType="fade" transparent={true} visible={open} onDismiss={() => setOpen(false)}>
-          <View style={styles.centeredView}>
-            <SafeAreaView style={styles.modalView}>
-              <DatePicker
-                options={{
-                  backgroundColor: allColors.backgroundColorLessPrimary.toString(),
-                  mainColor: '#d6d6d6',
-                  selectedTextColor: "black",
-                  textHeaderColor: 'white',
-                  borderColor: "transparent",
-                  textDefaultColor: "white",
-                  textSecondaryColor: "white",
-                }}
-                mode="calendar"
-                selected={tempDate}
-                onDateChange={changeDate}
-              />
-
-              <Button
-                onPress={() => setOpen(false)}
-                mode="elevated"
-                contentStyle={{ width: 100 }}
-                buttonColor={allColors.backgroundColorQuaternary}
-              >
-                <Text
-                  style={{ color: allColors.textColorFour, fontWeight: 800 }}
-                >
-                  Cancel
-                </Text>
-              </Button>
-            </SafeAreaView>
-          </View>
-        </Modal>
-      </Portal>
+       <MyDatePicker 
+        open={open} 
+        setOpen={setOpen} 
+        fetchDates={fetchDates}
+        selectedDate={selectedDate}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        setSelectedDate={setSelectedDate}
+        setSelectedMonth={setSelectedMonth}
+        setSelectedYear={setSelectedYear}
+        disableTheDates={true}
+      />
 
       <Portal>
         <Dialog

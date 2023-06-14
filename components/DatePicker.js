@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -8,25 +8,36 @@ import {
   Easing,
   Dimensions,
   ScrollView,
-  TouchableHighlight,
   TouchableWithoutFeedback,
   Vibration,
 } from "react-native";
 import { Dialog, Text, Portal, Button, Divider } from "react-native-paper";
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import allColors from "../commons/allColors";
 import moment from "moment";
 import Feather from "react-native-vector-icons/Feather";
 
-const Calendar = ({ year, month, onDateChange }) => {
-  const [selectedDate, setSelectedDate] = useState(moment().date());
+const compareDates = (date1, month1, year1, date2, month2, year2) => {
+  const date1String = `${year1}-${month1}-${date1}`;
+  const date2String = `${year2}-${month2}-${date2}`;
+
+  const momentDate1 = moment(date1String, 'YYYY-MMM-DD');
+  const momentDate2 = moment(date2String, 'YYYY-MMM-DD');
+
+  return momentDate2.isAfter(momentDate1);
+};
+
+const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, disableTheDates }) => {
+  const todayDate = moment().date();
+  const todayMonth = moment().month("MMMM").format("MMMM");
+  const todayYear = moment().year();
+  
   const monthNumber = moment(month, 'MMMM').format('M');
   moment.updateLocale('en', {
     weekdaysShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
   });
   const weekdays = moment.weekdaysShort();
   const startDate = moment({ year, month: monthNumber - 1 }).startOf('month');
-  const startDay = startDate.day(); // Sunday: 0, Monday: 1, ..., Saturday: 6
+  const startDay = startDate.day();
   const daysInMonth = startDate.daysInMonth();
 
   const calendarArray = [];
@@ -41,13 +52,22 @@ const Calendar = ({ year, month, onDateChange }) => {
       Vibration.vibrate(1);
     }
 
-    if (item === null) {
-      return <View style={styles.nullCell} />;
-    }
+    if (item === null) return <View style={styles.nullCell} />;
+
+    const disableDates = compareDates(todayDate, todayMonth, todayYear, item, month, year);
+
     return (
-      <TouchableWithoutFeedback onPress={handleDatePress} >
-        <View style={[styles.cell, selectedDate === item && {backgroundColor: allColors.textColorPrimary}]}>
-          <Text style={[styles.dateText, selectedDate === item && {color: allColors.textColorFour}]}>{item}</Text>
+      <TouchableWithoutFeedback onPress={handleDatePress} disabled={disableDates && disableTheDates}>
+        <View style={[styles.cell,
+          selectedDate === item && {backgroundColor: allColors.textColorPrimary},
+          disableDates && disableTheDates && {backgroundColor: 'transparent'}
+        ]}>
+          <Text style={[styles.dateText, 
+            selectedDate === item && {color: allColors.textColorFour},
+            disableDates && disableTheDates && {color: allColors.backgroundColorTertiary}
+          ]}>
+            {item}
+          </Text>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -55,14 +75,19 @@ const Calendar = ({ year, month, onDateChange }) => {
 
   return (
     <View style={styles.calendarContainer}>
-      {/* Calendar days */}
       <FlatList
         data={calendarArray}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         numColumns={7}
         contentContainerStyle={styles.flatListContent}
-        ListHeaderComponent={<View style={styles.weekdaysContainer}>{weekdays.map((day, index) => <Text key={index} style={styles.weekdayText}>{day}</Text>)}</View>}
+        ListHeaderComponent={
+          <View style={styles.weekdaysContainer}>
+            {weekdays.map((day, index) => 
+              <Text key={index} style={styles.weekdayText}>{day}</Text>
+            )}
+          </View>
+        }
       />
     </View>
   );
@@ -81,20 +106,32 @@ const generateYearList = () => {
   return years;
 };
 
-const MyDatePicker = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+const MyDatePicker = ({
+  open,
+  setOpen,
+  fetchDates,
+  selectedMonth,
+  setSelectedMonth,
+  selectedYear,
+  setSelectedYear,
+  selectedDate,
+  setSelectedDate,
+  disableTheDates
+}) => {
+  const todayDate = moment().date();
+  const todayMonth = moment().month("MMMM").format("MMMM");
+  const todayYear = moment().year();
+
   const [showYears, setShowYears] = useState(false);
   const currentDate = moment();
   const rotationAngle = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-1000)).current;
   const years = generateYearList();
 
-  const [selectedMonth, setSelectedMonth] = useState(currentDate.format("MMMM"));
-  const [selectedYear, setSelectedYear] = useState(currentDate.format("YYYY"))
-  const [selectedDate, setSelectedDate] = useState(currentDate.date());
+  const [titleDay, setTitleDay] = useState(currentDate.format("dddd").substring(0,3));
+  const [titleMonth, setTitleMonth] = useState(currentDate.format("MMM DD"));
 
-  const openModal = () => setModalVisible(true);
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => setOpen(false);
 
   const handleShowMoreYear = () => {
     const toValue = showYears ? 0 : 180;
@@ -142,6 +179,21 @@ const MyDatePicker = () => {
     setSelectedYear(nextMonth.format('YYYY'));
   };
 
+  const formatTitle = (date, tempMonth, year) => {
+    const month = moment().month(tempMonth).format('M');
+    const dateString = `${year}-${month}-${date}`;
+    const formattedDay = moment(dateString, 'YYYY-M-D').format("dddd").substring(0,3);
+    const rest = moment(dateString, 'YYYY-M-D').format('MMM D');
+    return {formattedDay, rest};
+  };
+
+  const submitDates = () => {
+    fetchDates({selectedDate, selectedMonth, selectedYear});
+    closeModal();
+  };
+
+  const disableDates = compareDates(todayDate, todayMonth, todayYear, selectedDate, selectedMonth, selectedYear);
+
   useEffect(() => {
     let animation;
 
@@ -162,6 +214,12 @@ const MyDatePicker = () => {
       if (animation) animation.stop();
     };
   }, [showYears, translateY]);
+
+  useEffect(() => {
+    const {formattedDay, rest} = formatTitle(selectedDate, selectedMonth, selectedYear);
+    setTitleDay(formattedDay);
+    setTitleMonth(rest);
+  }, [selectedDate, selectedMonth, selectedYear]);
 
   // #region Animations for left and right arrow btns
   const [animation] = useState(new Animated.Value(0));
@@ -191,14 +249,10 @@ const MyDatePicker = () => {
   // #endregion
 
   return (
-    <GestureHandlerRootView>
-      <TouchableOpacity onPress={openModal}>
-        <Text>Open Date Picker</Text>
-      </TouchableOpacity>
-
+    <>
       <Portal>
         <Dialog
-          visible={modalVisible}
+          visible={open}
           onDismiss={closeModal}
           style={{
             backgroundColor: allColors.backgroundColorLessPrimary,
@@ -227,10 +281,10 @@ const MyDatePicker = () => {
             }}
           >
             {/* First Section */}
-            <Text variant="displaySmall">{currentDate.format("dddd").substring(0,3)},</Text>{" "}
-            <Text variant="displaySmall">{currentDate.format("MMM DD")}</Text>
+            <Text variant="displaySmall">{titleDay},</Text>{" "}
+            <Text variant="displaySmall">{titleMonth}</Text>
           </Dialog.Title>
-          <Dialog.Content style={{alignItems: 'center', maxHeight: 300, height: 290 }}>
+          <Dialog.Content style={{alignItems: 'center', maxHeight: 300, height: 270 }}>
             {/* Second Section */}
             <View style={styles.navigationContainer}>
                 <TouchableOpacity
@@ -251,7 +305,7 @@ const MyDatePicker = () => {
                       style={{
                         transform: [
                           {
-                            rotate: rotationAngle.interpolate({
+                            rotateX: rotationAngle.interpolate({
                               inputRange: [0, 180],
                               outputRange: ["0deg", "180deg"],
                             }),
@@ -263,7 +317,7 @@ const MyDatePicker = () => {
                         name="chevron-down"
                         size={18}
                         color={allColors.textColorPrimary}
-                        style={{ marginTop: 4, marginLeft: 1 }}
+                        style={{ marginTop: 2, marginLeft: 5 }}
                       />
                     </Animated.View>
                   </View>
@@ -316,20 +370,22 @@ const MyDatePicker = () => {
                 </Animated.View>
               </>
             ) : (
-              <Calendar year={selectedYear} month={selectedMonth} onDateChange={handleDateChange}/>
+              <Calendar year={selectedYear} month={selectedMonth} onDateChange={handleDateChange}
+              selectedDate={selectedDate} setSelectedDate={setSelectedDate} disableTheDates={disableTheDates}
+              />
             )}
           </Dialog.Content>
-          <Dialog.Actions style={{marginTop: 10}}>
+          <Dialog.Actions style={{marginTop: 10, height: 60}}>
             <Button onPress={closeModal}>
               <Text style={{ color: allColors.textColorPrimary }}>Cancel</Text>
             </Button>
-            <Button onPress={closeModal} contentStyle={{ width: 60 }}>
+            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={disableDates && disableTheDates}>
               <Text style={{ color: allColors.textColorPrimary }}>OK</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </GestureHandlerRootView>
+    </>
   );
 };
 
