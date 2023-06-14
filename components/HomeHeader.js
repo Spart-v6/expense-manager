@@ -7,6 +7,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
 
 const makeStyles = () =>
   StyleSheet.create({
@@ -27,6 +28,7 @@ const makeStyles = () =>
     incomeContent: {
       paddingLeft: 16,
       paddingTop: 16,
+      paddingRight: 16,
     },
     expenseCard: {
       backgroundColor: allColors.backgroundColorTertiary,
@@ -39,6 +41,7 @@ const makeStyles = () =>
     expenseContent: {
       paddingLeft: 16,
       paddingTop: 16,
+      paddingRight: 16,
     },
     header: {
       alignItems: "flex-start",
@@ -53,11 +56,12 @@ const makeStyles = () =>
       flexDirection: "row",
       alignItems: "center",
       marginTop: 10,
+      gap: 20
     },
     text: {
       fontSize: 16,
     },
-  });
+});
 
 const MyBezierLineChart = (colors, chartData) => {
   const data = {
@@ -116,12 +120,6 @@ const DashboardCard = ({ currency }) => {
     else return acc;
   }, 0);
 
-  let overallExpense = totalValue?.toString();
-  if (totalValue >= 0) overallExpense = currency + overallExpense;
-  else
-    overallExpense =
-      overallExpense?.slice(0, 1) + currency + overallExpense?.slice(1);
-
   const currentMonth = moment().month() + 1;
   const filteredArr = expenseData?.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
 
@@ -139,16 +137,18 @@ const DashboardCard = ({ currency }) => {
     <Card style={[styles.card]}>
       <Card.Title
         title="My balance"
-        subtitle={overallExpense}
         titleStyle={{ color: allColors.textColorPrimary, fontSize: 17 }}
-        subtitleStyle={{
-          fontSize: 30,
-          textAlignVertical: "center",
-          paddingTop: 20,
-          paddingBottom: 10,
-          color: allColors.textColorSecondary,
-        }}
       />
+      <Text style={{
+        fontSize: 30,
+        textAlignVertical: "center",
+        padding: 16,
+        paddingTop: 0,
+        marginTop: -15,
+        color: allColors.textColorSecondary,
+      }}>
+        {formatNumberWithCurrency(totalValue, currency)}
+      </Text>
       <Card.Content>
         <Text
           variant="titleLarge"
@@ -162,7 +162,7 @@ const DashboardCard = ({ currency }) => {
             <View style={{flexDirection:"row", gap: 2}}>
               <AntDesign name="caretup" size={10} color={'green'} style={{alignSelf:"center"}}/>
               <Text style={{ color: allColors.textColorFive }}>
-                + {currency}{totalIncomeForMonth}
+                + {formatNumberWithCurrency(totalIncomeForMonth, currency)}
               </Text>
             </View>
           </View>
@@ -171,7 +171,7 @@ const DashboardCard = ({ currency }) => {
             <View style={{flexDirection:"row", gap: 2}}>
               <AntDesign name="caretdown" size={10} color={'red'} style={{alignSelf:"center"}}/>
               <Text style={{ color: allColors.textColorFive }}>
-                - {currency}{totalExpenseForMonth}
+                - {formatNumberWithCurrency(totalExpenseForMonth, currency)}
               </Text>
             </View>
           </View>
@@ -189,7 +189,7 @@ const IncomeCard = ({ incomeArray, currency }) => {
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
         <Text>Income</Text>
-          <Text style={{ color: allColors.successColor }}>+ {currency}{totalIncome}</Text>
+          <Text style={{ color: allColors.successColor }}>+ {formatNumberWithCurrency(totalIncome, currency)}</Text>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
@@ -204,7 +204,7 @@ const ExpenseCard = ({ expenseArray, currency }) => {
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
         <Text>Expense</Text>
-          <Text style={{ color: allColors.warningColor }}>- {currency}{totalExpense}</Text>
+          <Text style={{ color: allColors.warningColor }}>- {formatNumberWithCurrency(totalExpense, currency)}</Text>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>

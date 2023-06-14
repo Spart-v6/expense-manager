@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   SafeAreaView,
   StatusBar,
   ScrollView,
@@ -11,7 +10,7 @@ import {
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import React, { useCallback, useState } from "react";
-import { FAB, Card, Dialog, Button } from "react-native-paper";
+import { FAB, Card, Dialog, Button, Portal, Text } from "react-native-paper";
 import allColors from "../commons/allColors";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -23,12 +22,13 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "react-native-vector-icons";
+import * as Notifications from "expo-notifications";
 
 const makeStyles = () =>
   StyleSheet.create({
     card: {
-      backgroundColor: allColors.backgroundColorLessPrimary,
-      borderRadius: 25,
+      backgroundColor: allColors.backgroundColorSecondary,
+      borderRadius: 10,
       margin: 16,
       padding: 16,
     },
@@ -72,6 +72,18 @@ const SplitMoneyScreen = ({ navigation }) => {
     }
   };
   // #endregion =========== End
+
+  
+  // #region going to scr thru notifications
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
+
 
   const groupsData = useSelector((state) => state.groupsReducer.allGroups);
   const sectionsData = useSelector((state) => state.sectionReducer.allSections);
@@ -133,7 +145,7 @@ const SplitMoneyScreen = ({ navigation }) => {
                     <Card style={styles.card}>
                       <Card.Title title={nameOfGrp} />
                       <Card.Content>
-                        <Text>{values.join(", ")}</Text>
+                        <Text variant="bodyMedium" style={{color: allColors.backgroundColorQuinary, fontWeight: 900}}>{values.join(", ")}</Text>
                       </Card.Content>
                     </Card>
                   </TouchableOpacity>
@@ -145,47 +157,53 @@ const SplitMoneyScreen = ({ navigation }) => {
                   justifyContent: "center",
                   alignItems: "center",
                   flex: 1,
-                  height: 700,
-                  gap: 20,
+                  height: 700
                 }}
               >
                 <FontAwesome
                   name="ban"
                   size={60}
-                  color={allColors.backgroundColorSecondary}
+                  color={allColors.textColorPrimary}
                 />
-                <Text variant="titleMedium" style={{ color: "white" }}>
-                  You don't have groups yet.
-                </Text>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Text variant="titleMedium">
+                    You don't have groups yet.
+                  </Text>
+                  <Text variant="bodySmall">
+                    Click on "+" button to start adding groups
+                  </Text>
+                </View>
               </View>
             )}
           </View>
         </ScrollView>
-        <Dialog
-          visible={isDeleteDialogVisible}
-          onDismiss={() => setDeleteDialogVisible(false)}
-          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-        >
-          <Dialog.Title>Delete group?</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium" style={{ color: "white" }}>
-              The group will be removed permanently
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>
-              Cancel
-            </Button>
-            <Button
-              onPress={handleDelete}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={allColors.warningColor}
-            >
-              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <Portal>
+          <Dialog
+            visible={isDeleteDialogVisible}
+            onDismiss={() => setDeleteDialogVisible(false)}
+            style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+          >
+            <Dialog.Title>Delete group?</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium" style={{ color: "white" }}>
+                The group will be removed permanently
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setDeleteDialogVisible(false)}>
+                <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
+              </Button>
+              <Button
+                onPress={handleDelete}
+                mode="elevated"
+                contentStyle={{ width: 60 }}
+                buttonColor={allColors.warningColor}
+              >
+                <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </AnimatedEntryScreen>
       <FAB
         animated

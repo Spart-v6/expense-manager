@@ -4,10 +4,21 @@ import AppHeader from "../components/AppHeader";
 import allColors from "../commons/allColors";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import CardComponent from "../components/CardComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as Notifications from "expo-notifications";
 
 const AccountsScreen = ({ navigation }) => {
   const [isSearchAccount, setIsSearchAccounts ] = useState(false);
+
+  // #region going to scr thru notifications
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -1,13 +1,38 @@
 import { View, SafeAreaView } from "react-native";
-import { Appbar, Button, TextInput, Text, Card } from "react-native-paper";
+import { Appbar, TextInput, Text, Card } from "react-native-paper";
+import formatNumberWithCurrency from "../helper/formatter";
 import allColors from "../commons/allColors";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import Icon from "react-native-vector-icons/Entypo";
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
+import { getCurrencyFromStorage } from "../helper/constants";
+import * as Notifications from "expo-notifications";
 
 const DisplayEachExpense = ({ exp }) => {
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
+  // #region going to scr thru notifications
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
+    return () => subscription.remove();
+  }, []);
+  // #endregion
+
   const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
   return (
     <Card style={{ backgroundColor: allColors.backgroundColorLessPrimary, marginTop: 10, marginBottom: 10 }}>
@@ -22,8 +47,10 @@ const DisplayEachExpense = ({ exp }) => {
             }}
           >
             <Text variant="headlineSmall">{exp.name}</Text>
-            <Text variant="headlineSmall" style={{color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {exp.type === "Income" ? `+${exp.amount}` : `-${exp.amount}`}
+            <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail" style={{maxWidth:200, color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
+              {exp.type === "Income"
+                ? `+${formatNumberWithCurrency(exp.amount, currency.curr)}`
+                : `-${formatNumberWithCurrency(exp.amount, currency.curr)}`}
             </Text>
           </View>
         }
@@ -37,15 +64,19 @@ const DisplayEachExpense = ({ exp }) => {
           >
             {formattedDate}
           </Text>
-          <FontAwesome
-            name="circle"
-            size={7}
-            color={"white"}
-            style={{ paddingLeft: 5, paddingRight: 5 }}
-          />
-          <Text variant="bodyMedium">
-            {exp.desc === "" ? "No Description" : exp.desc}
-          </Text>
+          {exp.desc !== "" && (
+            <>
+              <FontAwesome
+                name="circle"
+                size={7}
+                color={"white"}
+                style={{ paddingLeft: 5, paddingRight: 5 }}
+              />
+              <Text variant="bodyMedium">
+                {exp.desc}
+              </Text>
+            </>
+          )}
         </View>
       </Card.Content>
     </Card>
@@ -65,7 +96,7 @@ const displaySearchedResults = (searchArray, text) => {
 
   if (searchArray(text).length === 0 && text.length > 2) {
     return (
-      <View style={{justifyContent:"center", alignItems:"center"}}>
+      <View style={{justifyContent:"center", alignItems:"center", gap: 10}}>
         <Icon
           name={"block"}
           color={allColors.backgroundColorQuinary}
@@ -106,7 +137,10 @@ const SearchScreen = ({ navigation, route }) => {
               label="Search your expenses"
               style={{ backgroundColor: "transparent" }}
               value={text}
+              underlineColor={allColors.backgroundColorQuaternary}
+              activeUnderlineColor={allColors.backgroundColorQuaternary}
               onChangeText={setText}
+              autoFocus
             />
           }
         />

@@ -1,14 +1,14 @@
 {
-    "workbench.colorCustomizations": {
-        "sash.hoverBorder": "#a82ee9",
-        "statusBar.background": "#8e16ce",
-        "statusBar.debuggingBackground": "#56ce16",
-        "statusBar.debuggingForeground": "#15202b",
-        "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#a82ee9",
-        "statusBarItem.remoteBackground": "#8e16ce",
-        "statusBarItem.remoteForeground": "#e7e7e7",
-        "tab.activeBorder": "#a82ee9"
-    },
-    "peacock.color": "#8e16ce"
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#8e16ce",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#a82ee9",
+    "statusBarItem.remoteBackground": "#8e16ce",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "sash.hoverBorder": "#a82ee9",
+    "statusBar.debuggingBackground": "#56ce16",
+    "statusBar.debuggingForeground": "#15202b",
+    "tab.activeBorder": "#a82ee9"
+  },
+  "peacock.color": "#8e16ce"
 }

@@ -110,3 +110,14 @@ export const storeSections = payload => ({
   type: types.STORE_SECTIONS,
   payload
 })
+
+// for creating a new recurrence type
+export const addNewRecurrType = payload => ({
+  type: types.ADD_RECURR_TYPE,
+  payload
+});
+
+export const storeRecurrType = payload => ({
+  type: types.STORE_RECURR_TYPE,
+  payload
+});
