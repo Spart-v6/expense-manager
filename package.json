@@ -1,11 +1,10 @@
 {
   "name": "expense-manager",
   "version": "1.1.0",
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "npx expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -15,10 +14,12 @@
     "@react-navigation/material-top-tabs": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
-    "expo": "~48.0.5",
+    "expo": "~48.0.18",
     "expo-local-authentication": "~13.3.0",
     "expo-navigation-bar": "~2.1.1",
     "expo-notifications": "~0.18.1",
+    "expo-splash-screen": "~0.18.2",
+    "expo-status-bar": "~1.4.4",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "react": "18.2.0",

@@ -133,8 +133,8 @@ const SettingsScreen = ({ navigation }) => {
 
   async function scheduleDailyNotifications() {
     const trigger = {
-      hour: 0,
-      minute: 45,
+      hour: 21,
+      minute: 15,
       repeats: true,
     };
 
@@ -188,7 +188,7 @@ const SettingsScreen = ({ navigation }) => {
         if (supportedBiometrics.includes(1)) {
           if (savedBiometrics) {
             biometricAuth = await LocalAuth.authenticateAsync({
-              promptMessage: "Confirm you identity",
+              promptMessage: "Confirm your identity",
               cancelLabel: "Cancel",
               disableDeviceFallback: true,
             });

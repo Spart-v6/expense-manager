@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
 import allColors from "./commons/allColors";
-import { View, SafeAreaView, StatusBar, Image } from "react-native";
+import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
 
 const theme = {
   ...DefaultTheme,
@@ -151,7 +151,11 @@ const App = () => {
   // #endregion
 
   const handleLogginIn = () => {
-    if (loading) return null;
+    if (loading) return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary }}>
+        <ActivityIndicator size="large" color={allColors.textColorFive}/>
+      </SafeAreaView>
+    );
   
     if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
     return (
