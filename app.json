@@ -11,6 +11,15 @@
       "resizeMode": "native",
       "backgroundColor": "#121212"
     },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff"
+        }
+      ]
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
