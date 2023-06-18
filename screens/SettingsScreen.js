@@ -4,17 +4,18 @@ import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snack
 import AppHeader from "../components/AppHeader";
 import { IconComponent } from "../components/IconPickerModal";
 import useDynamicColors from "../commons/useDynamicColors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Device from 'expo-device';
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+    shouldPlaySound: true,
+    shouldSetBadge: true
+  })
 });
 
 const SettingsScreen = ({ navigation }) => {
@@ -52,6 +53,10 @@ const SettingsScreen = ({ navigation }) => {
   const [biometricWarning, setBiometricWarning] = useState("");
   const [openLockAppDialog, setOpenLockAppDialog] = useState(false);
 
+  const [notification, setNotification] = React.useState(false);
+  const notificationListener = React.useRef();
+  const responseListener = React.useRef();
+
   React.useEffect(() => {
     setUpdatedUsername(username);
     setPlaceholderUsername(username);
@@ -67,8 +72,8 @@ const SettingsScreen = ({ navigation }) => {
       console.log("Error saving data to AsyncStorage:", error);
     }
   }
+
   
-  // #region Notifications
   const onToggleSwitch = async () => {
     const newSwitchValue = !isSwitchOn;
     setIsSwitchOn(newSwitchValue);
@@ -77,12 +82,22 @@ const SettingsScreen = ({ navigation }) => {
     } catch (error) {
       console.log('Error saving switch state to AsyncStorage:', error);
     }
-  
-    if (!newSwitchValue) {
-      await Notifications.cancelAllScheduledNotificationsAsync();
+    if (newSwitchValue) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Title",
+          body: "body",
+          data: { data: "data goes here" }
+        },
+        trigger: {
+          hour: 17,
+          minute: 40,
+          repeats: true
+        }
+      });
     }
-
-  };
+    return;
+  }
 
   React.useEffect(() => {
     const retrieveSwitchState = async () => {
@@ -93,73 +108,51 @@ const SettingsScreen = ({ navigation }) => {
         console.log('Error retrieving switch state from AsyncStorage:', error);
       }
     };
-  
     retrieveSwitchState();
   }, []);
-  
-  React.useEffect(() => {
-    if (isSwitchOn) {
-      registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
-    }
-  }, [isSwitchOn]);
-  
 
-  async function registerForPushNotificationsAsync() {
-    let token;
-  
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
-  
-    const { status } = await Notifications.getPermissionsAsync();
-  
-    if (status !== 'granted') {
-      const { status: finalStatus } = await Notifications.requestPermissionsAsync();
-      if (finalStatus !== 'granted') {
-        setShowError(true);
-        setIsSwitchOn(false);
-        AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
-        return;
+  React.useEffect(() => {
+    const getPermission = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+          console.log('Enable push notifications to use the app!');
+          await AsyncStorage.setItem('expopushtoken', "");
+          return;
+        }
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        await AsyncStorage.setItem('expopushtoken', token);
+      } else {
+        console.log('Must use physical device for Push Notifications');
+      }
+
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
       }
     }
-  
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    scheduleDailyNotifications();
-    return token;
-  }
+    if (isSwitchOn) getPermission();
 
-  async function scheduleDailyNotifications() {
-    const trigger = {
-      hour: 21,
-      minute: 15,
-      repeats: true,
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {});
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Expense Reminder 🪙",
-        body: 'Don\'t forget to add your expenses for today!',
-        data: { headToThisScreen: 'PlusMoreHome' },
-      },
-      trigger,
-    });
-  }
-
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
   }, []);
-
-  // #endregion
-
 
   // #region Biometrics
 

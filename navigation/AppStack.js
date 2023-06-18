@@ -23,7 +23,7 @@ import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useDynamicColors from "../commons/useDynamicColors";
 import * as NavigationBar from "expo-navigation-bar";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator, StatusBar } from "react-native";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -272,6 +272,7 @@ const AppStack = () => {
           backgroundColor: allColors.backgroundColorPrimary,
         }}
       >
+        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
         <ActivityIndicator size={50} color={allColors.textColorFive} />
       </View>
     );

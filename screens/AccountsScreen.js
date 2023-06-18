@@ -11,15 +11,15 @@ const AccountsScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
   const [isSearchAccount, setIsSearchAccounts ] = useState(false);
 
-  // #region going to scr thru notifications
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
-  // #endregion
+  // // #region going to scr thru notifications
+  // useEffect(() => {
+  //   const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+  //     const nextScreen = response.notification.request.content.data.headToThisScreen;
+  //     navigation.navigate(nextScreen);
+  //   });
+  //   return () => subscription.remove();
+  // }, []);
+  // // #endregion
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

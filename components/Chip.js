@@ -45,6 +45,7 @@ const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
               variant="bodyMedium"
               style={{
                 color: allColors.universalColor,
+                width: 100
               }}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -53,7 +54,7 @@ const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
             </Text>
             <Text
               variant="bodySmall"
-              style={{ color: "grey" }}
+              style={{ color: "grey", width: 100 }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >

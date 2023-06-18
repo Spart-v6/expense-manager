@@ -103,7 +103,7 @@ const makeStyles = allColors => StyleSheet.create({
     marginRight: 20,
   },
   moreCardStyle: {
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     flexDirection: "column",
     justifyContent: "space-between",

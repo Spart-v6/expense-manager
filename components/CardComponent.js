@@ -103,7 +103,7 @@ const CardComponent = () => {
               >
                 {formatNumberWithCurrency(
                     expensesData
-                      .filter((exp) => exp.selectedCard === crd.paymentNetwork)
+                      .filter((exp) => exp.accCardSelected === crd.id)
                       ?.reduce((acc, card) => {
                         if (card.type === "Income") {
                           return acc + +card.amount;

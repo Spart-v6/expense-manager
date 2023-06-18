@@ -3,7 +3,7 @@ import useDynamicColors from "../commons/useDynamicColors";
 import { Dialog, Button, Text, TouchableRipple } from "react-native-paper";
 import { View } from "react-native";
 
-const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content }) => {
+const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subtitle="" }) => {
   const allColors = useDynamicColors();
   return (
     <Dialog
@@ -14,7 +14,7 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content }) =>
       <Dialog.Title style={{color: allColors.universalColor}}>Delete {title}?</Dialog.Title>
       <Dialog.Content>
         <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
-          The {content} will be removed permanently
+          The {content} will be removed permanently {subtitle}
         </Text>
       </Dialog.Content>
       <Dialog.Actions style={{gap: 10}}>

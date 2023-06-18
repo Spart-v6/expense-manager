@@ -4,7 +4,7 @@ import { Text, Dialog, Portal, Button } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteCard } from "../redux/actions";
+import { deleteCard, deleteData } from "../redux/actions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
 import DeleteDialog from "../components/DeleteDialog";
@@ -26,16 +26,17 @@ const CardDetailsScreen = ({ navigation, route }) => {
 
   const hideDialog = () => setIsDeleteBtnPressed(false);
 
+  const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
+  const filteredArray = expensesData.filter(
+    (expense) => expense?.accCardSelected === card?.id
+  );
+  
   const deleteCardForever = () => {
     setIsDeleteBtnPressed(false);
     dispatch(deleteCard(card.id));
+    for (const obj of filteredArray) dispatch(deleteData(obj.id));
     navigation.navigate("Accounts");
   };
-
-  const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
-  const filteredArray = expensesData.filter(
-    (expense) => expense?.selectedCard === card?.paymentNetwork
-  );
 
   React.useEffect(() => {
     setCard(route.params.card);
@@ -72,6 +73,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
           allColors={allColors}
           title={"card"}
           content={"card"}
+          subtitle={"and expenses linked with this card will be deleted"}
         />
       </Portal>
     </SafeAreaView>
