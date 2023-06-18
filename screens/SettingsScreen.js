@@ -85,16 +85,19 @@ const SettingsScreen = ({ navigation }) => {
     if (newSwitchValue) {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Title",
-          body: "body",
-          data: { data: "data goes here" }
+          title: "Expense Reminder 🪙",
+          body: 'Don\'t forget to add your expenses for today!',
+          data: { headToThisScreen: 'PlusMoreHome' },
         },
         trigger: {
-          hour: 17,
+          hour: 20,
           minute: 40,
           repeats: true
         }
       });
+    }
+    if (!newSwitchValue) {
+      await Notifications.cancelAllScheduledNotificationsAsync();
     }
     return;
   }
@@ -121,8 +124,11 @@ const SettingsScreen = ({ navigation }) => {
           finalStatus = status;
         }
         if (finalStatus !== 'granted') {
+          setShowError(true);
           console.log('Enable push notifications to use the app!');
           await AsyncStorage.setItem('expopushtoken', "");
+          await AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
+          setIsSwitchOn(false);
           return;
         }
         const token = (await Notifications.getExpoPushTokenAsync()).data;
@@ -146,13 +152,17 @@ const SettingsScreen = ({ navigation }) => {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {});
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      const nextScreen = response.notification.request.content.data.headToThisScreen;
+      navigation.navigate(nextScreen);
+    });
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  }, [isSwitchOn]);
+
 
   // #region Biometrics
 
