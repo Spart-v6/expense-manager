@@ -1,7 +1,7 @@
 import { View, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import { Text, TextInput, Button } from "react-native-paper";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
@@ -10,6 +10,7 @@ import SnackbarComponent from "../commons/snackbar";
 import React from "react";
 
 const PlusMoreSplitSection = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
@@ -36,7 +37,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [selectedItem, setSelectedItem] = React.useState(null);
 
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
-    route.params.currGrpMems
+    route.params.currGrpMems.sort()
   );
   const [groupIdentity, setGroupIdentity] = React.useState(route.params.grpIdentity);
 
@@ -127,10 +128,21 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         };
       });
     const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10, groupIdentity });
+    const isValidNumber = input => {
+      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
+      return numberRegex.test(input);
+    }
+    const checkTotalMembersAmount = () => {
+      let sum = 0;
+      for (let key in amountOfEachMember) {
+        if (amountOfEachMember.hasOwnProperty(key)) sum += +amountOfEachMember[key];
+      }
+      return sum;
+    }
 
     const checkError = () => {
       if (sectionName.length === 0) { setErrorMsg("Please fill the section name"); return true; }
-      if (totalAmountSpent === null || totalAmountSpent.length === 0) {setErrorMsg("Please fill total amount spent"); return true;}
+      if (!isValidNumber(totalAmountSpent)) {setErrorMsg("Please enter a valid amount"); return true;}
 
       // checks for whoPaid, whoPaid really exists inn the array
       const lastObject = finalRes[finalRes.length - 1];
@@ -146,6 +158,10 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       const isAmountNan = restObjects.some(obj => obj.amount === "NaN")
       if (isAmountNan) {
         setErrorMsg("Please enter correct amount or percentage for the members");
+        return true;
+      }
+      if (checkTotalMembersAmount() > totalAmountSpent + 1) { // +- 1 
+        setErrorMsg("Individual members total amount must be less than or equal to the total amount spent");
         return true;
       }
       return false;
@@ -185,19 +201,23 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <View style={{ marginLeft: 20, marginRight: 20, gap: 20, flex: 1 }}>
+      <View style={{ marginLeft: 20, marginRight: 20, marginBottom: 10, gap: 20, flex: 1 }}>
         <TextInput
-          label="Section name"
+          label={<Text style={{color: allColors.universalColor}}>{"Section name"}</Text>}
           style={{ backgroundColor: "transparent" }}
           underlineColor={allColors.textColorPrimary}
+          textColor={allColors.universalColor}
+          selectionColor={allColors.textSelectionColor}
           activeUnderlineColor={allColors.textColorPrimary}
           value={sectionName}
           onChangeText={(text) => setSectionName(text)}
         />
         <TextInput
-          label="Total amount spent"
+          label={<Text style={{color: allColors.universalColor}}>{"Total amount spent"}</Text>}
           style={{ backgroundColor: "transparent" }}
           underlineColor={allColors.textColorPrimary}
+          textColor={allColors.universalColor}
+          selectionColor={allColors.textSelectionColor}
           activeUnderlineColor={allColors.textColorPrimary}
           value={totalAmountSpent}
           onChangeText={(text) => setTotalAmountSpent(text)}
@@ -206,16 +226,18 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         />
 
         <TextInput 
-          label="Who paid (leave this empty if you have paid)"
+          label={<Text style={{color: allColors.universalColor}}>{"Who paid (leave this empty if you have paid)"}</Text>}
           value={whoPaid}
           onChangeText={text => setWhoPaid(text)}
           style={{backgroundColor: 'transparent'}}
+          textColor={allColors.universalColor}
+          selectionColor={allColors.textSelectionColor}
           underlineColor={allColors.textColorPrimary}
           activeUnderlineColor={allColors.textColorPrimary}
           keyboardType="default"
         />
 
-        <Text>Select members for this section</Text>
+        <Text style={{color: allColors.universalColor}}>Select members for this section</Text>
         <View
           style={{
             flexDirection: "row",
@@ -233,7 +255,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               iconStyle={{ borderRadius: 50 }}
               style={{ paddingLeft: 5 }}
             />
-            <Text>Divide Equally</Text>
+            <Text style={{color: allColors.universalColor}}>Divide Equally</Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <BouncyCheckbox
@@ -245,7 +267,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               iconStyle={{ borderRadius: 50 }}
               style={{ paddingLeft: 5 }}
             />
-            <Text>Divide by percent</Text>
+            <Text style={{color: allColors.universalColor}}>Divide by percent</Text>
           </View>
         </View>
 
@@ -253,12 +275,12 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           <View
             style={{ flexDirection: "row", justifyContent: "center", gap: 30 }}
           >
-            <Text style={percentageLeft < 0 && {color: allColors.errorColor}}>{percentageLeft.toFixed(2)}% left</Text>
-            <Text style={totalAmountLeft < 0 && {color: allColors.errorColor}}>{totalAmountLeft.toFixed(2)} left</Text>
+            <Text style={[{color: allColors.universalColor},percentageLeft < 0 && {color: allColors.errorColor}]}>{percentageLeft.toFixed(2)}% left</Text>
+            <Text style={[{color: allColors.universalColor},totalAmountLeft < 0 && {color: allColors.errorColor}]}>{totalAmountLeft.toFixed(2)} left</Text>
           </View>
         )}
 
-        <ScrollView style={!divideByPercent && { marginTop: 35.8 }}>
+        <ScrollView style={!divideByPercent && { marginTop: 35.8 }} showsVerticalScrollIndicator={false}>
           {currentGroupMembers?.map((name, index) => (
             <View key={index} style={styles.allGrpMems}>
               <BouncyCheckbox
@@ -272,9 +294,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>
-                  <Text>{name}</Text>
+                  <Text style={{color: allColors.universalColor}}>{name}</Text>
                   {divideByPercent && amountOfEachMember[name] && (
-                    <Text variant="labelSmall">
+                    <Text variant="labelSmall" style={{color: allColors.universalColor}}>
                       {handleDividePercent(amountOfEachMember[name])}
                     </Text>
                   )}
@@ -288,7 +310,11 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                   }}
                 >
                   <TextInput
-                    label={divideByPercent ? "Percent" : "Amount"}
+                    label={
+                      <Text style={{color: allColors.universalColor}}>
+                        {divideByPercent ? "Percent" : "Amount"}
+                      </Text>
+                    }
                     style={{
                       backgroundColor: "transparent",
                       flex: 1,
@@ -298,8 +324,12 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                     onChangeText={(value) => handleInputChange(name, value)}
                     disabled={!isChecked[name]}
                     keyboardType="number-pad"
+                    textColor={allColors.universalColor}
+                    selectionColor={allColors.textSelectionColor}
+                    underlineColor={allColors.textColorPrimary}
+                    activeUnderlineColor={allColors.textColorPrimary}
                   />
-                  {divideByPercent && <Text>%</Text>}
+                  {divideByPercent && <Text style={{color: allColors.universalColor}}>%</Text>}
                 </View>
               </View>
             </View>
@@ -314,7 +344,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           textColor={"black"}
           style={{
             borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
+            backgroundColor: allColors.addBtnColors,
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
@@ -322,12 +352,12 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         >
           <Text
             style={{
-              color: allColors.textColorPrimary,
+              color: allColors.backgroundColorPrimary,
               fontWeight: 700,
               fontSize: 18,
             }}
           >
-            Add
+            Add section
           </Text>
         </Button>
       </View>

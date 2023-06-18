@@ -17,7 +17,8 @@ export default class RadioButton extends Component {
 
   static defaultProps = {
     size: 16,
-    innerColor: allColors.backgroundColorQuaternary,
+    innerColor: allColors.backgroundColorQuaternary, 
+    // TODO: Fix radio button, remove this file and use bouncycheckbox in plusMorAccount
     isSelected: false,
     onPress: () => null,
   };

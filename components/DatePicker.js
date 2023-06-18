@@ -12,7 +12,7 @@ import {
   Vibration,
 } from "react-native";
 import { Dialog, Text, Portal, Button, Divider } from "react-native-paper";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import Feather from "react-native-vector-icons/Feather";
 
@@ -27,6 +27,8 @@ const compareDates = (date1, month1, year1, date2, month2, year2) => {
 };
 
 const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, disableTheDates }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const todayDate = moment().date();
   const todayMonth = moment().month("MMMM").format("MMMM");
   const todayYear = moment().year();
@@ -59,11 +61,11 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
     return (
       <TouchableWithoutFeedback onPress={handleDatePress} disabled={disableDates && disableTheDates}>
         <View style={[styles.cell,
-          selectedDate === item && {backgroundColor: allColors.textColorPrimary},
+          selectedDate === item && {backgroundColor: allColors.selectedDateColor},
           disableDates && disableTheDates && {backgroundColor: 'transparent'}
         ]}>
           <Text style={[styles.dateText, 
-            selectedDate === item && {color: allColors.textColorFour},
+            selectedDate === item && {color: allColors.selectedDateTextColor},
             disableDates && disableTheDates && {color: allColors.backgroundColorTertiary}
           ]}>
             {item}
@@ -84,7 +86,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
         ListHeaderComponent={
           <View style={styles.weekdaysContainer}>
             {weekdays.map((day, index) => 
-              <Text key={index} style={styles.weekdayText}>{day}</Text>
+              <Text key={index} style={[styles.weekdayText, {color: allColors.backgroundColorTertiary}]}>{day}</Text>
             )}
           </View>
         }
@@ -118,6 +120,9 @@ const MyDatePicker = ({
   setSelectedDate,
   disableTheDates
 }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
+
   const todayDate = moment().date();
   const todayMonth = moment().month("MMMM").format("MMMM");
   const todayYear = moment().year();
@@ -159,7 +164,7 @@ const MyDatePicker = ({
           {item.name === moment().year() &&
             <View style={{backgroundColor: allColors.textColorPrimary, width: "80%", height: '120%', position: 'absolute', top: 18, left: 4, borderRadius: 50}}/>
           }
-          <Text variant="titleMedium" style={item.name === moment().year() &&{color: allColors.textColorTertiary}}>
+          <Text variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === moment().year() &&{color: allColors.backgroundColorSecondary}]}>
             {item.name}
           </Text>
         </View>
@@ -267,7 +272,7 @@ const MyDatePicker = ({
         >
           <Dialog.Title
             style={{
-              backgroundColor: allColors.backgroundColorPrimary,
+              backgroundColor: allColors.calendarTopColor,
               marginTop: 0,
               marginBottom: 10,
               marginLeft: 0,
@@ -298,7 +303,7 @@ const MyDatePicker = ({
                   activeOpacity={1}
                 >
                   <View style={{flexDirection: 'row'}}>
-                    <Text variant="titleMedium">
+                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>
                       {selectedMonth} {selectedYear}
                     </Text>
                     <Animated.View
@@ -360,6 +365,7 @@ const MyDatePicker = ({
                   <ScrollView>
                     <FlatList
                       data={years.reverse()}
+                      showsHorizontalScrollIndicator={false} 
                       showsVerticalScrollIndicator={false}
                       renderItem={renderItem}
                       keyExtractor={(item) => item.id.toString()}
@@ -389,7 +395,8 @@ const MyDatePicker = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => 
+StyleSheet.create({
   navigationContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -443,8 +450,6 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    // borderWidth: 1,
-    // borderColor: '#ccc',
     width: "13%",
     borderRadius: 50,
     paddingVertical: 5,
@@ -452,7 +457,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    color: allColors.backgroundColorQuaternary,
+    color: allColors.universalColor,
   },
   nullCell: {
     flex: 1,
@@ -463,7 +468,7 @@ const styles = StyleSheet.create({
   },
   rippleEffect: {
     position: 'absolute',
-    backgroundColor: '#FFD3D3D3', // Default ripple color
+    backgroundColor: allColors.backgroundColorQuaternary,
     borderRadius: 100,
     top: -10,
     left: -10,

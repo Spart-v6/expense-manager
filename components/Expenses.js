@@ -1,12 +1,14 @@
 import { View, TouchableOpacity } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, TouchableRipple } from "react-native-paper";
 import React from "react";
 import moment from "moment";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 
 const Expenses = ({ item, index, onPress }) => {
+  const allColors = useDynamicColors();
+
   const [currency, setCurrency] = React.useState({
     curr: "$"
   });
@@ -28,40 +30,41 @@ const Expenses = ({ item, index, onPress }) => {
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={1}>
-      <View style={{ borderRadius: 5 }} >
-        <View style={{height: 70, flexDirection: "row", justifyContent: "space-between", alignItems:"center"}}>
+    <TouchableRipple onPress={handlePress} rippleColor={allColors.rippleColor} centered>
+      <View>
+        <View style={{height: 50, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
           <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
-
-            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 15, flex: 0.20}}>
-              <Text variant="titleLarge">
+            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 0, flex: 0.10}}>
+              <Text variant="titleMedium" style={{color: allColors.universalColor}}>
                 {dateFormat}
               </Text>
-              <Text variant="titleLarge">
+              <Text variant="titleMedium" style={{color: allColors.universalColor}}>
                 {dayOfWeekFormat}
               </Text>
             </View>
 
-            <View style={{flex: 1}}>
-              <Text variant="titleLarge" style={{width: 200}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-              {item.desc !== "" && (
-                  <Text variant="titleSmall" numberOfLines={2} ellipsizeMode="tail">
-                    {item.desc}
-                  </Text>
-              )}
-            </View>
+            <View style={{flexDirection: 'column', gap: 2, flex: 1}}>
+              <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
+                <Text style={{fontSize: 20, width: 200, color: allColors.universalColor}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
 
-            <View style={{alignItems: "center", marginRight: 15, flex: 0.30,}}>
-              <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
-              </Text>
-              <Text variant="titleSmall" numberOfLines={1}>{item.selectedCard}</Text>
+                <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor, maxWidth: 16, maxWidth: 120, textAlign:"right", marginRight: 10}} ellipsizeMode="tail">
+                  {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
+                </Text>
+              </View>
+              <View style={{flexDirection: 'row' , justifyContent:"space-between"}}>
+                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, maxWidth: 280, }}>
+                    {item.desc}
+                </Text>
+                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, textAlign:"right", maxWidth: 90, width: 85, marginRight: 10,}} >
+                  {item.selectedCard}
+                </Text>
+
+              </View>
             </View>
           </View>
         </View>
       </View>
-    </TouchableOpacity>
-
+    </TouchableRipple>
   );
 };
 

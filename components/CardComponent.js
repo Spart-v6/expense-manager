@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback } from "react";
@@ -10,11 +10,12 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
+import capitalizeSentence from "../helper/capEachWord";
 
-const makeStyles = () =>
+const makeStyles = allColors =>
   StyleSheet.create({
     card: {
-      backgroundColor: allColors.backgroundColorLessPrimary,
+      backgroundColor: allColors.defaultAccSplitRecCard,
       borderRadius: 25,
       margin: 16,
       padding: 16,
@@ -27,6 +28,7 @@ const makeStyles = () =>
 });
 
 const CardComponent = () => {
+  const allColors = useDynamicColors();
   // #region fetching currency
   const [currency, setCurrency] = React.useState({
     curr: "$"
@@ -41,7 +43,7 @@ const CardComponent = () => {
   }, []);
   // #endregion
 
-  const styles = makeStyles();
+  const styles = makeStyles(allColors);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -66,7 +68,7 @@ const CardComponent = () => {
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   return (
-    <View style={{ flex :1 }}>
+    <View style={{ flex :1, marginBottom: 80 }}>
     {
       allCards?.length > 0 ? (
       allCards?.map(crd => (
@@ -75,22 +77,26 @@ const CardComponent = () => {
             title={
               <View style={{ flexDirection: 'row', width: 360, justifyContent: 'space-between'}}>
                 <View style={{flexDirection:"row", alignItems:"center", gap: 10}}>
-                <FontAwesome5
+                  <FontAwesome5
                     name="credit-card"
                     size={20}
                     color={allColors.textColorPrimary}
                     type="font-awesome-5"
                     solid={crd?.checked === "credit"}
                   />
-                  <Text>{crd?.checked?.charAt(0)?.toUpperCase() + crd?.checked?.slice(1)} Card</Text>
+                  <Text style={{color: allColors.universalColor}}>{crd?.checked?.charAt(0)?.toUpperCase() + crd?.checked?.slice(1)} Card</Text>
                 </View>
-              <Text variant="titleMedium">{crd?.paymentNetwork}</Text>
+                  <Text variant="titleMedium" style={{color: allColors.universalColor, maxWidth: 230}} 
+                    numberOfLines={1}
+                      ellipsizeMode="tail">
+                      {crd?.paymentNetwork}
+                  </Text>
             </View>
             }
           />
           <Card.Content>
             <View style={{gap: 6}}>
-              <Text variant="titleMedium">Total Expenditure</Text>
+              <Text variant="titleMedium" style={{color: allColors.universalColor}}>Total Expenditure</Text>
               <Text
                 variant="headlineLarge"
                 style={{ color: allColors.textColorPrimary }}
@@ -120,13 +126,15 @@ const CardComponent = () => {
                   alignItems: "center"
                 }}
               >
-                <View style={{}}>
-                  <Text variant="titleMedium">Card Holder name</Text>
+                <View>
+                  <Text variant="titleMedium" style={{color: allColors.universalColor}}>Card holder name</Text>
                   <Text
                     variant="headlineSmall"
                     style={{ color: allColors.textColorPrimary }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     >
-                    {crd?.cardHolderName.toUpperCase()}
+                    {capitalizeSentence(crd?.cardHolderName)}
                   </Text>
                 </View>
                 <View>
@@ -140,7 +148,7 @@ const CardComponent = () => {
                     </Text>
                     :
                     <View style={{flexDirection:"column", justifyContent:"center", alignItems:"flex-start"}}>
-                      <Text variant="titleMedium">Expiry</Text>
+                      <Text variant="titleMedium" style={{ color: allColors.textColorPrimary }}>Expiry</Text>
                       <View style={{flexDirection:"row", gap: 5}}>
                         <Text variant="headlineSmall"
                         style={{ color: allColors.textColorPrimary }}>{crd?.month}</Text>
@@ -163,8 +171,8 @@ const CardComponent = () => {
         <View style={{justifyContent: "center", alignItems:"center", height: 700, flex: 1, marginBottom: 0}}>
           <MaterialCommunityIcons name="credit-card-off-outline" size={60} color={allColors.textColorPrimary} />
           <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text variant="titleMedium">You don't have cards yet.</Text>
-            <Text variant="bodySmall">
+            <Text variant="titleMedium" style={{color: allColors.universalColor}}>You don't have cards yet.</Text>
+            <Text variant="bodySmall" style={{color: allColors.universalColor}}>
               Click on "+" button to start adding cards
             </Text>
           </View>

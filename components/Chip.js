@@ -1,10 +1,13 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import allColors from "../commons/allColors";
+import { View, TouchableOpacity } from "react-native";
+import { Text } from "react-native-paper";
+import useDynamicColors from "../commons/useDynamicColors";
 import React from "react";
+import { IconComponent } from "./IconPickerModal";
 
-const Chip = ({ index, onPress, isClicked, text }) => {
+const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
+  const allColors = useDynamicColors();
   const handlePress = () => {
-    onPress(index, text);
+    onPress(data);
   };
 
   return (
@@ -17,23 +20,46 @@ const Chip = ({ index, onPress, isClicked, text }) => {
             justifyContent: "center",
             borderRadius: 6,
             alignSelf: "flex-start",
-            marginRight: 10
+            marginRight: 10,
+            borderRadius: 12,
           },
-          isClicked && { backgroundColor: allColors.textColorSecondary }
+          isClicked && { backgroundColor: allColors.addBtnColors },
         ]}
       >
         <TouchableOpacity
           onPress={handlePress}
-          activeOpacity={0.7}
-          style={{
-            backgroundColor: allColors.backgroundColorLessPrimary,
-            borderRadius: 6,
-            justifyContent: "center",
-            alignItems: "center",
-            alignSelf: "flex-start",
-          }}
+          activeOpacity={0.95}
+          style={[
+            styles.moreCardStyle,
+            { height: 97, borderRadius: 10, gap: 15 },
+          ]}
         >
-          <Text style={{ padding: 10, color: "white" }}>{text}</Text>
+          <IconComponent
+            name={cardName === "credit" ? "credit-card-alt" : "credit-card"}
+            category={"FontAwesome"}
+            size={15}
+            color={allColors.addBtnColors}
+          />
+          <View style={{ flexDirection: "column", gap: 2 }}>
+            <Text
+              variant="bodyMedium"
+              style={{
+                color: allColors.universalColor,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {name}
+            </Text>
+            <Text
+              variant="bodySmall"
+              style={{ color: "grey" }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {text}
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </>

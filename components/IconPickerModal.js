@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Dialog, Portal, Text, Button } from "react-native-paper";
 import React, { useState } from "react";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import icons from "../commons/allIcons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -27,7 +27,7 @@ const getIconLibrary = (category) => {
   return iconLibraryMap[category] || Icon;
 };
 
-export const IconComponent = ({ name, category, size=30, color=allColors.textColorSecondary }) => {
+export const IconComponent = ({ name, category, size=30, color=useDynamicColors().textColorSecondary }) => {
   const IconLibrary = getIconLibrary(category);
   return <IconLibrary name={name} size={size} color={color} />;
 };
@@ -35,7 +35,7 @@ export const IconComponent = ({ name, category, size=30, color=allColors.textCol
 const ITEM_WIDTH = 95; // Width of each item in the grid
 const NUM_COLUMNS = 4; // Number of columns in the grid
 
-const IconPickerModal = ({ onSelectIcon }) => {
+const IconPickerModal = ({ onSelectIcon, textColor }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -44,7 +44,7 @@ const IconPickerModal = ({ onSelectIcon }) => {
     >
       <View style={{ justifyContent:"center", alignItems:"center", gap: 10 }}>
         <IconComponent name={item.name} category={item.category} />
-        <Text variant="bodySmall">{item.title}</Text>
+        <Text variant="bodySmall" style={{color: textColor}}>{item.title}</Text>
       </View>
     </TouchableOpacity>
   );

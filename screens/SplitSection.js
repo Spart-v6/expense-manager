@@ -1,7 +1,7 @@
 import { View, SafeAreaView, TouchableOpacity, Vibration } from "react-native";
-import { Text, FAB, Card, Dialog, Button, Avatar } from "react-native-paper";
+import { Text, FAB, Card, Dialog, Button, Avatar, Portal } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -12,6 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
+import DeleteDialog from "../components/DeleteDialog";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -22,6 +23,7 @@ const AllSections = ({
   username,
   currency
 }) => {
+  const allColors = useDynamicColors();
   const renderPayAndReceive = (payBack, receive) => {
     if (parseInt(payBack) === 0 && receive === 0) return <></>;
     return payBack !== 0 ? (
@@ -113,12 +115,13 @@ const AllSections = ({
                 navigation.navigate("SplitDetailScreen", { subArray })
               }
               style={{ marginTop: 20 }}
-              activeOpacity={0.8}
+              activeOpacity={0.9}
             >
               <Card
                 key={index}
                 style={{
                   backgroundColor: allColors.backgroundColorLessPrimary,
+                  shadowColor: "transparent"
                 }}
               >
                 <Card.Title
@@ -130,8 +133,8 @@ const AllSections = ({
                         justifyContent: "space-between",
                       }}
                     >
-                      <Text variant="titleMedium">{sectionName}</Text>
-                      <Text variant="titleLarge" style={{maxWidth: 200}} ellipsizeMode="tail" numberOfLines={1}>{formatNumberWithCurrency(totalAmountSpent, currency)}</Text>
+                      <Text variant="titleMedium" style={{color: allColors.universalColor}}>{sectionName}</Text>
+                      <Text variant="titleLarge" style={{maxWidth: 200, color: allColors.universalColor}} ellipsizeMode="tail" numberOfLines={1}>{formatNumberWithCurrency(totalAmountSpent, currency)}</Text>
                     </View>
                   }
                   titleStyle={{ marginTop: 10 }}
@@ -193,9 +196,9 @@ const AllSections = ({
             <MaterialCommunityIcons
               name="playlist-plus"
               size={60}
-              color={allColors.backgroundColorSecondary}
+              color={allColors.textColorPrimary}
             />
-            <Text variant="titleMedium">
+            <Text variant="titleMedium" style={{color: allColors.universalColor}}>
               Go ahead and create sections for this group.
             </Text>
           </View>
@@ -206,10 +209,11 @@ const AllSections = ({
 };
 
 const AllMembers = ({ allMembers }) => {
+  const allColors = useDynamicColors();
   return (
     <>
       <View style={{marginLeft: 20, marginTop: 20}}>
-        <Text>{allMembers?.length} Members</Text>
+        <Text variant="titleMedium" style={{color: allColors.universalColor}}>{allMembers?.length} Members</Text>
       </View>
       <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
         <View style={{ margin: 20, gap: 15 }}>
@@ -217,8 +221,8 @@ const AllMembers = ({ allMembers }) => {
             const words = e.split(' ').map(word => word[0]).join('');
             return (
               <View key={index} style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
-                <Avatar.Text size={30} label={words} style={{backgroundColor: allColors.textColorPrimary}} labelStyle={{color: allColors.textColorFour}}/>
-                <Text>{e}</Text>
+                <Avatar.Text size={35} label={words} style={{backgroundColor: allColors.addBtnColors}} labelStyle={{color: allColors.selectedDateTextColor}}/>
+                <Text style={{color: allColors.universalColor, fontSize: 18}}>{e}</Text>
               </View>
             )}
           )}
@@ -229,6 +233,7 @@ const AllMembers = ({ allMembers }) => {
 };
 
 const SplitSection = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
@@ -288,6 +293,8 @@ const SplitSection = ({ navigation, route }) => {
       innerArray[innerArray.length - 1].groupIdentity === identity
   );
 
+  const hideDialog = () => setDeleteDialogVisible(false);
+
   const handleDeleteSection = (identity) => {
     setSelectedSectionToDelete(identity);
     setDeleteDialogVisible(true);
@@ -331,34 +338,34 @@ const SplitSection = ({ navigation, route }) => {
       <View style={{ margin: 20, gap: 10, flex: 1 }}>
         <View style={{ flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 0.5 }}>
-            <Card style={{ backgroundColor: "darkgreen" }}>
+            <Card style={{ backgroundColor: allColors.receiveGreenBg }}>
               <Card.Title
                 title={"Receive"}
-                titleStyle={{ color: allColors.successColor }}
+                titleStyle={{ color: allColors.universalColor }}
               />
                 <Text style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
-                  color: allColors.successColor,
+                  color: allColors.universalColor,
                 }}>
                   {formatNumberWithCurrency(totalReceive, currency.curr)}
                 </Text>
             </Card>
           </View>
           <View style={{ flex: 0.5 }}>
-            <Card style={{ backgroundColor: "darkred" }}>
+            <Card style={{ backgroundColor: allColors.payRedBg }}>
               <Card.Title
                 title={"Pay"}
-                titleStyle={{ color: allColors.warningColor }}
+                titleStyle={{ color: allColors.universalColor }}
               />
               <Text style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
-                  color: allColors.warningColor,
+                  color: allColors.universalColor,
                 }}>
                   {formatNumberWithCurrency(totalPay, currency.curr)}
               </Text>
@@ -370,8 +377,8 @@ const SplitSection = ({ navigation, route }) => {
           <Tab.Navigator
             initialRouteName="Sections"
             screenOptions={{
-              tabBarActiveTintColor: "#fff",
-              tabBarLabelStyle: { fontSize: 12 },
+              tabBarActiveTintColor: allColors.universalColor,
+              tabBarLabelStyle: { fontSize: 15, fontWeight: 500 },
               tabBarIndicatorStyle: {
                 backgroundColor: allColors.textColorPrimary,
               },
@@ -394,37 +401,22 @@ const SplitSection = ({ navigation, route }) => {
               )}
             </Tab.Screen>
             <Tab.Screen name="Members">
-              {() => <AllMembers allMembers={value} />}
+              {() => <AllMembers allMembers={value.sort()} />}
             </Tab.Screen>
           </Tab.Navigator>
         </View>
       </View>
 
-      <Dialog
-        visible={isDeleteDialogVisible}
-        onDismiss={() => setDeleteDialogVisible(false)}
-        style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-      >
-        <Dialog.Title>Delete section?</Dialog.Title>
-        <Dialog.Content>
-          <Text variant="bodyMedium" style={{ color: "white" }}>
-            The section will be removed permanently
-          </Text>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={() => setDeleteDialogVisible(false)}>
-            <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
-          </Button>
-          <Button
-            onPress={handleDelete}
-            mode="elevated"
-            contentStyle={{ width: 60 }}
-            buttonColor={allColors.warningColor}
-          >
-            <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+      <Portal>
+        <DeleteDialog
+          visible={isDeleteDialogVisible}
+          hideDialog={hideDialog}
+          deleteExpense={handleDelete}
+          allColors={allColors}
+          title={"section"}
+          content={"section"}
+        />
+      </Portal>
 
       <FAB
         animated
@@ -435,7 +427,8 @@ const SplitSection = ({ navigation, route }) => {
             grpIdentity: identity,
           })
         }
-        mode="flat"
+        color={allColors.universalColor}
+        mode="elevated"
         style={{
           position: "absolute",
           margin: 16,

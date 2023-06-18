@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Text, Button } from "react-native-paper";
 import React from "react";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
@@ -74,6 +74,8 @@ const currencyObj = [
 ];
 
 const WelcomeScreen = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const [clickedCurrency, setClickedCurrency] = React.useState({
     name: currencyObj[0].name,
     id: currencyObj[0].id,
@@ -131,10 +133,10 @@ const WelcomeScreen = ({ navigation, route }) => {
     <View
       style={[
         {
-          borderRadius: 20,
+          borderRadius: 26,
         },
         isCurrencyClicked.id === item.id && {
-          backgroundColor: allColors.textColorSecondary,
+          backgroundColor: allColors.addBtnColors,
         },
       ]}
     >
@@ -148,8 +150,9 @@ const WelcomeScreen = ({ navigation, route }) => {
               name={item.iconName}
               category={item.iconType}
               size={40}
+              color={allColors.addBtnColors}
             />
-            <Text variant="titleMedium">{item.name}</Text>
+            <Text variant="titleMedium" style={{color: allColors.universalColor}}>{item.name}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -165,7 +168,7 @@ const WelcomeScreen = ({ navigation, route }) => {
         marginRight: 20,
       }}
     >
-      <StatusBar translucent backgroundColor={"transparent"} />
+      <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>
         <SimpleLineIcons
           name="globe-alt"
@@ -173,7 +176,7 @@ const WelcomeScreen = ({ navigation, route }) => {
           color={allColors.textColorPrimary}
           style={{ alignSelf: "center" }}
         />
-        <Text variant="displaySmall">Select currency</Text>
+        <Text variant="displaySmall" style={{color: allColors.universalColor}}>Select currency</Text>
       </View>
 
       <View style={{ marginTop: 20, gap: 40 }}>
@@ -193,7 +196,7 @@ const WelcomeScreen = ({ navigation, route }) => {
           textColor={"black"}
           style={{
             borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
+            backgroundColor: allColors.addBtnColors,
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
@@ -203,7 +206,7 @@ const WelcomeScreen = ({ navigation, route }) => {
         >
           <Text
             style={{
-              color: allColors.textColorPrimary,
+              color: allColors.backgroundColorPrimary,
               fontWeight: 700,
               fontSize: 18,
             }}
@@ -216,7 +219,7 @@ const WelcomeScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   containerStyle: {
     flexGrow: 1,
     justifyContent: "space-between",
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "flex-start",
-    backgroundColor: allColors.textColorFour,
+    backgroundColor: allColors.backgroundColorLessPrimary,
   },
 });
 

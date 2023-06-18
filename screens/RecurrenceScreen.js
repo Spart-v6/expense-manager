@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   Vibration
 } from "react-native";
-import { FAB, Card, Text, Dialog, Button } from "react-native-paper";
-import allColors from "../commons/allColors";
+import { FAB, Card, Text, Dialog, Button, Portal } from "react-native-paper";
+import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
@@ -25,8 +25,11 @@ import { storeRecurrences, deleteRecurrences } from "../redux/actions";
 import formatNumberWithCurrency from "../helper/formatter";
 import { getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
+import DeleteDialog from "../components/DeleteDialog";
 
 const RecurrenceScreen = ({ navigation }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const [currency, setCurrency] = React.useState({
     curr: "$"
   });
@@ -61,6 +64,7 @@ const RecurrenceScreen = ({ navigation }) => {
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
+  const hideDialog = () => setDeleteDialogVisible(false);
 
   const handleLongPress = (item) => {
     setSelectedItemToDelete(item);
@@ -125,7 +129,7 @@ const RecurrenceScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor={"transparent"} />
+      <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeader
         title="Recurring Expenses"
         isParent={true}
@@ -135,13 +139,13 @@ const RecurrenceScreen = ({ navigation }) => {
         <View style={{ margin: 20 }}>
           <Card
             mode="contained"
-            style={{ backgroundColor: allColors.backgroundColorSecondary }}
+            style={{ backgroundColor: allColors.defaultHomeRecurrCard }}
           >
             <Card.Title
               title="Future Balance"
-              subtitle={formatNumberWithCurrency(totalRecurrenceSum, currency.curr)}
+              subtitle={formatNumberWithCurrency((totalRecurrenceSum+totalValue), currency.curr)}
               titleStyle={{
-                color: allColors.textColorPrimary,
+                color: allColors.universalColor,
                 fontSize: 30,
                 paddingTop: 30,
               }}
@@ -154,13 +158,13 @@ const RecurrenceScreen = ({ navigation }) => {
               }}
             />
             <Card.Content>
-              <Text variant="headlineSmall">{`Current balance: ${formatNumberWithCurrency(totalValue, currency.curr)}`}</Text>
+              <Text variant="headlineSmall" style={{color: allColors.universalColor}}>{`Current balance: ${formatNumberWithCurrency(totalValue, currency.curr)}`}</Text>
             </Card.Content>
           </Card>
         </View>
 
         {recurrencesData.length > 0 ?
-          <ScrollView>
+          <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
             <View style={{ margin: 20, flex: 1 }}>
               <FlatList
                 scrollEnabled={false}
@@ -173,15 +177,16 @@ const RecurrenceScreen = ({ navigation }) => {
           : 
           <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
             <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>
-            <Text variant="titleMedium">You haven't added any recurring payment.</Text>
+            <Text variant="titleMedium" style={{color: allColors.universalColor}}>You haven't added any recurring payment.</Text>
           </View>
         }
       </AnimatedEntryScreen>
       <FAB
         animated
         icon="repeat"
+        color={allColors.universalColor}
         onPress={() => navigation.navigate("PlusMoreRecurrence")}
-        mode="flat"
+        mode="elevated"
         style={{
           position: "absolute",
           margin: 16,
@@ -192,35 +197,22 @@ const RecurrenceScreen = ({ navigation }) => {
         customSize={70}
       />
 
-      <Dialog
-        visible={isDeleteDialogVisible}
-        onDismiss={() => setDeleteDialogVisible(false)}
-        style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-      >
-        <Dialog.Title>Delete recurrence?</Dialog.Title>
-        <Dialog.Content>
-          <Text variant="bodyMedium">The recurring payment will be removed permanently</Text>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={() => setDeleteDialogVisible(false)}>
-            <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
-          </Button>
-          <Button
-            onPress={handleDelete}
-            mode="elevated"
-            contentStyle={{ width: 60 }}
-            buttonColor={allColors.warningColor}
-          >
-            <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+      <Portal>
+        <DeleteDialog
+          visible={isDeleteDialogVisible}
+          hideDialog={hideDialog}
+          deleteExpense={handleDelete}
+          allColors={allColors}
+          title={"recurrence"}
+          content={"recurring payment"}
+        />
+      </Portal>
     </SafeAreaView>
   );
 };
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   card: {
-    backgroundColor: allColors.backgroundColorRecurrence,
+    backgroundColor: allColors.defaultAccSplitRecCard,
     marginTop: 8,
     marginBottom: 8,
     elevation: 4,

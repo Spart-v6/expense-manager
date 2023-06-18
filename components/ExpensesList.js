@@ -4,24 +4,29 @@ import { Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
 import { addData, updateRecurrences } from "../redux/actions";
 import { storeData, storeRecurrences, deleteRecurrences } from "../redux/actions";
 
-const Separator = () => (
-  <View
-    style={{
-      height: 1,
-      width: "80%",
-      backgroundColor: allColors.backgroundColorTertiary,
-      alignSelf: "center",
-    }}
-  />
-);
+const Separator = () => {
+  const allColors = useDynamicColors();
+  return (
+    <View
+      style={{
+        height: 1,
+        width: "190%",
+        backgroundColor: allColors.backgroundColorTertiary,
+        alignSelf: "center",
+        opacity: 0.5
+      }}
+    />
+  );
+}
 
 const ExpensesList = ({ filter }) => {
+  const allColors = useDynamicColors();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [currentFilter, setCurrentFilter] = useState("Daily");
@@ -211,6 +216,7 @@ const ExpensesList = ({ filter }) => {
         recurrenceStartDate,
         recurrenceEndDate,
         repeatRecurrrence,
+        accCardSelected
       } = expense;
       let fre = "";
       if (frequency === "Daily") fre = "days";
@@ -240,9 +246,13 @@ const ExpensesList = ({ filter }) => {
         });
         dispatch(deleteRecurrences(expense.id))
       }
+      expenses.push({
+        ...expense,
+        accCardSelected
+      })
     }
     const updatedExpenses = expenses.map(expense => {
-      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time } = expense;
+      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected } = expense;
     
       return {
         amount: recurrenceAmount,
@@ -253,7 +263,8 @@ const ExpensesList = ({ filter }) => {
         selectedCard: paymentNetwork,
         selectedCategory: { iconCategory: "FontAwesome", iconName: "repeat" },
         time: time,
-        type: paymentType
+        type: paymentType,
+        accCardSelected
       };
     });
     if (updatedExpenses.length > 0) dispatch(addData(updatedExpenses));
@@ -276,13 +287,13 @@ const ExpensesList = ({ filter }) => {
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <View style={{ alignItems: "center" }}>
-                    <Text variant="titleMedium">{item}</Text>
+                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>{item}</Text>
                   </View>
                 )}
                 renderSectionHeader={({ section: { title } }) => (
                   <Text
                     variant="titleMedium"
-                    style={{ marginTop: 7, marginBottom: 7 }}
+                    style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                   >
                     {title}
                   </Text>
@@ -298,7 +309,7 @@ const ExpensesList = ({ filter }) => {
               renderSectionHeader={({ section: { title } }) => (
                 <Text
                   variant="titleMedium"
-                  style={{ marginTop: 7, marginBottom: 7 }}
+                  style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                 >
                   {title}
                 </Text>

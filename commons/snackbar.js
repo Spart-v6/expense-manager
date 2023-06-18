@@ -1,9 +1,10 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Snackbar, Text } from "react-native-paper";
-import allColors from "./allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 
 const SnackbarComponent = ({errorMsg}) => {
+  const allColors = useDynamicColors();
 
   const [visible, setVisible] = React.useState(false);
 

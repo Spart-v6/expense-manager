@@ -11,7 +11,7 @@ import AppStack from "./navigation/AppStack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
-import allColors from "./commons/allColors";
+import useDynamicColors from "./commons/useDynamicColors";
 import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
 
 const theme = {
@@ -24,6 +24,7 @@ const theme = {
 };
 
 const App = () => {
+  const allColors = useDynamicColors();
   // #region Notifications
   const [notification, setNotification] = React.useState(false);
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
@@ -160,15 +161,15 @@ const App = () => {
     if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
-        <StatusBar translucent backgroundColor={"transparent"} />
+        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
         <View style={{marginTop: 100, justifyContent: 'center', alignItems: 'center'}}>
           <Image source={require('./assets/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
         </View>
         <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
 
-          <Text variant="titleLarge"> Authentication {authMsg} </Text>
+          <Text variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </Text>
           {authMsg === "failed" && (
-              <Text>{warningMsg}</Text>
+              <Text style={{color: allColors.universalColor}}>{warningMsg}</Text>
           )}
         </View>
       </SafeAreaView>

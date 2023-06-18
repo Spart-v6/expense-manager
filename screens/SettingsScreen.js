@@ -3,7 +3,7 @@ import { View, SafeAreaView } from "react-native";
 import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snackbar } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import { IconComponent } from "../components/IconPickerModal";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
@@ -18,6 +18,8 @@ Notifications.setNotificationHandler({
 });
 
 const SettingsScreen = ({ navigation }) => {
+  const allColors = useDynamicColors();
+
   // #region fetching username and currency
   const [username, setUsername] = React.useState(null);
   const [currency, setCurrency] = React.useState({
@@ -231,10 +233,12 @@ const SettingsScreen = ({ navigation }) => {
           style={{ borderRadius: 2, flexDirection: "row", alignItems: "center", padding: 10 }}
         >
           <>
-            <IconComponent name={"pencil"} category={"Foundation"} size={20} color={allColors.textColorPrimary}/>
-            <View style={{ marginLeft: 15 }}>
-              <Text variant="bodyLarge">Change name</Text>
-              <Text variant="bodySmall">{placeholderUsername}</Text>
+            <View style={{paddingRight: 10, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"pencil"} category={"Foundation"} size={20} color={allColors.textColorPrimary}/>
+            </View>
+            <View style={{ marginLeft: 13 }}>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Change name</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{placeholderUsername}</Text>
             </View>
           </>
         </TouchableRipple>
@@ -243,31 +247,37 @@ const SettingsScreen = ({ navigation }) => {
           style={{ borderRadius: 2, flexDirection: "row", alignItems: "center", padding: 10 }}
         >
           <>
+          <View style={{paddingRight: 9, paddingLeft: 0, paddingTop: 3}}>
             <IconComponent name={"currency-sign"} category={"MaterialCommunityIcons"} size={20} color={allColors.textColorPrimary}/>
+          </View>
             <View style={{ marginLeft: 13 }}>
-              <Text variant="bodyLarge">Currency Sign</Text>
-              <Text variant="bodySmall">{currency.name}</Text>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Currency Sign</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{currency.name}</Text>
             </View>
           </>
         </TouchableRipple>
 
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
-            <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
+          <View style={{flexDirection: "row",padding: 9 }}>
+            <View style={{paddingRight: 10, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
+            </View>
             <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
-              <Text variant="bodyLarge">Notifications</Text>
-              <Text variant="bodySmall">A reminder for adding expenses will be sent</Text>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Notifications</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>A reminder for adding expenses will be sent</Text>
             </View>
           </View>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
         </View>
 
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
-            <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
-            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
-              <Text variant="bodyLarge">Lock App</Text>
-              <Text variant="bodySmall">When enabled, you need to use fingerprint to unlock the app</Text>
+          <View style={{flexDirection: "row", padding: 10 }}>
+            <View style={{paddingRight: 12, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
+            </View>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }} >
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Lock App</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>When enabled, you need to use fingerprint to unlock the app</Text>
             </View>
           </View>
           <Switch value={isLockEnabled} onValueChange={lockAppHandler} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
@@ -279,13 +289,15 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openChangeName} onDismiss={()=> setOpenChangeName(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title>Update name</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary}}>Update name</Dialog.Title>
           <Dialog.Content>
             <TextInput
-              placeholder={"New username"}
+              label={<Text style={{color: allColors.universalColor}}>{"New username"}</Text>}
               style={{ backgroundColor: "transparent" }}
               value={updatedUsername}
+              textColor={allColors.universalColor}
               underlineColor={allColors.textColorFive}
+              selectionColor={allColors.textSelectionColor}
               activeUnderlineColor={allColors.textColorPrimary}
               onChangeText={text => setUpdatedUsername(text)}
               autoFocus
@@ -304,9 +316,9 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openLockAppDialog} onDismiss={()=> setOpenLockAppDialog(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary}}>Alert</Dialog.Title>
           <Dialog.Content>
-            <Text>
+            <Text style={{color: allColors.textColorSecondary}}>
               {biometricWarning}
             </Text>
           </Dialog.Content>
@@ -322,11 +334,12 @@ const SettingsScreen = ({ navigation }) => {
         visible={showError}
         onDismiss={() => setShowError(false)}
         duration={1200}
+        style={{backgroundColor: allColors.backgroundColorLessPrimary}}
         >
-          <Text variant="bodyMedium" style={{color: "black"}}>
+          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
             Permission denied
           </Text>
-          <Text variant="bodyMedium" style={{color: "black"}}>
+          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
             Please enable permissions from settings
           </Text>
       </Snackbar>

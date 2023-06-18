@@ -10,13 +10,16 @@ import AppHeader from "../components/AppHeader";
 import { Text, TextInput, Button, Portal, Dialog } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { useDispatch } from "react-redux";
 import { addGroups } from "../redux/actions/index";
 import SnackbarComponent from "../commons/snackbar";
 import { getUsernameFromStorage } from "../helper/constants";
 
 const PlusMoreGroup = ({ navigation }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
+
   //fetching username
   const [username, setUsername] = React.useState(null);
 
@@ -116,10 +119,12 @@ const PlusMoreGroup = ({ navigation }) => {
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
-              backgroundColor: allColors.backgroundColorQuinary,
+              backgroundColor: allColors.innerTextFieldColor,
               marginBottom: 20,
+              borderColor: "black",
+              borderWidth: 2,
             }}
-            selectionColor={allColors.textColorFour}
+            selectionColor={allColors.textSelectionColor}
             textColor={allColors.textColorFour}
             underlineColorAndroid="transparent"
             activeUnderlineColor="transparent"
@@ -136,12 +141,12 @@ const PlusMoreGroup = ({ navigation }) => {
         <View style={styles.line} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text>Add names</Text>
+          <Text style={{color: allColors.universalColor}}>Add names</Text>
           {urself && (
             <View style={[styles.rowContainer]}>
               <TextInput
                 style={styles.textInput}
-                selectionColor={allColors.textColorFour}
+                selectionColor={allColors.textSelectionColor}
                 textColor={allColors.textColorFour}
                 placeholderTextColor={allColors.textColorFour}
                 underlineColorAndroid="transparent"
@@ -169,7 +174,7 @@ const PlusMoreGroup = ({ navigation }) => {
             <View style={[styles.rowContainer]} key={input.id}>
               <TextInput
                 style={styles.textInput}
-                selectionColor={allColors.textColorFour}
+                selectionColor={allColors.textSelectionColor}
                 textColor={allColors.textColorFour}
                 underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
@@ -205,7 +210,7 @@ const PlusMoreGroup = ({ navigation }) => {
           <Octicons
             name="plus"
             size={50}
-            color={allColors.backgroundColorQuinary}
+          color={allColors.addBtnColors}
             style={{ alignSelf: "center" }}
           />
         </TouchableOpacity>
@@ -218,7 +223,7 @@ const PlusMoreGroup = ({ navigation }) => {
           labelStyle={{ fontSize: 15 }}
           style={{
             borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
+            backgroundColor: allColors.addBtnColors,
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
@@ -226,12 +231,12 @@ const PlusMoreGroup = ({ navigation }) => {
         >
           <Text
             style={{
-              color: allColors.textColorPrimary,
+              color: allColors.backgroundColorPrimary,
               fontWeight: "bold",
               fontSize: 18,
             }}
           >
-            Add
+            Add Group
           </Text>
         </Button>
       </View>
@@ -265,7 +270,7 @@ const PlusMoreGroup = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   container: {
     backgroundColor: "transparent",
     borderRadius: 8,
@@ -281,7 +286,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
-    backgroundColor: allColors.backgroundColorQuinary,
+    backgroundColor: allColors.innerTextFieldColor,
+    borderColor: "black",
+    borderWidth: 2,
     margin: 10,
     marginLeft: 0,
   },

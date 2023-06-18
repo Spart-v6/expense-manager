@@ -2,7 +2,6 @@ import {
   View,
   SafeAreaView,
   StyleSheet,
-  Modal,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
@@ -11,27 +10,27 @@ import {
   TextInput,
   Button,
   Text,
-  useTheme,
   Dialog,
   Portal,
+  TouchableRipple 
 } from "react-native-paper";
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import DatePicker from "react-native-modern-datepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addData, deleteData, updateData, storeCard } from "../redux/actions";
 import moment from "moment";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import Icon1 from "react-native-vector-icons/AntDesign";
-import allColors from "../commons/allColors";
+import Icon1 from "react-native-vector-icons/Octicons";
+import useDynamicColors from "../commons/useDynamicColors";
 import SnackbarComponent from "../commons/snackbar";
-import { AntDesign } from "@expo/vector-icons";
 import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
 import MyDatePicker from "../components/DatePicker";
+import DeleteDialog from "../components/DeleteDialog";
+import Chip from "../components/Chip";
 
 const FrequentCategories = ({ handleSelectedCategory }) => {
+  const allColors = useDynamicColors();
   const [selectedIcon, setSelectedIcon] = useState(null);
   const handleSelectIcon = ({ iconName, iconCategory }) => {
     setSelectedIcon(iconName);
@@ -47,26 +46,29 @@ const FrequentCategories = ({ handleSelectedCategory }) => {
       }}
     >
       <View>
-        <IconPickerModal onSelectIcon={handleSelectIcon} />
+        <IconPickerModal onSelectIcon={handleSelectIcon} textColor={allColors.textColorFive}/>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   btn: {
     borderColor: "transparent",
     borderRadius: 10,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },
+  textbtn: {
+    color: allColors.textColorSecondary
+  },
   selected: {
     borderRadius: 20,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    backgroundColor: allColors.backgroundColorQuaternary,
+    backgroundColor: allColors.backgroundColorDatesSelected,
     text: {
-      color: allColors.textColorTertiary,
+      color: allColors.textColorPrimary,
       fontWeight: 700,
     },
   },
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    backgroundColor: allColors.backgroundColorLessPrimary,
+    backgroundColor: allColors.backgroundColorDates,
     height: 100,
     width: 125,
   },
@@ -122,6 +124,8 @@ const styles = StyleSheet.create({
 });
 
 const PlusMoreHome = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const dispatch = useDispatch();
 
   // #region
@@ -145,7 +149,7 @@ const PlusMoreHome = ({ navigation, route }) => {
   // Update screen variables
   const [isUpdatePressed, setIsUpdatePressed] = useState(false);
   const [valuesToChange, setValuesToChange] = useState({});
-  const [btnName, setBtnName] = useState("Add");
+  const [btnName, setBtnName] = useState("Add Expense");
 
   const [expenseName, setExpenseName] = useState(() => {
     if (route.params) return route.params.updateItem.name;
@@ -170,7 +174,13 @@ const PlusMoreHome = ({ navigation, route }) => {
     if (route.params) return route.params.updateItem.selectedCard;
     return "";
   });
+  const [selectedCardID, setSelectedCardID] = useState(() => {
+    if (route.params) return route.params.updateItem.accCardSelected;
+    return 0;
+  });
+
   const handlePress = (e) => {
+    setSelectedCardID(e.id);
     setSelectedCardInExpense(e.paymentNetwork);
   };
 
@@ -246,7 +256,7 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   // for icons
   // TODO: Do chips and Icon Picker + Tabs in modal
-
+  // TODO: Add border color to income and expense buttons
   const incomeExpenseBtns = (name) => {
     return (
       <Button
@@ -256,11 +266,12 @@ const PlusMoreHome = ({ navigation, route }) => {
             : setSelectedButton("Expense")
         }
         mode="contained"
-        buttonColor={allColors.backgroundColorTertiary}
+        buttonColor={allColors.backgroundColorDates}
         labelStyle={{ fontSize: 15 }}
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
-        <Text style={selectedButton === name && styles.selected.text}>
+        {/* TODO: Limit the amount digits to 10 only */}
+        <Text style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
           {name}
         </Text>
       </Button>
@@ -292,14 +303,14 @@ const PlusMoreHome = ({ navigation, route }) => {
               borderTopLeftRadius: 15,
               borderColor: "black",
               borderWidth: 2,
-              backgroundColor: allColors.backgroundColorQuinary,
+              backgroundColor: allColors.innerTextFieldColor,
               ...style,
             },
             (placeholder === "Expense" || placeholder === "Income") && {
               flex: 1,
             },
           ]}
-          selectionColor={allColors.textColorFour}
+          selectionColor={allColors.textSelectionColor}
           textColor={allColors.textColorFour}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
@@ -319,8 +330,8 @@ const PlusMoreHome = ({ navigation, route }) => {
           >
             {selectedCategory === null || selectedCategory === undefined ? (
               <Icon1
-                name={"select1"}
-                color={allColors.backgroundColorQuinary}
+                name={"single-select"}
+                color={allColors.universalColor}
                 size={30}
               />
             ) : (
@@ -337,24 +348,27 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   const dateTextInput = (name) => {
     return (
-      <TouchableOpacity
-        activeOpacity={1}
+      <TouchableRipple
         style={{
-          borderRadius: 15,
-          borderColor: "black",
-          borderWidth: 2,
-          backgroundColor: allColors.backgroundColorQuinary,
+          backgroundColor: 'transparent',
           flex: 1,
-          justifyContent: "center",
-          paddingLeft: 15,
-          alignItems: "flex-start",
+          paddingLeft: 0,
+          paddingTop: 15,
         }}
         onPress={() => setOpen(true)}
+        rippleColor={allColors.rippleColor} 
       >
-        <Text style={{ color: allColors.textColorFour, fontWeight: 700 }}>
-          {name}
-        </Text>
-      </TouchableOpacity>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+          <IconComponent
+            name={"calendar"}
+            category={"MaterialCommunityIcons"}
+            size={30}
+          />
+          <Text style={{ color: allColors.textColorSecondary, fontWeight: 700 }}>
+            {name}
+          </Text>
+      </View>
+      </TouchableRipple>
     );
   };
 
@@ -368,7 +382,8 @@ const PlusMoreHome = ({ navigation, route }) => {
       desc: description,
       date: tempDate,
       selectedCard: selectedCardInExpense,
-      selectedCategory: selectedCategory
+      selectedCategory: selectedCategory,
+      accCardSelected: selectedCardID,
     };
     const updateExpense = {
       type: selectedButton,
@@ -377,15 +392,20 @@ const PlusMoreHome = ({ navigation, route }) => {
       desc: description,
       date: tempDate,
       selectedCard: selectedCardInExpense,
-      selectedCategory: selectedCategory
+      selectedCategory: selectedCategory,
+      accCardSelected: selectedCardID,
     };
+    const isValidNumber = input => {
+      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
+      return numberRegex.test(input);
+    }
     const checkError = () => {
       if (expenseName.length === 0) {
         setErrorMsg("Please enter a expense name");
         return true;
       }
-      if (amountValue.length === 0) {
-        setErrorMsg("Please enter a amount value");
+      if (!isValidNumber(amountValue)) { 
+        setErrorMsg("Please enter a valid amount value");
         return true;
       }
       if (selectedCardInExpense.length === 0) {
@@ -412,7 +432,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     if (route.params) {
       setValuesToChange(memoizedObj);
       setIsUpdatePressed(true);
-      setBtnName("Update");
+      setBtnName("Update Expense");
     }
   }, [memoizedObj]);
 
@@ -463,21 +483,10 @@ const PlusMoreHome = ({ navigation, route }) => {
 
         <View style={{ flexDirection: "row", marginRight: 10 }}>
           {dateTextInput(dateValue)}
-          <TouchableOpacity
-            onPress={() => setOpen(true)}
-            style={{ margin: 12 }}
-            activeOpacity={1}
-          >
-            <Icon
-              name={"calendar"}
-              color={allColors.backgroundColorQuinary}
-              size={30}
-            />
-          </TouchableOpacity>
         </View>
 
         <View style={{ ...styles.commonStyles, height: 150 }}>
-          <Text>Payment network</Text>
+          <Text style={{color: allColors.universalColor}}>Payment network</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               style={styles.commonTouchableStyle}
@@ -485,10 +494,11 @@ const PlusMoreHome = ({ navigation, route }) => {
               activeOpacity={0.5}
             >
               <View style={styles.moreCardStyle}>
-                <AntDesign
-                  name="pluscircle"
+                <IconComponent
+                  name={"plus-circle"}
+                  category={"Feather"}
                   size={30}
-                  color={allColors.textColorPrimary}
+                  color={allColors.addBtnColors}
                 />
                 <Text
                   variant="bodyLarge"
@@ -502,26 +512,16 @@ const PlusMoreHome = ({ navigation, route }) => {
               cardsData
                 ?.filter((item) => item?.paymentNetwork)
                 .map((e, index) => (
-                  <TouchableOpacity
-                    style={styles.commonTouchableStyle}
-                    activeOpacity={0.5}
-                    onPress={() => handlePress(e)}
+                  <Chip
                     key={index}
-                  >
-                    <View
-                      style={[
-                        styles.moreCardStyle,
-                        selectedCardInExpense === e.paymentNetwork && {
-                          ...styles.moreCardStyle,
-                          ...styles.highlightedCardStyle,
-                        },
-                      ]}
-                    >
-                      <Text style={{ color: allColors.textColorFive }}>
-                        {e.paymentNetwork}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                    data={e}
+                    onPress={handlePress}
+                    isClicked={selectedCardID === e.id}
+                    text={e.paymentNetwork}
+                    styles={styles}
+                    name={e.cardHolderName}
+                    cardName={e.checked}
+                  />
                 ))}
           </ScrollView>
         </View>
@@ -534,7 +534,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             textColor={"black"}
             style={{
               borderColor: "transparent",
-              backgroundColor: allColors.backgroundColorLessPrimary,
+              backgroundColor: allColors.addBtnColors,
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15
@@ -542,7 +542,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           >
             <Text
               style={{
-                color: allColors.textColorPrimary,
+                color: allColors.backgroundColorPrimary,
                 fontWeight: 700,
                 fontSize: 18,
               }}
@@ -567,31 +567,14 @@ const PlusMoreHome = ({ navigation, route }) => {
       />
 
       <Portal>
-        <Dialog
+        <DeleteDialog
           visible={isDeleteBtnPressed}
-          onDismiss={hideDialog}
-          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-        >
-          <Dialog.Title>Delete expense?</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              The expense will be removed permanently
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>
-              <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
-            </Button>
-            <Button
-              onPress={deleteExpense}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={allColors.warningColor}
-            >
-              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+          hideDialog={hideDialog}
+          deleteExpense={deleteExpense}
+          allColors={allColors}
+          title={"expense"}
+          content={"expense"}
+        />
       </Portal>
 
       <Portal>
@@ -604,7 +587,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             backgroundColor: allColors.backgroundColorLessPrimary,
           }}
         >
-          <Dialog.Title>Choose a category</Dialog.Title>
+          <Dialog.Title style={{color: allColors.universalColor}}>Choose a category</Dialog.Title>
           <FrequentCategories
             handleSelectedCategory={handleSelectedCategory}
           />
