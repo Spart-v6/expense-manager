@@ -91,7 +91,7 @@ const SettingsScreen = ({ navigation }) => {
         },
         trigger: {
           hour: 20,
-          minute: 40,
+          minute: 0,
           repeats: true
         }
       });
