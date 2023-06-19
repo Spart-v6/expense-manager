@@ -133,7 +133,9 @@ const AllSections = ({
                         justifyContent: "space-between",
                       }}
                     >
-                      <Text variant="titleMedium" style={{color: allColors.universalColor}}>{sectionName}</Text>
+                      <Text variant="titleMedium" style={{color: allColors.universalColor, maxWidth: 220}} ellipsizeMode="tail" numberOfLines={1}>
+                        {sectionName}
+                      </Text>
                       <Text variant="titleLarge" style={{maxWidth: 200, color: allColors.universalColor}} ellipsizeMode="tail" numberOfLines={1}>{formatNumberWithCurrency(totalAmountSpent, currency)}</Text>
                     </View>
                   }
@@ -222,7 +224,7 @@ const AllMembers = ({ allMembers }) => {
             return (
               <View key={index} style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
                 <Avatar.Text size={35} label={words} style={{backgroundColor: allColors.addBtnColors}} labelStyle={{color: allColors.selectedDateTextColor}}/>
-                <Text style={{color: allColors.universalColor, fontSize: 18}}>{e}</Text>
+                <Text style={{color: allColors.universalColor, fontSize: 18, maxWidth: 350}} numberOfLines={2} ellipsizeMode="tail">{e}</Text>
               </View>
             )}
           )}

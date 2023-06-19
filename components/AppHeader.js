@@ -106,7 +106,7 @@ const AppHeader = ({
       ) : (
         <Appbar.Content
           title={isUpdate ? "Update Expense" : title}
-          titleStyle={[ {color: allColors.textColorSecondary} ,isParent && { marginLeft: 6 }]}
+          titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
       {isHome && (

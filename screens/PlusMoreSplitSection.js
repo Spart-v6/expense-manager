@@ -49,14 +49,62 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   );
   const [isChecked, setIsChecked] = React.useState(initialIsChecked);
 
-  const handleInputChange = (name, value) => {
-    // preventing > two decimals in a number
-    const sanitizedValue = value.replace(".", "");
-    if (sanitizedValue.includes(".")) {
-      return;
+  const commonTextSection = (label, value, setter, keyboardType) => {
+    const handleTextCheck = (val) => {
+      if (keyboardType === 'number-pad') {
+        val = val.replace(',', '.');
+        const regex = /^\d{0,10}(\.\d{0,2})?$/;
+        if (!regex.test(val)) {
+          return;
+        }
+      }
+      setter(val);
+    };
+
+    return (
+      <TextInput
+        label={<Text style={{color: allColors.universalColor}}>{label}</Text>}
+        style={{ backgroundColor: "transparent" }}
+        underlineColor={allColors.textColorPrimary}
+        textColor={allColors.universalColor}
+        selectionColor={allColors.textSelectionColor}
+        activeUnderlineColor={allColors.textColorPrimary}
+        value={value}
+        onChangeText={handleTextCheck}
+        keyboardType={keyboardType}
+        autoCorrect={false}
+      />
+    )
+  };
+
+  const commonCheckBox = (vall, setter, text) => {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <BouncyCheckbox
+          isChecked={vall}
+          disableBuiltInState
+          onPress={() => setter((prevState) => !prevState)}
+          fillColor={allColors.textColorPrimary}
+          innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
+          iconStyle={{ borderRadius: 50 }}
+          style={{ paddingLeft: 5 }}
+        />
+        <Text style={{color: allColors.universalColor}}>{text}</Text>
+      </View>
+    )
+  }
+
+  const handleInputChange = (name, value, keyboardType) => {
+    if (keyboardType === 'number-pad') {
+      value = value.replace(',', '.');
+      const regex = /^\d{0,10}(\.\d{0,2})?$/;
+      if (!regex.test(value)) {
+        return;
+      }
     }
     setAmountOfEachMember({ ...amountOfEachMember, [name]: value });
   };
+
   const handleCheckboxChange = (name, value) => {
     setIsChecked({ ...isChecked, [name]: value });
   };
@@ -202,41 +250,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         isPlus={true}
       />
       <View style={{ marginLeft: 20, marginRight: 20, marginBottom: 10, gap: 20, flex: 1 }}>
-        <TextInput
-          label={<Text style={{color: allColors.universalColor}}>{"Section name"}</Text>}
-          style={{ backgroundColor: "transparent" }}
-          underlineColor={allColors.textColorPrimary}
-          textColor={allColors.universalColor}
-          selectionColor={allColors.textSelectionColor}
-          activeUnderlineColor={allColors.textColorPrimary}
-          value={sectionName}
-          onChangeText={(text) => setSectionName(text)}
-        />
-        <TextInput
-          label={<Text style={{color: allColors.universalColor}}>{"Total amount spent"}</Text>}
-          style={{ backgroundColor: "transparent" }}
-          underlineColor={allColors.textColorPrimary}
-          textColor={allColors.universalColor}
-          selectionColor={allColors.textSelectionColor}
-          activeUnderlineColor={allColors.textColorPrimary}
-          value={totalAmountSpent}
-          onChangeText={(text) => setTotalAmountSpent(text)}
-          keyboardType="number-pad"
-          autoCorrect={false}
-        />
-
-        <TextInput 
-          label={<Text style={{color: allColors.universalColor}}>{"Who paid (leave this empty if you have paid)"}</Text>}
-          value={whoPaid}
-          onChangeText={text => setWhoPaid(text)}
-          style={{backgroundColor: 'transparent'}}
-          textColor={allColors.universalColor}
-          selectionColor={allColors.textSelectionColor}
-          underlineColor={allColors.textColorPrimary}
-          activeUnderlineColor={allColors.textColorPrimary}
-          keyboardType="default"
-        />
-
+        {commonTextSection("Section name", sectionName, setSectionName, "default")}
+        {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
+        {commonTextSection("Who paid (leave this empty if you have paid)", whoPaid, setWhoPaid, "default")}
         <Text style={{color: allColors.universalColor}}>Select members for this section</Text>
         <View
           style={{
@@ -245,30 +261,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
             justifyContent: "space-between",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <BouncyCheckbox
-              isChecked={divideEqually}
-              disableBuiltInState
-              onPress={() => setDivideEqually((prevState) => !prevState)}
-              fillColor={allColors.textColorPrimary}
-              innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
-              iconStyle={{ borderRadius: 50 }}
-              style={{ paddingLeft: 5 }}
-            />
-            <Text style={{color: allColors.universalColor}}>Divide Equally</Text>
-          </View>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <BouncyCheckbox
-              isChecked={divideByPercent}
-              disableBuiltInState
-              onPress={() => setDivideByPercent((prevState) => !prevState)}
-              fillColor={allColors.textColorPrimary}
-              innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
-              iconStyle={{ borderRadius: 50 }}
-              style={{ paddingLeft: 5 }}
-            />
-            <Text style={{color: allColors.universalColor}}>Divide by percent</Text>
-          </View>
+          {commonCheckBox(divideEqually, setDivideEqually, "Divide Equally")}
+          {commonCheckBox(divideByPercent, setDivideByPercent, "Divide by percent")}
         </View>
 
         {divideByPercent && (
@@ -294,7 +288,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>
-                  <Text style={{color: allColors.universalColor}}>{name}</Text>
+                  <Text style={{color: allColors.universalColor, maxWidth: 250}} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
                   {divideByPercent && amountOfEachMember[name] && (
                     <Text variant="labelSmall" style={{color: allColors.universalColor}}>
                       {handleDividePercent(amountOfEachMember[name])}
@@ -306,7 +300,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    width: "26%",
+                    width: "34%",
                   }}
                 >
                   <TextInput
@@ -321,13 +315,15 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                       height: 50,
                     }}
                     value={amountOfEachMember[name] || ""}
-                    onChangeText={(value) => handleInputChange(name, value)}
+                    onChangeText={(value) => handleInputChange(name, value, "number-pad")}
                     disabled={!isChecked[name]}
                     keyboardType="number-pad"
                     textColor={allColors.universalColor}
                     selectionColor={allColors.textSelectionColor}
                     underlineColor={allColors.textColorPrimary}
                     activeUnderlineColor={allColors.textColorPrimary}
+                    scrollEnabled={true}
+                    textAlignVertical="top"
                   />
                   {divideByPercent && <Text style={{color: allColors.universalColor}}>%</Text>}
                 </View>

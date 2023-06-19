@@ -6,7 +6,7 @@ const initialState = {
   allRecurrences: [],
 };
 
-const expenseReducer = (state = initialState, action) => {
+const recurrenceReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_RECURRENCE:
       const allRecurrences = state.allRecurrences || [];
@@ -45,4 +45,4 @@ const expenseReducer = (state = initialState, action) => {
   }
 };
 
-export default expenseReducer;
+export default recurrenceReducer;

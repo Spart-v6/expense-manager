@@ -52,14 +52,6 @@ const RecurrenceScreen = ({ navigation }) => {
   }, []);
   // #endregion
 
-  // #region Fetching expenses information for displaying current balance
-  const expenseData = useSelector(state => state.expenseReducer.allExpenses);
-  const totalValue = expenseData?.reduce((acc, curr) => {
-    if (curr.type === "Income") return acc + +curr.amount; 
-    else if (curr.type === "Expense") return acc - +curr.amount;
-    else return acc;
-  }, 0);
-
   const dispatch = useDispatch();
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -82,18 +74,18 @@ const RecurrenceScreen = ({ navigation }) => {
       <Card style={styles.card}>
         <Card.Content style={{gap: 10}}>
           <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
-            <Text variant="titleLarge">{item.recurrenceName}</Text>
-            <Text variant="titleLarge">{formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}</Text>
+            <Text variant="titleLarge" style={{color: allColors.universalColor}}>{item.recurrenceName}</Text>
+            <Text variant="titleLarge" style={{color: allColors.universalColor}}>{formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}</Text>
           </View>
           <View style={styles.container}>
             <View style={styles.textContainer}>
-              <Text variant="bodyMedium">{moment(item.recurrenceStartDate, 'DD MM YY').format('Do MMMM')}</Text>
+              <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{moment(item.recurrenceStartDate, 'DD MM YY').format('Do MMMM')}</Text>
               <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium">{item.recurrenceType}</Text>
+              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor}}>{item.recurrenceType}</Text>
               <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium">{item.paymentNetwork}</Text>
+              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor}}>{item.paymentNetwork}</Text>
             </View>
-            <FontAwesome name="repeat" size={10} color={'white'} style={{alignSelf:"center"}}/>
+            <FontAwesome name="repeat" size={10} color={allColors.universalColor} style={{alignSelf:"center"}}/>
           </View>
         </Card.Content>
       </Card>
@@ -120,12 +112,17 @@ const RecurrenceScreen = ({ navigation }) => {
     (state) => state.recurrenceReducer.allRecurrences
   );
 
-  //#region Finding the total sum of all recurrences
-  const totalRecurrenceSum = recurrencesData?.reduce((acc, curr) => {
-    if (curr.paymentType === "Income") return acc + +curr.recurrenceAmount; 
-    else if (curr.paymentType === "Expense") return acc - +curr.recurrenceAmount;
-    else return acc;
-  }, 0);
+  recurrencesData.sort((a,b) => {
+    const dateA = moment(`${a.recurrenceStartDate} ${a.time}`, "DD MM YY HH:mm:ss");
+    const dateB = moment(`${b.recurrenceStartDate} ${b.time}`, "DD MM YY HH:mm:ss");
+    if (dateA.isAfter(dateB)) {
+      return -1;
+    } else if (dateA.isBefore(dateB)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  })
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -136,33 +133,6 @@ const RecurrenceScreen = ({ navigation }) => {
         navigation={navigation}
       />
       <AnimatedEntryScreen>
-        <View style={{ margin: 20 }}>
-          <Card
-            mode="contained"
-            style={{ backgroundColor: allColors.defaultHomeRecurrCard }}
-          >
-            <Card.Title
-              title="Future Balance"
-              subtitle={formatNumberWithCurrency((totalRecurrenceSum+totalValue), currency.curr)}
-              titleStyle={{
-                color: allColors.universalColor,
-                fontSize: 30,
-                paddingTop: 30,
-              }}
-              subtitleStyle={{
-                fontSize: 35,
-                textAlignVertical: "center",
-                paddingTop: 30,
-                paddingBottom: 10,
-                color: allColors.textColorSecondary,
-              }}
-            />
-            <Card.Content>
-              <Text variant="headlineSmall" style={{color: allColors.universalColor}}>{`Current balance: ${formatNumberWithCurrency(totalValue, currency.curr)}`}</Text>
-            </Card.Content>
-          </Card>
-        </View>
-
         {recurrencesData.length > 0 ?
           <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
             <View style={{ margin: 20, flex: 1 }}>
@@ -229,7 +199,7 @@ const makeStyles = allColors => StyleSheet.create({
   },
   bulletText: {
     fontSize: 16,
-    color: 'white',
+    color: allColors.universalColor,
     paddingHorizontal: 5,
   }
 });

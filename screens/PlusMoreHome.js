@@ -254,8 +254,6 @@ const PlusMoreHome = ({ navigation, route }) => {
     [route?.params?.updateItem]
   );
 
-  // for icons
-  // TODO: Do chips and Icon Picker + Tabs in modal
   // TODO: Add border color to income and expense buttons
   const incomeExpenseBtns = (name) => {
     return (
@@ -278,7 +276,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     );
   };
 
-  const commonTextInput = (name, setter, placeholder, style = {}) => {
+  const commonTextInput = (name, setter, placeholder, keyboardType, style = {}) => {
     const defaultPlaceholder = "";
     let resolvedPlaceholder =
       placeholder === "Income"
@@ -286,6 +284,17 @@ const PlusMoreHome = ({ navigation, route }) => {
         : placeholder === "Expense"
         ? "Expense name"
         : placeholder || defaultPlaceholder;
+
+    const handleTextCheck = (val) => {
+      if (keyboardType === 'number-pad') {
+        val = val.replace(',', '.');
+        const regex = /^\d{0,10}(\.\d{0,2})?$/;
+        if (!regex.test(val)) {
+          return;
+        }
+      }
+      setter(val);
+    };
 
     return (
       <View
@@ -319,8 +328,8 @@ const PlusMoreHome = ({ navigation, route }) => {
           textContentType="none"
           value={name}
           placeholder={resolvedPlaceholder}
-          onChangeText={(val) => setter(val)}
-          keyboardType={placeholder === "Amount" ? "phone-pad" : "default"}
+          onChangeText={handleTextCheck}
+          keyboardType={keyboardType}
         />
         {(placeholder === "Expense" || placeholder === "Income") && (
           <TouchableOpacity
@@ -476,9 +485,9 @@ const PlusMoreHome = ({ navigation, route }) => {
         </View>
 
         <View style={{ marginTop: 10, gap: 20 }}>
-          {commonTextInput(expenseName, setExpenseName, selectedButton)}
-          {commonTextInput(amountValue, setAmountValue, "Amount")}
-          {commonTextInput(description, setDescription, "Description")}
+          {commonTextInput(expenseName, setExpenseName, selectedButton, "default")}
+          {commonTextInput(amountValue, setAmountValue, "Amount", "number-pad")}
+          {commonTextInput(description, setDescription, "Description", "default")}
         </View>
 
         <View style={{ flexDirection: "row", marginRight: 10 }}>

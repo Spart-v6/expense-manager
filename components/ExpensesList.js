@@ -206,53 +206,49 @@ const ExpensesList = ({ filter }) => {
   );
 
   const addRecurringExpenses = useCallback(() => {
-    const today = moment();
+    const expense = [];
 
-    const expenses = [];
+    const currentDate = moment().format("DD MM YY");
+    recurrencesData.forEach((obj) => {
+      const { recurrenceStartDate, frequency } = obj;
+      const frequencyDays = {
+        Daily: 1,
+        Weekly: 7,
+        Monthly: 30,
+        Yearly: 365,
+      };
+      const daysToAdd = frequencyDays[frequency];
+      
+      const futureDate = moment(recurrenceStartDate, "DD MM YY")
+        .add(daysToAdd, "days")
+        .format("DD MM YY");
+  
+      if (moment(futureDate, "DD MM YY").isSameOrBefore(moment(currentDate, "DD MM YY"))) {
+        const numOccurrences = Math.floor(moment(currentDate, "DD MM YY").diff(moment(recurrenceStartDate, "DD MM YY"), "days") / daysToAdd);
+  
+        for (let i = 0; i < numOccurrences; i++) {
+          const newObj = {
+            ...obj,
+            recurrenceStartDate: moment(recurrenceStartDate, "DD MM YY")
+              .add(daysToAdd * (i + 1), "days")
+              .format("DD MM YY"),
+          };
+          expense.push(newObj);
+        }
 
-    for (const expense of recurrencesData) {
-      const {
-        frequency,
-        recurrenceStartDate,
-        recurrenceEndDate,
-        repeatRecurrrence,
-        accCardSelected
-      } = expense;
-      let fre = "";
-      if (frequency === "Daily") fre = "days";
-      if (frequency === "Weekly") fre = "weeks";
-      if (frequency === "Monthly") fre = "months";
-      if (frequency === "Yearly") fre = "years";
-      const startDate = moment(recurrenceStartDate, "DD MM YY");
-      const endDate = moment(recurrenceEndDate, "DD MM YY");
-      const daysDifference = endDate.diff(startDate, "days");
-
-      if (repeatRecurrrence) {
-        let nextDate = startDate.clone();
-        while (nextDate.isSameOrBefore(today, "day")) {
-          expenses.push({
-            ...expense,
-            recurrenceStartDate: nextDate.format("DD MM YY"),
-          });
-          if (endDate) nextDate = nextDate.add(daysDifference, "days");
-          nextDate = nextDate.add(1, fre);
-          dispatch(updateRecurrences(expense.id, nextDate.format("DD MM YY")));
+        const updatedRecurrenceStartDate = moment(recurrenceStartDate, "DD MM YY")
+          .add(numOccurrences * daysToAdd, "days")
+          .format("DD MM YY");
+        dispatch(updateRecurrences(obj.id, updatedRecurrenceStartDate));
+      } else {
+        if (futureDate === currentDate) {
+          expense.push(obj);
         }
       }
-      if (!repeatRecurrrence && (endDate ? startDate.add(daysDifference, "days") : startDate.add(1, fre)).isSameOrBefore(today, "day")) {
-        expenses.push({
-          ...expense,
-          recurrenceStartDate: startDate.format("DD MM YY"),
-        });
-        dispatch(deleteRecurrences(expense.id))
-      }
-      expenses.push({
-        ...expense,
-        accCardSelected
-      })
-    }
-    const updatedExpenses = expenses.map(expense => {
-      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected } = expense;
+    });
+
+    const updatedExpenses = expense.map(ex => {
+      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected } = ex;
     
       return {
         amount: recurrenceAmount,

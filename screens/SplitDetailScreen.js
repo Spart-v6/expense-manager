@@ -15,8 +15,8 @@ const Item = ({ item }) => {
         padding: 10,
       }}
     >
-      <Text style={{color: allColors.universalColor}}>{item.name}</Text>
-      <Text style={{color: allColors.universalColor}}>{item.amount}</Text>
+      <Text style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</Text>
+      <Text style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</Text>
     </View>
   );
 }
