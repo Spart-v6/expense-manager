@@ -6,9 +6,10 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Vibration
+  Vibration,
+  Dimensions
 } from "react-native";
-import { FAB, Card, Text, Dialog, Button, Portal } from "react-native-paper";
+import { FAB, Card, Text, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -74,16 +75,27 @@ const RecurrenceScreen = ({ navigation }) => {
       <Card style={styles.card}>
         <Card.Content style={{gap: 10}}>
           <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
-            <Text variant="titleLarge" style={{color: allColors.universalColor}}>{item.recurrenceName}</Text>
-            <Text variant="titleLarge" style={{color: allColors.universalColor}}>{formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}</Text>
+            <Text variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.8}}
+            numberOfLines={1} ellipsizeMode="tail">
+              {item.recurrenceName}
+            </Text>
+            <Text variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 3}}
+            numberOfLines={1} ellipsizeMode="tail"
+            >
+              {formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}
+            </Text>
           </View>
           <View style={styles.container}>
             <View style={styles.textContainer}>
               <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{moment(item.recurrenceStartDate, 'DD MM YY').format('Do MMMM')}</Text>
               <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor}}>{item.recurrenceType}</Text>
+              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
+                {item.recurrenceType}
+              </Text>
               <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor}}>{item.paymentNetwork}</Text>
+              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
+                {item.paymentNetwork}
+              </Text>
             </View>
             <FontAwesome name="repeat" size={10} color={allColors.universalColor} style={{alignSelf:"center"}}/>
           </View>

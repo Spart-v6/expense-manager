@@ -123,13 +123,14 @@ const HomeScreen = ({ navigation, route }) => {
         <AnimatedEntryScreen>
           <HomeHeader />
           <View>
-            <View
+            <ScrollView
               style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                gap: 10,
                 marginLeft: 15,
+                marginRight: 15
               }}
+              contentContainerStyle={{flexDirection: "row", gap: 10, justifyContent:"flex-start"}}
+              horizontal
+              showsHorizontalScrollIndicator={false}
             >
               {datesNames.map((date, index) => (
                 <ButtonMemoized
@@ -139,7 +140,7 @@ const HomeScreen = ({ navigation, route }) => {
                   name={date.name}
                 />
               ))}
-            </View>
+            </ScrollView>
             {listToShow}
           </View>
         </AnimatedEntryScreen>

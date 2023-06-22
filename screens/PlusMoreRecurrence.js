@@ -233,7 +233,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
             color={allColors.addBtnColors}
           />
           <TextInput
-            style={{ backgroundColor: "transparent", height: 20, width: "70%" }}
+            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
             underlineColor={'transparent'}
@@ -344,7 +344,9 @@ const PlusMoreRecurrence = ({ navigation }) => {
         isPlus={true}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <View style={{ margin: 20, gap: 10, flex: 1 }}>
+      <View style={{flex: 1}}>
+
+      <ScrollView style={{ margin: 20 }} contentContainerStyle={{ gap: 10, flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View
           style={{
             flexDirection: "row",
@@ -369,7 +371,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
         {/* Frequency */}
         <View style={{ marginTop: 10, gap: 5 }}>
           <Text variant="titleSmall" style={{color: allColors.universalColor}}>Frequency</Text>
-          <View style={{ flexDirection: "row", gap: 10 }}>
+          <ScrollView contentContainerStyle={{flexDirection: "row", gap: 10 }} horizontal showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
             <BouncyCheckboxGroup
               data={datesObj.map((item) => ({
                 id: item.id.toString(),
@@ -385,7 +387,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               }}
               onChange={handleFrequencyChange}
             />
-          </View>
+          </ScrollView>
         </View>
 
         {/* Recurrence type scroll */}
@@ -498,6 +500,8 @@ const PlusMoreRecurrence = ({ navigation }) => {
             </Text>
           </Button>
         </View>
+      </ScrollView>
+
       </View>
       {<MyDatePicker open={startDateOpen} setOpen={setStartDateOpen} fetchDates={fetchStartDates} selectedDate={selectedStartDate} selectedMonth={selectedStartMonth} selectedYear={selectedStartYear} setSelectedDate={setSelectedStartDate} setSelectedMonth={setSelectedStartMonth} setSelectedYear={setSelectedStartYear} disableTheDates={false}/>
       }

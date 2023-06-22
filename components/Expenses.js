@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Text, TouchableRipple } from "react-native-paper";
 import React from "react";
 import moment from "moment";
@@ -32,9 +32,9 @@ const Expenses = ({ item, index, onPress }) => {
   return (
     <TouchableRipple onPress={handlePress} rippleColor={allColors.rippleColor} centered>
       <View>
-        <View style={{height: 50, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
+        <View style={{height: 55, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
           <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
-            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 0, flex: 0.10}}>
+            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 0}}>
               <Text variant="titleMedium" style={{color: allColors.universalColor}}>
                 {dateFormat}
               </Text>
@@ -45,17 +45,19 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{flexDirection: 'column', gap: 2, flex: 1}}>
               <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
-                <Text style={{fontSize: 20, width: 200, color: allColors.universalColor}} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                <Text style={{fontSize: 20, color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}} numberOfLines={1} ellipsizeMode="tail">
+                  {item.name}
+                </Text>
 
-                <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor, maxWidth: 16, maxWidth: 120, textAlign:"right", marginRight: 10}} ellipsizeMode="tail">
+                <Text variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor,  maxWidth: Dimensions.get("window").width / 3, textAlign:"right"}} ellipsizeMode="tail">
                   {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
                 </Text>
               </View>
               <View style={{flexDirection: 'row' , justifyContent:"space-between"}}>
-                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, maxWidth: 280, }}>
+                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8 }}>
                     {item.desc}
                 </Text>
-                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, textAlign:"right", maxWidth: 90, width: 85, marginRight: 10,}} >
+                <Text variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, textAlign:"right",  maxWidth: Dimensions.get("window").width / 6}} >
                   {item.selectedCard}
                 </Text>
 

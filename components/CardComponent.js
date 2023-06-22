@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Text } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -73,29 +73,25 @@ const CardComponent = () => {
       allCards?.length > 0 ? (
       allCards?.map(crd => (
         <Card style={[styles.card]} key={Math.random()} onPress={() => navigation.navigate("CardDetailsScreen", {card: crd})}>
-          <Card.Title
-            title={
-              <View style={{ flexDirection: 'row', width: 360, justifyContent: 'space-between'}}>
-                <View style={{flexDirection:"row", alignItems:"center", gap: 10}}>
-                  <FontAwesome5
-                    name="credit-card"
-                    size={20}
-                    color={allColors.textColorPrimary}
-                    type="font-awesome-5"
-                    solid={crd?.checked === "credit"}
-                  />
-                  <Text style={{color: allColors.universalColor}}>{crd?.checked?.charAt(0)?.toUpperCase() + crd?.checked?.slice(1)} Card</Text>
-                </View>
-                  <Text variant="titleMedium" style={{color: allColors.universalColor, maxWidth: 230}} 
-                    numberOfLines={1}
-                      ellipsizeMode="tail">
-                      {crd?.paymentNetwork}
-                  </Text>
-            </View>
-            }
-          />
           <Card.Content>
-            <View style={{gap: 6}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View style={{flexDirection:"row", alignItems:"center", gap: 10}}>
+                <FontAwesome5
+                  name="credit-card"
+                  size={20}
+                  color={allColors.textColorPrimary}
+                  type="font-awesome-5"
+                  solid={crd?.checked === "credit"}
+                />
+                <Text style={{color: allColors.universalColor}}>{crd?.checked?.charAt(0)?.toUpperCase() + crd?.checked?.slice(1)} Card</Text>
+              </View>
+                <Text variant="titleMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 2.5}} 
+                  numberOfLines={1}
+                    ellipsizeMode="tail">
+                    {crd?.paymentNetwork}
+                </Text>
+            </View>
+            <View style={{gap: 6, marginTop: 20}}>
               <Text variant="titleMedium" style={{color: allColors.universalColor}}>Total Expenditure</Text>
               <Text
                 variant="headlineLarge"
@@ -130,7 +126,7 @@ const CardComponent = () => {
                   <Text variant="titleMedium" style={{color: allColors.universalColor}}>Card holder name</Text>
                   <Text
                     variant="headlineSmall"
-                    style={{ color: allColors.textColorPrimary }}
+                    style={{ color: allColors.textColorPrimary,  maxWidth: Dimensions.get("window").width / 2 }}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                     >

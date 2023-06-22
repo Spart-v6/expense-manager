@@ -40,9 +40,10 @@ const FrequentCategories = ({ handleSelectedCategory }) => {
   return (
     <View
       style={{
-        paddingLeft: 10,
         paddingTop: 30,
-        backgroundColor: allColors.backgroundColorLessPrimary
+        backgroundColor: allColors.backgroundColorLessPrimary,
+        borderBottomLeftRadius: 50,
+        borderBottomRightRadius: 50,
       }}
     >
       <View>
@@ -473,7 +474,9 @@ const PlusMoreHome = ({ navigation, route }) => {
         isUpdate={isUpdatePressed}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <View style={{ margin: 20, gap: 10, flex: 1 }}>
+      <View style={{flex: 1}}>
+
+      <ScrollView style={{ margin: 20 }} contentContainerStyle={{flexGrow: 1,justifyContent: 'flex-end', gap: 10}} showsVerticalScrollIndicator={false}>
         <View
           style={{
             flexDirection: "row",
@@ -534,8 +537,9 @@ const PlusMoreHome = ({ navigation, route }) => {
                 ))}
           </ScrollView>
         </View>
+        <View style={{flex: 1}}/>
 
-        <View style={{ flex: 1, flexDirection: "column-reverse" }}>
+        <View>
           <Button
             onPress={handleAddOrUpdateExpense}
             mode="contained"
@@ -560,6 +564,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             </Text>
           </Button>
         </View>
+      </ScrollView>
       </View>
 
        <MyDatePicker 

@@ -1,6 +1,6 @@
 import { Appbar, Text, Button } from "react-native-paper";
 import { IconComponent } from "./IconPickerModal";
-import { View, Animated } from "react-native";
+import { View, Animated, Dimensions } from "react-native";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
@@ -20,6 +20,10 @@ const AppHeader = ({
   isUpdateCardScreen = false,
 }) => {
   const allColors = useDynamicColors();
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+
+
   const GreetAndSearch = React.memo(({greeting, username}) => {
     const [showGreeting, setShowGreeting] = React.useState(true);
     const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
@@ -87,7 +91,7 @@ const AppHeader = ({
   return (
     <Appbar.Header
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
-      statusBarHeight={50}
+      // statusBarHeight={windowHeight - 700}
     >
       {!isParent && (
         <Button onPress={() => navigation.goBack()}>

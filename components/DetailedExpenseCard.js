@@ -1,8 +1,7 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Card, Text } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
-import { FontAwesome } from "@expo/vector-icons";
 import moment from "moment";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
@@ -39,44 +38,38 @@ const DetailedExpenseCard = ({exp}) => {
 
   return (
     <Card style={{ backgroundColor: allColors.backgroundColorLessPrimary }}>
-      <Card.Title
-        title={
-          <View
+      <Card.Content>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            // width: 389,
+          }}
+        >
+          <Text
+            variant="headlineSmall"
+            style={{ color: allColors.universalColor, maxWidth:  Dimensions.get("window").width / 2 }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {exp.name}
+          </Text>
+          <Text
+            variant="headlineSmall"
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: 389,
+              maxWidth: Dimensions.get("window").width / 3,
+              color:
+                exp.type === "Income"
+                  ? allColors.successColor
+                  : allColors.warningColor,
             }}
           >
-            <Text
-              variant="headlineSmall"
-              style={{ color: allColors.universalColor, maxWidth: 200 }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {exp.name}
-            </Text>
-            <Text
-              variant="headlineSmall"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={{
-                maxWidth: 200,
-                color:
-                  exp.type === "Income"
-                    ? allColors.successColor
-                    : allColors.warningColor,
-              }}
-            >
-              {exp.type === "Income" ? "+" : "-"}
-              {formatNumberWithCurrency(exp.amount, currency.curr)}
-            </Text>
-          </View>
-        }
-        titleStyle={{ paddingTop: 10 }}
-      />
-      <Card.Content>
+            {exp.type === "Income" ? "+" : "-"}
+            {formatNumberWithCurrency(exp.amount, currency.curr)}
+          </Text>
+        </View>
         <View style={{ flexDirection: "column", alignItems: "flex-start" }}>
           <Text
             variant="bodyMedium"
@@ -88,7 +81,7 @@ const DetailedExpenseCard = ({exp}) => {
             <>
               <Text
                 variant="bodyMedium"
-                style={{ color: allColors.universalColor, maxWidth: 330 }}
+                style={{ color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1 }}
                 numberOfLines={5}
                 ellipsizeMode="tail"
               >

@@ -162,9 +162,9 @@ const MyDatePicker = ({
       <TouchableOpacity onPress={handleYearPress}>
         <View style={styles.itemContainer}>
           {item.name === moment().year() &&
-            <View style={{backgroundColor: allColors.textColorPrimary, width: "80%", height: '120%', position: 'absolute', top: 18, left: 4, borderRadius: 50}}/>
+            <View style={{backgroundColor: allColors.textColorPrimary, width: "90%", height: '120%', position: 'absolute', top: 18, left: 5, borderRadius: 50}}/>
           }
-          <Text variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === moment().year() &&{color: allColors.backgroundColorSecondary}]}>
+          <Text variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === moment().year() &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
             {item.name}
           </Text>
         </View>

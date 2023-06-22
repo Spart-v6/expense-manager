@@ -125,21 +125,10 @@ const AllSections = ({
                 }}
               >
                 <Card.Title
-                  title={
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        width: 380,
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Text variant="titleMedium" style={{color: allColors.universalColor, maxWidth: 220}} ellipsizeMode="tail" numberOfLines={1}>
-                        {sectionName}
-                      </Text>
-                      <Text variant="titleLarge" style={{maxWidth: 200, color: allColors.universalColor}} ellipsizeMode="tail" numberOfLines={1}>{formatNumberWithCurrency(totalAmountSpent, currency)}</Text>
-                    </View>
-                  }
-                  titleStyle={{ marginTop: 10 }}
+                  title={sectionName}
+                  titleStyle={{ marginTop: 10, color: allColors.universalColor }}
+                  subtitle={`Amount paid: ${formatNumberWithCurrency(totalAmountSpent, currency)}`}
+                  subtitleStyle={{color: allColors.universalColor}}
                 />
                 <Card.Content>
                   <View
@@ -153,8 +142,7 @@ const AllSections = ({
                       variant="titleMedium"
                       style={{
                         color: allColors.textColorPrimary,
-                        maxWidth: 180,
-                        width: 180,
+                        maxWidth: 180
                       }}
                       numberOfLines={1}
                       ellipsizeMode="tail"
@@ -173,8 +161,7 @@ const AllSections = ({
                       style={{
                         flexDirection: "row",
                         justifyContent: "flex-end",
-                        maxWidth: 180,
-                        width: 180,
+                        maxWidth: 180
                       }}
                     >
                       {renderPayAndReceive(payBack, receive)}

@@ -230,7 +230,7 @@ const SettingsScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Settings" navigation={navigation} />
-      <View style={{ flex: 1, marginLeft: 25, marginTop: 20, marginRight: 25, gap: 10 }}>
+      <View style={{ flex: 1, marginLeft: 20, marginTop: 20, marginRight: 20, gap: 10 }}>
         <TouchableRipple
           onPress={() => setOpenChangeName(prevState => !prevState)}
           style={{ borderRadius: 2, flexDirection: "row", alignItems: "center", padding: 10 }}
@@ -261,11 +261,11 @@ const SettingsScreen = ({ navigation }) => {
         </TouchableRipple>
 
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row",padding: 9 }}>
+          <View style={{flexDirection: "row", padding: 9}}>
             <View style={{paddingRight: 10, paddingLeft: 0, paddingTop: 3}}>
               <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
             </View>
-            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 200 }}>
               <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Notifications</Text>
               <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>A reminder for adding expenses will be sent</Text>
             </View>
@@ -278,7 +278,7 @@ const SettingsScreen = ({ navigation }) => {
             <View style={{paddingRight: 12, paddingLeft: 0, paddingTop: 3}}>
               <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
             </View>
-            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }} >
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 250 }} >
               <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Lock App</Text>
               <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>When enabled, you need to use fingerprint to unlock the app</Text>
             </View>
@@ -308,7 +308,7 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={()=> setOpenChangeName(false)}>
-              <Text style={{color: allColors.textColorFive}}> Cancel </Text>
+              <Text style={{color: allColors.universalColor}}> Cancel </Text>
             </Button>
             <Button onPress={updateUsername}>
               <Text style={{color: allColors.textColorPrimary}}> Update </Text>

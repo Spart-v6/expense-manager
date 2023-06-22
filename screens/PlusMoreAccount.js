@@ -186,7 +186,7 @@ const PlusMoreAccount = ({ navigation }) => {
               autoComplete="off"
               textContentType="none"
               value={paymentNetwork}
-              placeholder={"Payment network like VISA, Google Pay"}
+              placeholder={"Payment network (e.g., VISA)"}
               onChangeText={(val) => setPaymentNetwork(val)}
               keyboardType={"default"}
             />
@@ -200,50 +200,44 @@ const PlusMoreAccount = ({ navigation }) => {
             <Text variant="titleSmall" style={{color: allColors.universalColor}}>
               Expiry Date (optional)
             </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "28%",
-                  ...styles.monthAndYearInput,
-                }}
-              >
-                <TextInput
-                  style={{ backgroundColor: "transparent" }}
-                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
-                  selectionColor={allColors.textSelectionColor}
-                  textColor={allColors.textColorFour}
-                  underlineColor="transparent"
-                  activeUnderlineColor="transparent"
-                  placeholder="MM"
-                  placeholderTextColor={allColors.textColorFour}
-                  value={month}
-                  onChangeText={handleMonthChange}
-                  keyboardType="numeric"
-                  maxLength={2}
-                />
-                <Text
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                label={<Text style={{color: allColors.universalColor}} >MM</Text>}
+                style={{ width: 80 ,backgroundColor: "transparent" }}
+                underlineColor={allColors.textColorPrimary}
+                allowFontScaling={false}
+                textColor={allColors.universalColor}
+                selectionColor={allColors.textSelectionColor}
+                activeUnderlineColor={allColors.textColorPrimary}
+                value={month}
+                onChangeText={handleMonthChange}
+                keyboardType={"number-pad"}
+                maxLength={2}
+                autoCorrect={false}
+              />
+              <Text
                   variant="headlineSmall"
-                  style={{ color: allColors.textColorFour }}
+                  allowFontScaling={false}
+                  style={{ color: allColors.universalColor }}
                 >
                   /
                 </Text>
-                <TextInput
-                  style={{ backgroundColor: "transparent" }}
-                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
-                  selectionColor={allColors.textColorFour}
-                  textColor={allColors.textColorFour}
-                  underlineColor="transparent"
-                  activeUnderlineColor="transparent"
-                  placeholder="YY"
-                  placeholderTextColor={allColors.textColorFour}
-                  ref={yearInputRef}
-                  value={year}
-                  onChangeText={handleYearChange}
-                  keyboardType="numeric"
-                  maxLength={2}
-                />
-              </View>
+              <TextInput
+                label={<Text style={{color: allColors.universalColor}}>YY</Text>}
+                style={{ width: 80, backgroundColor: "transparent" }}
+                allowFontScaling={false}
+                underlineColor={allColors.textColorPrimary}
+                textColor={allColors.universalColor}
+                selectionColor={allColors.textSelectionColor}
+                activeUnderlineColor={allColors.textColorPrimary}
+                value={year}
+                ref={yearInputRef}
+                onChangeText={handleYearChange}
+                keyboardType={"number-pad"}
+                maxLength={2}
+                autoCorrect={false}
+              />
+            </View>
           </View>
  
           <View

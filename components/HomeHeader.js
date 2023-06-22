@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { Text, Card, Tooltip } from "react-native-paper";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -74,7 +74,6 @@ const makeStyles = allColors =>
 });
 
 const MyBezierLineChart = (colors, chartData) => {
-  // TODO: sort by time too
   const data = {
     datasets: [
       {
@@ -202,11 +201,11 @@ const IncomeCard = ({ incomeArray, currency }) => {
   return (
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
-        <Text style={{color: allColors.universalColor}} variant="labelMedium">Income</Text>
+        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>Income</Text>
         <Tooltip title={formatNumberWithCurrency(totalIncome, currency)}  
           theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >
           <View>
-            <Text style={{ color: allColors.successColor, maxWidth: 120 }} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium">
+            <Text style={{ color: allColors.successColor, maxWidth: Dimensions.get("window").width / 5 }} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
               + {formatNumberWithCurrency(totalIncome, currency)}
             </Text>
           </View>
@@ -225,11 +224,11 @@ const ExpenseCard = ({ expenseArray, currency }) => {
   return (
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
-        <Text style={{color: allColors.universalColor}} variant="labelMedium">Expense</Text>
+        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} ellipsizeMode="tail"  numberOfLines={1} variant="labelMedium" allowFontScaling={false}>Expense</Text>
         <Tooltip title={formatNumberWithCurrency(totalExpense, currency)}  
           theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >  
           <View>
-            <Text style={{ color: allColors.warningColor, maxWidth: 120 }}numberOfLines={1} ellipsizeMode="tail" variant="labelMedium">
+            <Text style={{ color: allColors.warningColor, maxWidth: Dimensions.get("window").width / 5 }}numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
               - {formatNumberWithCurrency(totalExpense, currency)}
             </Text>
           </View>

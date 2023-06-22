@@ -252,7 +252,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       <View style={{ marginLeft: 20, marginRight: 20, marginBottom: 10, gap: 20, flex: 1 }}>
         {commonTextSection("Section name", sectionName, setSectionName, "default")}
         {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
-        {commonTextSection("Who paid (leave this empty if you have paid)", whoPaid, setWhoPaid, "default")}
+        {commonTextSection("You paid? Leave empty if paid", whoPaid, setWhoPaid, "default")}
         <Text style={{color: allColors.universalColor}}>Select members for this section</Text>
         <View
           style={{
