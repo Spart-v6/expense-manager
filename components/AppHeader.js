@@ -20,8 +20,8 @@ const AppHeader = ({
   isUpdateCardScreen = false,
 }) => {
   const allColors = useDynamicColors();
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  const screenHeight = Dimensions.get('window').height;
+  const statusBarHeight = screenHeight * 0.05;
 
 
   const GreetAndSearch = React.memo(({greeting, username}) => {
@@ -91,7 +91,7 @@ const AppHeader = ({
   return (
     <Appbar.Header
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
-      // statusBarHeight={windowHeight - 700}
+      statusBarHeight={statusBarHeight}
     >
       {!isParent && (
         <Button onPress={() => navigation.goBack()}>
