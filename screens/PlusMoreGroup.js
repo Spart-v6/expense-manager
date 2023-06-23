@@ -43,10 +43,7 @@ const PlusMoreGroup = ({ navigation }) => {
     { id: 0, value: "", showCross: true },
   ]);
   const [idCounter, setIdCounter] = useState(1);
-  const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
   const [urself, setUrself] = useState(true);
-
-  const hideDialog = () => setIsDeleteBtnPressed(false);
 
   const handleAddTextInput = () => {
     setTextInputs((prevState) => [
@@ -90,18 +87,12 @@ const PlusMoreGroup = ({ navigation }) => {
       timeoutRef.current = setTimeout(() => setError(false), 2000);
       return;
     }
-
     const newArr = [...textInputs];
     newArr.push({ id: idCounter, showCross: true, value: username });
     setIdCounter((prevId) => prevId + 1);
     newArr.push({ nameOfGrp: groupName, identity: Math.random() * 10 });
     dispatch(addGroups(newArr));
     navigation.goBack();
-  };
-
-  const handleDeleteUrSelf = () => {
-    setUrself(false);
-    setIsDeleteBtnPressed(false);
   };
 
   return (
@@ -142,34 +133,19 @@ const PlusMoreGroup = ({ navigation }) => {
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={{color: allColors.universalColor}}>Add names</Text>
-          {urself && (
-            <View style={[styles.rowContainer]}>
-              <TextInput
-                style={styles.textInput}
-                selectionColor={allColors.textSelectionColor}
-                textColor={allColors.universalColor}
-                placeholderTextColor={allColors.placeholderTextColor}
-                underlineColorAndroid="transparent"
-                activeUnderlineColor="transparent"
-                underlineColor="transparent"
-                editable={false}
-                placeholder={username}
-              />
-              {urself && (
-                <TouchableOpacity
-                  onPress={() => setIsDeleteBtnPressed(true)}
-                  style={styles.iconContainer}
-                >
-                  <MaterialIcons
-                    name="close"
-                    size={30}
-                    color={allColors.warningColor}
-                    style={{ alignSelf: "center" }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+          <View style={[styles.rowContainer]}>
+            <TextInput
+              style={styles.textInput}
+              selectionColor={allColors.textSelectionColor}
+              textColor={allColors.universalColor}
+              placeholderTextColor={allColors.placeholderTextColor}
+              underlineColorAndroid="transparent"
+              activeUnderlineColor="transparent"
+              underlineColor="transparent"
+              editable={false}
+              placeholder={username}
+            />
+          </View>
           {textInputs.map((input, index) => (
             <View style={[styles.rowContainer]} key={input.id}>
               <TextInput
@@ -240,31 +216,6 @@ const PlusMoreGroup = ({ navigation }) => {
           </Text>
         </Button>
       </View>
-
-      <Portal>
-        <Dialog
-          visible={isDeleteBtnPressed}
-          onDismiss={hideDialog}
-          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-        >
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Are you sure you want to remove yourself from the group?
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
-            <Button
-              onPress={handleDeleteUrSelf}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={allColors.warningColor}
-            >
-              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
       {error && <SnackbarComponent errorMsg={errorMsg} />}
     </SafeAreaView>
   );
