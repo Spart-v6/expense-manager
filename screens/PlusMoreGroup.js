@@ -121,15 +121,15 @@ const PlusMoreGroup = ({ navigation }) => {
               borderTopLeftRadius: 15,
               backgroundColor: allColors.innerTextFieldColor,
               marginBottom: 20,
-              borderColor: "black",
+              borderColor: allColors.placeholderTextColor,
               borderWidth: 2,
             }}
             selectionColor={allColors.textSelectionColor}
-            textColor={allColors.textColorFour}
+            textColor={allColors.universalColor}
             underlineColorAndroid="transparent"
             activeUnderlineColor="transparent"
             underlineColor="transparent"
-            placeholderTextColor={allColors.textColorFour}
+            placeholderTextColor={allColors.placeholderTextColor}
             autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
@@ -147,8 +147,8 @@ const PlusMoreGroup = ({ navigation }) => {
               <TextInput
                 style={styles.textInput}
                 selectionColor={allColors.textSelectionColor}
-                textColor={allColors.textColorFour}
-                placeholderTextColor={allColors.textColorFour}
+                textColor={allColors.universalColor}
+                placeholderTextColor={allColors.placeholderTextColor}
                 underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
                 underlineColor="transparent"
@@ -175,12 +175,12 @@ const PlusMoreGroup = ({ navigation }) => {
               <TextInput
                 style={styles.textInput}
                 selectionColor={allColors.textSelectionColor}
-                textColor={allColors.textColorFour}
+                textColor={allColors.universalColor}
                 underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
                 underlineColor="transparent"
                 autoFocus={index > 0}
-                placeholderTextColor={allColors.textColorFour}
+                placeholderTextColor={allColors.placeholderTextColor}
                 autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
@@ -287,7 +287,7 @@ const makeStyles = allColors => StyleSheet.create({
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
     backgroundColor: allColors.innerTextFieldColor,
-    borderColor: "black",
+    borderColor: allColors.placeholderTextColor,
     borderWidth: 2,
     margin: 10,
     marginLeft: 0,

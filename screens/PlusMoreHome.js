@@ -311,7 +311,7 @@ const PlusMoreHome = ({ navigation, route }) => {
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
-              borderColor: "black",
+              borderColor: allColors.placeholderTextColor,
               borderWidth: 2,
               backgroundColor: allColors.innerTextFieldColor,
               ...style,
@@ -321,10 +321,10 @@ const PlusMoreHome = ({ navigation, route }) => {
             },
           ]}
           selectionColor={allColors.textSelectionColor}
-          textColor={allColors.textColorFour}
+          textColor={allColors.universalColor}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
-          placeholderTextColor={allColors.textColorFour}
+          placeholderTextColor={allColors.placeholderTextColor}
           autoComplete="off"
           textContentType="none"
           value={name}

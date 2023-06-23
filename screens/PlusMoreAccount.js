@@ -99,15 +99,15 @@ const PlusMoreAccount = ({ navigation }) => {
           borderRadius: 15,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
-          borderColor: "black",
+          borderColor: allColors.placeholderTextColor,
           borderWidth: 2,
           backgroundColor: allColors.innerTextFieldColor,
         }}
         selectionColor={allColors.textSelectionColor}
-        textColor={allColors.textColorFour}
+        textColor={allColors.universalColor}
         underlineColor="transparent"
         activeUnderlineColor="transparent"
-        placeholderTextColor={allColors.textColorFour}
+        placeholderTextColor={allColors.placeholderTextColor}
         autoComplete="off"
         textContentType="none"
         value={name}
@@ -169,27 +169,7 @@ const PlusMoreAccount = ({ navigation }) => {
           </View>
 
           <View style={{ ...styles.commonStyles }}>
-            <TextInput
-              style={{
-                borderRadius: 15,
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
-                borderColor: "black",
-                borderWidth: 2,
-                backgroundColor: allColors.innerTextFieldColor,
-              }}
-              selectionColor={allColors.textSelectionColor}
-              textColor={allColors.textColorFour}
-              underlineColor="transparent"
-              activeUnderlineColor="transparent"
-              placeholderTextColor={allColors.textColorFour}
-              autoComplete="off"
-              textContentType="none"
-              value={paymentNetwork}
-              placeholder={"Payment network (e.g., VISA)"}
-              onChangeText={(val) => setPaymentNetwork(val)}
-              keyboardType={"default"}
-            />
+            {textInput(paymentNetwork, setPaymentNetwork, "Payment network (e.g., VISA)")}
           </View>
           <View
             style={{
