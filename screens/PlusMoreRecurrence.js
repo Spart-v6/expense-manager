@@ -331,7 +331,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
       timeoutRef.current = setTimeout(() => setError(false), 2000);
       return;
     }
-    // console.log(recurrenceDetails);
     dispatch(addRecurrences(recurrenceDetails));
     navigation.goBack();
   };

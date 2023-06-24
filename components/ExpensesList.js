@@ -248,11 +248,11 @@ const ExpensesList = ({ filter }) => {
     });
 
     const updatedExpenses = expense.map(ex => {
-      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected } = ex;
+      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected, recurrenceType } = ex;
     
       return {
         amount: recurrenceAmount,
-        desc: `${recurrenceName} recurrence`,
+        desc: recurrenceType,
         id: Math.random() * 10,
         date: moment(recurrenceStartDate, "DD MM YY").format("YYYY/MM/DD"),
         name: recurrenceName,

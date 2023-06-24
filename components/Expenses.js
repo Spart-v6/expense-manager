@@ -25,7 +25,7 @@ const Expenses = ({ item, index, onPress }) => {
     return moment(item.date, "YYYY/MM/DD").format("DD");
   })
   const [dayOfWeekFormat] = React.useState(() => {
-    return moment(item.date, "YYYY/MM/DD").format("ddd");
+    return moment(item.date, "YYYY/MM/DD").format("dddd").substring(0,3);
   })
 
   const handlePress = () => {
