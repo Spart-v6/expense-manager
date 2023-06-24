@@ -11,8 +11,8 @@ import AppStack from "./navigation/AppStack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
-import allColors from "./commons/allColors";
-import { View, SafeAreaView, StatusBar, Image } from "react-native";
+import useDynamicColors from "./commons/useDynamicColors";
+import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
 
 const theme = {
   ...DefaultTheme,
@@ -23,77 +23,33 @@ const theme = {
   },
 };
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true
+  })
+});
+
 const App = () => {
-  // #region Notifications
+  const allColors = useDynamicColors();
+
   const [notification, setNotification] = React.useState(false);
-  const [isSwitchOn, setIsSwitchOn] = React.useState(false);  
-  const [expoPushToken, setExpoPushToken] = React.useState("");
   const notificationListener = React.useRef();
   const responseListener = React.useRef();
 
   React.useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
-  
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
-    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {});
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-
-  React.useEffect(() => {
-    const retrieveSwitchState = async () => {
-      try {
-        const switchState = await AsyncStorage.getItem('isSwitchOn');
-        setIsSwitchOn(JSON.parse(switchState));
-      } catch (error) {
-        console.log('Error retrieving switch state from AsyncStorage:', error);
-      }
-    };
-    retrieveSwitchState();
-  }, []);
-
-  React.useEffect(() => {
-    if (isSwitchOn) {
-      registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
-    }
-  }, [isSwitchOn]);
-  
-
-  async function registerForPushNotificationsAsync() {
-    let token;
-  
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
-  
-    const { status } = await Notifications.getPermissionsAsync();
-  
-    if (status !== 'granted') {
-      const { status: finalStatus } = await Notifications.requestPermissionsAsync();
-      if (finalStatus !== 'granted') {
-        setShowError(true);
-        setIsSwitchOn(false);
-        AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
-        return;
-      }
-    }
-  
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    return token;
-  }
-
-  // #endregion
 
 
   // #region Biometrics
@@ -151,20 +107,25 @@ const App = () => {
   // #endregion
 
   const handleLogginIn = () => {
-    if (loading) return null;
+    if (loading) return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary }}>
+        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+        <ActivityIndicator size="large" color={allColors.textColorFive}/>
+      </SafeAreaView>
+    );
   
     if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
-        <StatusBar translucent backgroundColor={"transparent"} />
+        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
         <View style={{marginTop: 100, justifyContent: 'center', alignItems: 'center'}}>
           <Image source={require('./assets/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
         </View>
         <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
 
-          <Text variant="titleLarge"> Authentication {authMsg} </Text>
+          <Text variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </Text>
           {authMsg === "failed" && (
-              <Text>{warningMsg}</Text>
+              <Text style={{color: allColors.universalColor}}>{warningMsg}</Text>
           )}
         </View>
       </SafeAreaView>

@@ -4,13 +4,14 @@ import { Text, TextInput, Button } from "react-native-paper";
 import React from "react";
 import RadioButton from "../components/RadioButton";
 import AppHeader from "../components/AppHeader";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { useDispatch } from "react-redux";
 import moment from "moment";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { addCard, updateCard } from "../redux/actions";
 import SnackbarComponent from "../commons/snackbar";
 
-const makeStyles = () =>
+const makeStyles = allColors =>
   StyleSheet.create({
     safeView: {
       flex: 1
@@ -33,15 +34,16 @@ const makeStyles = () =>
       borderTopLeftRadius: 15,
       borderColor: "black",
       borderWidth: 2,
-      backgroundColor: allColors.backgroundColorQuinary,
+      backgroundColor: allColors.innerTextFieldColor,
     },
     addCardBtn: {
       margin: 20, marginTop: 0
     },
   });
 
-const PlusMoreAccount = ({ navigation, route }) => {
-  const styles = makeStyles();
+const PlusMoreAccount = ({ navigation }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const dispatch = useDispatch();
 
   const [error, setError] = useState(false);
@@ -50,35 +52,15 @@ const PlusMoreAccount = ({ navigation, route }) => {
 
   const [isUpdateCardPressed, setIsUpdateCardPressed] = useState(false);
   const [valuesToChangeInCard, setValuesToChangeInCard] = useState({});
-  const [btnName] = useState(() => {
-    if(route.params) return "Update Card";
-    return "Add Card";
-  });
-  const [cardHolderName, setCardHolderName] = useState(() => {
-    if(route.params) return route.params.updateCard.cardHolderName;
-    return "";
-  });
-  const [paymentNetwork, setPaymentNetwork] = useState(() => {
-    if(route.params) return route.params.updateCard.paymentNetwork;
-    return "";
-  });
-  const [month, setMonth] = useState(() => {
-    if(route.params) return route.params.updateCard.month;
-    return "";
-  });
-  const [year, setYear] = useState(() => {
-    if(route.params) return route.params.updateCard.year;
-    return "";
-  });
-  const [checked, setChecked] = useState(() => {
-    if(route.params) return route.params.updateCard.checked;
-    return "debit";
-  });
+  const [btnName] = useState("Add Card");
+  const [cardHolderName, setCardHolderName] = useState("");
+  const [paymentNetwork, setPaymentNetwork] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [checked, setChecked] = useState("debit");
 
-  const memoizedCardObj = useMemo(
-    () => route?.params?.updateCard,
-    [route?.params?.updateCard]
-  );
+  const [debitCard, setDebitCard] = useState(true);
+  const [creditCard, setCreditCard] = useState(false);
 
   const yearInputRef = useRef(null);
 
@@ -97,6 +79,19 @@ const PlusMoreAccount = ({ navigation, route }) => {
     }
   };
 
+  const handleDebitCardPress = () => {
+    setDebitCard(true);
+    setCreditCard(false);
+    setChecked("debit");
+  };
+  
+  const handleCreditCardPress = () => {
+    setDebitCard(false);
+    setCreditCard(true);
+    setChecked("credit");
+  };
+  
+
   const textInput = (name, setter, placeholder) => {
     return (
       <TextInput
@@ -104,15 +99,15 @@ const PlusMoreAccount = ({ navigation, route }) => {
           borderRadius: 15,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
-          borderColor: "black",
+          borderColor: allColors.placeholderTextColor,
           borderWidth: 2,
-          backgroundColor: allColors.backgroundColorQuinary
+          backgroundColor: allColors.innerTextFieldColor,
         }}
-        selectionColor={allColors.textColorFour}
-        textColor={allColors.textColorFour}
+        selectionColor={allColors.textSelectionColor}
+        textColor={allColors.universalColor}
         underlineColor="transparent"
         activeUnderlineColor="transparent"
-        placeholderTextColor={allColors.textColorFour}
+        placeholderTextColor={allColors.placeholderTextColor}
         autoComplete="off"
         textContentType="none"
         value={name}
@@ -123,23 +118,9 @@ const PlusMoreAccount = ({ navigation, route }) => {
     );
   };
 
-  useEffect(() => {
-    if (route.params) {
-      setValuesToChangeInCard(memoizedCardObj);
-      setIsUpdateCardPressed(true);
-    }
-  }, [memoizedCardObj]);
-
   const handleAddOrUpdateCard = () => {
     const cardDetails = {
       id: Math.random() + 10 + Math.random(),
-      cardHolderName: cardHolderName,
-      paymentNetwork: paymentNetwork,
-      month: month,
-      year: year,
-      checked
-    };
-    const updatedCardDetails = {
       cardHolderName: cardHolderName,
       paymentNetwork: paymentNetwork,
       month: month,
@@ -174,10 +155,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
       timeoutRef.current = setTimeout(() => setError(false), 2000);
       return;
     }
-
-
-    if(route.params) dispatch(updateCard(valuesToChangeInCard.id, updatedCardDetails));
-    else dispatch(addCard(cardDetails));
+    dispatch(addCard(cardDetails));
     navigation.goBack();
   };
 
@@ -191,25 +169,7 @@ const PlusMoreAccount = ({ navigation, route }) => {
           </View>
 
           <View style={{ ...styles.commonStyles }}>
-            <TextInput
-              style={{
-                borderRadius: 15,
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
-                backgroundColor: allColors.backgroundColorQuinary,
-              }}
-              selectionColor={allColors.textColorFour}
-              textColor={allColors.textColorFour}
-              underlineColor="transparent"
-              activeUnderlineColor="transparent"
-              placeholderTextColor={allColors.textColorFour}
-              autoComplete="off"
-              textContentType="none"
-              value={paymentNetwork}
-              placeholder={"Payment network like VISA, Google Pay"}
-              onChangeText={(val) => setPaymentNetwork(val)}
-              keyboardType={"default"}
-            />
+            {textInput(paymentNetwork, setPaymentNetwork, "Payment network (e.g., VISA)")}
           </View>
           <View
             style={{
@@ -217,53 +177,47 @@ const PlusMoreAccount = ({ navigation, route }) => {
               ...styles.commonStyles,
             }}
           >
-            <Text variant="titleSmall">
+            <Text variant="titleSmall" style={{color: allColors.universalColor}}>
               Expiry Date (optional)
             </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "30%",
-                  ...styles.monthAndYearInput,
-                }}
-              >
-                <TextInput
-                  style={{ backgroundColor: "transparent" }}
-                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
-                  selectionColor={allColors.textColorFour}
-                  textColor={allColors.textColorFour}
-                  underlineColor="transparent"
-                  activeUnderlineColor="transparent"
-                  placeholder="MM"
-                  placeholderTextColor={allColors.textColorFour}
-                  value={month}
-                  onChangeText={handleMonthChange}
-                  keyboardType="numeric"
-                  maxLength={2}
-                />
-                <Text
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                label={<Text style={{color: allColors.universalColor}} >MM</Text>}
+                style={{ width: 80 ,backgroundColor: "transparent" }}
+                underlineColor={allColors.textColorPrimary}
+                allowFontScaling={false}
+                textColor={allColors.universalColor}
+                selectionColor={allColors.textSelectionColor}
+                activeUnderlineColor={allColors.textColorPrimary}
+                value={month}
+                onChangeText={handleMonthChange}
+                keyboardType={"number-pad"}
+                maxLength={2}
+                autoCorrect={false}
+              />
+              <Text
                   variant="headlineSmall"
-                  style={{ color: allColors.textColorFour }}
+                  allowFontScaling={false}
+                  style={{ color: allColors.universalColor }}
                 >
                   /
                 </Text>
-                <TextInput
-                  style={{ backgroundColor: "transparent" }}
-                  contentStyle={{ paddingLeft: 14, paddingRight: 14 }}
-                  selectionColor={allColors.textColorFour}
-                  textColor={allColors.textColorFour}
-                  underlineColor="transparent"
-                  activeUnderlineColor="transparent"
-                  placeholder="YY"
-                  placeholderTextColor={allColors.textColorFour}
-                  ref={yearInputRef}
-                  value={year}
-                  onChangeText={handleYearChange}
-                  keyboardType="numeric"
-                  maxLength={2}
-                />
-              </View>
+              <TextInput
+                label={<Text style={{color: allColors.universalColor}}>YY</Text>}
+                style={{ width: 80, backgroundColor: "transparent" }}
+                allowFontScaling={false}
+                underlineColor={allColors.textColorPrimary}
+                textColor={allColors.universalColor}
+                selectionColor={allColors.textSelectionColor}
+                activeUnderlineColor={allColors.textColorPrimary}
+                value={year}
+                ref={yearInputRef}
+                onChangeText={handleYearChange}
+                keyboardType={"number-pad"}
+                maxLength={2}
+                autoCorrect={false}
+              />
+            </View>
           </View>
  
           <View
@@ -271,30 +225,31 @@ const PlusMoreAccount = ({ navigation, route }) => {
               ...styles.commonStyles,
               flexDirection: "row",
               marginRight: 0,
+              gap: 20
             }}
           >
-            <TouchableOpacity
-              style={styles.wholeRadioBtnStyle}
-              onPress={() => setChecked("debit")}
-              activeOpacity={1}
-            >
-              <RadioButton
-                isSelected={checked === "debit"}
-                onPress={() => setChecked("debit")}
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <BouncyCheckbox
+                isChecked={debitCard}
+                disableBuiltInState
+                onPress={handleDebitCardPress}
+                fillColor={allColors.addBtnColors}
+                innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
+                iconStyle={{ borderRadius: 50 }}
               />
-              <Text>Debit Card</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.wholeRadioBtnStyle}
-              onPress={() => setChecked("credit")}
-              activeOpacity={1}
-            >
-              <RadioButton
-                isSelected={checked === "credit"}
-                onPress={() => setChecked("credit")}
+              <Text style={{color: allColors.universalColor}}>Debit Card</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <BouncyCheckbox
+                isChecked={creditCard}
+                disableBuiltInState
+                onPress={handleCreditCardPress}
+                fillColor={allColors.addBtnColors}
+                innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
+                iconStyle={{ borderRadius: 50 }}
               />
-              <Text>Credit Card</Text>
-            </TouchableOpacity>
+              <Text style={{color: allColors.universalColor}}>Credit Card</Text>
+            </View>
           </View>
         </View>
 
@@ -302,16 +257,18 @@ const PlusMoreAccount = ({ navigation, route }) => {
           <Button
             style={{
               borderColor: "transparent",
-              backgroundColor: allColors.backgroundColorLessPrimary,
+              backgroundColor: allColors.addBtnColors,
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15
             }}
+            mode="contained"
+            labelStyle={{ fontSize: 15 }}
             onPress={handleAddOrUpdateCard}
           >
             <Text
               style={{
-                color: allColors.textColorPrimary,
+                color: allColors.backgroundColorPrimary,
                 fontWeight: 700,
                 fontSize: 18,
               }}

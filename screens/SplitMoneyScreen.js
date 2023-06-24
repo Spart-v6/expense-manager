@@ -11,7 +11,7 @@ import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
 import React, { useCallback, useState } from "react";
 import { FAB, Card, Dialog, Button, Portal, Text } from "react-native-paper";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { useSelector, useDispatch } from "react-redux";
 import {
   storeGroups,
@@ -23,11 +23,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "react-native-vector-icons";
 import * as Notifications from "expo-notifications";
+import DeleteDialog from "../components/DeleteDialog";
 
-const makeStyles = () =>
+const makeStyles = allColors =>
   StyleSheet.create({
     card: {
-      backgroundColor: allColors.backgroundColorSecondary,
+      backgroundColor: allColors.defaultAccSplitRecCard,
       borderRadius: 10,
       margin: 16,
       padding: 16,
@@ -35,7 +36,8 @@ const makeStyles = () =>
   });
 
 const SplitMoneyScreen = ({ navigation }) => {
-  const styles = makeStyles();
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const dispatch = useDispatch();
   // #region getting groups stuff
   useFocusEffect(
@@ -91,6 +93,8 @@ const SplitMoneyScreen = ({ navigation }) => {
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
+  const hideDialog = () => setDeleteDialogVisible(false);
+
   const handleLongDeleteGroup = (identity) => {
     setSelectedItemToDelete(identity);
     setDeleteDialogVisible(true);
@@ -115,10 +119,10 @@ const SplitMoneyScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor={"transparent"} />
+      <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeader title="Split Money" isParent={true} navigation={navigation} />
       <AnimatedEntryScreen>
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1 }}>
             {groupsData?.length > 0 ? (
               groupsData.map((innerArray, index) => {
@@ -140,12 +144,12 @@ const SplitMoneyScreen = ({ navigation }) => {
                       })
                     }
                     style={{ gap: 20 }}
-                    activeOpacity={0.8}
+                    activeOpacity={0.9}
                   >
                     <Card style={styles.card}>
-                      <Card.Title title={nameOfGrp} />
+                      <Card.Title title={nameOfGrp} titleStyle={{color:allColors.universalColor, fontWeight: 900}}/>
                       <Card.Content>
-                        <Text variant="bodyMedium" style={{color: allColors.backgroundColorQuinary, fontWeight: 900}}>{values.join(", ")}</Text>
+                        <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{values.sort().join(", ")}</Text>
                       </Card.Content>
                     </Card>
                   </TouchableOpacity>
@@ -166,10 +170,10 @@ const SplitMoneyScreen = ({ navigation }) => {
                   color={allColors.textColorPrimary}
                 />
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Text variant="titleMedium">
+                  <Text variant="titleMedium" style={{color: allColors.universalColor}}>
                     You don't have groups yet.
                   </Text>
-                  <Text variant="bodySmall">
+                  <Text variant="bodySmall" style={{color: allColors.universalColor}}>
                     Click on "+" button to start adding groups
                   </Text>
                 </View>
@@ -178,38 +182,22 @@ const SplitMoneyScreen = ({ navigation }) => {
           </View>
         </ScrollView>
         <Portal>
-          <Dialog
+          <DeleteDialog
             visible={isDeleteDialogVisible}
-            onDismiss={() => setDeleteDialogVisible(false)}
-            style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-          >
-            <Dialog.Title>Delete group?</Dialog.Title>
-            <Dialog.Content>
-              <Text variant="bodyMedium" style={{ color: "white" }}>
-                The group will be removed permanently
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => setDeleteDialogVisible(false)}>
-                <Text style={{color: allColors.textColorPrimary}}> Cancel </Text>
-              </Button>
-              <Button
-                onPress={handleDelete}
-                mode="elevated"
-                contentStyle={{ width: 60 }}
-                buttonColor={allColors.warningColor}
-              >
-                <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
+            hideDialog={hideDialog}
+            deleteExpense={handleDelete}
+            allColors={allColors}
+            title={"group"}
+            content={"group"}
+          />
         </Portal>
       </AnimatedEntryScreen>
       <FAB
         animated
         icon="account-multiple-plus"
+        color={allColors.universalColor}
         onPress={() => navigation.navigate("PlusMoreGroup")}
-        mode="flat"
+        mode="elevated"
         style={{
           position: "absolute",
           margin: 16,

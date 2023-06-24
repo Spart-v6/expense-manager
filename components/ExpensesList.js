@@ -4,24 +4,29 @@ import { Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
 import { addData, updateRecurrences } from "../redux/actions";
 import { storeData, storeRecurrences, deleteRecurrences } from "../redux/actions";
 
-const Separator = () => (
-  <View
-    style={{
-      height: 1,
-      width: "80%",
-      backgroundColor: allColors.backgroundColorTertiary,
-      alignSelf: "center",
-    }}
-  />
-);
+const Separator = () => {
+  const allColors = useDynamicColors();
+  return (
+    <View
+      style={{
+        height: 1,
+        width: "190%",
+        backgroundColor: allColors.backgroundColorTertiary,
+        alignSelf: "center",
+        opacity: 0.5
+      }}
+    />
+  );
+}
 
 const ExpensesList = ({ filter }) => {
+  const allColors = useDynamicColors();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [currentFilter, setCurrentFilter] = useState("Daily");
@@ -201,59 +206,61 @@ const ExpensesList = ({ filter }) => {
   );
 
   const addRecurringExpenses = useCallback(() => {
-    const today = moment();
+    const expense = [];
 
-    const expenses = [];
+    const currentDate = moment().format("DD MM YY");
+    recurrencesData.forEach((obj) => {
+      const { recurrenceStartDate, frequency } = obj;
+      const frequencyDays = {
+        Daily: 1,
+        Weekly: 7,
+        Monthly: 30,
+        Yearly: 365,
+      };
+      const daysToAdd = frequencyDays[frequency];
+      
+      const futureDate = moment(recurrenceStartDate, "DD MM YY")
+        .add(daysToAdd, "days")
+        .format("DD MM YY");
+  
+      if (moment(futureDate, "DD MM YY").isSameOrBefore(moment(currentDate, "DD MM YY"))) {
+        const numOccurrences = Math.floor(moment(currentDate, "DD MM YY").diff(moment(recurrenceStartDate, "DD MM YY"), "days") / daysToAdd);
+  
+        for (let i = 0; i < numOccurrences; i++) {
+          const newObj = {
+            ...obj,
+            recurrenceStartDate: moment(recurrenceStartDate, "DD MM YY")
+              .add(daysToAdd * (i + 1), "days")
+              .format("DD MM YY"),
+          };
+          expense.push(newObj);
+        }
 
-    for (const expense of recurrencesData) {
-      const {
-        frequency,
-        recurrenceStartDate,
-        recurrenceEndDate,
-        repeatRecurrrence,
-      } = expense;
-      let fre = "";
-      if (frequency === "Daily") fre = "days";
-      if (frequency === "Weekly") fre = "weeks";
-      if (frequency === "Monthly") fre = "months";
-      if (frequency === "Yearly") fre = "years";
-      const startDate = moment(recurrenceStartDate, "DD MM YY");
-      const endDate = moment(recurrenceEndDate, "DD MM YY");
-      const daysDifference = endDate.diff(startDate, "days");
-
-      if (repeatRecurrrence) {
-        let nextDate = startDate.clone();
-        while (nextDate.isSameOrBefore(today, "day")) {
-          expenses.push({
-            ...expense,
-            recurrenceStartDate: nextDate.format("DD MM YY"),
-          });
-          if (endDate) nextDate = nextDate.add(daysDifference, "days");
-          nextDate = nextDate.add(1, fre);
-          dispatch(updateRecurrences(expense.id, nextDate.format("DD MM YY")));
+        const updatedRecurrenceStartDate = moment(recurrenceStartDate, "DD MM YY")
+          .add(numOccurrences * daysToAdd, "days")
+          .format("DD MM YY");
+        dispatch(updateRecurrences(obj.id, updatedRecurrenceStartDate));
+      } else {
+        if (futureDate === currentDate) {
+          expense.push(obj);
         }
       }
-      if (!repeatRecurrrence && (endDate ? startDate.add(daysDifference, "days") : startDate.add(1, fre)).isSameOrBefore(today, "day")) {
-        expenses.push({
-          ...expense,
-          recurrenceStartDate: startDate.format("DD MM YY"),
-        });
-        dispatch(deleteRecurrences(expense.id))
-      }
-    }
-    const updatedExpenses = expenses.map(expense => {
-      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time } = expense;
+    });
+
+    const updatedExpenses = expense.map(ex => {
+      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected, recurrenceType } = ex;
     
       return {
         amount: recurrenceAmount,
-        desc: `${recurrenceName} recurrence`,
+        desc: recurrenceType,
         id: Math.random() * 10,
         date: moment(recurrenceStartDate, "DD MM YY").format("YYYY/MM/DD"),
         name: recurrenceName,
         selectedCard: paymentNetwork,
         selectedCategory: { iconCategory: "FontAwesome", iconName: "repeat" },
         time: time,
-        type: paymentType
+        type: paymentType,
+        accCardSelected
       };
     });
     if (updatedExpenses.length > 0) dispatch(addData(updatedExpenses));
@@ -276,13 +283,13 @@ const ExpensesList = ({ filter }) => {
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <View style={{ alignItems: "center" }}>
-                    <Text variant="titleMedium">{item}</Text>
+                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>{item}</Text>
                   </View>
                 )}
                 renderSectionHeader={({ section: { title } }) => (
                   <Text
                     variant="titleMedium"
-                    style={{ marginTop: 7, marginBottom: 7 }}
+                    style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                   >
                     {title}
                   </Text>
@@ -298,7 +305,7 @@ const ExpensesList = ({ filter }) => {
               renderSectionHeader={({ section: { title } }) => (
                 <Text
                   variant="titleMedium"
-                  style={{ marginTop: 7, marginBottom: 7 }}
+                  style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                 >
                   {title}
                 </Text>

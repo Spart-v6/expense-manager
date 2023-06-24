@@ -1,7 +1,7 @@
 import { View, SafeAreaView } from "react-native";
 import { Appbar, TextInput, Text, Card } from "react-native-paper";
 import formatNumberWithCurrency from "../helper/formatter";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import Icon from "react-native-vector-icons/Entypo";
@@ -9,89 +9,18 @@ import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
-
-const DisplayEachExpense = ({ exp }) => {
-  const [currency, setCurrency] = React.useState({
-    curr: "$"
-  });
-
-  React.useEffect(() => {
-    const fetchCurrency = async () => {
-      const storedCurrency = await getCurrencyFromStorage();
-      setCurrency(storedCurrency);
-    };
-    fetchCurrency();
-  }, []);
-
-  // #region going to scr thru notifications
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
-  // #endregion
-
-  const formattedDate = moment(exp?.date, "YYYY/MM/DD").format("Do MMMM");
-  return (
-    <Card style={{ backgroundColor: allColors.backgroundColorLessPrimary, marginTop: 10, marginBottom: 10 }}>
-      <Card.Title
-        title={
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: 389,
-            }}
-          >
-            <Text variant="headlineSmall">{exp.name}</Text>
-            <Text variant="headlineSmall" numberOfLines={1} ellipsizeMode="tail" style={{maxWidth:200, color: exp.type === "Income" ? allColors.successColor : allColors.warningColor}}>
-              {exp.type === "Income"
-                ? `+${formatNumberWithCurrency(exp.amount, currency.curr)}`
-                : `-${formatNumberWithCurrency(exp.amount, currency.curr)}`}
-            </Text>
-          </View>
-        }
-        titleStyle={{ paddingTop: 10 }}
-      />
-      <Card.Content>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text
-            variant="bodyMedium"
-            style={{ color: allColors.textColorPrimary }}
-          >
-            {formattedDate}
-          </Text>
-          {exp.desc !== "" && (
-            <>
-              <FontAwesome
-                name="circle"
-                size={7}
-                color={"white"}
-                style={{ paddingLeft: 5, paddingRight: 5 }}
-              />
-              <Text variant="bodyMedium">
-                {exp.desc}
-              </Text>
-            </>
-          )}
-        </View>
-      </Card.Content>
-    </Card>
-  );
-};
+import DetailedExpenseCard from "../components/DetailedExpenseCard";
 
 const displaySearchedResults = (searchArray, text) => {
+  const allColors = useDynamicColors();
   if (text.length > 2 && searchArray(text).length > 0) {
     return searchArray(text)?.map((e) => (
-      <DisplayEachExpense exp={e} key={Math.random() * 10}/>
+      <DetailedExpenseCard exp={e} key={Math.random() * 10}/>
     ));
   }
 
   if (searchArray(text).length === 0 && text.length === 0) {
-    return <Text variant="titleMedium">Type something to see the results</Text>;
+    return <Text variant="titleMedium" style={{color: allColors.universalColor}}>Type something to see the results</Text>;
   }
 
   if (searchArray(text).length === 0 && text.length > 2) {
@@ -99,16 +28,17 @@ const displaySearchedResults = (searchArray, text) => {
       <View style={{justifyContent:"center", alignItems:"center", gap: 10}}>
         <Icon
           name={"block"}
-          color={allColors.backgroundColorQuinary}
+          color={allColors.universalColor}
           size={30}
         />
-        <Text variant="titleMedium">Not found</Text>
+        <Text variant="titleMedium" style={{color: allColors.universalColor}}>Not found</Text>
       </View>
     );
   }
 };
 
 const SearchScreen = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
   const allExpenses = useSelector((state) => state.expenseReducer.allExpenses);
   const [text, setText] = React.useState("");
 
@@ -130,12 +60,15 @@ const SearchScreen = ({ navigation, route }) => {
         <Appbar.Action
           icon="keyboard-backspace"
           onPress={() => navigation.goBack()}
+          color={allColors.universalColor}
         />
         <Appbar.Content
           title={
             <TextInput
-              label="Search your expenses"
+              label={<Text style={{color: allColors.universalColor}}>{"Search your expenses"}</Text>}
               style={{ backgroundColor: "transparent" }}
+              textColor={allColors.universalColor}
+              selectionColor={allColors.textSelectionColor} // TODO: add selection color to all selected items
               value={text}
               underlineColor={allColors.backgroundColorQuaternary}
               activeUnderlineColor={allColors.backgroundColorQuaternary}
@@ -149,9 +82,10 @@ const SearchScreen = ({ navigation, route }) => {
           onPress={() => {
             setText("");
           }}
+          color={allColors.universalColor}
         />
       </Appbar.Header>
-      <View style={searchArray(text).length === 0 ? {justifyContent:"center", alignItems:"center", flex: 1} :{padding: 20}}>
+      <View style={searchArray(text).length === 0 ? {justifyContent:"center", alignItems:"center", flex: 1} :{padding: 20, gap: 20}}>
         {displaySearchedResults(searchArray, text)}
       </View>
     </SafeAreaView>

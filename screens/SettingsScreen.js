@@ -3,21 +3,24 @@ import { View, SafeAreaView } from "react-native";
 import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snackbar } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import { IconComponent } from "../components/IconPickerModal";
-import allColors from "../commons/allColors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Device from 'expo-device';
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+    shouldPlaySound: true,
+    shouldSetBadge: true
+  })
 });
 
 const SettingsScreen = ({ navigation }) => {
+  const allColors = useDynamicColors();
+
   // #region fetching username and currency
   const [username, setUsername] = React.useState(null);
   const [currency, setCurrency] = React.useState({
@@ -50,6 +53,10 @@ const SettingsScreen = ({ navigation }) => {
   const [biometricWarning, setBiometricWarning] = useState("");
   const [openLockAppDialog, setOpenLockAppDialog] = useState(false);
 
+  const [notification, setNotification] = React.useState(false);
+  const notificationListener = React.useRef();
+  const responseListener = React.useRef();
+
   React.useEffect(() => {
     setUpdatedUsername(username);
     setPlaceholderUsername(username);
@@ -65,8 +72,8 @@ const SettingsScreen = ({ navigation }) => {
       console.log("Error saving data to AsyncStorage:", error);
     }
   }
+
   
-  // #region Notifications
   const onToggleSwitch = async () => {
     const newSwitchValue = !isSwitchOn;
     setIsSwitchOn(newSwitchValue);
@@ -75,12 +82,25 @@ const SettingsScreen = ({ navigation }) => {
     } catch (error) {
       console.log('Error saving switch state to AsyncStorage:', error);
     }
-  
+    if (newSwitchValue) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Expense Reminder 🪙",
+          body: 'Don\'t forget to add your expenses for today!',
+          data: { headToThisScreen: 'PlusMoreHome' },
+        },
+        trigger: {
+          hour: 20,
+          minute: 0,
+          repeats: true
+        }
+      });
+    }
     if (!newSwitchValue) {
       await Notifications.cancelAllScheduledNotificationsAsync();
     }
-
-  };
+    return;
+  }
 
   React.useEffect(() => {
     const retrieveSwitchState = async () => {
@@ -91,72 +111,57 @@ const SettingsScreen = ({ navigation }) => {
         console.log('Error retrieving switch state from AsyncStorage:', error);
       }
     };
-  
     retrieveSwitchState();
   }, []);
-  
-  React.useEffect(() => {
-    if (isSwitchOn) {
-      registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
-    }
-  }, [isSwitchOn]);
-  
 
-  async function registerForPushNotificationsAsync() {
-    let token;
-  
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
-  
-    const { status } = await Notifications.getPermissionsAsync();
-  
-    if (status !== 'granted') {
-      const { status: finalStatus } = await Notifications.requestPermissionsAsync();
-      if (finalStatus !== 'granted') {
-        setShowError(true);
-        setIsSwitchOn(false);
-        AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
-        return;
+  React.useEffect(() => {
+    const getPermission = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+          setShowError(true);
+          console.log('Enable push notifications to use the app!');
+          await AsyncStorage.setItem('expopushtoken', "");
+          await AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
+          setIsSwitchOn(false);
+          return;
+        }
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        await AsyncStorage.setItem('expopushtoken', token);
+      } else {
+        console.log('Must use physical device for Push Notifications');
+      }
+
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
       }
     }
-  
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    scheduleDailyNotifications();
-    return token;
-  }
+    if (isSwitchOn) getPermission();
 
-  async function scheduleDailyNotifications() {
-    const trigger = {
-      hour: 0,
-      minute: 45,
-      repeats: true,
-    };
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Expense Reminder 🪙",
-        body: 'Don\'t forget to add your expenses for today!',
-        data: { headToThisScreen: 'PlusMoreHome' },
-      },
-      trigger,
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
     });
-  }
 
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       const nextScreen = response.notification.request.content.data.headToThisScreen;
       navigation.navigate(nextScreen);
     });
-    return () => subscription.remove();
-  }, []);
 
-  // #endregion
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, [isSwitchOn]);
 
 
   // #region Biometrics
@@ -188,7 +193,7 @@ const SettingsScreen = ({ navigation }) => {
         if (supportedBiometrics.includes(1)) {
           if (savedBiometrics) {
             biometricAuth = await LocalAuth.authenticateAsync({
-              promptMessage: "Confirm you identity",
+              promptMessage: "Confirm your identity",
               cancelLabel: "Cancel",
               disableDeviceFallback: true,
             });
@@ -225,16 +230,18 @@ const SettingsScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Settings" navigation={navigation} />
-      <View style={{ flex: 1, marginLeft: 25, marginTop: 20, marginRight: 25, gap: 10 }}>
+      <View style={{ flex: 1, marginLeft: 20, marginTop: 20, marginRight: 20, gap: 10 }}>
         <TouchableRipple
           onPress={() => setOpenChangeName(prevState => !prevState)}
           style={{ borderRadius: 2, flexDirection: "row", alignItems: "center", padding: 10 }}
         >
           <>
-            <IconComponent name={"pencil"} category={"Foundation"} size={20} color={allColors.textColorPrimary}/>
-            <View style={{ marginLeft: 15 }}>
-              <Text variant="bodyLarge">Change name</Text>
-              <Text variant="bodySmall">{placeholderUsername}</Text>
+            <View style={{paddingRight: 10, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"pencil"} category={"Foundation"} size={20} color={allColors.textColorPrimary}/>
+            </View>
+            <View style={{ marginLeft: 13 }}>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Change name</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{placeholderUsername}</Text>
             </View>
           </>
         </TouchableRipple>
@@ -243,31 +250,37 @@ const SettingsScreen = ({ navigation }) => {
           style={{ borderRadius: 2, flexDirection: "row", alignItems: "center", padding: 10 }}
         >
           <>
+          <View style={{paddingRight: 9, paddingLeft: 0, paddingTop: 3}}>
             <IconComponent name={"currency-sign"} category={"MaterialCommunityIcons"} size={20} color={allColors.textColorPrimary}/>
+          </View>
             <View style={{ marginLeft: 13 }}>
-              <Text variant="bodyLarge">Currency Sign</Text>
-              <Text variant="bodySmall">{currency.name}</Text>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Currency Sign</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{currency.name}</Text>
             </View>
           </>
         </TouchableRipple>
 
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
-            <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
-            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
-              <Text variant="bodyLarge">Notifications</Text>
-              <Text variant="bodySmall">A reminder for adding expenses will be sent</Text>
+          <View style={{flexDirection: "row", padding: 9}}>
+            <View style={{paddingRight: 10, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
+            </View>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 200 }}>
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Notifications</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>A reminder for adding expenses will be sent</Text>
             </View>
           </View>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
         </View>
 
         <View style={{flexDirection: "row", gap: 2, justifyContent: "space-between"}}>
-          <View style={{flexDirection: "row",gap: 2, padding: 10 }}>
-            <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
-            <View style={{flexDirection: "column", gap: 2, marginLeft: 13 }}>
-              <Text variant="bodyLarge">Lock App</Text>
-              <Text variant="bodySmall">When enabled, you need to use fingerprint to unlock the app</Text>
+          <View style={{flexDirection: "row", padding: 10 }}>
+            <View style={{paddingRight: 12, paddingLeft: 0, paddingTop: 3}}>
+              <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
+            </View>
+            <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 250 }} >
+              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Lock App</Text>
+              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>When enabled, you need to use fingerprint to unlock the app</Text>
             </View>
           </View>
           <Switch value={isLockEnabled} onValueChange={lockAppHandler} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
@@ -279,13 +292,15 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openChangeName} onDismiss={()=> setOpenChangeName(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title>Update name</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary}}>Update name</Dialog.Title>
           <Dialog.Content>
             <TextInput
-              placeholder={"New username"}
+              label={<Text style={{color: allColors.universalColor}}>{"New username"}</Text>}
               style={{ backgroundColor: "transparent" }}
               value={updatedUsername}
+              textColor={allColors.universalColor}
               underlineColor={allColors.textColorFive}
+              selectionColor={allColors.textSelectionColor}
               activeUnderlineColor={allColors.textColorPrimary}
               onChangeText={text => setUpdatedUsername(text)}
               autoFocus
@@ -293,7 +308,7 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={()=> setOpenChangeName(false)}>
-              <Text style={{color: allColors.textColorFive}}> Cancel </Text>
+              <Text style={{color: allColors.universalColor}}> Cancel </Text>
             </Button>
             <Button onPress={updateUsername}>
               <Text style={{color: allColors.textColorPrimary}}> Update </Text>
@@ -304,9 +319,9 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openLockAppDialog} onDismiss={()=> setOpenLockAppDialog(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary}}>Alert</Dialog.Title>
           <Dialog.Content>
-            <Text>
+            <Text style={{color: allColors.textColorSecondary}}>
               {biometricWarning}
             </Text>
           </Dialog.Content>
@@ -322,11 +337,12 @@ const SettingsScreen = ({ navigation }) => {
         visible={showError}
         onDismiss={() => setShowError(false)}
         duration={1200}
+        style={{backgroundColor: allColors.backgroundColorLessPrimary}}
         >
-          <Text variant="bodyMedium" style={{color: "black"}}>
+          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
             Permission denied
           </Text>
-          <Text variant="bodyMedium" style={{color: "black"}}>
+          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
             Please enable permissions from settings
           </Text>
       </Snackbar>

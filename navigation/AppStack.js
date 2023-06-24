@@ -18,12 +18,12 @@ import SplitDetailScreen from "../screens/SplitDetailScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
-import { useTheme, Text } from "react-native-paper";
-import { Icon } from "react-native-elements";
+import { Text } from "react-native-paper";
+import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import allColors from "../commons/allColors.js";
+import useDynamicColors from "../commons/useDynamicColors";
 import * as NavigationBar from "expo-navigation-bar";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator, StatusBar } from "react-native";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -37,34 +37,39 @@ const TabArr = [
   {
     route: "Home",
     label: "Home",
-    icon: "home",
-    iconFilled: "home",
+    icon: "home-outline",
+    focused: "home",
+    category: "Ionicons",
     component: HomeScreen,
   },
   {
     route: "Accounts",
     label: "Accounts",
-    icon: "credit-card",
-    iconFilled: "credit-card",
+    icon: "bank-outline",
+    focused: "bank",
+    category: "MaterialCommunityIcons",
     component: AccountsScreen,
   },
   {
     route: "SplitMoney",
     label: "Split",
-    icon: "people",
-    iconFilled: "people",
+    icon: "share-social-outline",
+    focused: "share-social",
+    category: "Ionicons",
     component: SplitMoneyScreen,
   },
   {
     route: "RecurrenceScreen",
     label: "Recurrence",
     icon: "repeat",
-    iconFilled: "repeat",
+    focused: "repeat",
+    category: "Feather",
     component: RecurrenceScreen,
   },
 ];
 
 const TabButton = (props) => {
+  const allColors = useDynamicColors();
   const { item, onPress, accessibilityState } = props;
   const focused = accessibilityState.selected;
 
@@ -88,8 +93,8 @@ const TabButton = (props) => {
               left: 10,
               width: 80,
               height: 28,
-              opacity: 0.4,
-              backgroundColor: allColors.backgroundColorQuaternary, // TODO: Add Icon background and text color
+              opacity: 0.7,
+              backgroundColor: allColors.tabBtnColor, // TODO: Add Icon background and text color
               zIndex: 1,
             }}
           />
@@ -107,9 +112,13 @@ const TabButton = (props) => {
           }}
         >
           <View style={{ marginBottom: 5 }}>
-            <Icon type={item.type} name={item.icon} color={"white"} size={20} />
+            <IconComponent
+              name={focused ? item.focused :item.icon}
+              category={item.category}
+              size={20}
+            />
           </View>
-          <Text style={{ color: "white" }}>{item.label}</Text>
+          <Text style={[{ color: allColors.universalColor }, focused && {fontWeight: 900}]}>{item.label}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -117,15 +126,16 @@ const TabButton = (props) => {
 };
 
 const HomeTabs = () => {
+  const allColors = useDynamicColors();
   return (
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "red",
         tabBarStyle: {
           backgroundColor: allColors.backgroundColorLessPrimary,
           height: 80,
+          borderColor: 'transparent',
         },
         unmountOnBlur: true,
       }}
@@ -229,6 +239,7 @@ const WelcomeNavigator = () => (
 );
 
 const AppStack = () => {
+  const allColors = useDynamicColors();
   NavigationBar.setBackgroundColorAsync("#000");
   const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");
   const [isLoading, setIsLoading] = React.useState(true);
@@ -261,6 +272,7 @@ const AppStack = () => {
           backgroundColor: allColors.backgroundColorPrimary,
         }}
       >
+        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
         <ActivityIndicator size={50} color={allColors.textColorFive} />
       </View>
     );

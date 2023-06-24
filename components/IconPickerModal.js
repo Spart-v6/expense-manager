@@ -1,7 +1,7 @@
-import { View, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { View, TouchableOpacity, FlatList, StyleSheet, useWindowDimensions } from "react-native";
 import { Dialog, Portal, Text, Button } from "react-native-paper";
 import React, { useState } from "react";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import icons from "../commons/allIcons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -27,27 +27,30 @@ const getIconLibrary = (category) => {
   return iconLibraryMap[category] || Icon;
 };
 
-export const IconComponent = ({ name, category, size=30, color=allColors.textColorSecondary }) => {
+export const IconComponent = ({ name, category, size=30, color=useDynamicColors().textColorSecondary }) => {
   const IconLibrary = getIconLibrary(category);
   return <IconLibrary name={name} size={size} color={color} />;
 };
 
 const ITEM_WIDTH = 95; // Width of each item in the grid
-const NUM_COLUMNS = 4; // Number of columns in the grid
+const NUM_COLUMNS = 3; // Number of columns in the grid
 
-const IconPickerModal = ({ onSelectIcon }) => {
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => onSelectIcon({iconName: item.name, iconCategory: item.category})}
-      style={styles.item}
-    >
-      <View style={{ justifyContent:"center", alignItems:"center", gap: 10 }}>
-        <IconComponent name={item.name} category={item.category} />
-        <Text variant="bodySmall">{item.title}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+const IconPickerModal = ({ onSelectIcon, textColor }) => {
+  const containerWidth = useWindowDimensions().width;
+  const renderItem = ({ item }) => { 
+    const itemWidth = (containerWidth - 60) / NUM_COLUMNS;
+    return (
+      <TouchableOpacity
+        onPress={() => onSelectIcon({iconName: item.name, iconCategory: item.category})}
+        style={[styles.item, { width: itemWidth }]}
+      >
+        <View style={{ justifyContent:"center", alignItems:"center", gap: 10 }}>
+          <IconComponent name={item.name} category={item.category} />
+          <Text variant="bodySmall" style={{color: textColor}}>{item.title}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
   
   return (
     <>

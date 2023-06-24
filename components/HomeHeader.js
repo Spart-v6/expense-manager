@@ -1,7 +1,7 @@
-import { View, StyleSheet } from "react-native";
-import { Text, Card } from "react-native-paper";
+import { View, StyleSheet, Dimensions } from "react-native";
+import { Text, Card, Tooltip } from "react-native-paper";
 import React from "react";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -9,36 +9,46 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 
-const makeStyles = () =>
+const makeStyles = allColors =>
   StyleSheet.create({
     card: {
-      backgroundColor: allColors.backgroundColorSecondary,
+      backgroundColor: allColors.defaultHomeRecurrCard,
       borderRadius: 25,
       margin: 16,
       padding: 16,
     },
     incomeCard: {
-      backgroundColor: allColors.backgroundColorTertiary,
+      backgroundColor: allColors.backgroundColorCard,
       borderRadius: 25,
-      elevation: 4,
-      margin: 16,
+      elevation: 1,
+      margin: 15,
+      marginTop: 4,
+      marginBottom: 20,
       padding: 0,
+      height: 100,
       flex: 1,
     },
     incomeContent: {
+      flexDirection: 'row',
+      justifyContent: "space-between",
       paddingLeft: 16,
       paddingTop: 16,
       paddingRight: 16,
     },
     expenseCard: {
-      backgroundColor: allColors.backgroundColorTertiary,
+      backgroundColor: allColors.backgroundColorCard,
       borderRadius: 25,
-      elevation: 4,
-      margin: 16,
+      elevation: 1,
+      margin: 15,
+      marginTop: 4,
+      marginBottom: 20,
       padding: 0,
+      height: 100,
       flex: 1,
     },
     expenseContent: {
+      flexDirection: 'row',
+      justifyContent: "space-between",
       paddingLeft: 16,
       paddingTop: 16,
       paddingRight: 16,
@@ -75,7 +85,7 @@ const MyBezierLineChart = (colors, chartData) => {
 
   const chartConfig = {
     backgroundGradientFrom: "transparent",
-    strokeWidth: 4,
+    strokeWidth: 3,
     backgroundGradientTo: "transparent",
     backgroundGradientFromOpacity: 0,
     backgroundGradientToOpacity: 0,
@@ -88,7 +98,7 @@ const MyBezierLineChart = (colors, chartData) => {
         bezier
         data={data}
         width={170}
-        height={100}
+        height={70}
         withDots={false}
         withShadow={false}
         withInnerLines={false}
@@ -101,9 +111,10 @@ const MyBezierLineChart = (colors, chartData) => {
         strokeLinejoin={"round"}
         style={{
           paddingTop: 5,
-          paddingRight: 0,
+          paddingRight: 3,
           paddingLeft: 15,
           paddingBottom: 0,
+          borderRadius: 10
         }}
       />
     </>
@@ -111,8 +122,9 @@ const MyBezierLineChart = (colors, chartData) => {
 };
 
 const DashboardCard = ({ currency }) => {
+  const allColors = useDynamicColors();
   const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
-  const styles = makeStyles();
+  const styles = makeStyles(allColors);
 
   const totalValue = expenseData?.reduce((acc, curr) => {
     if (curr.type === "Income") return acc + +curr.amount; 
@@ -182,14 +194,22 @@ const DashboardCard = ({ currency }) => {
 };
 
 const IncomeCard = ({ incomeArray, currency }) => {
-  const styles = makeStyles();
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;
 
   return (
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
-        <Text>Income</Text>
-          <Text style={{ color: allColors.successColor }}>+ {formatNumberWithCurrency(totalIncome, currency)}</Text>
+        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>Income</Text>
+        <Tooltip title={formatNumberWithCurrency(totalIncome, currency)}  
+          theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >
+          <View>
+            <Text style={{ color: allColors.successColor, maxWidth: Dimensions.get("window").width / 5 }} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
+              + {formatNumberWithCurrency(totalIncome, currency)}
+            </Text>
+          </View>
+        </Tooltip>
       </View>
       <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
@@ -197,14 +217,22 @@ const IncomeCard = ({ incomeArray, currency }) => {
 };
 
 const ExpenseCard = ({ expenseArray, currency }) => {
-  const styles = makeStyles();
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const totalExpense = expenseArray?.reduce((a, b) => a + b, 0) || 0;
 
   return (
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
-        <Text>Expense</Text>
-          <Text style={{ color: allColors.warningColor }}>- {formatNumberWithCurrency(totalExpense, currency)}</Text>
+        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} ellipsizeMode="tail"  numberOfLines={1} variant="labelMedium" allowFontScaling={false}>Expense</Text>
+        <Tooltip title={formatNumberWithCurrency(totalExpense, currency)}  
+          theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >  
+          <View>
+            <Text style={{ color: allColors.warningColor, maxWidth: Dimensions.get("window").width / 5 }}numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
+              - {formatNumberWithCurrency(totalExpense, currency)}
+            </Text>
+          </View>
+        </Tooltip>
       </View>
       <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
     </View>
@@ -233,13 +261,21 @@ const HomeHeader = () => {
   React.useEffect(() => {
     const newIncomeArray = expenseData
       ?.filter((item) => item?.type === "Income")
-      ?.sort((a, b) => moment(a.date, "YYYY/MM/DD") - moment(b.date, "YYYY/MM/DD"))
+      ?.sort((a, b) => {
+        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(moment(b.date, "YYYY/MM/DD"));
+        if (dateComparison !== 0) return dateComparison;
+        else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
+      })
       ?.map((item) => +item?.amount);
   
     const newExpenseArray = expenseData
-      ?.filter((item) => item.type === "Expense")
-      ?.sort((a, b) => moment(a.date, "YYYY/MM/DD") - moment(b.date, "YYYY/MM/DD"))
-      ?.map((item) => +item.amount);
+      ?.filter((item) => item?.type === "Expense")
+      ?.sort((a, b) => {
+        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(moment(b.date, "YYYY/MM/DD"));
+        if (dateComparison !== 0) return dateComparison;
+        else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
+      })
+      ?.map((item) => +item?.amount);
   
     setIncomeArray(newIncomeArray);
     setExpenseArray(newExpenseArray);

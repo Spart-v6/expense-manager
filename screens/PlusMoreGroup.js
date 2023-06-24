@@ -10,13 +10,16 @@ import AppHeader from "../components/AppHeader";
 import { Text, TextInput, Button, Portal, Dialog } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { useDispatch } from "react-redux";
 import { addGroups } from "../redux/actions/index";
 import SnackbarComponent from "../commons/snackbar";
 import { getUsernameFromStorage } from "../helper/constants";
 
 const PlusMoreGroup = ({ navigation }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
+
   //fetching username
   const [username, setUsername] = React.useState(null);
 
@@ -40,10 +43,7 @@ const PlusMoreGroup = ({ navigation }) => {
     { id: 0, value: "", showCross: true },
   ]);
   const [idCounter, setIdCounter] = useState(1);
-  const [isDeleteBtnPressed, setIsDeleteBtnPressed] = useState(false);
   const [urself, setUrself] = useState(true);
-
-  const hideDialog = () => setIsDeleteBtnPressed(false);
 
   const handleAddTextInput = () => {
     setTextInputs((prevState) => [
@@ -87,18 +87,12 @@ const PlusMoreGroup = ({ navigation }) => {
       timeoutRef.current = setTimeout(() => setError(false), 2000);
       return;
     }
-
     const newArr = [...textInputs];
     newArr.push({ id: idCounter, showCross: true, value: username });
     setIdCounter((prevId) => prevId + 1);
     newArr.push({ nameOfGrp: groupName, identity: Math.random() * 10 });
     dispatch(addGroups(newArr));
     navigation.goBack();
-  };
-
-  const handleDeleteUrSelf = () => {
-    setUrself(false);
-    setIsDeleteBtnPressed(false);
   };
 
   return (
@@ -116,15 +110,17 @@ const PlusMoreGroup = ({ navigation }) => {
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
-              backgroundColor: allColors.backgroundColorQuinary,
+              backgroundColor: allColors.innerTextFieldColor,
               marginBottom: 20,
+              borderColor: allColors.placeholderTextColor,
+              borderWidth: 2,
             }}
-            selectionColor={allColors.textColorFour}
-            textColor={allColors.textColorFour}
+            selectionColor={allColors.textSelectionColor}
+            textColor={allColors.universalColor}
             underlineColorAndroid="transparent"
             activeUnderlineColor="transparent"
             underlineColor="transparent"
-            placeholderTextColor={allColors.textColorFour}
+            placeholderTextColor={allColors.placeholderTextColor}
             autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
@@ -136,46 +132,31 @@ const PlusMoreGroup = ({ navigation }) => {
         <View style={styles.line} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text>Add names</Text>
-          {urself && (
-            <View style={[styles.rowContainer]}>
-              <TextInput
-                style={styles.textInput}
-                selectionColor={allColors.textColorFour}
-                textColor={allColors.textColorFour}
-                placeholderTextColor={allColors.textColorFour}
-                underlineColorAndroid="transparent"
-                activeUnderlineColor="transparent"
-                underlineColor="transparent"
-                editable={false}
-                placeholder={username}
-              />
-              {urself && (
-                <TouchableOpacity
-                  onPress={() => setIsDeleteBtnPressed(true)}
-                  style={styles.iconContainer}
-                >
-                  <MaterialIcons
-                    name="close"
-                    size={30}
-                    color={allColors.warningColor}
-                    style={{ alignSelf: "center" }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+          <Text style={{color: allColors.universalColor}}>Add names</Text>
+          <View style={[styles.rowContainer]}>
+            <TextInput
+              style={styles.textInput}
+              selectionColor={allColors.textSelectionColor}
+              textColor={allColors.universalColor}
+              placeholderTextColor={allColors.placeholderTextColor}
+              underlineColorAndroid="transparent"
+              activeUnderlineColor="transparent"
+              underlineColor="transparent"
+              editable={false}
+              placeholder={username}
+            />
+          </View>
           {textInputs.map((input, index) => (
             <View style={[styles.rowContainer]} key={input.id}>
               <TextInput
                 style={styles.textInput}
-                selectionColor={allColors.textColorFour}
-                textColor={allColors.textColorFour}
+                selectionColor={allColors.textSelectionColor}
+                textColor={allColors.universalColor}
                 underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
                 underlineColor="transparent"
                 autoFocus={index > 0}
-                placeholderTextColor={allColors.textColorFour}
+                placeholderTextColor={allColors.placeholderTextColor}
                 autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
@@ -205,7 +186,7 @@ const PlusMoreGroup = ({ navigation }) => {
           <Octicons
             name="plus"
             size={50}
-            color={allColors.backgroundColorQuinary}
+          color={allColors.addBtnColors}
             style={{ alignSelf: "center" }}
           />
         </TouchableOpacity>
@@ -218,7 +199,7 @@ const PlusMoreGroup = ({ navigation }) => {
           labelStyle={{ fontSize: 15 }}
           style={{
             borderColor: "transparent",
-            backgroundColor: allColors.backgroundColorLessPrimary,
+            backgroundColor: allColors.addBtnColors,
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
@@ -226,46 +207,21 @@ const PlusMoreGroup = ({ navigation }) => {
         >
           <Text
             style={{
-              color: allColors.textColorPrimary,
+              color: allColors.backgroundColorPrimary,
               fontWeight: "bold",
               fontSize: 18,
             }}
           >
-            Add
+            Add Group
           </Text>
         </Button>
       </View>
-
-      <Portal>
-        <Dialog
-          visible={isDeleteBtnPressed}
-          onDismiss={hideDialog}
-          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-        >
-          <Dialog.Content>
-            <Text variant="bodyMedium">
-              Are you sure you want to remove yourself from the group?
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog}>Cancel</Button>
-            <Button
-              onPress={handleDeleteUrSelf}
-              mode="elevated"
-              contentStyle={{ width: 60 }}
-              buttonColor={allColors.warningColor}
-            >
-              <Text style={{ color: allColors.textColorTertiary }}>Sure</Text>
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
       {error && <SnackbarComponent errorMsg={errorMsg} />}
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   container: {
     backgroundColor: "transparent",
     borderRadius: 8,
@@ -281,7 +237,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
-    backgroundColor: allColors.backgroundColorQuinary,
+    backgroundColor: allColors.innerTextFieldColor,
+    borderColor: allColors.placeholderTextColor,
+    borderWidth: 2,
     margin: 10,
     marginLeft: 0,
   },

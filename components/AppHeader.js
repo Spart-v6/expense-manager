@@ -1,8 +1,8 @@
 import { Appbar, Text, Button } from "react-native-paper";
 import { IconComponent } from "./IconPickerModal";
-import { View, Animated } from "react-native";
+import { View, Animated, Dimensions } from "react-native";
 import React from "react";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
@@ -16,10 +16,14 @@ const AppHeader = ({
   isPlus,
   isUpdate,
   isDeletePressed,
-  isCardEditPressed,
   needSearch,
   isUpdateCardScreen = false,
 }) => {
+  const allColors = useDynamicColors();
+  const screenHeight = Dimensions.get('window').height;
+  const statusBarHeight = screenHeight * 0.05;
+
+
   const GreetAndSearch = React.memo(({greeting, username}) => {
     const [showGreeting, setShowGreeting] = React.useState(true);
     const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
@@ -56,7 +60,7 @@ const AppHeader = ({
     return (
       <Animated.View style={{ opacity: fadeAnimation }}>
         <View style={{ marginLeft: 6 }}>
-          <Text variant="titleMedium">{greetingText}</Text>
+          <Text style={{color: allColors.universalColor}} variant="titleMedium">{greetingText}</Text>
         </View>
       </Animated.View>
     );
@@ -73,7 +77,6 @@ const AppHeader = ({
   }, []);
 
   const handleDeleteExpense = () => isDeletePressed(true);
-  const handleCardEdit = () => isCardEditPressed(true);
   const searchExpense = () =>
     navigation.navigate("SearchScreen", { comingFrom: title });
 
@@ -88,7 +91,7 @@ const AppHeader = ({
   return (
     <Appbar.Header
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
-      statusBarHeight={50}
+      statusBarHeight={statusBarHeight}
     >
       {!isParent && (
         <Button onPress={() => navigation.goBack()}>
@@ -101,13 +104,13 @@ const AppHeader = ({
       )}
       {isHome || needSearch ? (
         <>
-        <Appbar.Action icon="magnify" onPress={searchExpense} />
+        <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor}/>
         <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} onPress={searchExpense}/>
         </>
       ) : (
         <Appbar.Content
           title={isUpdate ? "Update Expense" : title}
-          titleStyle={isParent && { marginLeft: 6 }}
+          titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
       {isHome && (
@@ -122,13 +125,10 @@ const AppHeader = ({
         />
       )}
       {isPlus && isUpdate && (
-        <Appbar.Action icon="delete" onPress={handleDeleteExpense} />
+        <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
       {isUpdateCardScreen && (
-        <Appbar.Action icon="pencil" onPress={handleCardEdit} />
-      )}
-      {isUpdateCardScreen && (
-        <Appbar.Action icon="delete" onPress={handleDeleteExpense} />
+        <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
     </Appbar.Header>
   );

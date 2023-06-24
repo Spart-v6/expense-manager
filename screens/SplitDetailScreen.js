@@ -1,24 +1,29 @@
 import { View, SafeAreaView, FlatList, ScrollView } from "react-native";
 import { Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
-import allColors from "../commons/allColors";
+import useDynamicColors from "../commons/useDynamicColors";
 import React, { useState } from "react";
 import * as Notifications from "expo-notifications";
 
-const Item = ({ item }) => (
-  <View
-    style={{
-      flexDirection: "row",
-      justifyContent: "space-between",
-      padding: 10,
-    }}
-  >
-    <Text>{item.name}</Text>
-    <Text>{item.amount}</Text>
-  </View>
-);
+const Item = ({ item }) => { 
+  const allColors = useDynamicColors();
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        padding: 10,
+      }}
+    >
+      <Text style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</Text>
+      <Text style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</Text>
+    </View>
+  );
+}
 
 const SplitDetailScreen = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
+
   // Works when u go inside a section
   const [currentSectionData, setCurrentSectionData] = useState(
     route.params.subArray
@@ -55,20 +60,22 @@ const SplitDetailScreen = ({ navigation, route }) => {
       <ScrollView showsHorizontalScrollIndicator={false}>
         <View style={{ margin: 20 }}>
           <View style={{gap: 15}}>
-            <Text>
-              Total amount is paid by
-              {
-                currentSectionData[currentSectionData.length - 1].whoPaid.length === 0 ? " you" 
-                : " " + currentSectionData[currentSectionData.length - 1].whoPaid
-              }
-            </Text>
+          <Text style={{ color: allColors.universalColor }}>
+            {
+              `Total amount ${totalAmount}/- is paid by${
+                currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
+                  ? " you"
+                  : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
+              }`
+            }
+          </Text>
             <FlatList
               scrollEnabled={false}
               data={filteredData}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorLessPrimary }} />}
-              ListHeaderComponent={() => <Text variant="titleMedium">Summary</Text>}
+              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
+              ListHeaderComponent={() => <Text variant="titleMedium" style={{color: allColors.universalColor}}>Summary</Text>}
               />
           </View>
         </View>

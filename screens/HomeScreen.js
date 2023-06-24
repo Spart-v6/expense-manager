@@ -14,39 +14,47 @@ import { useDispatch } from "react-redux";
 import { storeCard } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
-import allColors from "../commons/allColors";
 import * as Notifications from "expo-notifications";
+import useDynamicColors from "../commons/useDynamicColors";
 
-const styles = StyleSheet.create({
+const makeStyles = allColors => StyleSheet.create({
   btn: {
     borderRadius: 10,
     paddingLeft: 5,
     paddingRight: 5,
   },
   selected: {
-    backgroundColor: allColors.backgroundColorQuaternary,
+    backgroundColor: allColors.backgroundColorDatesSelected,
     borderRadius: 20,
     text: {
-      color: allColors.textColorTertiary,
+      color: allColors.textColorPrimary,
       fontWeight: 700,
     },
   },
+  notSelected: {
+    color: allColors.textColorSecondary,
+  }
 });
 
-const ButtonMemoized = React.memo(({ onPress, isSelected, name }) => (
-  <Button
-    onPress={onPress}
-    compact
-    buttonColor={allColors.backgroundColorTertiary}
-    style={[styles.btn, isSelected && styles.selected]}
-  >
-    <Text style={isSelected && styles.selected.text}>{name}</Text>
-  </Button>
-));
+const ButtonMemoized = React.memo(({ onPress, isSelected, name }) => {
+  const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
+  return (
+    <Button
+      onPress={onPress}
+      compact
+      buttonColor={allColors.backgroundColorDates}
+      style={[styles.btn, isSelected && styles.selected]}
+    >
+      <Text style={[styles.notSelected, isSelected && styles.selected.text]}>{name}</Text>
+    </Button>
+  )
+});
 
 const AppHeaderMemoized = React.memo(AppHeader);
 
 const HomeScreen = ({ navigation, route }) => {
+  const allColors = useDynamicColors();
   const [selectedButton, setSelectedButton] = useState("Daily");
 
   const handleListButtonPress = useCallback((nameOfDate) => {
@@ -74,7 +82,7 @@ const HomeScreen = ({ navigation, route }) => {
     listToShow = <ExpensesList filter="All" />;
   }
 
-  // #region =========== Fetching card details here only (coz it's the initial screen)
+  // #region =========== Fetching card details here
   const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
@@ -103,7 +111,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor={"transparent"} />
+      <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeaderMemoized
         title="Home"
         isParent={true}
@@ -115,13 +123,14 @@ const HomeScreen = ({ navigation, route }) => {
         <AnimatedEntryScreen>
           <HomeHeader />
           <View>
-            <View
+            <ScrollView
               style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                gap: 10,
                 marginLeft: 15,
+                marginRight: 15
               }}
+              contentContainerStyle={{flexDirection: "row", gap: 10, justifyContent:"flex-start"}}
+              horizontal
+              showsHorizontalScrollIndicator={false}
             >
               {datesNames.map((date, index) => (
                 <ButtonMemoized
@@ -131,7 +140,7 @@ const HomeScreen = ({ navigation, route }) => {
                   name={date.name}
                 />
               ))}
-            </View>
+            </ScrollView>
             {listToShow}
           </View>
         </AnimatedEntryScreen>
@@ -139,8 +148,9 @@ const HomeScreen = ({ navigation, route }) => {
       <FAB
         animated
         icon="plus"
+        color={allColors.universalColor}
         onPress={() => navigation.navigate("PlusMoreHome")}
-        mode="flat"
+        mode="elevated"
         style={{
           position: "absolute",
           margin: 16,
