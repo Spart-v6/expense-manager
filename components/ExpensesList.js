@@ -5,6 +5,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
 import useDynamicColors from "../commons/useDynamicColors";
+import MyText from "../components/MyText";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
 import { addData, updateRecurrences } from "../redux/actions";
@@ -180,7 +181,7 @@ const ExpensesList = ({ filter }) => {
   const DATA = [
     {
       title: moment().format("Do MMMM, YYYY"),
-      data: ["You havent added any expense for today"],
+      data: ["You haven't added any expense for today"],
     },
   ];
 
@@ -283,16 +284,16 @@ const ExpensesList = ({ filter }) => {
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <View style={{ alignItems: "center" }}>
-                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>{item}</Text>
+                    <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{item}</MyText>
                   </View>
                 )}
                 renderSectionHeader={({ section: { title } }) => (
-                  <Text
+                  <MyText
                     variant="titleMedium"
                     style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                   >
                     {title}
-                  </Text>
+                  </MyText>
                 )}
                 ItemSeparatorComponent={Separator}
               />
@@ -303,12 +304,12 @@ const ExpensesList = ({ filter }) => {
               keyExtractor={(item, index) => item.id + index}
               renderItem={renderItem}
               renderSectionHeader={({ section: { title } }) => (
-                <Text
+                <MyText
                   variant="titleMedium"
                   style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                 >
                   {title}
-                </Text>
+                </MyText>
               )}
               ItemSeparatorComponent={Separator}
             />

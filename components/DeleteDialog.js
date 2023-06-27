@@ -1,6 +1,7 @@
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
-import { Dialog, Button, Text, TouchableRipple } from "react-native-paper";
+import MyText from "./MyText";
+import { Dialog, TouchableRipple } from "react-native-paper";
 import { View } from "react-native";
 
 const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subtitle="" }) => {
@@ -11,16 +12,16 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subt
       onDismiss={hideDialog}
       style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
     >
-      <Dialog.Title style={{color: allColors.universalColor}}>Delete {title}?</Dialog.Title>
+      <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Rubik_400Regular"}}>Delete {title}?</Dialog.Title>
       <Dialog.Content>
-        <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
+        <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
           The {content} will be removed permanently {subtitle}
-        </Text>
+        </MyText>
       </Dialog.Content>
       <Dialog.Actions style={{gap: 10}}>
         <TouchableRipple onPress={hideDialog} rippleColor={allColors.rippleColor} centered>
           <View style={{padding: 10}}> 
-            <Text style={{ color: allColors.universalColor }}>Cancel</Text>
+            <MyText style={{ color: allColors.universalColor }}>Cancel</MyText>
           </View>
         </TouchableRipple>
         <TouchableRipple
@@ -29,7 +30,7 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subt
           centered
         >
           <View style={{padding: 10}}>
-            <Text style={{ color: allColors.addBtnColors }}>Sure</Text>
+            <MyText style={{ color: allColors.addBtnColors }}>Sure</MyText>
           </View>
         </TouchableRipple>
       </Dialog.Actions>

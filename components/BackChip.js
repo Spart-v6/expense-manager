@@ -1,4 +1,5 @@
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+import MyText from "./MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import React from "react";
 
@@ -29,14 +30,14 @@ const BackChip = ({ index, onPress, isClicked, text }) => {
           },
         ]}
       >
-        <Text
+        <MyText
           style={[
             { padding: 10, color: allColors.universalColor },
             isClicked && { color: allColors.textColorPrimary },
           ]}
         >
           {text}
-        </Text>
+        </MyText>
       </TouchableOpacity>
     </>
   );

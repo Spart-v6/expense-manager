@@ -8,10 +8,11 @@ import {
   Dimensions,
   ScrollView
 } from "react-native";
-import { Text, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { IconComponent } from "../components/IconPickerModal";
+import MyText from "../components/MyText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
@@ -161,7 +162,7 @@ const WelcomeScreen = ({ navigation, route }) => {
                 size={20}
                 color={allColors.addBtnColors}
               />
-              <Text variant="titleMedium" style={{ color: allColors.universalColor, maxWidth:  Dimensions.get("window").width / 2 }} allowFontScaling={false} ellipsizeMode="tail" numberOfLines={3}>{item.name}</Text>
+              <MyText variant="titleMedium" style={{ color: allColors.universalColor, maxWidth:  Dimensions.get("window").width / 2 }} allowFontScaling={false} ellipsizeMode="tail" numberOfLines={3}>{item.name}</MyText>
             </View>
           </View>
         </TouchableOpacity>
@@ -187,9 +188,9 @@ const WelcomeScreen = ({ navigation, route }) => {
           color={allColors.textColorPrimary}
           style={{ alignSelf: "center" }}
         />
-        <Text variant="displaySmall" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}}>
+        <MyText variant="displaySmall" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}}>
           Select currency
-        </Text>
+        </MyText>
       </View>
 
       <ScrollView style={{ flex: 1, marginTop: 10 }}>
@@ -221,15 +222,15 @@ const WelcomeScreen = ({ navigation, route }) => {
             width: 200,
           }}
         >
-          <Text
+          <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontWeight: 700,
+              fontFamily: "Rubik_500Medium",
               fontSize: 18,
             }}
             >
             Continue
-          </Text>
+          </MyText>
         </Button>
       </View>
     </SafeAreaView>

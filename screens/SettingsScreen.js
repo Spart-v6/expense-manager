@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { View, SafeAreaView } from "react-native";
-import { Text, TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snackbar } from "react-native-paper";
+import { TouchableRipple, Dialog, Portal, Button, TextInput, Switch, Snackbar } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import { IconComponent } from "../components/IconPickerModal";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
@@ -240,8 +241,8 @@ const SettingsScreen = ({ navigation }) => {
               <IconComponent name={"pencil"} category={"Foundation"} size={20} color={allColors.textColorPrimary}/>
             </View>
             <View style={{ marginLeft: 13 }}>
-              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Change name</Text>
-              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{placeholderUsername}</Text>
+              <MyText variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Change name</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.textColorSecondary}}>{placeholderUsername}</MyText>
             </View>
           </>
         </TouchableRipple>
@@ -254,8 +255,8 @@ const SettingsScreen = ({ navigation }) => {
             <IconComponent name={"currency-sign"} category={"MaterialCommunityIcons"} size={20} color={allColors.textColorPrimary}/>
           </View>
             <View style={{ marginLeft: 13 }}>
-              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Currency Sign</Text>
-              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>{currency.name}</Text>
+              <MyText variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Currency Sign</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.textColorSecondary}}>{currency.name}</MyText>
             </View>
           </>
         </TouchableRipple>
@@ -266,8 +267,8 @@ const SettingsScreen = ({ navigation }) => {
               <IconComponent name={"notifications"} category={"Ionicons"} size={20} color={allColors.textColorPrimary}/>
             </View>
             <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 200 }}>
-              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Notifications</Text>
-              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>A reminder for adding expenses will be sent</Text>
+              <MyText variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Notifications</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.textColorSecondary}}>A reminder for adding expenses will be sent</MyText>
             </View>
           </View>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
@@ -279,8 +280,8 @@ const SettingsScreen = ({ navigation }) => {
               <IconComponent name={"lock"} category={"Octicons"} size={20} color={allColors.textColorPrimary}/>
             </View>
             <View style={{flexDirection: "column", gap: 2, marginLeft: 13, maxWidth: 250 }} >
-              <Text variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Lock App</Text>
-              <Text variant="bodySmall" style={{color: allColors.textColorSecondary}}>When enabled, you need to use fingerprint to unlock the app</Text>
+              <MyText variant="bodyLarge" style={{color: allColors.textColorSecondary}}>Lock App</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.textColorSecondary}}>When enabled, you need to use fingerprint to unlock the app</MyText>
             </View>
           </View>
           <Switch value={isLockEnabled} onValueChange={lockAppHandler} thumbColor={allColors.textColorPrimary} trackColor={allColors.textColorFive} style={{marginRight: 10}}/>
@@ -292,15 +293,16 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openChangeName} onDismiss={()=> setOpenChangeName(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title style={{color: allColors.textColorSecondary}}>Update name</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary, fontFamily: "Rubik_400Regular"}}>Update name</Dialog.Title>
           <Dialog.Content>
             <TextInput
-              label={<Text style={{color: allColors.universalColor}}>{"New username"}</Text>}
+              label={<MyText style={{color: allColors.universalColor}}>{"New username"}</MyText>}
               style={{ backgroundColor: "transparent" }}
               value={updatedUsername}
               textColor={allColors.universalColor}
               underlineColor={allColors.textColorFive}
               selectionColor={allColors.textSelectionColor}
+              contentStyle={{fontFamily: "Rubik_400Regular"}}
               activeUnderlineColor={allColors.textColorPrimary}
               onChangeText={text => setUpdatedUsername(text)}
               autoFocus
@@ -308,10 +310,10 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={()=> setOpenChangeName(false)}>
-              <Text style={{color: allColors.universalColor}}> Cancel </Text>
+              <MyText style={{color: allColors.universalColor}}> Cancel </MyText>
             </Button>
             <Button onPress={updateUsername}>
-              <Text style={{color: allColors.textColorPrimary}}> Update </Text>
+              <MyText style={{color: allColors.textColorPrimary}}> Update </MyText>
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -319,15 +321,15 @@ const SettingsScreen = ({ navigation }) => {
 
       <Portal>
         <Dialog visible={openLockAppDialog} onDismiss={()=> setOpenLockAppDialog(false)} style={{backgroundColor: allColors.backgroundColorLessPrimary}}>
-          <Dialog.Title style={{color: allColors.textColorSecondary}}>Alert</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary, fontFamily: "Rubik_400Regular"}}>Alert</Dialog.Title>
           <Dialog.Content>
-            <Text style={{color: allColors.textColorSecondary}}>
+            <MyText style={{color: allColors.textColorSecondary}}>
               {biometricWarning}
-            </Text>
+            </MyText>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={()=> setOpenLockAppDialog(false)}>
-              <Text style={{color: allColors.textColorPrimary}}> OK </Text>
+              <MyText style={{color: allColors.textColorPrimary}}> OK </MyText>
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -339,12 +341,12 @@ const SettingsScreen = ({ navigation }) => {
         duration={1200}
         style={{backgroundColor: allColors.backgroundColorLessPrimary}}
         >
-          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
+          <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
             Permission denied
-          </Text>
-          <Text variant="bodyMedium" style={{color: allColors.universalColor}}>
+          </MyText>
+          <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
             Please enable permissions from settings
-          </Text>
+          </MyText>
       </Snackbar>
 
     </SafeAreaView>

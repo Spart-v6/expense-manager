@@ -8,9 +8,10 @@ import {
   StyleSheet,
 } from "react-native";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
+import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
 import React, { useCallback, useState } from "react";
-import { FAB, Card, Dialog, Button, Portal, Text } from "react-native-paper";
+import { FAB, Card, Portal, Text } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -122,9 +123,10 @@ const SplitMoneyScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeader title="Split Money" isParent={true} navigation={navigation} />
       <AnimatedEntryScreen>
+        {groupsData?.length > 0 ? (
         <ScrollView style={{ flex: 1 }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-          <View style={{ flex: 1 }}>
-            {groupsData?.length > 0 ? (
+          <View style={{ flex: 1, marginBottom: 70 }}>
+            {
               groupsData.map((innerArray, index) => {
                 const { identity, nameOfGrp } = innerArray.find(
                   obj => obj.hasOwnProperty('identity') && obj.hasOwnProperty('nameOfGrp')
@@ -149,48 +151,31 @@ const SplitMoneyScreen = ({ navigation }) => {
                     <Card style={styles.card}>
                       <Card.Title title={nameOfGrp} titleStyle={{color:allColors.universalColor, fontWeight: 900}}/>
                       <Card.Content>
-                        <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{values.sort().join(", ")}</Text>
+                        <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{values.sort().join(", ")}</MyText>
                       </Card.Content>
                     </Card>
                   </TouchableOpacity>
                 );
-              })
-            ) : (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                  height: 700
-                }}
-              >
-                <FontAwesome
-                  name="ban"
-                  size={60}
-                  color={allColors.textColorPrimary}
-                />
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Text variant="titleMedium" style={{color: allColors.universalColor}}>
-                    You don't have groups yet.
-                  </Text>
-                  <Text variant="bodySmall" style={{color: allColors.universalColor}}>
-                    Click on "+" button to start adding groups
-                  </Text>
-                </View>
-              </View>
-            )}
+              })}
           </View>
         </ScrollView>
-        <Portal>
-          <DeleteDialog
-            visible={isDeleteDialogVisible}
-            hideDialog={hideDialog}
-            deleteExpense={handleDelete}
-            allColors={allColors}
-            title={"group"}
-            content={"group"}
-          />
-        </Portal>
+        ): (
+          <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
+            <FontAwesome
+              name="ban"
+              size={60}
+              color={allColors.textColorPrimary}
+            />
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+                You don't have groups yet.
+              </MyText>
+              <MyText variant="bodySmall" style={{color: allColors.universalColor}}>
+                Click on "+" button to start adding groups
+              </MyText>
+            </View>
+          </View>
+        )}
       </AnimatedEntryScreen>
       <FAB
         animated
@@ -207,6 +192,16 @@ const SplitMoneyScreen = ({ navigation }) => {
         }}
         customSize={70}
       />
+      <Portal>
+        <DeleteDialog
+          visible={isDeleteDialogVisible}
+          hideDialog={hideDialog}
+          deleteExpense={handleDelete}
+          allColors={allColors}
+          title={"group"}
+          content={"group"}
+        />
+      </Portal>
     </SafeAreaView>
   );
 };

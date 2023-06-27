@@ -1,5 +1,5 @@
 import { View, TouchableOpacity } from "react-native";
-import { Text } from "react-native-paper";
+import MyText from "./MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import React from "react";
 import { IconComponent } from "./IconPickerModal";
@@ -41,7 +41,7 @@ const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
             color={allColors.addBtnColors}
           />
           <View style={{ flexDirection: "column", gap: 2 }}>
-            <Text
+            <MyText
               variant="bodyMedium"
               style={{
                 color: allColors.universalColor,
@@ -51,15 +51,15 @@ const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
               ellipsizeMode="tail"
             >
               {name}
-            </Text>
-            <Text
+            </MyText>
+            <MyText
               variant="bodySmall"
               style={{ color: "grey", width: 100 }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {text}
-            </Text>
+            </MyText>
           </View>
         </TouchableOpacity>
       </View>

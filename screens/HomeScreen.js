@@ -5,7 +5,7 @@ import {
   StatusBar,
   StyleSheet,
 } from "react-native";
-import { FAB, Text, Button } from "react-native-paper";
+import { FAB, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useState, useCallback } from "react";
@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { storeCard } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import * as Notifications from "expo-notifications";
 import useDynamicColors from "../commons/useDynamicColors";
 
@@ -28,7 +29,7 @@ const makeStyles = allColors => StyleSheet.create({
     borderRadius: 20,
     text: {
       color: allColors.textColorPrimary,
-      fontWeight: 700,
+      fontFamily: "Rubik_500Medium"
     },
   },
   notSelected: {
@@ -46,7 +47,7 @@ const ButtonMemoized = React.memo(({ onPress, isSelected, name }) => {
       buttonColor={allColors.backgroundColorDates}
       style={[styles.btn, isSelected && styles.selected]}
     >
-      <Text style={[styles.notSelected, isSelected && styles.selected.text]}>{name}</Text>
+      <MyText style={[styles.notSelected, isSelected && styles.selected.text]}>{name}</MyText>
     </Button>
   )
 });

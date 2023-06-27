@@ -1,7 +1,8 @@
 import { View, SafeAreaView, TouchableOpacity, Vibration } from "react-native";
-import { Text, FAB, Card, Dialog, Button, Avatar, Portal } from "react-native-paper";
+import { FAB, Card, Avatar, Portal } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import useDynamicColors from "../commons/useDynamicColors";
+import MyText from "../components/MyText";
 import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -11,6 +12,7 @@ import { storeSections, deleteSections } from "../redux/actions";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import moment from "moment";
 import formatNumberWithCurrency from "../helper/formatter";
 import DeleteDialog from "../components/DeleteDialog";
 
@@ -28,15 +30,15 @@ const AllSections = ({
     if (parseInt(payBack) === 0 && receive === 0) return <></>;
     return payBack !== 0 ? (
       <View style={{ flexDirection: "row", gap: 5 }}>
-        <Text
+        <MyText
           style={{
             color: allColors.warningColor,
             textAlign: "right",
           }}
         >
           Pay:
-        </Text>
-        <Text
+        </MyText>
+        <MyText
           style={{
             textAlign: "right",
             color: allColors.warningColor,
@@ -46,19 +48,19 @@ const AllSections = ({
           ellipsizeMode="tail"
         >
           {formatNumberWithCurrency(payBack, currency)}
-        </Text>
+        </MyText>
       </View>
     ) : (
       <View style={{ flexDirection: "row", gap: 5 }}>
-        <Text
+        <MyText
           style={{
             color: allColors.successColor,
             textAlign: "right",
           }}
         >
           Receive:
-        </Text>
-        <Text
+        </MyText>
+        <MyText
           style={{
             textAlign: "right",
             color: allColors.successColor,
@@ -68,7 +70,7 @@ const AllSections = ({
           ellipsizeMode="tail"
         >
           {formatNumberWithCurrency(receive, currency)}
-        </Text>
+        </MyText>
       </View>
     );
   };
@@ -82,6 +84,29 @@ const AllSections = ({
     );
   };
 
+  specificGroupSection.sort((a, b) => {
+    const lastObjA = a[a.length - 1];
+    const lastObjB = b[b.length - 1];
+    const dateA = moment(lastObjA.dateOfSection, 'DD/MM/YYYY');
+    const dateB = moment(lastObjB.dateOfSection, 'DD/MM/YYYY');
+    const timeA = moment(lastObjA.timeOfSection, 'HH:mm:ss');
+    const timeB = moment(lastObjB.timeOfSection, 'HH:mm:ss');
+  
+    if (dateA.isAfter(dateB)) {
+      return -1;
+    } else if (dateA.isSame(dateB)) {
+      if (timeA.isAfter(timeB)) {
+        return -1;
+      } else if (timeA.isSame(timeB)) {
+        return 0;
+      } else {
+        return 1;
+      }
+    } else {
+      return 1;
+    }
+  });
+
   return (
     <ScrollView
       style={{
@@ -94,7 +119,7 @@ const AllSections = ({
         specificGroupSection?.map((subArray, index) => {
           const { sectionName, totalAmountSpent, whoPaid } =
             subArray[subArray.length - 1];
-          const { id } = subArray.find((obj) => obj.id);
+          const { id } = subArray.find(obj => obj.hasOwnProperty('id'));
           const tempAmount = subArray.find((obj) => obj.name === username);
           const amount = tempAmount ? tempAmount.amount : 0;
 
@@ -138,7 +163,7 @@ const AllSections = ({
                       justifyContent: "space-between",
                     }}
                   >
-                    <Text
+                    <MyText
                       variant="titleMedium"
                       style={{
                         color: allColors.textColorPrimary,
@@ -153,7 +178,7 @@ const AllSections = ({
                           ? "You"
                           : whoPaid
                       } paid`}
-                    </Text>
+                    </MyText>
                     <View style={{ alignSelf: "center" }}>
                       {renderArrow(payBack, receive)}
                     </View>
@@ -187,9 +212,9 @@ const AllSections = ({
               size={60}
               color={allColors.textColorPrimary}
             />
-            <Text variant="titleMedium" style={{color: allColors.universalColor}}>
+            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
               Go ahead and create sections for this group.
-            </Text>
+            </MyText>
           </View>
         </>
       )}
@@ -202,7 +227,7 @@ const AllMembers = ({ allMembers }) => {
   return (
     <>
       <View style={{marginLeft: 20, marginTop: 20}}>
-        <Text variant="titleMedium" style={{color: allColors.universalColor}}>{allMembers?.length} Members</Text>
+        <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{allMembers?.length} Members</MyText>
       </View>
       <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
         <View style={{ margin: 20, gap: 15 }}>
@@ -211,7 +236,7 @@ const AllMembers = ({ allMembers }) => {
             return (
               <View key={index} style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
                 <Avatar.Text size={35} label={words} style={{backgroundColor: allColors.addBtnColors}} labelStyle={{color: allColors.selectedDateTextColor}}/>
-                <Text style={{color: allColors.universalColor, fontSize: 18, maxWidth: 350}} numberOfLines={2} ellipsizeMode="tail">{e}</Text>
+                <MyText style={{color: allColors.universalColor, fontSize: 18, maxWidth: 350}} numberOfLines={2} ellipsizeMode="tail">{e}</MyText>
               </View>
             )}
           )}
@@ -332,7 +357,7 @@ const SplitSection = ({ navigation, route }) => {
                 title={"Receive"}
                 titleStyle={{ color: allColors.universalColor }}
               />
-                <Text style={{
+                <MyText style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
@@ -340,7 +365,7 @@ const SplitSection = ({ navigation, route }) => {
                   color: allColors.universalColor,
                 }}>
                   {formatNumberWithCurrency(totalReceive, currency.curr)}
-                </Text>
+                </MyText>
             </Card>
           </View>
           <View style={{ flex: 0.5 }}>
@@ -349,7 +374,7 @@ const SplitSection = ({ navigation, route }) => {
                 title={"Pay"}
                 titleStyle={{ color: allColors.universalColor }}
               />
-              <Text style={{
+              <MyText style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
@@ -357,7 +382,7 @@ const SplitSection = ({ navigation, route }) => {
                   color: allColors.universalColor,
                 }}>
                   {formatNumberWithCurrency(totalPay, currency.curr)}
-              </Text>
+              </MyText>
             </Card>
           </View>
         </View>

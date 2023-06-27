@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Dimensions } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card } from "react-native-paper";
+import MyText from "./MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import { getCurrencyFromStorage } from "../helper/constants";
@@ -46,15 +47,15 @@ const DetailedExpenseCard = ({exp}) => {
             // width: 389,
           }}
         >
-          <Text
+          <MyText
             variant="headlineSmall"
             style={{ color: allColors.universalColor, maxWidth:  Dimensions.get("window").width / 2 }}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
             {exp.name}
-          </Text>
-          <Text
+          </MyText>
+          <MyText
             variant="headlineSmall"
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -68,25 +69,25 @@ const DetailedExpenseCard = ({exp}) => {
           >
             {exp.type === "Income" ? "+" : "-"}
             {formatNumberWithCurrency(exp.amount, currency.curr)}
-          </Text>
+          </MyText>
         </View>
         <View style={{ flexDirection: "column", alignItems: "flex-start" }}>
-          <Text
+          <MyText
             variant="bodyMedium"
             style={{ color: allColors.textColorPrimary }}
           >
             {formattedDate}
-          </Text>
+          </MyText>
           {exp.desc !== "" && (
             <>
-              <Text
+              <MyText
                 variant="bodyMedium"
                 style={{ color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1 }}
                 numberOfLines={5}
                 ellipsizeMode="tail"
               >
                 {exp.desc}
-              </Text>
+              </MyText>
             </>
           )}
         </View>

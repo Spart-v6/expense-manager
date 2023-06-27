@@ -9,11 +9,12 @@ import {
   Vibration,
   Dimensions
 } from "react-native";
-import { FAB, Card, Text, Portal } from "react-native-paper";
+import { FAB, Card, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
+import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -75,27 +76,27 @@ const RecurrenceScreen = ({ navigation }) => {
       <Card style={styles.card}>
         <Card.Content style={{gap: 10}}>
           <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between"}}>
-            <Text variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.8}}
+            <MyText variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.8}}
             numberOfLines={1} ellipsizeMode="tail">
               {item.recurrenceName}
-            </Text>
-            <Text variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 3}}
+            </MyText>
+            <MyText variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 3}}
             numberOfLines={1} ellipsizeMode="tail"
             >
               {formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}
-            </Text>
+            </MyText>
           </View>
           <View style={styles.container}>
             <View style={styles.textContainer}>
-              <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{moment(item.recurrenceStartDate, 'DD MM YY').format('Do MMMM')}</Text>
-              <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{moment(item.recurrenceStartDate, 'DD MM YY').format('Do MMMM')}</MyText>
+              <MyText style={styles.bulletText}>{'\u2022'}</MyText>
+              <MyText numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
                 {item.recurrenceType}
-              </Text>
-              <Text style={styles.bulletText}>{'\u2022'}</Text>
-              <Text numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
+              </MyText>
+              <MyText style={styles.bulletText}>{'\u2022'}</MyText>
+              <MyText numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
                 {item.paymentNetwork}
-              </Text>
+              </MyText>
             </View>
             <FontAwesome name="repeat" size={10} color={allColors.universalColor} style={{alignSelf:"center"}}/>
           </View>
@@ -147,19 +148,19 @@ const RecurrenceScreen = ({ navigation }) => {
       <AnimatedEntryScreen>
         {recurrencesData.length > 0 ?
           <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-            <View style={{ margin: 20, flex: 1 }}>
+            <View style={{ margin: 20, flex: 1, marginBottom: 80, marginTop: 0 }}>
               <FlatList
                 scrollEnabled={false}
                 data={recurrencesData}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
-                />
+              />
             </View>
           </ScrollView>
           : 
           <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
             <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>
-            <Text variant="titleMedium" style={{color: allColors.universalColor}}>You haven't added any recurring payment.</Text>
+            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>You haven't added any recurring payment.</MyText>
           </View>
         }
       </AnimatedEntryScreen>

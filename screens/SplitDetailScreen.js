@@ -1,6 +1,6 @@
 import { View, SafeAreaView, FlatList, ScrollView } from "react-native";
-import { Text } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import React, { useState } from "react";
 import * as Notifications from "expo-notifications";
@@ -15,8 +15,8 @@ const Item = ({ item }) => {
         padding: 10,
       }}
     >
-      <Text style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</Text>
-      <Text style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</Text>
+      <MyText style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</MyText>
+      <MyText style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</MyText>
     </View>
   );
 }
@@ -60,7 +60,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
       <ScrollView showsHorizontalScrollIndicator={false}>
         <View style={{ margin: 20 }}>
           <View style={{gap: 15}}>
-          <Text style={{ color: allColors.universalColor }}>
+          <MyText style={{ color: allColors.universalColor }}>
             {
               `Total amount ${totalAmount}/- is paid by${
                 currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
@@ -68,14 +68,14 @@ const SplitDetailScreen = ({ navigation, route }) => {
                   : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
               }`
             }
-          </Text>
+          </MyText>
             <FlatList
               scrollEnabled={false}
               data={filteredData}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
-              ListHeaderComponent={() => <Text variant="titleMedium" style={{color: allColors.universalColor}}>Summary</Text>}
+              ListHeaderComponent={() => <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Summary</MyText>}
               />
           </View>
         </View>

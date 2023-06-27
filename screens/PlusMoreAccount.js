@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import { View, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import { Text, TextInput, Button } from "react-native-paper";
+import { useState, useRef } from "react";
+import { View, SafeAreaView, StyleSheet } from "react-native";
+import { TextInput, Button } from "react-native-paper";
 import React from "react";
-import RadioButton from "../components/RadioButton";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { addCard, updateCard } from "../redux/actions";
+import { addCard } from "../redux/actions";
 import SnackbarComponent from "../commons/snackbar";
 
 const makeStyles = allColors =>
@@ -107,6 +107,7 @@ const PlusMoreAccount = ({ navigation }) => {
         textColor={allColors.universalColor}
         underlineColor="transparent"
         activeUnderlineColor="transparent"
+        contentStyle={{fontFamily: "Rubik_400Regular"}}
         placeholderTextColor={allColors.placeholderTextColor}
         autoComplete="off"
         textContentType="none"
@@ -177,39 +178,41 @@ const PlusMoreAccount = ({ navigation }) => {
               ...styles.commonStyles,
             }}
           >
-            <Text variant="titleSmall" style={{color: allColors.universalColor}}>
+            <MyText variant="titleSmall" style={{color: allColors.universalColor}}>
               Expiry Date (optional)
-            </Text>
+            </MyText>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
-                label={<Text style={{color: allColors.universalColor}} >MM</Text>}
+                label={<MyText style={{color: allColors.universalColor}} >MM</MyText>}
                 style={{ width: 80 ,backgroundColor: "transparent" }}
                 underlineColor={allColors.textColorPrimary}
                 allowFontScaling={false}
                 textColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
+                contentStyle={{fontFamily: "Rubik_400Regular"}}
                 value={month}
                 onChangeText={handleMonthChange}
                 keyboardType={"number-pad"}
                 maxLength={2}
                 autoCorrect={false}
               />
-              <Text
-                  variant="headlineSmall"
+              <MyText
+                  variant="titleMedium"
                   allowFontScaling={false}
                   style={{ color: allColors.universalColor }}
                 >
                   /
-                </Text>
+                </MyText>
               <TextInput
-                label={<Text style={{color: allColors.universalColor}}>YY</Text>}
+                label={<MyText style={{color: allColors.universalColor}}>YY</MyText>}
                 style={{ width: 80, backgroundColor: "transparent" }}
                 allowFontScaling={false}
                 underlineColor={allColors.textColorPrimary}
                 textColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
+                contentStyle={{fontFamily: "Rubik_400Regular"}}
                 value={year}
                 ref={yearInputRef}
                 onChangeText={handleYearChange}
@@ -237,7 +240,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
               />
-              <Text style={{color: allColors.universalColor}}>Debit Card</Text>
+              <MyText style={{color: allColors.universalColor}}>Debit Card</MyText>
             </View>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <BouncyCheckbox
@@ -248,7 +251,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
               />
-              <Text style={{color: allColors.universalColor}}>Credit Card</Text>
+              <MyText style={{color: allColors.universalColor}}>Credit Card</MyText>
             </View>
           </View>
         </View>
@@ -266,15 +269,15 @@ const PlusMoreAccount = ({ navigation }) => {
             labelStyle={{ fontSize: 15 }}
             onPress={handleAddOrUpdateCard}
           >
-            <Text
+            <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontWeight: 700,
+                fontFamily: "Rubik_500Medium",
                 fontSize: 18,
               }}
             >
               {btnName}
-            </Text>
+            </MyText>
           </Button>
         </View>
       </SafeAreaView>

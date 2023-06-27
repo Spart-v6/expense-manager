@@ -1,6 +1,7 @@
-import { Appbar, Text, Button } from "react-native-paper";
+import { Appbar, Button } from "react-native-paper";
 import { IconComponent } from "./IconPickerModal";
 import { View, Animated, Dimensions } from "react-native";
+import MyText from "./MyText";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
@@ -60,7 +61,7 @@ const AppHeader = ({
     return (
       <Animated.View style={{ opacity: fadeAnimation }}>
         <View style={{ marginLeft: 6 }}>
-          <Text style={{color: allColors.universalColor}} variant="titleMedium">{greetingText}</Text>
+          <MyText style={{color: allColors.universalColor}} variant="titleMedium">{greetingText}</MyText>
         </View>
       </Animated.View>
     );
@@ -109,7 +110,7 @@ const AppHeader = ({
         </>
       ) : (
         <Appbar.Content
-          title={isUpdate ? "Update Expense" : title}
+          title={isUpdate ? "Update Expense" : <MyText variant="titleLarge">{title}</MyText>}
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}

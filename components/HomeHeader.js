@@ -1,11 +1,13 @@
 import { View, StyleSheet, Dimensions } from "react-native";
-import { Text, Card, Tooltip } from "react-native-paper";
+import { Card, Tooltip } from "react-native-paper";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import MyText from "../components/MyText";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 
@@ -149,9 +151,9 @@ const DashboardCard = ({ currency }) => {
     <Card style={[styles.card]}>
       <Card.Title
         title="My balance"
-        titleStyle={{ color: allColors.textColorPrimary, fontSize: 17 }}
+        titleStyle={{ color: allColors.textColorPrimary, fontSize: 18, fontFamily: "Rubik_400Regular" }}
       />
-      <Text style={{
+      <MyText style={{
         fontSize: 30,
         textAlignVertical: "center",
         padding: 16,
@@ -160,31 +162,31 @@ const DashboardCard = ({ currency }) => {
         color: allColors.textColorSecondary,
       }}>
         {formatNumberWithCurrency(totalValue, currency)}
-      </Text>
+      </MyText>
       <Card.Content>
-        <Text
+        <MyText
           variant="titleLarge"
           style={{ color: allColors.textColorPrimary }}
         >
            {moment().format("MMMM")} month
-        </Text>
+        </MyText>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: allColors.textColorPrimary }}>Income</Text>
+            <MyText style={{ color: allColors.textColorPrimary }}>Income</MyText>
             <View style={{flexDirection:"row", gap: 2}}>
-              <AntDesign name="caretup" size={10} color={'green'} style={{alignSelf:"center"}}/>
-              <Text style={{ color: allColors.textColorFive }}>
+              <AntDesign name="caretup" size={10} color={allColors.successColor} style={{alignSelf:"center"}}/>
+              <MyText style={{ color: allColors.textColorFive }}>
                 + {formatNumberWithCurrency(totalIncomeForMonth, currency)}
-              </Text>
+              </MyText>
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: allColors.textColorPrimary }}>Expense</Text>
+            <MyText style={{ color: allColors.textColorPrimary }}>Expense</MyText>
             <View style={{flexDirection:"row", gap: 2}}>
-              <AntDesign name="caretdown" size={10} color={'red'} style={{alignSelf:"center"}}/>
-              <Text style={{ color: allColors.textColorFive }}>
+              <AntDesign name="caretdown" size={10} color={allColors.warningColor} style={{alignSelf:"center"}}/>
+              <MyText style={{ color: allColors.textColorFive }}>
                 - {formatNumberWithCurrency(totalExpenseForMonth, currency)}
-              </Text>
+              </MyText>
             </View>
           </View>
         </View>
@@ -201,17 +203,17 @@ const IncomeCard = ({ incomeArray, currency }) => {
   return (
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
-        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>Income</Text>
+        <Feather name="trending-up" size={20} color={allColors.successColor} style={{alignSelf:"center"}}/>
         <Tooltip title={formatNumberWithCurrency(totalIncome, currency)}  
           theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >
           <View>
-            <Text style={{ color: allColors.successColor, maxWidth: Dimensions.get("window").width / 5 }} numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
+            <MyText style={{ color: allColors.successColor, maxWidth: Dimensions.get("window").width / 4 }} numberOfLines={1} ellipsizeMode="tail" variant="labelSmall" allowFontScaling={false}>
               + {formatNumberWithCurrency(totalIncome, currency)}
-            </Text>
+            </MyText>
           </View>
         </Tooltip>
       </View>
-      <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
+      <View>{MyBezierLineChart("#4bba38", incomeArray)}</View> 
     </View>
   );
 };
@@ -224,13 +226,13 @@ const ExpenseCard = ({ expenseArray, currency }) => {
   return (
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
-        <Text style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 9}} ellipsizeMode="tail"  numberOfLines={1} variant="labelMedium" allowFontScaling={false}>Expense</Text>
+        <Feather name="trending-down" size={20} color={allColors.warningColor} style={{alignSelf:"center"}}/>
         <Tooltip title={formatNumberWithCurrency(totalExpense, currency)}  
           theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >  
           <View>
-            <Text style={{ color: allColors.warningColor, maxWidth: Dimensions.get("window").width / 5 }}numberOfLines={1} ellipsizeMode="tail" variant="labelMedium" allowFontScaling={false}>
+            <MyText style={{ color: allColors.warningColor, maxWidth: Dimensions.get("window").width / 4 }}numberOfLines={1} ellipsizeMode="tail" variant="labelSmall" allowFontScaling={false}>
               - {formatNumberWithCurrency(totalExpense, currency)}
-            </Text>
+            </MyText>
           </View>
         </Tooltip>
       </View>

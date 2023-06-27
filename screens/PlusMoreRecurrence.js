@@ -8,6 +8,7 @@ import {
 import { Portal, TextInput, Text, Dialog, Button, TouchableRipple } from "react-native-paper";
 import BouncyCheckboxGroup from "react-native-bouncy-checkbox-group";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import moment from "moment";
 import useDynamicColors from "../commons/useDynamicColors";
 import Chip from "../components/Chip";
@@ -150,9 +151,9 @@ const PlusMoreRecurrence = ({ navigation }) => {
         labelStyle={{ fontSize: 15 }}
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
-        <Text style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
+        <MyText style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
           {name}
-        </Text>
+        </MyText>
       </Button>
     );
   };
@@ -184,6 +185,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           underlineColor="transparent"
           activeUnderlineColor="transparent"
           placeholderTextColor={allColors.placeholderTextColor}
+          contentStyle={{fontFamily: "Rubik_400Regular"}}
           autoComplete="off"
           textContentType="none"
           value={name}
@@ -224,8 +226,8 @@ const PlusMoreRecurrence = ({ navigation }) => {
         gap: 5,
       }}
     >
-      <TouchableRipple rippleColor={allColors.rippleColor} onPress={() => handleNewDatePress()}>
-        <View style={{flexDirection: 'row',  gap: 0, padding: 10, paddingLeft: 0}}>
+      <TouchableRipple  rippleColor={allColors.rippleColor} onPress={() => handleNewDatePress()}>
+        <View style={{flexDirection: 'row', alignItems: "center", gap: 0, padding: 10, paddingLeft: 0}}>
           <IconComponent
             name={"calendar"}
             category={"MaterialCommunityIcons"}
@@ -235,6 +237,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           <TextInput
             style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
             placeholderTextColor={allColors.textColorSecondary}
+            contentStyle={{fontFamily: "Rubik_400Regular"}}
             disabled
             underlineColor={'transparent'}
             activeUnderlineColor={'transparent'}
@@ -343,7 +346,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
         isPlus={true}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
 
       <ScrollView style={{ margin: 20 }} contentContainerStyle={{ gap: 10, flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View
@@ -369,7 +372,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
         {/* Frequency */}
         <View style={{ marginTop: 10, gap: 5 }}>
-          <Text variant="titleSmall" style={{color: allColors.universalColor}}>Frequency</Text>
+          <MyText variant="titleSmall" style={{color: allColors.universalColor}}>Frequency</MyText>
           <ScrollView contentContainerStyle={{flexDirection: "row", gap: 10 }} horizontal showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
             <BouncyCheckboxGroup
               data={datesObj.map((item) => ({
@@ -391,9 +394,9 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
         {/* Recurrence type scroll */}
         <View style={{ marginTop: 10, gap: 5 }}>
-          <Text variant="titleSmall" style={{ marginTop: 10, color: allColors.universalColor }}>
+          <MyText variant="titleSmall" style={{ marginTop: 10, color: allColors.universalColor }}>
             Recurrence Type
-          </Text>
+          </MyText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -416,7 +419,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
                 size={20}
                 color={allColors.addBtnColors}
               />
-              <Text style={{color: allColors.universalColor}}>Add new</Text>
+              <MyText style={{color: allColors.universalColor}}>Add new</MyText>
             </TouchableOpacity>
             {allRecurrTypes.length > 0 &&
               allRecurrTypes.map((item, index) => (
@@ -433,7 +436,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
         {/* Payment network cards */}
         <View style={{ ...styles.commonStyles, height: 150 }}>
-          <Text style={{color: allColors.universalColor}}>Payment network</Text>
+          <MyText style={{color: allColors.universalColor}}>Payment network</MyText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               style={styles.commonTouchableStyle}
@@ -447,12 +450,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
                   size={30}
                   color={allColors.addBtnColors}
                 />
-                <Text
+                <MyText
                   variant="bodyLarge"
                   style={{ color: allColors.textColorFive }}
                 >
                   Add new
-                </Text>
+                </MyText>
               </View>
             </TouchableOpacity>
             {cardsData?.length !== 0 &&
@@ -488,21 +491,21 @@ const PlusMoreRecurrence = ({ navigation }) => {
               borderTopLeftRadius: 15,
             }}
           >
-            <Text
+            <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontWeight: 700,
+                fontFamily: "Rubik_500Medium",
                 fontSize: 18,
               }}
             >
               Add Recurrence
-            </Text>
+            </MyText>
           </Button>
         </View>
       </ScrollView>
 
       </View>
-      {<MyDatePicker open={startDateOpen} setOpen={setStartDateOpen} fetchDates={fetchStartDates} selectedDate={selectedStartDate} selectedMonth={selectedStartMonth} selectedYear={selectedStartYear} setSelectedDate={setSelectedStartDate} setSelectedMonth={setSelectedStartMonth} setSelectedYear={setSelectedStartYear} disableTheDates={false}/>
+      {<MyDatePicker open={startDateOpen} setOpen={setStartDateOpen} fetchDates={fetchStartDates} selectedDate={selectedStartDate} selectedMonth={selectedStartMonth} selectedYear={selectedStartYear} setSelectedDate={setSelectedStartDate} setSelectedMonth={setSelectedStartMonth} setSelectedYear={setSelectedStartYear} disableTheDates={false} disablePreviousDates={true} screen={"Recurrence"}/>
       }
 
       <Portal>
@@ -512,10 +515,10 @@ const PlusMoreRecurrence = ({ navigation }) => {
           onDismiss={() => setOpenNewRecurrence(false)}
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
         >
-          <Dialog.Title style={{color: allColors.textColorSecondary}}>Add new recurrence type</Dialog.Title>
+          <Dialog.Title style={{color: allColors.textColorSecondary, fontFamily: "Rubik_400Regular"}}>Add new recurrence type</Dialog.Title>
           <Dialog.Content>
             <TextInput 
-              label={<Text style={{color: allColors.universalColor}}>{"Name"}</Text>}
+              label={<MyText style={{color: allColors.universalColor}}>{"Name"}</MyText>}
               value={addNewRecurrenceName}
               onChangeText={(val) => setAddNewRecurrenceName(val)}
               textColor={allColors.universalColor}
@@ -523,6 +526,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               underlineColor={allColors.textColorPrimary}
               selectionColor={allColors.textSelectionColor}
               activeUnderlineColor={allColors.textColorPrimary}
+              contentStyle={{fontFamily: "Rubik_400Regular"}}
               keyboardType="default"
               autoFocus
             />
@@ -532,16 +536,16 @@ const PlusMoreRecurrence = ({ navigation }) => {
               onPress={() => setOpenNewRecurrence(false)}
               contentStyle={{ width: 60 }}
             >
-              <Text style={{ color: allColors.textColorSecondary }}>
+              <MyText style={{ color: allColors.textColorSecondary }}>
                 Cancel
-              </Text>
+              </MyText>
             </Button>
             <Button
               onPress={addRecurrType}
               contentStyle={{ width: 60 }}
               disabled={addNewRecurrenceName.length < 1}
             >
-              <Text style={{ color: allColors.textColorPrimary }}>Add</Text>
+              <MyText style={{ color: allColors.textColorPrimary }}>Add</MyText>
             </Button>
           </Dialog.Actions>
         </Dialog>

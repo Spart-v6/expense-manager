@@ -2,7 +2,6 @@ import "react-native-gesture-handler";
 import {
   MD3DarkTheme as DefaultTheme,
   Provider as PaperProvider,
-  Text
 } from "react-native-paper";
 import store from "./redux/store";
 import { Provider } from "react-redux";
@@ -12,6 +11,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import * as LocalAuth from "expo-local-authentication";
 import useDynamicColors from "./commons/useDynamicColors";
+import FontLoader from "./components/FontLoader";
+import MyText from "./components/MyText";
 import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
 
 const theme = {
@@ -123,9 +124,9 @@ const App = () => {
         </View>
         <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
 
-          <Text variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </Text>
+          <MyText variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </MyText>
           {authMsg === "failed" && (
-              <Text style={{color: allColors.universalColor}}>{warningMsg}</Text>
+              <MyText style={{color: allColors.universalColor}}>{warningMsg}</MyText>
           )}
         </View>
       </SafeAreaView>
@@ -135,7 +136,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <PaperProvider theme={theme}>
-        {handleLogginIn()}
+        <FontLoader>
+          {handleLogginIn()}
+        </FontLoader>
       </PaperProvider>
     </Provider>
   );

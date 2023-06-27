@@ -1,8 +1,9 @@
 import React from "react";
 import { View, SafeAreaView, StyleSheet, ScrollView } from "react-native";
-import { Text, Dialog, Portal, Button } from "react-native-paper";
+import { Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteCard, deleteData } from "../redux/actions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -50,21 +51,21 @@ const CardDetailsScreen = ({ navigation, route }) => {
         isUpdateCardScreen={true}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-        <View style={styles.listView}>
-          {
-            filteredArray.length > 0 ?
-            filteredArray.map((exp, index) => (
+      {
+        filteredArray.length > 0 ?
+        <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+          <View style={styles.listView}>
+            {filteredArray.map((exp, index) => (
                 <DetailedExpenseCard exp={exp} key={index}/>
-            ))
-            :
-            <View style={{justifyContent: "center", alignItems: 'center', height: 800, gap: 10}}>
-              <MaterialCommunityIcons name="cancel" size={60} color={allColors.textColorPrimary}/>        
-              <Text variant="titleMedium" style={{color: allColors.universalColor}}>Expenses will appear here once added to this card.</Text>
-            </View>
-          }
+            ))}
+          </View>
+        </ScrollView>
+        :
+        <View style={{justifyContent: "center", alignItems: 'center', height: 800, gap: 10}}>
+          <MaterialCommunityIcons name="cancel" size={60} color={allColors.textColorPrimary}/>        
+          <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Expenses will appear here once added to this card.</MyText>
         </View>
-      </ScrollView>
+      }
       <Portal>
         <DeleteDialog
           visible={isDeleteBtnPressed}

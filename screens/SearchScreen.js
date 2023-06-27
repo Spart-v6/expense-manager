@@ -1,5 +1,5 @@
 import { View, SafeAreaView } from "react-native";
-import { Appbar, TextInput, Text, Card } from "react-native-paper";
+import { Appbar, TextInput, Card } from "react-native-paper";
 import formatNumberWithCurrency from "../helper/formatter";
 import useDynamicColors from "../commons/useDynamicColors";
 import { useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
+import MyText from "../components/MyText";
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
 
 const displaySearchedResults = (searchArray, text) => {
@@ -20,7 +21,7 @@ const displaySearchedResults = (searchArray, text) => {
   }
 
   if (searchArray(text).length === 0 && text.length === 0) {
-    return <Text variant="titleMedium" style={{color: allColors.universalColor}}>Type something to see the results</Text>;
+    return <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Type something to see the results</MyText>;
   }
 
   if (searchArray(text).length === 0 && text.length > 2) {
@@ -31,7 +32,7 @@ const displaySearchedResults = (searchArray, text) => {
           color={allColors.universalColor}
           size={30}
         />
-        <Text variant="titleMedium" style={{color: allColors.universalColor}}>Not found</Text>
+        <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Not found</MyText>
       </View>
     );
   }
@@ -65,13 +66,14 @@ const SearchScreen = ({ navigation, route }) => {
         <Appbar.Content
           title={
             <TextInput
-              label={<Text style={{color: allColors.universalColor}}>{"Search your expenses"}</Text>}
+              label={<MyText style={{color: allColors.universalColor}}>{"Search your expenses"}</MyText>}
               style={{ backgroundColor: "transparent" }}
               textColor={allColors.universalColor}
-              selectionColor={allColors.textSelectionColor} // TODO: add selection color to all selected items
+              selectionColor={allColors.textSelectionColor}
               value={text}
               underlineColor={allColors.backgroundColorQuaternary}
               activeUnderlineColor={allColors.backgroundColorQuaternary}
+              contentStyle={{fontFamily: "Rubik_400Regular"}}
               onChangeText={setText}
               autoFocus
             />
