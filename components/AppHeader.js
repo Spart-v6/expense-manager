@@ -19,6 +19,7 @@ const AppHeader = ({
   isDeletePressed,
   needSearch,
   isUpdateCardScreen = false,
+  isInfoPressed,
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
@@ -78,6 +79,7 @@ const AppHeader = ({
   }, []);
 
   const handleDeleteExpense = () => isDeletePressed(true);
+  const handleInfoPress = () => isInfoPressed(true);
   const searchExpense = () =>
     navigation.navigate("SearchScreen", { comingFrom: title });
 
@@ -110,7 +112,7 @@ const AppHeader = ({
         </>
       ) : (
         <Appbar.Content
-          title={isUpdate ? "Update Expense" : <MyText variant="titleLarge">{title}</MyText>}
+          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary}}>{ isUpdate ? "Update Expense" : title}</MyText>}
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
@@ -131,6 +133,13 @@ const AppHeader = ({
       {isUpdateCardScreen && (
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
+      {
+        title === "Add Card" && (
+          <Appbar.Action icon={({ color, size }) => (
+              <Feather name="info" size={20} color={allColors.textColorPrimary}/>
+          )} onPress={handleInfoPress}/>
+        )
+      }
     </Appbar.Header>
   );
 };

@@ -235,9 +235,9 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [selectedYear, setSelectedYear] = useState(() => {
     if (route.params) {
       const [year, month, day] = route.params.updateItem.date.split("/");
-      return year;
+      return +year;
     }
-    return moment().format("YYYY")
+    return moment().year()
   })
   const [selectedDate, setSelectedDate] = useState(() => {
     if (route.params) {

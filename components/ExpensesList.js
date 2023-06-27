@@ -1,6 +1,6 @@
+import React, { memo } from "react";
 import { View, SafeAreaView, SectionList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
@@ -303,6 +303,9 @@ const ExpensesList = ({ filter }) => {
               sections={sectionListData}
               keyExtractor={(item, index) => item.id + index}
               renderItem={renderItem}
+              initialNumToRender={8}
+              maxToRenderPerBatch={10}
+              windowSize={10}
               renderSectionHeader={({ section: { title } }) => (
                 <MyText
                   variant="titleMedium"

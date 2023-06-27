@@ -199,7 +199,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
   // #region New dates stuff
   const [selectedStartMonth, setSelectedStartMonth] = useState(moment().format("MMMM"));
-  const [selectedStartYear, setSelectedStartYear] = useState(moment().format("YYYY"))
+  const [selectedStartYear, setSelectedStartYear] = useState(moment().year())
   const [selectedStartDate, setSelectedStartDate] = useState(moment().date());
 
   const [newStartDate, setNewStartDate] = useState(moment().format('YYYY/MM/DD'));

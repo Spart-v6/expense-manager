@@ -112,7 +112,7 @@ const MyBezierLineChart = (colors, chartData) => {
         chartConfig={chartConfig}
         strokeLinejoin={"round"}
         style={{
-          paddingTop: 5,
+          paddingTop: 3,
           paddingRight: 3,
           paddingLeft: 15,
           paddingBottom: 0,

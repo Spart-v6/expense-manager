@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { View, SafeAreaView, StyleSheet } from "react-native";
-import { TextInput, Button } from "react-native-paper";
+import { View, SafeAreaView, StyleSheet, Dimensions } from "react-native";
+import { TextInput, Button, Banner, Portal } from "react-native-paper";
 import React from "react";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
@@ -10,6 +10,7 @@ import moment from "moment";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { addCard } from "../redux/actions";
 import SnackbarComponent from "../commons/snackbar";
+import Feather from 'react-native-vector-icons/Feather';
 
 const makeStyles = allColors =>
   StyleSheet.create({
@@ -39,6 +40,12 @@ const makeStyles = allColors =>
     addCardBtn: {
       margin: 20, marginTop: 0
     },
+    bannerContainer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+    }
   });
 
 const PlusMoreAccount = ({ navigation }) => {
@@ -50,8 +57,6 @@ const PlusMoreAccount = ({ navigation }) => {
   const [errorMsg, setErrorMsg] = useState("Please fill all the fields");
   const timeoutRef = useRef(null);
 
-  const [isUpdateCardPressed, setIsUpdateCardPressed] = useState(false);
-  const [valuesToChangeInCard, setValuesToChangeInCard] = useState({});
   const [btnName] = useState("Add Card");
   const [cardHolderName, setCardHolderName] = useState("");
   const [paymentNetwork, setPaymentNetwork] = useState("");
@@ -61,6 +66,8 @@ const PlusMoreAccount = ({ navigation }) => {
 
   const [debitCard, setDebitCard] = useState(true);
   const [creditCard, setCreditCard] = useState(false);
+
+  const [isInfoPressed, setIsInfoPressed] = useState(false);
 
   const yearInputRef = useRef(null);
 
@@ -163,7 +170,7 @@ const PlusMoreAccount = ({ navigation }) => {
   return (
     <>
       <SafeAreaView style={styles.safeView}>
-        <AppHeader title={btnName} navigation={navigation} />
+        <AppHeader title={btnName} navigation={navigation} isInfoPressed={val => setIsInfoPressed(val)}/>
         <View style={{flex: 1}}>
           <View style={{ ...styles.commonStyles, marginTop: 0 }}>
             {textInput(cardHolderName, setCardHolderName, "Cardholder name")}
@@ -282,6 +289,32 @@ const PlusMoreAccount = ({ navigation }) => {
         </View>
       </SafeAreaView>
       {error && <SnackbarComponent errorMsg={errorMsg}/>}
+      
+      <Portal>
+        <View style={styles.bannerContainer}>
+          <Banner
+            visible={isInfoPressed}
+            style={{backgroundColor: allColors.backgroundColorLessPrimary}}
+            actions={[
+              {
+                label: 'OK',
+                onPress: () => setIsInfoPressed(false),
+                style: {marginRight: 20},
+                textColor: allColors.universalColor
+              }
+            ]}
+            
+            >
+              <View style={{flexDirection: 'row', gap: 5, justifyContent: "center", alignItems: 'center'}}>
+                <Feather name="info" size={20} color={allColors.textColorPrimary}/>
+                <MyText style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.2}} numberOfLines={4}>
+                  The details you provide here are for visualization purposes only and are not collected in any way. Feel free to add any information, even if it's not accurate.
+                </MyText>
+              </View>
+        </Banner>
+        </View>
+      </Portal>
+
     </>
   );
 };

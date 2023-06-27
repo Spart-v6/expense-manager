@@ -177,14 +177,13 @@ const MyDatePicker = ({
 
     const handleYearPress = () => {
       handleShowMoreYear();
-      setSelectedYear(isSelected ? null : item.name);
+      setSelectedYear(isSelected ? null : +item.name);
     };
-    console.log("Selected year: " + selectedYear);
 
     return (
       <TouchableOpacity onPress={handleYearPress} activeOpacity={0.5}>
         <View style={[styles.itemContainer, item.name === selectedYear && { backgroundColor: allColors.textColorPrimary, borderRadius: 50 }]}>
-          <MyText variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name ===selectedYear &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
+          <MyText variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === selectedYear &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
             {item.name}
           </MyText>
         </View>
@@ -195,13 +194,13 @@ const MyDatePicker = ({
   const handleLeftArrowPress = () => {
     const previousMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').subtract(1, 'month');
     setSelectedMonth(previousMonth.format('MMMM'));
-    setSelectedYear(previousMonth.format('YYYY'));
+    setSelectedYear(+previousMonth.format('YYYY'));
   };
 
   const handleRightArrowPress = () => {
     const nextMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').add(1, 'month');
     setSelectedMonth(nextMonth.format('MMMM'));
-    setSelectedYear(nextMonth.format('YYYY'));
+    setSelectedYear(+nextMonth.format('YYYY'));
   };
 
   const formatTitle = (date, tempMonth, year) => {
