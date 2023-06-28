@@ -182,7 +182,7 @@ const CardComponent = () => {
         </View>
       </Card.Content>
     </Card>
-  ), []);
+  ), [currency]);
 
   return (
     <View style={{ flex :1 }}>

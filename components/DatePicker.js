@@ -55,7 +55,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
   for (let i = 0; i < startDay; i++) calendarArray.push(null);
   for (let i = 1; i <= daysInMonth; i++) calendarArray.push(i);
 
-  const renderItem = useCallback(({ item }) => {
+  const renderItem = ({ item }) => {
 
     const handleDatePress = () => {
       setSelectedDate(item);
@@ -93,7 +93,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
         </View>
       </TouchableWithoutFeedback>
     );
-  },[]);
+  };
 
   return (
     <View style={styles.calendarContainer}>
@@ -189,7 +189,7 @@ const MyDatePicker = ({
         </View>
       </TouchableOpacity>
     );
-  }, []);
+  }, [selectedYear]);
 
   const handleLeftArrowPress = () => {
     const previousMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').subtract(1, 'month');

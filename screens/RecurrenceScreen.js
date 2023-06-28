@@ -102,7 +102,7 @@ const RecurrenceScreen = ({ navigation }) => {
         </Card.Content>
       </Card>
     </TouchableOpacity>
-  ), []);
+  ), [currency]);
 
   useFocusEffect(
     useCallback(() => {

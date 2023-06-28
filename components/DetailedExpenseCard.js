@@ -88,9 +88,8 @@ const DetailedExpenseCard = ({exp}) => {
           </Card.Content>
         </Card>
       </View>
-
     );
-  }, []);
+  }, [currency]);
 
   return (
     <FlashList

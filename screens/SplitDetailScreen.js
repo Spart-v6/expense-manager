@@ -36,7 +36,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
   const data = filteredData?.map((obj) => parseFloat(obj.amount));
   const totalAmount = data?.reduce((acc, curr) => acc + curr, 0);
 
-  const renderItem = useCallback(({ item }) => {<Item item={item} />},[]);
+  const renderItem = ({ item }) => <Item item={item} />;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
