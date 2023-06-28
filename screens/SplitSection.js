@@ -15,6 +15,7 @@ import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/consta
 import moment from "moment";
 import formatNumberWithCurrency from "../helper/formatter";
 import DeleteDialog from "../components/DeleteDialog";
+import { FlashList } from "@shopify/flash-list";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -107,96 +108,96 @@ const AllSections = ({
     }
   });
 
-  return (
-    <ScrollView
-      style={{
-        backgroundColor: allColors.backgroundColorPrimary,
-        marginBottom: 100,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      {specificGroupSection.length > 0 ? (
-        specificGroupSection?.map((subArray, index) => {
-          const { sectionName, totalAmountSpent, whoPaid } =
-            subArray[subArray.length - 1];
-          const { id } = subArray.find(obj => obj.hasOwnProperty('id'));
-          const tempAmount = subArray.find((obj) => obj.name === username);
-          const amount = tempAmount ? tempAmount.amount : 0;
-
-          let payBack = 0,
-            receive = 0;
-          if (
-            whoPaid.length === 0 ||
-            whoPaid.toLowerCase() === username?.toLowerCase()
-          )
-            receive = (totalAmountSpent - +amount).toFixed(2);
-          else payBack = parseInt(amount).toFixed(2);
-
-          return (
-            <TouchableOpacity
-              key={index}
-              onLongPress={() => handleDeleteSection(id)}
-              onPress={() =>
-                navigation.navigate("SplitDetailScreen", { subArray })
-              }
-              style={{ marginTop: 20 }}
-              activeOpacity={0.9}
+  const renderItem = ({ item }) => {
+    const subArray = item;
+    const { sectionName, totalAmountSpent, whoPaid } =
+      subArray[subArray.length - 1];
+    const { id } = subArray.find((obj) => obj.hasOwnProperty('id'));
+    const tempAmount = subArray.find((obj) => obj.name === username);
+    const amount = tempAmount ? tempAmount.amount : 0;
+  
+    let payBack = 0,
+      receive = 0;
+    if (
+      whoPaid.length === 0 ||
+      whoPaid.toLowerCase() === username?.toLowerCase()
+    )
+      receive = (totalAmountSpent - +amount).toFixed(2);
+    else payBack = parseInt(amount).toFixed(2);
+  
+    return (
+      <TouchableOpacity
+        onLongPress={() => handleDeleteSection(id)}
+        onPress={() => navigation.navigate('SplitDetailScreen', { subArray })}
+        style={{ marginTop: 20 }}
+        activeOpacity={0.9}
+      >
+        <Card
+          style={{
+            backgroundColor: allColors.backgroundColorLessPrimary,
+            shadowColor: 'transparent',
+          }}
+        >
+          <Card.Title
+            title={sectionName}
+            titleStyle={{ marginTop: 10, color: allColors.universalColor }}
+            subtitle={`Amount paid: ${formatNumberWithCurrency(totalAmountSpent, currency)}`}
+            subtitleStyle={{ color: allColors.universalColor }}
+          />
+          <Card.Content>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
             >
-              <Card
-                key={index}
+              <MyText
+                variant="titleMedium"
                 style={{
-                  backgroundColor: allColors.backgroundColorLessPrimary,
-                  shadowColor: "transparent"
+                  color: allColors.textColorPrimary,
+                  maxWidth: 180,
+                }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {`${
+                  whoPaid === '' ||
+                  whoPaid.toLowerCase() === username?.toLowerCase()
+                    ? 'You'
+                    : whoPaid
+                } paid`}
+              </MyText>
+              <View style={{ alignSelf: 'center' }}>
+                {renderArrow(payBack, receive)}
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  maxWidth: 180,
                 }}
               >
-                <Card.Title
-                  title={sectionName}
-                  titleStyle={{ marginTop: 10, color: allColors.universalColor }}
-                  subtitle={`Amount paid: ${formatNumberWithCurrency(totalAmountSpent, currency)}`}
-                  subtitleStyle={{color: allColors.universalColor}}
-                />
-                <Card.Content>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <MyText
-                      variant="titleMedium"
-                      style={{
-                        color: allColors.textColorPrimary,
-                        maxWidth: 180
-                      }}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {`${
-                        whoPaid === "" ||
-                        whoPaid.toLowerCase() === username?.toLowerCase()
-                          ? "You"
-                          : whoPaid
-                      } paid`}
-                    </MyText>
-                    <View style={{ alignSelf: "center" }}>
-                      {renderArrow(payBack, receive)}
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        maxWidth: 180
-                      }}
-                    >
-                      {renderPayAndReceive(payBack, receive)}
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            </TouchableOpacity>
-          );
-        })
+                {renderPayAndReceive(payBack, receive)}
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  };
+  
+  return (
+    <View  style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
+      {specificGroupSection.length > 0 ? (
+        <FlashList
+          data={specificGroupSection}
+          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={200}
+          renderItem={renderItem}
+        />
       ) : (
         <>
           <View
@@ -218,7 +219,8 @@ const AllSections = ({
           </View>
         </>
       )}
-    </ScrollView>
+    </View>
+
   );
 };
 

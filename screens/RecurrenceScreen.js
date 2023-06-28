@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
   Vibration,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { FAB, Card, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
+import { FlashList } from "@shopify/flash-list";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
@@ -147,16 +147,14 @@ const RecurrenceScreen = ({ navigation }) => {
       />
       <AnimatedEntryScreen>
         {recurrencesData.length > 0 ?
-          <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
             <View style={{ margin: 20, flex: 1, marginBottom: 80, marginTop: 0 }}>
-              <FlatList
-                scrollEnabled={false}
+              <FlashList
                 data={recurrencesData}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
+                estimatedItemSize={200}
               />
             </View>
-          </ScrollView>
           : 
           <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
             <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>

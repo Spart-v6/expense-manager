@@ -91,7 +91,7 @@ const TabButton = (props) => {
 
   const interpolatedWidth = widthAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['40%', '70%'],
+    outputRange: ['65%', '70%'],
   });
 
   return (

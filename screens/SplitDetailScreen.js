@@ -1,4 +1,5 @@
-import { View, SafeAreaView, FlatList, ScrollView } from "react-native";
+import { View, SafeAreaView, ScrollView } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -57,29 +58,26 @@ const SplitDetailScreen = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <ScrollView showsHorizontalScrollIndicator={false}>
-        <View style={{ margin: 20 }}>
-          <View style={{gap: 15}}>
-          <MyText style={{ color: allColors.universalColor }}>
-            {
-              `Total amount ${totalAmount}/- is paid by${
-                currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
-                  ? " you"
-                  : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
-              }`
-            }
-          </MyText>
-            <FlatList
-              scrollEnabled={false}
-              data={filteredData}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
-              ListHeaderComponent={() => <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Summary</MyText>}
-              />
-          </View>
-        </View>
-      </ScrollView>
+      <View style={{ margin: 20, flex : 1, gap: 15 }}>
+        <MyText style={{ color: allColors.universalColor }}>
+          {
+            `Total amount ${totalAmount}/- is paid by${
+              currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
+                ? " you"
+                : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
+            }`
+          }
+        </MyText>
+          <FlashList
+            scrollEnabled={false}
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
+            ListHeaderComponent={() => <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Summary</MyText>}
+            estimatedItemSize={200}
+            />
+      </View>
     </SafeAreaView>
   );
 };
