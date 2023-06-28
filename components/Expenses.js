@@ -35,7 +35,7 @@ const Expenses = ({ item, index, onPress }) => {
 
   return (
     <TouchableRipple onPress={handlePress} rippleColor={allColors.rippleColor} centered>
-      <View>
+      <>
         <View style={{height: 55, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
           <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
             <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 0}}>
@@ -69,7 +69,7 @@ const Expenses = ({ item, index, onPress }) => {
             </View>
           </View>
         </View>
-      </View>
+      </>
     </TouchableRipple>
   );
 };

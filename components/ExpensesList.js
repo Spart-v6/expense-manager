@@ -1,8 +1,7 @@
-import React, { memo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, SafeAreaView, SectionList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
 import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
@@ -67,7 +66,7 @@ const ExpensesList = ({ filter }) => {
     return aMoment.isBefore(bMoment) ? 1 : -1;
   });
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = useCallback(({ item, index }) => (
     <Expenses
       item={item}
       index={index}
@@ -75,7 +74,18 @@ const ExpensesList = ({ filter }) => {
         navigation.navigate("PlusMoreHome", { updateItem: item })
       }
     />
-  );
+  ), []);
+
+  const getItemLayout = (data, index) => {
+    const itemHeight = 10;
+    const offset = itemHeight * index;
+
+    return {
+      length: itemHeight,
+      offset,
+      index,
+    };
+  };
 
   const groupByCategory = (data, category) => {
     let groupedData = [];
@@ -303,8 +313,10 @@ const ExpensesList = ({ filter }) => {
               sections={sectionListData}
               keyExtractor={(item, index) => item.id + index}
               renderItem={renderItem}
-              initialNumToRender={8}
-              maxToRenderPerBatch={10}
+              initialNumToRender={10}
+              getItemLayout={getItemLayout}
+              maxToRenderPerBatch={5}
+              removeClippedSubviews={true}
               windowSize={10}
               renderSectionHeader={({ section: { title } }) => (
                 <MyText

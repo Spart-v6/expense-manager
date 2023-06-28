@@ -9,6 +9,7 @@ import { deleteCard, deleteData } from "../redux/actions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
 import DeleteDialog from "../components/DeleteDialog";
+import { Dimensions } from "react-native";
 
 const makeStyles = () => 
   StyleSheet.create({
@@ -53,13 +54,9 @@ const CardDetailsScreen = ({ navigation, route }) => {
       />
       {
         filteredArray.length > 0 ?
-        <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-          <View style={styles.listView}>
-            {filteredArray.map((exp, index) => (
-                <DetailedExpenseCard exp={exp} key={index}/>
-            ))}
-          </View>
-        </ScrollView>
+        <View style={{flex : 1}}>
+          <DetailedExpenseCard exp={filteredArray} key={Math.random()}/>
+        </View>
         :
         <View style={{justifyContent: "center", alignItems: 'center', height: 800, gap: 10}}>
           <MaterialCommunityIcons name="cancel" size={60} color={allColors.textColorPrimary}/>        

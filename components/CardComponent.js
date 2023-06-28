@@ -1,5 +1,4 @@
-import { View, StyleSheet, Dimensions } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+import { View, StyleSheet, Dimensions, FlatList } from "react-native";
 import { Card } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -189,10 +188,9 @@ const CardComponent = () => {
     <View style={{ flex :1 }}>
     {
       allCards?.length > 0 ? (
-        <FlashList
+        <FlatList
           data={allCards}
-          keyExtractor={() => Math.random().toString()}
-          estimatedItemSize={200}
+          keyExtractor={(item, index) => index.toString()}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}

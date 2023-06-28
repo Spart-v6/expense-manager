@@ -188,7 +188,7 @@ const AllSections = ({
   };
   
   return (
-    <View  style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
+    <View style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
       {specificGroupSection.length > 0 ? (
         <FlashList
           data={specificGroupSection}
