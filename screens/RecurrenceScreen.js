@@ -18,9 +18,8 @@ import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import React from "react";
 import { useDispatch } from "react-redux";
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storeRecurrences, deleteRecurrences } from "../redux/actions";
@@ -71,7 +70,7 @@ const RecurrenceScreen = ({ navigation }) => {
     dispatch(deleteRecurrences(selectedItemToDelete?.id))
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <TouchableOpacity onLongPress={() => handleLongPress(item)} activeOpacity={0.8}>
       <Card style={styles.card}>
         <Card.Content style={{gap: 10}}>
@@ -103,7 +102,7 @@ const RecurrenceScreen = ({ navigation }) => {
         </Card.Content>
       </Card>
     </TouchableOpacity>
-  );
+  ), []);
 
   useFocusEffect(
     useCallback(() => {

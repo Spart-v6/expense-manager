@@ -69,7 +69,7 @@ const CardComponent = () => {
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   
-  const renderItem = ({ item: crd }) => (
+  const renderItem = useCallback(({ item: crd }) => (
     <Card
       style={[styles.card]}
       onPress={() => navigation.navigate("CardDetailsScreen", { card: crd })}
@@ -182,7 +182,7 @@ const CardComponent = () => {
         </View>
       </Card.Content>
     </Card>
-  );
+  ), []);
 
   return (
     <View style={{ flex :1 }}>

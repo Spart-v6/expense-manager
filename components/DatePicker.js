@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   TouchableOpacity,
@@ -55,7 +55,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
   for (let i = 0; i < startDay; i++) calendarArray.push(null);
   for (let i = 1; i <= daysInMonth; i++) calendarArray.push(i);
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
 
     const handleDatePress = () => {
       setSelectedDate(item);
@@ -93,7 +93,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
         </View>
       </TouchableWithoutFeedback>
     );
-  };
+  },[]);
 
   return (
     <View style={styles.calendarContainer}>
@@ -172,7 +172,7 @@ const MyDatePicker = ({
 
   const handleDateChange = newDate => setSelectedDate(newDate);
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     const isSelected = item.name === selectedYear;
 
     const handleYearPress = () => {
@@ -189,7 +189,7 @@ const MyDatePicker = ({
         </View>
       </TouchableOpacity>
     );
-  }
+  }, []);
 
   const handleLeftArrowPress = () => {
     const previousMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').subtract(1, 'month');

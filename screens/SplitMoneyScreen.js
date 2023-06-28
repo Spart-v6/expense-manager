@@ -118,7 +118,7 @@ const SplitMoneyScreen = ({ navigation }) => {
     if (itemsToDelete.length > 0) dispatch(deleteGroupAndSections(itemsToDelete));
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     const { identity, nameOfGrp } = item.find(
       (obj) => obj.hasOwnProperty('identity') && obj.hasOwnProperty('nameOfGrp')
     );
@@ -148,7 +148,7 @@ const SplitMoneyScreen = ({ navigation }) => {
         </Card>
       </TouchableOpacity>
     );
-  };
+  },[]);
   
 
   return (

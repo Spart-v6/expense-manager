@@ -3,8 +3,7 @@ import { FlashList } from "@shopify/flash-list";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
-import React, { useState } from "react";
-import * as Notifications from "expo-notifications";
+import React, { useState, useCallback } from "react";
 
 const Item = ({ item }) => { 
   const allColors = useDynamicColors();
@@ -37,19 +36,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
   const data = filteredData?.map((obj) => parseFloat(obj.amount));
   const totalAmount = data?.reduce((acc, curr) => acc + curr, 0);
 
-  const renderItem = ({ item }) => <Item item={item} />;
-
-  
-  // #region going to scr thru notifications
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
-  // #endregion
-
+  const renderItem = useCallback(({ item }) => {<Item item={item} />},[]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

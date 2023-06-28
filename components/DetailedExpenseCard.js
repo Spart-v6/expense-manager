@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, Dimensions, FlatList } from "react-native";
 import { Card } from "react-native-paper";
 import { FlashList } from "@shopify/flash-list";
@@ -23,7 +23,7 @@ const DetailedExpenseCard = ({exp}) => {
   }, []);
 
   
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     const formattedDate = moment(item?.date, "YYYY/MM/DD").format("Do MMMM");
     return (
       <View style={{marginBottom: 20}}>
@@ -90,7 +90,7 @@ const DetailedExpenseCard = ({exp}) => {
       </View>
 
     );
-  };
+  }, []);
 
   return (
     <FlashList

@@ -108,7 +108,7 @@ const AllSections = ({
     }
   });
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     const subArray = item;
     const { sectionName, totalAmountSpent, whoPaid } =
       subArray[subArray.length - 1];
@@ -185,7 +185,7 @@ const AllSections = ({
         </Card>
       </TouchableOpacity>
     );
-  };
+  }, []);
   
   return (
     <View style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
