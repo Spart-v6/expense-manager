@@ -89,7 +89,7 @@ const DetailedExpenseCard = ({exp}) => {
         </Card>
       </View>
     );
-  }, [currency]);
+  }, [currency, allColors]);
 
   return (
     <FlashList

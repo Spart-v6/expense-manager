@@ -144,7 +144,7 @@ const SplitMoneyScreen = ({ navigation }) => {
         </Card>
       </TouchableOpacity>
     );
-  },[]);
+  },[allColors]);
   
 
   return (

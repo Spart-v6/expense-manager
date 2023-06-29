@@ -189,7 +189,7 @@ const MyDatePicker = ({
         </View>
       </TouchableOpacity>
     );
-  }, [selectedYear]);
+  }, [selectedYear, allColors]);
 
   const handleLeftArrowPress = () => {
     const previousMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').subtract(1, 'month');

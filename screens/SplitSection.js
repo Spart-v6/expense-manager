@@ -185,7 +185,7 @@ const AllSections = ({
         </Card>
       </TouchableOpacity>
     );
-  }, [currency]);
+  }, [currency, allColors]);
   
   return (
     <View style={{flex: 1, marginBottom: 80, marginTop: 0 }}>

@@ -9,14 +9,14 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "native",
-      "backgroundColor": "#121212"
+      "backgroundColor": "#0B0B0B"
     },
     "plugins": [
       [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#ffffff"
+          "color": "#0B0B0B"
         }
       ]
     ],
@@ -31,7 +31,7 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#121212"
+        "backgroundColor": "#0B0B0B"
       },
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [

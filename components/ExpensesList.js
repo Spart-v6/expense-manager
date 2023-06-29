@@ -72,7 +72,7 @@ const ExpensesList = ({ filter }) => {
         navigation.navigate("PlusMoreHome", { updateItem: item })
       }
     />
-  ), []);
+  ), [allColors]);
 
   const getItemLayout = (data, index) => {
     const itemHeight = 10;

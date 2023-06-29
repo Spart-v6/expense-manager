@@ -180,7 +180,7 @@ const CardComponent = () => {
         </View>
       </Card.Content>
     </Card>
-  ), [currency]);
+  ), [currency, allColors]);
 
   return (
     <View style={{ flex :1 }}>
