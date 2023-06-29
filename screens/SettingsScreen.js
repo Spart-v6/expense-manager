@@ -69,9 +69,7 @@ const SettingsScreen = ({ navigation }) => {
       setPlaceholderUsername(updatedUsername);
       await AsyncStorage.setItem("username", updatedUsername);
       setOpenChangeName(false);
-    } catch (error) {
-      console.log("Error saving data to AsyncStorage:", error);
-    }
+    } catch (error) {}
   }
 
   
@@ -80,9 +78,7 @@ const SettingsScreen = ({ navigation }) => {
     setIsSwitchOn(newSwitchValue);
     try {
       await AsyncStorage.setItem('isSwitchOn', JSON.stringify(newSwitchValue));
-    } catch (error) {
-      console.log('Error saving switch state to AsyncStorage:', error);
-    }
+    } catch (error) {}
     if (newSwitchValue) {
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -108,9 +104,7 @@ const SettingsScreen = ({ navigation }) => {
       try {
         const switchState = await AsyncStorage.getItem('isSwitchOn');
         setIsSwitchOn(JSON.parse(switchState));
-      } catch (error) {
-        console.log('Error retrieving switch state from AsyncStorage:', error);
-      }
+      } catch (error) {}
     };
     retrieveSwitchState();
   }, []);
@@ -126,7 +120,6 @@ const SettingsScreen = ({ navigation }) => {
         }
         if (finalStatus !== 'granted') {
           setShowError(true);
-          console.log('Enable push notifications to use the app!');
           await AsyncStorage.setItem('expopushtoken', "");
           await AsyncStorage.setItem('isSwitchOn', JSON.stringify(false));
           setIsSwitchOn(false);
@@ -134,9 +127,7 @@ const SettingsScreen = ({ navigation }) => {
         }
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         await AsyncStorage.setItem('expopushtoken', token);
-      } else {
-        console.log('Must use physical device for Push Notifications');
-      }
+      } else {}
 
       if (Platform.OS === 'android') {
         Notifications.setNotificationChannelAsync('default', {
@@ -172,9 +163,7 @@ const SettingsScreen = ({ navigation }) => {
       try {
         const switchState = await AsyncStorage.getItem('isLockEnabled');
         setIsLockEnabled(JSON.parse(switchState));
-      } catch (error) {
-        console.log('Error retrieving switch state from AsyncStorage:', error);
-      }
+      } catch (error) {}
     }
     retrieveLockState();
   }, []);
@@ -222,9 +211,7 @@ const SettingsScreen = ({ navigation }) => {
         setOpenLockAppDialog(true);
         setBiometricWarning("No fingerprint scanner found");
       }
-      } catch (error) {
-        console.log('Error: ', error);
-      }
+      } catch (error) {}
   }
   // #endregion
 

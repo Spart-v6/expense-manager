@@ -286,9 +286,7 @@ const SplitSection = ({ navigation, route }) => {
       const res = await AsyncStorage.getItem("ALL_SECTIONS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeSections(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // #endregion =========== End
 

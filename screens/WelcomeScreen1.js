@@ -30,9 +30,7 @@ const WelcomeScreen1 = ({ navigation }) => {
 
       await AsyncStorage.setItem("username", username);
       navigation.navigate("WelcomeScreen");
-    } catch (error) {
-      console.log("Error saving data to AsyncStorage:", error);
-    }
+    } catch (error) {}
   };
 
   return (

@@ -59,9 +59,7 @@ const CardComponent = () => {
       const res = await AsyncStorage.getItem("ALL_CARDS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeCard(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // =========== End
 

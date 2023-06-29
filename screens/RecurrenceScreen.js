@@ -115,9 +115,7 @@ const RecurrenceScreen = ({ navigation }) => {
       const res = await AsyncStorage.getItem("ALL_RECURRENCES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeRecurrences(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
 
   const recurrencesData = useSelector(

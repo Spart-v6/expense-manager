@@ -52,9 +52,7 @@ const SplitMoneyScreen = ({ navigation }) => {
       const res = await AsyncStorage.getItem("ALL_GROUPS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeGroups(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // #endregion =========== End
 
@@ -70,9 +68,7 @@ const SplitMoneyScreen = ({ navigation }) => {
       const res = await AsyncStorage.getItem("ALL_SECTIONS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeSections(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // #endregion =========== End
 

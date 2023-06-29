@@ -46,9 +46,7 @@ const ExpensesList = ({ filter }) => {
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeData(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
@@ -207,9 +205,7 @@ const ExpensesList = ({ filter }) => {
       const res = await AsyncStorage.getItem("ALL_RECURRENCES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeRecurrences(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
 
   const recurrencesData = useSelector(

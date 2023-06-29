@@ -66,9 +66,7 @@ const App = () => {
       try {
         const switchState = await AsyncStorage.getItem('isLockEnabled');
         setIsBiometricAuthOn(JSON.parse(switchState));
-      } catch (error) {
-        console.log('Error retrieving switch state from AsyncStorage:', error);
-      }
+      } catch (error) {}
     }
   
     const handleBiometricAuth = async () => {

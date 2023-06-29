@@ -254,9 +254,8 @@ const AppStack = () => {
         );
         const flag = hasSeenWelcomeScreen === "true";
         setInitialRoute(flag ? "HomeApp" : "WelcomeNavigator");
-      } catch (error) {
-        console.log("Error retrieving data from AsyncStorage:", error);
-      } finally {
+      } catch (error) {} 
+      finally {
         setIsLoading(false);
       }
     };
