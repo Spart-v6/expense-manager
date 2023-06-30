@@ -2,13 +2,13 @@
   "expo": {
     "name": "Thrifty",
     "slug": "thrifty-expense-manager",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "native",
+      "resizeMode": "cover",
       "backgroundColor": "#0B0B0B"
     },
     "plugins": [
@@ -27,8 +27,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ankur24.thrifty",
-      "versionCode": 2,
+      "package": "com.ankur24.expensemanager",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B0B0B"

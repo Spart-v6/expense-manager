@@ -1,6 +1,6 @@
 {
   "name": "expense-manager",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -24,6 +24,9 @@
     "expo-local-authentication": "~13.3.0",
     "expo-navigation-bar": "~2.1.1",
     "expo-notifications": "~0.18.1",
+    "expo-splash-screen": "~0.18.2",
+    "expo-status-bar": "~1.4.4",
+    "expo-system-ui": "~2.2.1",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
