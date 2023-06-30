@@ -17,7 +17,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addData, deleteData, updateData, storeCard } from "../redux/actions";
+import { addData, deleteData, updateData, storeCard, addRecentTransactions, updateRecentTransactions, deleteRecentTransactions } from "../redux/actions";
 import moment from "moment";
 import Icon1 from "react-native-vector-icons/Octicons";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -440,10 +440,12 @@ const PlusMoreHome = ({ navigation, route }) => {
     }
     if (isUpdatePressed) {
       dispatch(updateData(valuesToChange.id, updateExpense));
+      dispatch(updateRecentTransactions(valuesToChange.id, updateExpense));
     } else {
       dispatch(addData(expense));
+      dispatch(addRecentTransactions(expense));
     }
-    navigation.navigate("Home");
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -459,7 +461,8 @@ const PlusMoreHome = ({ navigation, route }) => {
   const deleteExpense = () => {
     setIsDeleteBtnPressed(false);
     dispatch(deleteData(valuesToChange.id));
-    navigation.navigate("Home");
+    dispatch(deleteRecentTransactions(valuesToChange.id));
+    navigation.goBack();
   };
 
   // #endregion

@@ -4,6 +4,7 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
+  TouchableOpacity
 } from "react-native";
 import { FAB, Button } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
@@ -13,10 +14,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { storeCard } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
+import { IconComponent } from "../components/IconPickerModal";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
-import * as Notifications from "expo-notifications";
 import useDynamicColors from "../commons/useDynamicColors";
+import RecentTransaction from "../components/RecentTransaction";
 
 const makeStyles = allColors => StyleSheet.create({
   btn: {
@@ -56,57 +58,6 @@ const AppHeaderMemoized = React.memo(AppHeader);
 
 const HomeScreen = ({ navigation, route }) => {
   const allColors = useDynamicColors();
-  const [selectedButton, setSelectedButton] = useState("Daily");
-
-  const handleListButtonPress = useCallback((nameOfDate) => {
-    setSelectedButton(nameOfDate);
-  }, []);
-
-  const datesNames = [
-    { name: "Daily" },
-    { name: "Weekly" },
-    { name: "Monthly" },
-    { name: "Yearly" },
-    { name: "All" },
-  ];
-  
-  let listToShow;
-  if (selectedButton === "Daily") {
-    listToShow = <ExpensesList filter="Daily" />;
-  } else if (selectedButton === "Weekly") {
-    listToShow = <ExpensesList filter="Weekly" />;
-  } else if (selectedButton === "Monthly") {
-    listToShow = <ExpensesList filter="Monthly" />;
-  } else if (selectedButton === "Yearly") {
-    listToShow = <ExpensesList filter="Yearly" />;
-  } else {
-    listToShow = <ExpensesList filter="All" />;
-  }
-
-  // #region =========== Fetching card details here
-  const dispatch = useDispatch();
-  useFocusEffect(
-    useCallback(() => {
-      fetchAllCardsData();
-    }, [])
-  );
-
-  const fetchAllCardsData = async () => {
-    try {
-      const res = await AsyncStorage.getItem("ALL_CARDS");
-      let newData = JSON.parse(res);
-      if (newData !== null) dispatch(storeCard(newData));
-    } catch (e) {}
-  };
-  // #endregion =========== End
-
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -121,26 +72,32 @@ const HomeScreen = ({ navigation, route }) => {
       <ScrollView>
         <AnimatedEntryScreen>
           <HomeHeader />
-          <View>
-            <ScrollView
-              style={{
-                marginLeft: 15,
-                marginRight: 15
-              }}
-              contentContainerStyle={{flexDirection: "row", gap: 10, justifyContent:"flex-start"}}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            >
-              {datesNames.map((date, index) => (
-                <ButtonMemoized
-                  key={index}
-                  onPress={() => handleListButtonPress(date.name)}
-                  isSelected={selectedButton === date.name}
-                  name={date.name}
+          <View style={{margin: 16, gap: 10}}>
+            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+              <MyText style={{padding: 15, paddingLeft: 0}} variant="titleMedium">
+                Recent transactions
+              </MyText>
+              <TouchableOpacity
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: 10
+                }}
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate("AllExpensesScreen")}
+              >
+                <MyText variant="titleMedium">View all</MyText>
+                <IconComponent
+                  name={"arrow-right"}
+                  category={"Octicons"}
+                  color={allColors.addBtnColors}
+                  size={20}
                 />
-              ))}
-            </ScrollView>
-            {listToShow}
+              </TouchableOpacity>
+            </View>
+            <RecentTransaction/>
           </View>
         </AnimatedEntryScreen>
       </ScrollView>

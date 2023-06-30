@@ -5,6 +5,7 @@ import recurrenceReducer from "./recurrenceReducer";
 import groupsReducer from "./groupsReducer";
 import sectionReducer from "./sectionReducer";
 import recurrTypeReducer from "./recurrTypeReducer";
+import recentTransactionsReducer from "./recentTransReducer";
 
 const rootReducer = combineReducers({
   expenseReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   recurrenceReducer,
   groupsReducer,
   sectionReducer,
-  recurrTypeReducer
+  recurrTypeReducer,
+  recentTransactionsReducer
 });
 
 export default rootReducer;

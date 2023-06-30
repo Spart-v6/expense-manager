@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "../screens/HomeScreen";
+import AllExpensesScreen from "../screens/AllExpensesScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
@@ -166,6 +167,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="PlusMoreHome"
       component={PlusMoreHome}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="AllExpensesScreen"
+      component={AllExpensesScreen}
       options={navOptions}
     />
     <Stack.Screen

@@ -8,7 +8,7 @@ import MyText from "../components/MyText";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
 import { addData, updateRecurrences } from "../redux/actions";
-import { storeData, storeRecurrences, deleteRecurrences } from "../redux/actions";
+import { storeData, storeRecurrences } from "../redux/actions";
 
 const Separator = () => {
   const allColors = useDynamicColors();
