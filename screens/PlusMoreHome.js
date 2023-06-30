@@ -9,7 +9,6 @@ import AppHeader from "../components/AppHeader";
 import {
   TextInput,
   Button,
-  Text,
   Dialog,
   Portal,
   TouchableRipple 
@@ -23,6 +22,7 @@ import moment from "moment";
 import Icon1 from "react-native-vector-icons/Octicons";
 import useDynamicColors from "../commons/useDynamicColors";
 import SnackbarComponent from "../commons/snackbar";
+import MyText from "../components/MyText";
 import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
 import MyDatePicker from "../components/DatePicker";
@@ -70,7 +70,7 @@ const makeStyles = allColors => StyleSheet.create({
     backgroundColor: allColors.backgroundColorDatesSelected,
     text: {
       color: allColors.textColorPrimary,
-      fontWeight: 700,
+      fontFamily: "Rubik_500Medium"
     },
   },
   centeredView: {
@@ -197,9 +197,7 @@ const PlusMoreHome = ({ navigation, route }) => {
       const res = await AsyncStorage.getItem("ALL_CARDS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeCard(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // =========== End
 
@@ -209,10 +207,10 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [dateValue, setDateValue] = useState(() => {
     if (route.params) {
       return moment(route.params.updateItem.date, "YYYY/MM/DD").format(
-        "Do MMMM YYYY"
+        "DD/MM/YYYY"
       );
     }
-    return moment().format("Do MMMM YYYY");
+    return moment().format("DD/MM/YYYY");
   });
   const [open, setOpen] = useState(false);
 
@@ -235,9 +233,9 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [selectedYear, setSelectedYear] = useState(() => {
     if (route.params) {
       const [year, month, day] = route.params.updateItem.date.split("/");
-      return year;
+      return +year;
     }
-    return moment().format("YYYY")
+    return moment().year()
   })
   const [selectedDate, setSelectedDate] = useState(() => {
     if (route.params) {
@@ -270,9 +268,9 @@ const PlusMoreHome = ({ navigation, route }) => {
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
         {/* TODO: Limit the amount digits to 10 only */}
-        <Text style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
+        <MyText style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
           {name}
-        </Text>
+        </MyText>
       </Button>
     );
   };
@@ -328,6 +326,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           autoComplete="off"
           textContentType="none"
           value={name}
+          contentStyle={{fontFamily: "Rubik_400Regular"}}
           placeholder={resolvedPlaceholder}
           onChangeText={handleTextCheck}
           keyboardType={keyboardType}
@@ -368,16 +367,25 @@ const PlusMoreHome = ({ navigation, route }) => {
         onPress={() => setOpen(true)}
         rippleColor={allColors.rippleColor} 
       >
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>
           <IconComponent
             name={"calendar"}
             category={"MaterialCommunityIcons"}
-            size={30}
+            size={25}
+            color={allColors.addBtnColors}
           />
-          <Text style={{ color: allColors.textColorSecondary, fontWeight: 700 }}>
-            {name}
-          </Text>
-      </View>
+           <TextInput
+            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
+            contentStyle={{fontFamily: "Rubik_400Regular"}}
+            placeholderTextColor={allColors.textColorSecondary}
+            disabled
+            underlineColor={'transparent'}
+            activeUnderlineColor={'transparent'}
+            placeholder={name}
+            underlineColorAndroid={'red'}
+            underlineStyle={{backgroundColor: 'transparent'}}
+          />
+        </View>
       </TouchableRipple>
     );
   };
@@ -462,7 +470,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     const month = moment().month(selectedMonth).format('MM');
     const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
     setTempDate(formattedDate);
-    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("Do MMMM YYYY"));
+    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
   }
 
   return (
@@ -498,7 +506,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         </View>
 
         <View style={{ ...styles.commonStyles, height: 150 }}>
-          <Text style={{color: allColors.universalColor}}>Payment network</Text>
+          <MyText style={{color: allColors.universalColor}} variant="smal">Payment network</MyText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               style={styles.commonTouchableStyle}
@@ -512,12 +520,12 @@ const PlusMoreHome = ({ navigation, route }) => {
                   size={30}
                   color={allColors.addBtnColors}
                 />
-                <Text
+                <MyText
                   variant="bodyLarge"
                   style={{ color: allColors.textColorFive }}
                 >
                   Add new
-                </Text>
+                </MyText>
               </View>
             </TouchableOpacity>
             {cardsData?.length !== 0 &&
@@ -553,15 +561,15 @@ const PlusMoreHome = ({ navigation, route }) => {
               borderTopLeftRadius: 15
             }}
           >
-            <Text
+            <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontWeight: 700,
+                fontFamily: "Rubik_500Medium",
                 fontSize: 18,
               }}
             >
               {btnName}
-            </Text>
+            </MyText>
           </Button>
         </View>
       </ScrollView>
@@ -578,6 +586,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         setSelectedMonth={setSelectedMonth}
         setSelectedYear={setSelectedYear}
         disableTheDates={true}
+        screen={"Home"}
       />
 
       <Portal>
@@ -601,7 +610,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             backgroundColor: allColors.backgroundColorLessPrimary,
           }}
         >
-          <Dialog.Title style={{color: allColors.universalColor}}>Choose a category</Dialog.Title>
+          <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Rubik_400Regular"}}>Choose a category</Dialog.Title>
           <FrequentCategories
             handleSelectedCategory={handleSelectedCategory}
           />

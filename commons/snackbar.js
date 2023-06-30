@@ -1,6 +1,7 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Snackbar, Text } from "react-native-paper";
+import { Snackbar } from "react-native-paper";
+import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 
 const SnackbarComponent = ({errorMsg}) => {
@@ -19,7 +20,7 @@ const SnackbarComponent = ({errorMsg}) => {
         onDismiss={onDismissSnackBar}
         style={{backgroundColor: allColors.errorColor}}
       >
-        <Text variant="bodyMedium"> {errorMsg} </Text>
+        <MyText variant="bodyMedium"> {errorMsg} </MyText>
       </Snackbar>
     </View>
   );

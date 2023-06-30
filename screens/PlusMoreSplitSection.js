@@ -3,10 +3,12 @@ import { Text, TextInput, Button } from "react-native-paper";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
 import { getUsernameFromStorage } from "../helper/constants";
 import SnackbarComponent from "../commons/snackbar";
+import moment from "moment";
 import React from "react";
 
 const PlusMoreSplitSection = ({ navigation, route }) => {
@@ -63,12 +65,13 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
 
     return (
       <TextInput
-        label={<Text style={{color: allColors.universalColor}}>{label}</Text>}
+        label={<MyText style={{color: allColors.universalColor}}>{label}</MyText>}
         style={{ backgroundColor: "transparent" }}
         underlineColor={allColors.textColorPrimary}
         textColor={allColors.universalColor}
         selectionColor={allColors.textSelectionColor}
         activeUnderlineColor={allColors.textColorPrimary}
+        contentStyle={{fontFamily: "Rubik_400Regular"}}
         value={value}
         onChangeText={handleTextCheck}
         keyboardType={keyboardType}
@@ -89,7 +92,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           iconStyle={{ borderRadius: 50 }}
           style={{ paddingLeft: 5 }}
         />
-        <Text style={{color: allColors.universalColor}}>{text}</Text>
+        <MyText style={{color: allColors.universalColor}}>{text}</MyText>
       </View>
     )
   }
@@ -175,7 +178,15 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           isChecked: true
         };
       });
-    const finalRes = result.concat({ sectionName, totalAmountSpent, whoPaid, id: Math.random() * 10, groupIdentity });
+    const finalRes = result.concat({ 
+      sectionName,
+      totalAmountSpent,
+      whoPaid,
+      id: Math.random() * 10,
+      groupIdentity,
+      dateOfSection: moment().format("DD/MM/YYYY"),
+      timeOfSection: moment().format('HH:mm:ss')
+    });
     const isValidNumber = input => {
       const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
       return numberRegex.test(input);
@@ -253,7 +264,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         {commonTextSection("Section name", sectionName, setSectionName, "default")}
         {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
         {commonTextSection("You paid? Leave empty if paid", whoPaid, setWhoPaid, "default")}
-        <Text style={{color: allColors.universalColor}}>Select members for this section</Text>
+        <MyText style={{color: allColors.universalColor}}>Select members for this section</MyText>
         <View
           style={{
             flexDirection: "row",
@@ -269,8 +280,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           <View
             style={{ flexDirection: "row", justifyContent: "center", gap: 30 }}
           >
-            <Text style={[{color: allColors.universalColor},percentageLeft < 0 && {color: allColors.errorColor}]}>{percentageLeft.toFixed(2)}% left</Text>
-            <Text style={[{color: allColors.universalColor},totalAmountLeft < 0 && {color: allColors.errorColor}]}>{totalAmountLeft.toFixed(2)} left</Text>
+            <MyText style={[{color: allColors.universalColor},percentageLeft < 0 && {color: allColors.errorColor}]}>{percentageLeft.toFixed(2)}% left</MyText>
+            <MyText style={[{color: allColors.universalColor},totalAmountLeft < 0 && {color: allColors.errorColor}]}>{totalAmountLeft.toFixed(2)} left</MyText>
           </View>
         )}
 
@@ -288,11 +299,11 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>
-                  <Text style={{color: allColors.universalColor, maxWidth: 250}} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
+                  <MyText style={{color: allColors.universalColor, maxWidth: 250}} numberOfLines={1} ellipsizeMode="tail">{name}</MyText>
                   {divideByPercent && amountOfEachMember[name] && (
-                    <Text variant="labelSmall" style={{color: allColors.universalColor}}>
+                    <MyText variant="labelSmall" style={{color: allColors.universalColor}}>
                       {handleDividePercent(amountOfEachMember[name])}
-                    </Text>
+                    </MyText>
                   )}
                 </View>
                 <View
@@ -305,9 +316,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                 >
                   <TextInput
                     label={
-                      <Text style={{color: allColors.universalColor}}>
+                      <MyText style={{color: allColors.universalColor}}>
                         {divideByPercent ? "Percent" : "Amount"}
-                      </Text>
+                      </MyText>
                     }
                     style={{
                       backgroundColor: "transparent",
@@ -320,12 +331,13 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                     keyboardType="number-pad"
                     textColor={allColors.universalColor}
                     selectionColor={allColors.textSelectionColor}
+                    contentStyle={{fontFamily: "Rubik_400Regular"}}
                     underlineColor={allColors.textColorPrimary}
                     activeUnderlineColor={allColors.textColorPrimary}
                     scrollEnabled={true}
                     textAlignVertical="top"
                   />
-                  {divideByPercent && <Text style={{color: allColors.universalColor}}>%</Text>}
+                  {divideByPercent && <MyText style={{color: allColors.universalColor}}>%</MyText>}
                 </View>
               </View>
             </View>
@@ -346,15 +358,15 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
             borderTopLeftRadius: 15,
           }}
         >
-          <Text
+          <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontWeight: 700,
+              fontFamily: "Rubik_500Medium",
               fontSize: 18,
             }}
           >
             Add section
-          </Text>
+          </MyText>
         </Button>
       </View>
       {error && <SnackbarComponent errorMsg={errorMsg}/>}

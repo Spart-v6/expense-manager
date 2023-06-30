@@ -1,10 +1,10 @@
+import React, { useState, useEffect, useCallback } from "react";
 import { View, SafeAreaView, SectionList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Text } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useState, useEffect, useCallback } from "react";
 import moment from "moment";
 import useDynamicColors from "../commons/useDynamicColors";
+import MyText from "../components/MyText";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
 import { addData, updateRecurrences } from "../redux/actions";
@@ -46,9 +46,7 @@ const ExpensesList = ({ filter }) => {
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeData(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
@@ -66,7 +64,7 @@ const ExpensesList = ({ filter }) => {
     return aMoment.isBefore(bMoment) ? 1 : -1;
   });
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = useCallback(({ item, index }) => (
     <Expenses
       item={item}
       index={index}
@@ -74,7 +72,18 @@ const ExpensesList = ({ filter }) => {
         navigation.navigate("PlusMoreHome", { updateItem: item })
       }
     />
-  );
+  ), [allColors]);
+
+  const getItemLayout = (data, index) => {
+    const itemHeight = 10;
+    const offset = itemHeight * index;
+
+    return {
+      length: itemHeight,
+      offset,
+      index,
+    };
+  };
 
   const groupByCategory = (data, category) => {
     let groupedData = [];
@@ -180,7 +189,7 @@ const ExpensesList = ({ filter }) => {
   const DATA = [
     {
       title: moment().format("Do MMMM, YYYY"),
-      data: ["You havent added any expense for today"],
+      data: ["You haven't added any expense for today"],
     },
   ];
 
@@ -196,9 +205,7 @@ const ExpensesList = ({ filter }) => {
       const res = await AsyncStorage.getItem("ALL_RECURRENCES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeRecurrences(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
 
   const recurrencesData = useSelector(
@@ -283,16 +290,16 @@ const ExpensesList = ({ filter }) => {
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <View style={{ alignItems: "center" }}>
-                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>{item}</Text>
+                    <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{item}</MyText>
                   </View>
                 )}
                 renderSectionHeader={({ section: { title } }) => (
-                  <Text
+                  <MyText
                     variant="titleMedium"
                     style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                   >
                     {title}
-                  </Text>
+                  </MyText>
                 )}
                 ItemSeparatorComponent={Separator}
               />
@@ -302,13 +309,18 @@ const ExpensesList = ({ filter }) => {
               sections={sectionListData}
               keyExtractor={(item, index) => item.id + index}
               renderItem={renderItem}
+              initialNumToRender={10}
+              getItemLayout={getItemLayout}
+              maxToRenderPerBatch={5}
+              removeClippedSubviews={true}
+              windowSize={10}
               renderSectionHeader={({ section: { title } }) => (
-                <Text
+                <MyText
                   variant="titleMedium"
                   style={{ marginTop: 7, marginBottom: 7, color: allColors.universalColor }}
                 >
                   {title}
-                </Text>
+                </MyText>
               )}
               ItemSeparatorComponent={Separator}
             />

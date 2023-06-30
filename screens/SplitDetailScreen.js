@@ -1,9 +1,9 @@
-import { View, SafeAreaView, FlatList, ScrollView } from "react-native";
-import { Text } from "react-native-paper";
+import { View, SafeAreaView, ScrollView } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import AppHeader from "../components/AppHeader";
+import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
-import React, { useState } from "react";
-import * as Notifications from "expo-notifications";
+import React, { useState, useCallback } from "react";
 
 const Item = ({ item }) => { 
   const allColors = useDynamicColors();
@@ -15,8 +15,8 @@ const Item = ({ item }) => {
         padding: 10,
       }}
     >
-      <Text style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</Text>
-      <Text style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</Text>
+      <MyText style={{color: allColors.universalColor, maxWidth: 300}} ellipsizeMode="tail" numberOfLines={1}>{item.name}</MyText>
+      <MyText style={{color: allColors.universalColor, maxWidth: 100}} ellipsizeMode="tail" numberOfLines={1}>{item.amount}</MyText>
     </View>
   );
 }
@@ -38,18 +38,6 @@ const SplitDetailScreen = ({ navigation, route }) => {
 
   const renderItem = ({ item }) => <Item item={item} />;
 
-  
-  // #region going to scr thru notifications
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const nextScreen = response.notification.request.content.data.headToThisScreen;
-      navigation.navigate(nextScreen);
-    });
-    return () => subscription.remove();
-  }, []);
-  // #endregion
-
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
@@ -57,29 +45,26 @@ const SplitDetailScreen = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <ScrollView showsHorizontalScrollIndicator={false}>
-        <View style={{ margin: 20 }}>
-          <View style={{gap: 15}}>
-          <Text style={{ color: allColors.universalColor }}>
-            {
-              `Total amount ${totalAmount}/- is paid by${
-                currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
-                  ? " you"
-                  : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
-              }`
-            }
-          </Text>
-            <FlatList
-              scrollEnabled={false}
-              data={filteredData}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
-              ListHeaderComponent={() => <Text variant="titleMedium" style={{color: allColors.universalColor}}>Summary</Text>}
-              />
-          </View>
-        </View>
-      </ScrollView>
+      <View style={{ margin: 20, flex : 1, gap: 15 }}>
+        <MyText style={{ color: allColors.universalColor }}>
+          {
+            `Total amount ${totalAmount}/- is paid by${
+              currentSectionData[currentSectionData.length - 1].whoPaid.length === 0
+                ? " you"
+                : ` ${currentSectionData[currentSectionData.length - 1].whoPaid}`
+            }`
+          }
+        </MyText>
+          <FlashList
+            scrollEnabled={false}
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: allColors.backgroundColorTertiary, opacity: 0.5 }} />}
+            ListHeaderComponent={() => <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Summary</MyText>}
+            estimatedItemSize={200}
+            />
+      </View>
     </SafeAreaView>
   );
 };

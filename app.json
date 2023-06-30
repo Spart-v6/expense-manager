@@ -1,22 +1,22 @@
 {
   "expo": {
-    "name": "Expense Manager",
-    "slug": "expense-manager",
-    "version": "1.1.0",
+    "name": "Thrifty",
+    "slug": "thrifty-expense-manager",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "native",
-      "backgroundColor": "#121212"
+      "resizeMode": "cover",
+      "backgroundColor": "#0B0B0B"
     },
     "plugins": [
       [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#ffffff"
+          "color": "#0B0B0B"
         }
       ]
     ],
@@ -27,20 +27,23 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.ankur24.expensemanager",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#121212"
+        "backgroundColor": "#0B0B0B"
       },
-      "package": "com.ankur24.expensemanager",
       "softwareKeyboardLayoutMode": "pan",
-      "permissions": ["NOTIFICATIONS"]
+      "permissions": [
+        "NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "4b470866-ce33-479e-af87-4f3cfc809106"
+        "projectId": "56ae8d30-a5dd-4454-a366-9cf2fe5d6eac"
       }
     }
   }

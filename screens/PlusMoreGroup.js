@@ -7,7 +7,8 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import AppHeader from "../components/AppHeader";
-import { Text, TextInput, Button, Portal, Dialog } from "react-native-paper";
+import MyText from "../components/MyText";
+import { Text, TextInput, Button } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -121,6 +122,7 @@ const PlusMoreGroup = ({ navigation }) => {
             activeUnderlineColor="transparent"
             underlineColor="transparent"
             placeholderTextColor={allColors.placeholderTextColor}
+            contentStyle={{fontFamily: "Rubik_400Regular"}}
             autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
@@ -132,13 +134,14 @@ const PlusMoreGroup = ({ navigation }) => {
         <View style={styles.line} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={{color: allColors.universalColor}}>Add names</Text>
+          <MyText style={{color: allColors.universalColor}}>Add names</MyText>
           <View style={[styles.rowContainer]}>
             <TextInput
               style={styles.textInput}
               selectionColor={allColors.textSelectionColor}
               textColor={allColors.universalColor}
               placeholderTextColor={allColors.placeholderTextColor}
+              contentStyle={{fontFamily: "Rubik_400Regular"}}
               underlineColorAndroid="transparent"
               activeUnderlineColor="transparent"
               underlineColor="transparent"
@@ -157,6 +160,7 @@ const PlusMoreGroup = ({ navigation }) => {
                 underlineColor="transparent"
                 autoFocus={index > 0}
                 placeholderTextColor={allColors.placeholderTextColor}
+                contentStyle={{fontFamily: "Rubik_400Regular"}}
                 autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
@@ -205,15 +209,15 @@ const PlusMoreGroup = ({ navigation }) => {
             borderTopLeftRadius: 15,
           }}
         >
-          <Text
+          <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontWeight: "bold",
+              fontFamily: "Rubik_500Medium",
               fontSize: 18,
             }}
           >
             Add Group
-          </Text>
+          </MyText>
         </Button>
       </View>
       {error && <SnackbarComponent errorMsg={errorMsg} />}

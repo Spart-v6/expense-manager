@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, FlatList, StyleSheet, useWindowDimensions } from "react-native";
-import { Dialog, Portal, Text, Button } from "react-native-paper";
-import React, { useState } from "react";
+import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
+import MyText from "./MyText";
 import icons from "../commons/allIcons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -46,7 +46,7 @@ const IconPickerModal = ({ onSelectIcon, textColor }) => {
       >
         <View style={{ justifyContent:"center", alignItems:"center", gap: 10 }}>
           <IconComponent name={item.name} category={item.category} />
-          <Text variant="bodySmall" style={{color: textColor}}>{item.title}</Text>
+          <MyText variant="bodySmall" style={{color: textColor}}>{item.title}</MyText>
         </View>
       </TouchableOpacity>
     );

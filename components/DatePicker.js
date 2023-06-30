@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   TouchableOpacity,
@@ -11,7 +11,8 @@ import {
   TouchableWithoutFeedback,
   Vibration,
 } from "react-native";
-import { Dialog, Text, Portal, Button, Divider } from "react-native-paper";
+import { Dialog, Portal, Button, Divider } from "react-native-paper";
+import MyText from "./MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import moment from "moment";
 import Feather from "react-native-vector-icons/Feather";
@@ -26,7 +27,15 @@ const compareDates = (date1, month1, year1, date2, month2, year2) => {
   return momentDate2.isAfter(momentDate1);
 };
 
-const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, disableTheDates }) => {
+const compare30DaysBack = (date, month, year) => {
+  const currentDate = moment();
+  const date1String = `${year}-${month}-${date}`;
+  const targetDate = moment(date1String, 'YYYY-MMM-DD');
+  const thirtyDaysBack = currentDate.clone().subtract(30, "days");
+  return targetDate.isBefore(thirtyDaysBack);
+};
+
+const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, disableTheDates, disablePreviousDates, screen }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
   const todayDate = moment().date();
@@ -57,19 +66,30 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
     if (item === null) return <View style={styles.nullCell} />;
 
     const disableDates = compareDates(todayDate, todayMonth, todayYear, item, month, year);
+    const disable30DaysPrior = compare30DaysBack(item, month, year);
+    const datesToBeDisabledInRecc = !disableTheDates && disable30DaysPrior && disablePreviousDates;
+
+    const disableDateInScreen = () => {
+      if (screen === "Home") {
+        return disableDates;
+      }
+      else {
+        return datesToBeDisabledInRecc;
+      }
+    }
 
     return (
-      <TouchableWithoutFeedback onPress={handleDatePress} disabled={disableDates && disableTheDates}>
+      <TouchableWithoutFeedback onPress={handleDatePress} disabled={disableDateInScreen()}>
         <View style={[styles.cell,
           selectedDate === item && {backgroundColor: allColors.selectedDateColor},
-          disableDates && disableTheDates && {backgroundColor: 'transparent'}
+          disableDateInScreen() && {backgroundColor: 'transparent'}
         ]}>
-          <Text style={[styles.dateText, 
+          <MyText style={[styles.dateText, 
             selectedDate === item && {color: allColors.selectedDateTextColor},
-            disableDates && disableTheDates && {color: allColors.backgroundColorTertiary}
+            disableDateInScreen() && {color: allColors.backgroundColorTertiary}
           ]}>
             {item}
-          </Text>
+          </MyText>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -86,7 +106,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
         ListHeaderComponent={
           <View style={styles.weekdaysContainer}>
             {weekdays.map((day, index) => 
-              <Text key={index} style={[styles.weekdayText, {color: allColors.backgroundColorTertiary}]}>{day}</Text>
+              <MyText key={index} style={[styles.weekdayText, {color: allColors.backgroundColorTertiary}]}>{day}</MyText>
             )}
           </View>
         }
@@ -118,7 +138,9 @@ const MyDatePicker = ({
   setSelectedYear,
   selectedDate,
   setSelectedDate,
-  disableTheDates
+  disableTheDates,
+  disablePreviousDates,
+  screen
 }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
@@ -150,38 +172,35 @@ const MyDatePicker = ({
 
   const handleDateChange = newDate => setSelectedDate(newDate);
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     const isSelected = item.name === selectedYear;
 
     const handleYearPress = () => {
       handleShowMoreYear();
-      setSelectedYear(isSelected ? null : item.name);
+      setSelectedYear(isSelected ? null : +item.name);
     };
 
     return (
-      <TouchableOpacity onPress={handleYearPress}>
-        <View style={styles.itemContainer}>
-          {item.name === moment().year() &&
-            <View style={{backgroundColor: allColors.textColorPrimary, width: "90%", height: '120%', position: 'absolute', top: 18, left: 5, borderRadius: 50}}/>
-          }
-          <Text variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === moment().year() &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
+      <TouchableOpacity onPress={handleYearPress} activeOpacity={0.5}>
+        <View style={[styles.itemContainer, item.name === selectedYear && { backgroundColor: allColors.textColorPrimary, borderRadius: 50 }]}>
+          <MyText variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === selectedYear &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
             {item.name}
-          </Text>
+          </MyText>
         </View>
       </TouchableOpacity>
     );
-  }
+  }, [selectedYear, allColors]);
 
   const handleLeftArrowPress = () => {
     const previousMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').subtract(1, 'month');
     setSelectedMonth(previousMonth.format('MMMM'));
-    setSelectedYear(previousMonth.format('YYYY'));
+    setSelectedYear(+previousMonth.format('YYYY'));
   };
 
   const handleRightArrowPress = () => {
     const nextMonth = moment(`${selectedMonth} ${selectedYear}`, 'MMMM YYYY').add(1, 'month');
     setSelectedMonth(nextMonth.format('MMMM'));
-    setSelectedYear(nextMonth.format('YYYY'));
+    setSelectedYear(+nextMonth.format('YYYY'));
   };
 
   const formatTitle = (date, tempMonth, year) => {
@@ -198,6 +217,8 @@ const MyDatePicker = ({
   };
 
   const disableDates = compareDates(todayDate, todayMonth, todayYear, selectedDate, selectedMonth, selectedYear);
+  const disable30DaysPrior = compare30DaysBack(selectedDate, selectedMonth, selectedYear);
+  const datesToBeDisabledInRecc = !disableTheDates && disable30DaysPrior && disablePreviousDates
 
   useEffect(() => {
     let animation;
@@ -225,6 +246,11 @@ const MyDatePicker = ({
     setTitleDay(formattedDay);
     setTitleMonth(rest);
   }, [selectedDate, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (selectedMonth === todayMonth) setSelectedDate(todayDate);
+    else setSelectedDate(1);
+  }, [selectedMonth, selectedYear])
 
   // #region Animations for left and right arrow btns
   const [animation] = useState(new Animated.Value(0));
@@ -286,8 +312,8 @@ const MyDatePicker = ({
             }}
           >
             {/* First Section */}
-            <Text variant="displaySmall">{titleDay},</Text>{" "}
-            <Text variant="displaySmall">{titleMonth}</Text>
+            <MyText variant="displaySmall">{titleDay},</MyText>{" "}
+            <MyText variant="displaySmall">{titleMonth}</MyText>
           </Dialog.Title>
           <Dialog.Content style={{alignItems: 'center', maxHeight: 300, height: 270 }}>
             {/* Second Section */}
@@ -303,9 +329,9 @@ const MyDatePicker = ({
                   activeOpacity={1}
                 >
                   <View style={{flexDirection: 'row'}}>
-                    <Text variant="titleMedium" style={{color: allColors.universalColor}}>
+                    <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
                       {selectedMonth} {selectedYear}
-                    </Text>
+                    </MyText>
                     <Animated.View
                       style={{
                         transform: [
@@ -370,7 +396,7 @@ const MyDatePicker = ({
                       renderItem={renderItem}
                       keyExtractor={(item) => item.id.toString()}
                       scrollEnabled={false}
-                      numColumns={4}
+                      numColumns={3}
                     />
                   </ScrollView>
                 </Animated.View>
@@ -378,15 +404,16 @@ const MyDatePicker = ({
             ) : (
               <Calendar year={selectedYear} month={selectedMonth} onDateChange={handleDateChange}
               selectedDate={selectedDate} setSelectedDate={setSelectedDate} disableTheDates={disableTheDates}
+              disablePreviousDates={disablePreviousDates} screen={screen}
               />
             )}
           </Dialog.Content>
           <Dialog.Actions style={{marginTop: 10, height: 60}}>
             <Button onPress={closeModal}>
-              <Text style={{ color: allColors.textColorPrimary }}>Cancel</Text>
+              <MyText style={{ color: allColors.textColorPrimary }}>Cancel</MyText>
             </Button>
-            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={disableDates && disableTheDates}>
-              <Text style={{ color: allColors.textColorPrimary }}>OK</Text>
+            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={disableDates || datesToBeDisabledInRecc}>
+              <MyText style={[{ color: allColors.textColorPrimary }, disableDates || datesToBeDisabledInRecc && {color : allColors.textColorTertiary}]}>OK</MyText>
             </Button>
           </Dialog.Actions>
         </Dialog>
@@ -421,11 +448,10 @@ StyleSheet.create({
     alignItems: "flex-start",
   },
   itemContainer: {
-    width: Dimensions.get("window").width / 4,
     padding: 10,
-    paddingTop: 20,
-    paddingLeft: 20,
-    alignItems: "flex-start",
+    width: 100,
+    justifyContent: "center",
+    alignItems: "center",
   },
   calendarContainer: {
     flex: 1,

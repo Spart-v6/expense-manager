@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -18,12 +18,12 @@ import SplitDetailScreen from "../screens/SplitDetailScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
-import { Text } from "react-native-paper";
+import MyText from "../components/MyText";
 import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useDynamicColors from "../commons/useDynamicColors";
 import * as NavigationBar from "expo-navigation-bar";
-import { View, TouchableOpacity, ActivityIndicator, StatusBar } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator, StatusBar, Dimensions, Animated } from "react-native";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -60,7 +60,7 @@ const TabArr = [
   },
   {
     route: "RecurrenceScreen",
-    label: "Recurrence",
+    label: "Recur",
     icon: "repeat",
     focused: "repeat",
     category: "Feather",
@@ -72,6 +72,27 @@ const TabButton = (props) => {
   const allColors = useDynamicColors();
   const { item, onPress, accessibilityState } = props;
   const focused = accessibilityState.selected;
+  
+  const widthAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animation = Animated.timing(widthAnimation, {
+      toValue: focused ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    });
+
+    animation.start();
+
+    return () => {
+      if (animation) animation.stop();
+    };
+  }, [focused, widthAnimation]);
+
+  const interpolatedWidth = widthAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['65%', '70%'],
+  });
 
   return (
     <TouchableOpacity
@@ -79,26 +100,7 @@ const TabButton = (props) => {
       activeOpacity={1}
       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
     >
-      <View style={{ position: "relative", width: 100, height: 40 }}>
-        {focused && (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 50,
-              position: "absolute",
-              bottom: 0,
-              top: 0,
-              left: 10,
-              width: 80,
-              height: 28,
-              opacity: 0.7,
-              backgroundColor: allColors.tabBtnColor, // TODO: Add Icon background and text color
-              zIndex: 1,
-            }}
-          />
-        )}
+      <View style={{ position: "relative" }}>
         <View
           style={{
             flex: 1,
@@ -106,19 +108,19 @@ const TabButton = (props) => {
             alignItems: "center",
             borderRadius: 50,
             marginTop: 8,
-            width: 100,
+            width:   Dimensions.get("screen").width / 4.5,
             height: 30,
             zIndex: 2,
           }}
         >
-          <View style={{ marginBottom: 5 }}>
+          <Animated.View style={[{paddingBottom: 5, paddingTop: 5}, focused && { backgroundColor: allColors.tabBtnColor, width: interpolatedWidth, justifyContent: 'center', alignItems: 'center', borderRadius: 50 }]}>
             <IconComponent
               name={focused ? item.focused :item.icon}
               category={item.category}
               size={20}
             />
-          </View>
-          <Text style={[{ color: allColors.universalColor }, focused && {fontWeight: 900}]}>{item.label}</Text>
+          </Animated.View>
+          <MyText style={[{ color: allColors.universalColor }, focused && {fontFamily: "Rubik_500Medium"}]}>{item.label}</MyText>
         </View>
       </View>
     </TouchableOpacity>
@@ -252,9 +254,8 @@ const AppStack = () => {
         );
         const flag = hasSeenWelcomeScreen === "true";
         setInitialRoute(flag ? "HomeApp" : "WelcomeNavigator");
-      } catch (error) {
-        console.log("Error retrieving data from AsyncStorage:", error);
-      } finally {
+      } catch (error) {} 
+      finally {
         setIsLoading(false);
       }
     };

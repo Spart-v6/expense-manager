@@ -1,7 +1,8 @@
 import { View, SafeAreaView, StyleSheet, StatusBar } from "react-native";
-import { Text, Button, TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
+import MyText from "../components/MyText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen1 = ({ navigation }) => {
@@ -29,9 +30,7 @@ const WelcomeScreen1 = ({ navigation }) => {
 
       await AsyncStorage.setItem("username", username);
       navigation.navigate("WelcomeScreen");
-    } catch (error) {
-      console.log("Error saving data to AsyncStorage:", error);
-    }
+    } catch (error) {}
   };
 
   return (
@@ -39,19 +38,20 @@ const WelcomeScreen1 = ({ navigation }) => {
       <View style={{flex: 0.3, gap: 20}}>
         <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
         <View style={styles.content}>
-          <Text variant="displayMedium" style={{color: allColors.universalColor}}> Welcome </Text>
-          <Text variant="bodyMedium" style={{paddingLeft: 10, color: allColors.universalColor}}>
+          <MyText variant="displayMedium" style={{color: allColors.universalColor}}> Welcome </MyText>
+          <MyText variant="bodyMedium" style={{paddingLeft: 10, color: allColors.universalColor}}>
             Empower Your Finances: Track, Split, Recur, and Master Your Expenses!
-          </Text>
+          </MyText>
         </View>
         <View style={{gap: 10, margin: 20 }}>
           <TextInput
-            label={<Text style={{color: allColors.universalColor}}>{"Your name"}</Text>}
+            label={<MyText style={{color: allColors.universalColor}}>{"Your name"}</MyText>}
             style={{ backgroundColor: "transparent" }}
             value={username}
             selectionColor={allColors.textSelectionColor}
             textColor={allColors.universalColor}
             underlineColor={error ? 'red' : allColors.textColorPrimary}
+            contentStyle={{fontFamily: "Rubik_400Regular"}}
             activeUnderlineColor={error ? 'red' : allColors.textColorPrimary}
             onChangeText={(text) => setUsername(text)}
           />
@@ -71,15 +71,15 @@ const WelcomeScreen1 = ({ navigation }) => {
               alignSelf: "center"
             }}
           >
-            <Text
+            <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontWeight: 700,
+                fontFamily: "Rubik_500Medium",
                 fontSize: 18,
               }}
             >
               Next
-            </Text>
+            </MyText>
           </Button>
         </View>
       </View>

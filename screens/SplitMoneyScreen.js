@@ -2,15 +2,15 @@ import {
   View,
   SafeAreaView,
   StatusBar,
-  ScrollView,
   TouchableOpacity,
   Vibration,
   StyleSheet,
 } from "react-native";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
+import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
 import React, { useCallback, useState } from "react";
-import { FAB, Card, Dialog, Button, Portal, Text } from "react-native-paper";
+import { FAB, Card, Portal, Text } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -24,6 +24,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "react-native-vector-icons";
 import * as Notifications from "expo-notifications";
 import DeleteDialog from "../components/DeleteDialog";
+import { FlashList } from "@shopify/flash-list";
 
 const makeStyles = allColors =>
   StyleSheet.create({
@@ -51,9 +52,7 @@ const SplitMoneyScreen = ({ navigation }) => {
       const res = await AsyncStorage.getItem("ALL_GROUPS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeGroups(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // #endregion =========== End
 
@@ -69,9 +68,7 @@ const SplitMoneyScreen = ({ navigation }) => {
       const res = await AsyncStorage.getItem("ALL_SECTIONS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeSections(newData));
-    } catch (e) {
-      console.log("error: ", e);
-    }
+    } catch (e) {}
   };
   // #endregion =========== End
 
@@ -117,80 +114,70 @@ const SplitMoneyScreen = ({ navigation }) => {
     if (itemsToDelete.length > 0) dispatch(deleteGroupAndSections(itemsToDelete));
   };
 
+  const renderItem = useCallback(({ item }) => {
+    const { identity, nameOfGrp } = item.find(
+      (obj) => obj.hasOwnProperty('identity') && obj.hasOwnProperty('nameOfGrp')
+    );
+    const otherObjects = item.filter((obj) => !obj.nameOfGrp);
+    const values = otherObjects.map((obj) => obj.value);
+  
+    return (
+      <TouchableOpacity
+        onLongPress={() => handleLongDeleteGroup(identity)}
+        onPress={() =>
+          navigation.navigate('SplitSection', {
+            identity,
+            nameOfGrp,
+            values,
+          })
+        }
+        style={{ gap: 20 }}
+        activeOpacity={0.9}
+      >
+        <Card style={styles.card}>
+          <Card.Title title={nameOfGrp} titleStyle={{ color: allColors.universalColor, fontWeight: '900' }} />
+          <Card.Content>
+            <MyText variant="bodyMedium" style={{ color: allColors.universalColor }}>
+              {values.sort().join(', ')}
+            </MyText>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  },[allColors]);
+  
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeader title="Split Money" isParent={true} navigation={navigation} />
       <AnimatedEntryScreen>
-        <ScrollView style={{ flex: 1 }} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-          <View style={{ flex: 1 }}>
-            {groupsData?.length > 0 ? (
-              groupsData.map((innerArray, index) => {
-                const { identity, nameOfGrp } = innerArray.find(
-                  obj => obj.hasOwnProperty('identity') && obj.hasOwnProperty('nameOfGrp')
-                );
-                const otherObjects = innerArray.filter((obj) => !obj.nameOfGrp);
-                const values = otherObjects.map((obj) => obj.value);
-
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    onLongPress={() => handleLongDeleteGroup(identity)}
-                    onPress={() =>
-                      navigation.navigate("SplitSection", {
-                        identity,
-                        nameOfGrp,
-                        values,
-                      })
-                    }
-                    style={{ gap: 20 }}
-                    activeOpacity={0.9}
-                  >
-                    <Card style={styles.card}>
-                      <Card.Title title={nameOfGrp} titleStyle={{color:allColors.universalColor, fontWeight: 900}}/>
-                      <Card.Content>
-                        <Text variant="bodyMedium" style={{color: allColors.universalColor}}>{values.sort().join(", ")}</Text>
-                      </Card.Content>
-                    </Card>
-                  </TouchableOpacity>
-                );
-              })
-            ) : (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                  height: 700
-                }}
-              >
-                <FontAwesome
-                  name="ban"
-                  size={60}
-                  color={allColors.textColorPrimary}
-                />
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Text variant="titleMedium" style={{color: allColors.universalColor}}>
-                    You don't have groups yet.
-                  </Text>
-                  <Text variant="bodySmall" style={{color: allColors.universalColor}}>
-                    Click on "+" button to start adding groups
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </ScrollView>
-        <Portal>
-          <DeleteDialog
-            visible={isDeleteDialogVisible}
-            hideDialog={hideDialog}
-            deleteExpense={handleDelete}
-            allColors={allColors}
-            title={"group"}
-            content={"group"}
+        {groupsData?.length > 0 ? (
+          <FlashList
+            data={groupsData}
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            renderItem={renderItem}
+            estimatedItemSize={200}
           />
-        </Portal>
+        ): (
+          <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
+            <FontAwesome
+              name="ban"
+              size={60}
+              color={allColors.textColorPrimary}
+            />
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+                You don't have groups yet.
+              </MyText>
+              <MyText variant="bodySmall" style={{color: allColors.universalColor}}>
+                Click on "+" button to start adding groups
+              </MyText>
+            </View>
+          </View>
+        )}
       </AnimatedEntryScreen>
       <FAB
         animated
@@ -207,6 +194,16 @@ const SplitMoneyScreen = ({ navigation }) => {
         }}
         customSize={70}
       />
+      <Portal>
+        <DeleteDialog
+          visible={isDeleteDialogVisible}
+          hideDialog={hideDialog}
+          deleteExpense={handleDelete}
+          allColors={allColors}
+          title={"group"}
+          content={"group"}
+        />
+      </Portal>
     </SafeAreaView>
   );
 };

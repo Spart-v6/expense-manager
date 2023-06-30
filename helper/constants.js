@@ -5,7 +5,6 @@ const getUsernameFromStorage = async () => {
     const username = await AsyncStorage.getItem('username');
     return username || null;
   } catch (error) {
-    console.log('Error retrieving username:', error);
     return null;
   }
 };
@@ -16,7 +15,6 @@ const getCurrencyFromStorage = async () => {
     let newCurr = JSON.parse(currency);
     return newCurr || null;
   } catch (error) {
-    console.log('Error retrieving currency:', error);
     return null;
   }
 }
