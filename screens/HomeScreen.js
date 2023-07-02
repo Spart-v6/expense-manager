@@ -20,40 +20,6 @@ import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import RecentTransaction from "../components/RecentTransaction";
 
-const makeStyles = allColors => StyleSheet.create({
-  btn: {
-    borderRadius: 10,
-    paddingLeft: 5,
-    paddingRight: 5,
-  },
-  selected: {
-    backgroundColor: allColors.backgroundColorDatesSelected,
-    borderRadius: 20,
-    text: {
-      color: allColors.textColorPrimary,
-      fontFamily: "Rubik_500Medium"
-    },
-  },
-  notSelected: {
-    color: allColors.textColorSecondary,
-  }
-});
-
-const ButtonMemoized = React.memo(({ onPress, isSelected, name }) => {
-  const allColors = useDynamicColors();
-  const styles = makeStyles(allColors);
-  return (
-    <Button
-      onPress={onPress}
-      compact
-      buttonColor={allColors.backgroundColorDates}
-      style={[styles.btn, isSelected && styles.selected]}
-    >
-      <MyText style={[styles.notSelected, isSelected && styles.selected.text]}>{name}</MyText>
-    </Button>
-  )
-});
-
 const AppHeaderMemoized = React.memo(AppHeader);
 
 const HomeScreen = ({ navigation, route }) => {
@@ -74,7 +40,7 @@ const HomeScreen = ({ navigation, route }) => {
           <HomeHeader />
           <View style={{margin: 16, gap: 10}}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-              <MyText style={{padding: 15, paddingLeft: 0}} variant="titleMedium">
+              <MyText style={{padding: 15, paddingLeft: 0, color: allColors.universalColor}} variant="titleMedium">
                 Recent transactions
               </MyText>
               <TouchableOpacity
@@ -88,7 +54,7 @@ const HomeScreen = ({ navigation, route }) => {
                 activeOpacity={0.8}
                 onPress={() => navigation.navigate("AllExpensesScreen")}
               >
-                <MyText variant="titleMedium">View all</MyText>
+                <MyText variant="titleMedium" style={{ color: allColors.universalColor}}>View all</MyText>
                 <IconComponent
                   name={"arrow-right"}
                   category={"Octicons"}

@@ -24,9 +24,7 @@ const RecentTransaction = ({}) => {
       const res = await AsyncStorage.getItem("RECENT_TRANSACTIONS");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeRecentTransactions(newData));
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   };
 
   const recentData = useSelector(state => state.recentTransactionsReducer.recentTransactions);
@@ -96,14 +94,13 @@ const RecentTransaction = ({}) => {
         const updatedRecurrenceStartDate = moment(recurrenceStartDate, "DD MM YY")
           .add(numOccurrences * daysToAdd, "days")
           .format("DD MM YY");
-        dispatch(updateRecentTransactions(obj.id, updatedRecurrenceStartDate));
+        dispatch(updateRecurrences(obj.id, updatedRecurrenceStartDate));
       } else {
         if (futureDate === currentDate) {
           expense.push(obj);
         }
       }
     });
-
     const updatedExpenses = expense.map(ex => {
       const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected, recurrenceType } = ex;
     
@@ -121,6 +118,7 @@ const RecentTransaction = ({}) => {
       };
     });
     if (updatedExpenses.length > 0) {
+      dispatch(addData(updatedExpenses));
       dispatch(addRecentTransactions(updatedExpenses));
     }
   }, [recurrencesData, dispatch]);
@@ -134,11 +132,11 @@ const RecentTransaction = ({}) => {
   return (
     <View>
       <FlatList
-      scrollEnabled={false}
-      data={recentData}
-      keyExtractor={(item, index) => item.id + index}
-      renderItem={renderItem}
-    />
+        scrollEnabled={false}
+        data={recentData}
+        keyExtractor={(item, index) => item.id + index}
+        renderItem={renderItem}
+      />
     </View>
   )
 }

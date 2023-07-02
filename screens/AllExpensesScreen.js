@@ -5,20 +5,22 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
+  Dimensions
 } from "react-native";
 import { Button } from "react-native-paper";
 import { ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
-import { storeCard } from "../redux/actions";
+import { useSelector, useDispatch } from "react-redux";
+import { storeCard, storeData } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import { IconComponent } from "../components/IconPickerModal";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
 import * as Notifications from "expo-notifications";
 import useDynamicColors from "../commons/useDynamicColors";
+import BigSectionList from "../components/BigSectionList";
 
 const makeStyles = (allColors) =>
   StyleSheet.create({
@@ -88,21 +90,18 @@ const AllExpensesScreen = ({ navigation }) => {
     { name: "Daily" },
     { name: "Weekly" },
     { name: "Monthly" },
-    { name: "Yearly" },
-    { name: "All" },
+    { name: "Yearly" }
   ];
 
   let listToShow;
   if (selectedButton === "Daily") {
-    listToShow = <ExpensesList filter="Daily" />;
+    listToShow = <BigSectionList filter="Daily" />;
   } else if (selectedButton === "Weekly") {
-    listToShow = <ExpensesList filter="Weekly" />;
+    listToShow = <BigSectionList filter="Weekly" />;
   } else if (selectedButton === "Monthly") {
-    listToShow = <ExpensesList filter="Monthly" />;
-  } else if (selectedButton === "Yearly") {
-    listToShow = <ExpensesList filter="Yearly" />;
+    listToShow = <BigSectionList filter="Monthly" />;
   } else {
-    listToShow = <ExpensesList filter="All" />;
+    listToShow = <BigSectionList filter="Yearly" />;
   }
 
   return (
@@ -113,7 +112,7 @@ const AllExpensesScreen = ({ navigation }) => {
         barStyle={allColors.barStyle}
       />
       <AppHeaderMemoized title="All Expenses" navigation={navigation} />
-      <View>
+      <View style={{marginBottom: 10}}>
         <ScrollView
           style={{
             marginLeft: 15,
@@ -136,10 +135,19 @@ const AllExpensesScreen = ({ navigation }) => {
             />
           ))}
         </ScrollView>
+      </View>
+      <View style={{flex: 1, position: "relative"}}>
         {listToShow}
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: "relative",
+  },
+});
 
 export default AllExpensesScreen;

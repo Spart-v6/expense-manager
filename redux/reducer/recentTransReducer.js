@@ -8,13 +8,21 @@ const initialState = {
 const recentTransactionsReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_RECENT_TRANSACTIONS:
-      const updatedRecentTransactions = [...(Array.isArray(action.payload) ? action.payload : [action.payload]), ...state.recentTransactions.slice(0,9)];
-
+      let updatedRecentTransactions;
+    
+      if (Array.isArray(action.payload)) {
+        updatedRecentTransactions = [...action.payload.slice(0, 10), ...state.recentTransactions.slice(0, 9)];
+      } else {
+        updatedRecentTransactions = [action.payload, ...state.recentTransactions.slice(0, 9)];
+      }
+    
       storeRecentTransactions(updatedRecentTransactions);
+    
       return {
         ...state,
-        recentTransactions: updatedRecentTransactions,
+        recentTransactions: updatedRecentTransactions.slice(0, 10),
       };
+    
 
     case types.UPDATE_RECENT_TRANSACTIONS:
       const { sameId, updatedObj } = action.payload;
@@ -53,9 +61,7 @@ const storeRecentTransactions = async (transactions) => {
   try {
     const jsonValue = JSON.stringify(transactions);
     await AsyncStorage.setItem("RECENT_TRANSACTIONS", jsonValue);
-  } catch (error) {
-    console.log("Error storing recent transactions:", error);
-  }
+  } catch (error) {}
 };
 
 export default recentTransactionsReducer;

@@ -5,11 +5,14 @@ import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteCard, deleteData } from "../redux/actions";
+import { deleteCard, deleteData, deleteRecentTransactions, deleteRecurrences, storeRecurrences } from "../redux/actions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
 import DeleteDialog from "../components/DeleteDialog";
 import { Dimensions } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const makeStyles = () => 
   StyleSheet.create({
@@ -32,11 +35,36 @@ const CardDetailsScreen = ({ navigation, route }) => {
   const filteredArray = expensesData.filter(
     (expense) => expense?.accCardSelected === card?.id
   );
+
+  // #region Fetching recurrence data: delete a recurrence when deleting a card if it has a card associated with it.
+  useFocusEffect(
+    useCallback(() => {
+      fetchRecurrencesData();
+    }, [])
+  );
+
+  const fetchRecurrencesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_RECURRENCES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeRecurrences(newData));
+    } catch (e) {}
+  };
+
+  const recurrencesData = useSelector(
+    (state) => state.recurrenceReducer.allRecurrences
+  );
+  // #endregion
   
   const deleteCardForever = () => {
     setIsDeleteBtnPressed(false);
+    for (const obj of filteredArray) { dispatch(deleteData(obj.id)); dispatch(deleteRecentTransactions(obj.id)); }
+    for (const obj of recurrencesData) { 
+      if (obj.accCardSelected === card.id) {
+        dispatch(deleteRecurrences(obj.id));
+      }
+    }
     dispatch(deleteCard(card.id));
-    for (const obj of filteredArray) dispatch(deleteData(obj.id));
     navigation.navigate("Accounts");
   };
 
@@ -71,7 +99,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
           allColors={allColors}
           title={"card"}
           content={"card"}
-          subtitle={"and expenses linked with this card will be deleted"}
+          subtitle={", along with its expenses and associated recurrences."}
         />
       </Portal>
     </SafeAreaView>
