@@ -88,7 +88,11 @@ export default function BigSectionList({ filter }) {
     );
   };
 
-  const renderEmpty = () => <List.Item title="No items" />;
+  const renderEmpty = () => (
+    <View style={{height: Dimensions.get("screen").height / 1.3, justifyContent: 'center', alignItems: 'center'}}>
+      <MyText variant="titleMedium" style={{color: allColors.universalColor}}>All expenses will be shown here</MyText>
+    </View>
+  )
 
   const renderSectionHeader = (section) => {
     let sectionTitle = "";
@@ -125,39 +129,40 @@ export default function BigSectionList({ filter }) {
         <>
           <View
             style={{
-              height: "100%",
               justifyContent: "center",
               alignItems: "flex-start",
             }}
           >
-            <MyText variant="headlineMedium">{sectionTitle}</MyText>
+            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{sectionTitle}</MyText>
           </View>
         </>
       </View>
-      // <View>
-      //     <Appbar style={{ backgroundColor: allColors.backgroundColorPrimary}}>
-      //       <Appbar.Content style={{ alignItems: 'flex-start' }} title={sectionTitle} />
-      //     </Appbar>
-      // </View>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.container}>
-        <BigList
-          style={styles.container}
-          sections={sectionListData}
-          // Item
-          itemHeight={70}
-          renderItem={renderItem}
-          renderEmpty={renderEmpty}
-          controlItemRender
-          // Section
-          sectionHeaderHeight={90}
-          renderSectionHeader={renderSectionHeader}
-          bounces={true}
-        />
+        {
+          sectionListData.length > 0 ? (
+            <BigList
+            style={styles.container}
+            sections={sectionListData}
+            // Item
+            itemHeight={70}
+            renderItem={renderItem}
+            renderEmpty={renderEmpty}
+            controlItemRender
+            // Section
+            sectionHeaderHeight={40}
+            renderSectionHeader={renderSectionHeader}
+            bounces={true}
+            />
+          ):
+          (
+            renderEmpty()
+          )
+        }
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -170,7 +175,7 @@ const makeStyles = allColors =>
       },
       separator: {
         height: 1,
-        backgroundColor: "#80808078",
+        backgroundColor: "#80808029",
         width: Dimensions.get("screen").width * 0.8,
         alignSelf: "center",
       },
@@ -178,7 +183,8 @@ const makeStyles = allColors =>
         width: "95%",
         justifyContent: "center",
         alignSelf: "center",
-        alignItems: "center",
+        alignItems: "flex-start",
+        paddingLeft: 5,
         backgroundColor: allColors.backgroundColorPrimary,
     },
 });

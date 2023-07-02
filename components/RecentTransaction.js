@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, SafeAreaView, FlatList } from "react-native";
+import React, { useEffect, useCallback } from "react";
+import { View, FlatList, Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -7,10 +7,25 @@ import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
 import Expenses from "./Expenses";
 import { useSelector, useDispatch } from "react-redux";
-import { addData, addRecentTransactions, storeRecurrences, updateRecentTransactions, updateRecurrences } from "../redux/actions";
+import { addData, addRecentTransactions, storeRecurrences, updateRecurrences } from "../redux/actions";
 import { storeRecentTransactions } from "../redux/actions";
+import { SimpleLineIcons } from "@expo/vector-icons";
 
-const RecentTransaction = ({}) => {
+const Separator = () => {
+  return (
+    <View
+      style={{
+        height: 1,
+        backgroundColor: "#80808029",
+        width: Dimensions.get("screen").width * 0.8,
+        alignSelf: "center",
+      }}
+    />
+  );
+}
+
+const RecentTransaction = () => {
+  const allColors = useDynamicColors();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   useFocusEffect(
@@ -32,10 +47,10 @@ const RecentTransaction = ({}) => {
   const renderItem = ({ item, index }) => {
     return (
       <Expenses
-      item={item}
-      index={index}
-      onPress={(item) =>
-        navigation.navigate("PlusMoreHome", { updateItem: item })
+        item={item}
+        index={index}
+        onPress={(item) =>
+          navigation.navigate("PlusMoreHome", { updateItem: item })
       }
     />
     );
@@ -128,24 +143,34 @@ const RecentTransaction = ({}) => {
   }, [addRecurringExpenses]);
   // #endregion
 
-
   return (
     <View>
-      <FlatList
-        scrollEnabled={false}
-        data={recentData}
-        keyExtractor={(item, index) => item.id + index}
-        renderItem={renderItem}
-      />
+      {
+        recentData.length > 0 ? (
+          <FlatList
+            scrollEnabled={false}
+            data={recentData}
+            keyExtractor={(item, index) => item.id + index}
+            renderItem={renderItem}
+            ItemSeparatorComponent={Separator}
+            style={{marginBottom: 80}}
+          />
+        )
+        :
+        (
+          <View style={{justifyContent: "center", alignItems: 'center', height: Dimensions.get("screen").height * 0.3, marginBottom: 100}}>
+            <SimpleLineIcons name="plus" size={50} color={allColors.textColorPrimary} />
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Your recent transactions will be shown here.</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.universalColor}}>
+                Click on "+" button to start adding expenses
+              </MyText>
+            </View>
+          </View> 
+        )
+      }
     </View>
   )
 }
 
-const styles = {
-  itemContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    padding: 10,
-  },
-};
 export default RecentTransaction
