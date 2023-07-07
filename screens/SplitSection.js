@@ -3,7 +3,7 @@ import { FAB, Card, Avatar, Portal } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -93,42 +93,52 @@ const AllSections = ({
     const timeA = moment(lastObjA.timeOfSection, 'HH:mm:ss');
     const timeB = moment(lastObjB.timeOfSection, 'HH:mm:ss');
   
-    if (dateA.isAfter(dateB)) {
-      return -1;
-    } else if (dateA.isSame(dateB)) {
-      if (timeA.isAfter(timeB)) {
-        return -1;
-      } else if (timeA.isSame(timeB)) {
-        return 0;
-      } else {
-        return 1;
-      }
-    } else {
-      return 1;
-    }
+    if (dateA.isAfter(dateB)) return -1;
+    else if (dateA.isSame(dateB)) {
+      if (timeA.isAfter(timeB)) return -1;
+      else if (timeA.isSame(timeB)) return 0;
+      else return 1;
+    } 
+    else return 1;
   });
 
   const renderItem = useCallback(({ item }) => {
     const subArray = item;
-    const { sectionName, totalAmountSpent, whoPaid } =
+    const { sectionName, totalAmountSpent, whoPaid, groupIdentity } =
       subArray[subArray.length - 1];
     const { id } = subArray.find((obj) => obj.hasOwnProperty('id'));
     const tempAmount = subArray.find((obj) => obj.name === username);
     const amount = tempAmount ? tempAmount.amount : 0;
-  
+    const removeMarkAsDoneAmount = subArray.reduce((acc, obj) => {
+      if (obj.markAsDone) {
+        const amount = parseFloat(obj.amount);
+        acc -= amount;
+      }
+      return acc;
+    }, parseFloat(subArray[subArray.length - 1].totalAmountSpent));
+
+    // for pay back, checking whether "you" have marked as done
+    const payBackAmountFinal = subArray.reduce((acc, obj) => {
+      if (obj.name === username && obj.markAsDone) {
+        const amount = parseFloat(obj.amount);
+        acc -= amount;
+      }
+      return acc;
+    }, amount);
+
     let payBack = 0,
       receive = 0;
     if (
       whoPaid.length === 0 ||
       whoPaid.toLowerCase() === username?.toLowerCase()
     )
-      receive = (totalAmountSpent - +amount).toFixed(2);
-    else payBack = parseInt(amount).toFixed(2);
+      receive = (removeMarkAsDoneAmount - +amount).toFixed(2);
+    else payBack = parseInt(payBackAmountFinal).toFixed(2);
   
     return (
       <TouchableOpacity
         onLongPress={() => handleDeleteSection(id)}
-        onPress={() => navigation.navigate('SplitDetailScreen', { subArray })}
+        onPress={() => navigation.navigate('SplitDetailScreen', { subArray, id, groupIdentity, whoPaid })}
         style={{ marginTop: 20 }}
         activeOpacity={0.9}
       >
@@ -323,26 +333,41 @@ const SplitSection = ({ navigation, route }) => {
   useEffect(() => {
     let totalReceived = 0;
     let totalPaid = 0;
-    let totalSpent = 0;
 
     specificGroupSection.forEach((innerArray) => {
-      const { totalAmountSpent, whoPaid } = innerArray[innerArray.length - 1];
-      totalSpent += +totalAmountSpent;
+      const { whoPaid } = innerArray[innerArray.length - 1];
 
       if (
         whoPaid.length === 0 ||
         whoPaid.toLowerCase() === username?.toLowerCase()
       ) {
         const obj = innerArray.find((obj) => obj.name === username);
-        if (obj) totalReceived += parseFloat(obj.amount);
+  
+        const markedAsDoneAmount = innerArray.reduce((acc, obj) => {
+          if (obj.markAsDone) {
+            const amount = parseFloat(obj.amount);
+            acc += amount;
+          }
+          return acc;
+        }, 0);
+
+        if (obj) totalReceived += parseFloat(obj.amount) - markedAsDoneAmount;
       } else {
+        const payBackAmountFinal = innerArray.reduce((acc, obj) => {
+          if (obj.name === username && obj.markAsDone) {
+            const amount = parseFloat(obj.amount);
+            acc += amount;
+          }
+          return acc;
+        }, 0);
+
         innerArray.forEach((obj) => {
-          if (obj.name === username) totalPaid += parseFloat(obj.amount);
+          if (obj.name === username) totalPaid += parseFloat(obj.amount) - payBackAmountFinal;
         });
       }
     });
 
-    setTotalReceive((totalSpent - totalReceived).toFixed(2));
+    setTotalReceive((totalReceived).toFixed(2));
     setTotalPay(totalPaid.toFixed(2));
   }, [specificGroupSection]);
 

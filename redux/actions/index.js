@@ -96,6 +96,11 @@ export const addSections = payload => ({
   payload: payload
 });
 
+export const updateSections = payload => ({
+  type: types.UPDATE_SECTIONS,
+  payload
+});
+
 export const deleteSections = payload => ({
   type: types.DELETE_SECTIONS,
   payload

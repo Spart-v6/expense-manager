@@ -72,6 +72,27 @@ const PlusMoreGroup = ({ navigation }) => {
 
   const handleAddGroups = () => {
     const checkError = () => {
+      const tempArr = [...textInputs];
+      tempArr.push({ id: idCounter, showCross: true, value: username });
+      const values = tempArr.map(obj => obj.value.trim().toLowerCase());
+
+      // Check for duplicate values
+      const duplicateValues = [];
+      const uniqueValues = new Set();
+      
+      values.forEach(value => {
+        if (uniqueValues.has(value)) {
+          duplicateValues.push(value);
+        } else {
+          uniqueValues.add(value);
+        }
+      });
+      
+      if (duplicateValues.length > 0) {
+        setErrorMsg("Please use unique names");
+        return true;
+      }
+
       if (groupName.length < 1) {
         setErrorMsg("Please write a group name");
         return true;

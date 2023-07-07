@@ -24,6 +24,26 @@ const sectionReducer = (state = initialState, action) => {
         allSections: updatedAllSections,
       };
 
+    case types.UPDATE_SECTIONS: {
+      const { item, currentSecId, groupIdentity: gID, mark } = action.payload;
+      const updatedSections = state.allSections.map((innerArray) => {
+        const { groupIdentity, id } = innerArray[innerArray.length - 1];
+        if (groupIdentity === gID && id === currentSecId) {
+          const updatedData = innerArray.map((x) => {
+            if (x.name === item.name) {
+              x.markAsDone = mark;
+            }
+            return x;
+          })
+          return updatedData;
+        }
+        return innerArray;
+      });
+
+      AsyncStorage.setItem("ALL_SECTIONS", JSON.stringify(updatedSections));
+      return { ...state, allSections: updatedSections };
+    }
+
     case types.DELETE_SECTIONS:
       const id = action.payload;
       const updatedArray = state.allSections?.filter(

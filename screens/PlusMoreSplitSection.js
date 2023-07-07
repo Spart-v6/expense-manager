@@ -175,7 +175,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         return {
           name,
           amount,
-          isChecked: true
+          isChecked: true,
+          markAsDone: false
         };
       });
     const finalRes = result.concat({ 
