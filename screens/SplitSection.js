@@ -1,9 +1,16 @@
-import { View, SafeAreaView, TouchableOpacity, Vibration } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  Vibration,
+  Dimensions,
+} from "react-native";
 import { FAB, Card, Avatar, Portal } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { IconComponent } from "../components/IconPickerModal";
+import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,7 +18,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { storeSections, deleteSections } from "../redux/actions";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
-import { getUsernameFromStorage, getCurrencyFromStorage } from "../helper/constants";
+import {
+  getUsernameFromStorage,
+  getCurrencyFromStorage,
+} from "../helper/constants";
 import moment from "moment";
 import formatNumberWithCurrency from "../helper/formatter";
 import DeleteDialog from "../components/DeleteDialog";
@@ -24,11 +34,11 @@ const AllSections = ({
   handleDeleteSection,
   navigation,
   username,
-  currency
+  currency,
 }) => {
   const allColors = useDynamicColors();
   const renderPayAndReceive = (payBack, receive) => {
-    if (parseInt(payBack) === 0 && receive === 0) return <></>;
+    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null; // Return null if both values are 0
     return payBack !== 0 ? (
       <View style={{ flexDirection: "row", gap: 5 }}>
         <MyText
@@ -77,7 +87,7 @@ const AllSections = ({
   };
 
   const renderArrow = (payBack, receive) => {
-    if (parseInt(payBack) === 0 && receive === 0) return <></>;
+    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null; // Return null if both values are 0
     return payBack !== 0 ? (
       <AntDesign name="arrowright" size={25} color="red" />
     ) : (
@@ -88,117 +98,143 @@ const AllSections = ({
   specificGroupSection.sort((a, b) => {
     const lastObjA = a[a.length - 1];
     const lastObjB = b[b.length - 1];
-    const dateA = moment(lastObjA.dateOfSection, 'DD/MM/YYYY');
-    const dateB = moment(lastObjB.dateOfSection, 'DD/MM/YYYY');
-    const timeA = moment(lastObjA.timeOfSection, 'HH:mm:ss');
-    const timeB = moment(lastObjB.timeOfSection, 'HH:mm:ss');
-  
+    const dateA = moment(lastObjA.dateOfSection, "DD/MM/YYYY");
+    const dateB = moment(lastObjB.dateOfSection, "DD/MM/YYYY");
+    const timeA = moment(lastObjA.timeOfSection, "HH:mm:ss");
+    const timeB = moment(lastObjB.timeOfSection, "HH:mm:ss");
+
     if (dateA.isAfter(dateB)) return -1;
     else if (dateA.isSame(dateB)) {
       if (timeA.isAfter(timeB)) return -1;
       else if (timeA.isSame(timeB)) return 0;
       else return 1;
-    } 
-    else return 1;
+    } else return 1;
   });
 
-  const renderItem = useCallback(({ item }) => {
-    const subArray = item;
-    const { sectionName, totalAmountSpent, whoPaid, groupIdentity } =
-      subArray[subArray.length - 1];
-    const { id } = subArray.find((obj) => obj.hasOwnProperty('id'));
-    const tempAmount = subArray.find((obj) => obj.name === username);
-    const amount = tempAmount ? tempAmount.amount : 0;
-    const removeMarkAsDoneAmount = subArray.reduce((acc, obj) => {
-      if (obj.markAsDone && obj.name !== username) {
-        const amount = parseFloat(obj.amount);
-        acc -= amount;
-      }
-      return acc;
-    }, parseFloat(subArray[subArray.length - 1].totalAmountSpent));
+  const renderItem = useCallback(
+    ({ item }) => {
+      const subArray = item;
+      const { sectionName, totalAmountSpent, whoPaid, groupIdentity } =
+        subArray[subArray.length - 1];
+      const { id } = subArray.find((obj) => obj.hasOwnProperty("id"));
+      const tempAmount = subArray.find((obj) => obj.name === username);
+      const amount = tempAmount ? tempAmount.amount : 0;
+      const removeMarkAsDoneAmount = subArray.reduce((acc, obj) => {
+        if (obj.markAsDone && obj.name !== username) {
+          const amount = parseFloat(obj.amount);
+          acc -= amount;
+        }
+        return acc;
+      }, parseFloat(subArray[subArray.length - 1].totalAmountSpent));
 
-    // for pay back, checking whether "you" have marked as done
-    const payBackAmountFinal = subArray.reduce((acc, obj) => {
-      if (obj.markAsDone && obj.name === username) {
-        const amount = parseFloat(obj.amount);
-        acc -= amount;
-      }
-      return acc;
-    }, amount);
+      // for pay back, checking whether "you" have marked as done
+      const payBackAmountFinal = subArray.reduce((acc, obj) => {
+        if (obj.markAsDone && obj.name === username) {
+          const amount = parseFloat(obj.amount);
+          acc -= amount;
+        }
+        return acc;
+      }, amount);
 
-    let payBack = 0,
-      receive = 0;
-    if (
-      whoPaid.length === 0 ||
-      whoPaid.toLowerCase() === username?.toLowerCase()
-    )
-      receive = (removeMarkAsDoneAmount - +amount).toFixed(2);
-    else payBack = parseInt(payBackAmountFinal).toFixed(2);
-  
-    return (
-      <TouchableOpacity
-        onLongPress={() => handleDeleteSection(id)}
-        onPress={() => navigation.navigate('SplitDetailScreen', { subArray, id, groupIdentity, whoPaid })}
-        style={{ marginTop: 20 }}
-        activeOpacity={0.9}
-      >
-        <Card
-          style={{
-            backgroundColor: allColors.backgroundColorLessPrimary,
-            shadowColor: 'transparent',
-          }}
+      let payBack = 0,
+        receive = 0;
+      if (
+        whoPaid.length === 0 ||
+        whoPaid.toLowerCase() === username?.toLowerCase()
+      )
+        receive = (removeMarkAsDoneAmount - +amount).toFixed(2);
+      else payBack = parseInt(payBackAmountFinal).toFixed(2);
+
+      return (
+        <TouchableOpacity
+          onLongPress={() => handleDeleteSection(id)}
+          onPress={() =>
+            navigation.navigate("SplitDetailScreen", {
+              subArray,
+              id,
+              groupIdentity,
+              whoPaid,
+            })
+          }
+          style={{ marginTop: 20 }}
+          activeOpacity={0.9}
         >
-          <Card.Title
-            title={sectionName}
-            titleStyle={{ marginTop: 10, color: allColors.universalColor }}
-            subtitle={`Amount paid: ${formatNumberWithCurrency(totalAmountSpent, currency)}`}
-            subtitleStyle={{ color: allColors.universalColor }}
-          />
-          <Card.Content>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <MyText
-                variant="titleMedium"
-                style={{
-                  color: allColors.textColorPrimary,
-                  maxWidth: 180,
-                }}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {`${
-                  whoPaid === '' ||
-                  whoPaid.toLowerCase() === username?.toLowerCase()
-                    ? 'You'
-                    : whoPaid
-                } paid`}
-              </MyText>
-              <View style={{ alignSelf: 'center' }}>
-                {renderArrow(payBack, receive)}
-              </View>
+          <Card
+            style={{
+              backgroundColor: allColors.backgroundColorLessPrimary,
+              shadowColor: "transparent",
+            }}
+          >
+            <Card.Title
+              title={sectionName}
+              titleStyle={{ marginTop: 10, color: allColors.universalColor }}
+              subtitle={`Amount paid: ${formatNumberWithCurrency(
+                totalAmountSpent,
+                currency
+              )}`}
+              subtitleStyle={{ color: allColors.universalColor }}
+              right={() =>
+                parseInt(payBack) === 0 &&
+                parseInt(receive) === 0 && (
+                  <IconComponent
+                    name={"checkmark-done"}
+                    category={"Ionicons"}
+                    size={20}
+                    color={allColors.textColorPrimary}
+                  />
+                )
+              }
+              rightStyle={{ marginRight: 15 }}
+            />
+            <Card.Content>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  maxWidth: 180,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                {renderPayAndReceive(payBack, receive)}
+                <View style={{ width: Dimensions.get("screen").width * 0.3 }}>
+                  <MyText
+                    variant="titleMedium"
+                    style={{
+                      color: allColors.textColorPrimary,
+                      maxWidth: 180,
+                    }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {`${
+                      whoPaid === "" ||
+                      whoPaid.toLowerCase() === username?.toLowerCase()
+                        ? "You"
+                        : whoPaid
+                    } paid`}
+                  </MyText>
+                </View>
+                <View style={{ alignSelf: "center" }}>
+                  {renderArrow(payBack, receive)}
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    width: Dimensions.get("screen").width * 0.3,
+                  }}
+                >
+                  {renderPayAndReceive(payBack, receive)}
+                </View>
               </View>
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
-    );
-  }, [currency, allColors, specificGroupSection]);
-  
+            </Card.Content>
+          </Card>
+        </TouchableOpacity>
+      );
+    },
+    [currency, allColors, specificGroupSection]
+  );
+
   return (
-    <View style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
+    <View style={{ flex: 1, marginBottom: 80, marginTop: 0 }}>
       {specificGroupSection.length > 0 ? (
         <FlashList
           data={specificGroupSection}
@@ -223,14 +259,16 @@ const AllSections = ({
               size={60}
               color={allColors.textColorPrimary}
             />
-            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+            <MyText
+              variant="titleMedium"
+              style={{ color: allColors.universalColor }}
+            >
               Go ahead and create sections for this group.
             </MyText>
           </View>
         </>
       )}
     </View>
-
   );
 };
 
@@ -238,20 +276,46 @@ const AllMembers = ({ allMembers }) => {
   const allColors = useDynamicColors();
   return (
     <>
-      <View style={{marginLeft: 20, marginTop: 20}}>
-        <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{allMembers?.length} Members</MyText>
+      <View style={{ marginLeft: 20, marginTop: 20 }}>
+        <MyText
+          variant="titleMedium"
+          style={{ color: allColors.universalColor }}
+        >
+          {allMembers?.length} Members
+        </MyText>
       </View>
       <ScrollView style={{ backgroundColor: allColors.backgroundColorPrimary }}>
         <View style={{ margin: 20, gap: 15 }}>
           {allMembers.map((e, index) => {
-            const words = e.split(' ').map(word => word[0]).join('');
+            const words = e
+              .split(" ")
+              .map((word) => word[0])
+              .join("");
             return (
-              <View key={index} style={{flexDirection: 'row', gap: 20, alignItems: 'center'}}>
-                <Avatar.Text size={35} label={words} style={{backgroundColor: allColors.addBtnColors}} labelStyle={{color: allColors.selectedDateTextColor}}/>
-                <MyText style={{color: allColors.universalColor, fontSize: 18, maxWidth: 350}} numberOfLines={2} ellipsizeMode="tail">{e}</MyText>
+              <View
+                key={index}
+                style={{ flexDirection: "row", gap: 20, alignItems: "center" }}
+              >
+                <Avatar.Text
+                  size={35}
+                  label={words}
+                  style={{ backgroundColor: allColors.addBtnColors }}
+                  labelStyle={{ color: allColors.selectedDateTextColor }}
+                />
+                <MyText
+                  style={{
+                    color: allColors.universalColor,
+                    fontSize: 18,
+                    maxWidth: 350,
+                  }}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {e}
+                </MyText>
               </View>
-            )}
-          )}
+            );
+          })}
         </View>
       </ScrollView>
     </>
@@ -271,7 +335,7 @@ const SplitSection = ({ navigation, route }) => {
   }, []);
 
   const [currency, setCurrency] = React.useState({
-    curr: "$"
+    curr: "$",
   });
 
   React.useEffect(() => {
@@ -281,7 +345,6 @@ const SplitSection = ({ navigation, route }) => {
     };
     fetchCurrency();
   }, []);
-
 
   const dispatch = useDispatch();
   // #region getting sections of groups stuff
@@ -344,7 +407,7 @@ const SplitSection = ({ navigation, route }) => {
         whoPaid.toLowerCase() === username?.toLowerCase()
       ) {
         const obj = innerArray.find((obj) => obj.name === username);
-  
+
         const markedAsDoneAmount = innerArray.reduce((acc, obj) => {
           if (obj.markAsDone && obj.name !== username) {
             const amount = parseFloat(obj.amount);
@@ -364,12 +427,13 @@ const SplitSection = ({ navigation, route }) => {
         }, 0);
 
         innerArray.forEach((obj) => {
-          if (obj.name === username) totalPaid += parseFloat(obj.amount) - payBackAmountFinal;
+          if (obj.name === username)
+            totalPaid += parseFloat(obj.amount) - payBackAmountFinal;
         });
       }
     });
 
-    setTotalReceive((totalReceived).toFixed(2));
+    setTotalReceive(totalReceived.toFixed(2));
     setTotalPay(totalPaid.toFixed(2));
   }, [specificGroupSection]);
 
@@ -384,15 +448,17 @@ const SplitSection = ({ navigation, route }) => {
                 title={"Receive"}
                 titleStyle={{ color: allColors.universalColor }}
               />
-                <MyText style={{
+              <MyText
+                style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
                   color: allColors.universalColor,
-                }}>
-                  {formatNumberWithCurrency(totalReceive, currency.curr)}
-                </MyText>
+                }}
+              >
+                {formatNumberWithCurrency(totalReceive, currency.curr)}
+              </MyText>
             </Card>
           </View>
           <View style={{ flex: 0.5 }}>
@@ -401,14 +467,16 @@ const SplitSection = ({ navigation, route }) => {
                 title={"Pay"}
                 titleStyle={{ color: allColors.universalColor }}
               />
-              <MyText style={{
+              <MyText
+                style={{
                   textAlignVertical: "center",
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
                   color: allColors.universalColor,
-                }}>
-                  {formatNumberWithCurrency(totalPay, currency.curr)}
+                }}
+              >
+                {formatNumberWithCurrency(totalPay, currency.curr)}
               </MyText>
             </Card>
           </View>

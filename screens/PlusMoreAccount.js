@@ -170,7 +170,7 @@ const PlusMoreAccount = ({ navigation }) => {
   return (
     <>
       <SafeAreaView style={styles.safeView}>
-        <AppHeader title={btnName} navigation={navigation} isInfoPressed={val => setIsInfoPressed(val)}/>
+        <AppHeader title={btnName} navigation={navigation} isInfoPressed={val => setIsInfoPressed(val)} needInfo={true}/>
         <View style={{flex: 1}}>
           <View style={{ ...styles.commonStyles, marginTop: 0 }}>
             {textInput(cardHolderName, setCardHolderName, "Cardholder name")}

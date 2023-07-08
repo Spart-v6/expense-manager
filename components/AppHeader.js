@@ -20,6 +20,7 @@ const AppHeader = ({
   needSearch,
   isUpdateCardScreen = false,
   isInfoPressed,
+  needInfo = false
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
@@ -134,7 +135,7 @@ const AppHeader = ({
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
       {
-        title === "Add Card" && (
+        needInfo && (
           <Appbar.Action icon={({ color, size }) => (
               <Feather name="info" size={20} color={allColors.textColorPrimary}/>
           )} onPress={handleInfoPress}/>
