@@ -130,7 +130,7 @@ const App = () => {
       </SafeAreaView>
     )
   };
-
+// React.useEffect(() => {AsyncStorage.clear()} ,[])
   return (
     <Provider store={store}>
       <PaperProvider theme={theme}>

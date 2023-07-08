@@ -110,7 +110,7 @@ const AllSections = ({
     const tempAmount = subArray.find((obj) => obj.name === username);
     const amount = tempAmount ? tempAmount.amount : 0;
     const removeMarkAsDoneAmount = subArray.reduce((acc, obj) => {
-      if (obj.markAsDone) {
+      if (obj.markAsDone && obj.name !== username) {
         const amount = parseFloat(obj.amount);
         acc -= amount;
       }
@@ -119,7 +119,7 @@ const AllSections = ({
 
     // for pay back, checking whether "you" have marked as done
     const payBackAmountFinal = subArray.reduce((acc, obj) => {
-      if (obj.name === username && obj.markAsDone) {
+      if (obj.markAsDone && obj.name === username) {
         const amount = parseFloat(obj.amount);
         acc -= amount;
       }
@@ -195,7 +195,7 @@ const AllSections = ({
         </Card>
       </TouchableOpacity>
     );
-  }, [currency, allColors]);
+  }, [currency, allColors, specificGroupSection]);
   
   return (
     <View style={{flex: 1, marginBottom: 80, marginTop: 0 }}>
@@ -330,6 +330,8 @@ const SplitSection = ({ navigation, route }) => {
     dispatch(deleteSections(selectedSectionToDelete));
   };
 
+  // console.log(specificGroupSection)
+
   useEffect(() => {
     let totalReceived = 0;
     let totalPaid = 0;
@@ -344,14 +346,14 @@ const SplitSection = ({ navigation, route }) => {
         const obj = innerArray.find((obj) => obj.name === username);
   
         const markedAsDoneAmount = innerArray.reduce((acc, obj) => {
-          if (obj.markAsDone) {
+          if (obj.markAsDone && obj.name !== username) {
             const amount = parseFloat(obj.amount);
-            acc += amount;
+            acc -= amount;
           }
           return acc;
-        }, 0);
+        }, parseFloat(innerArray[innerArray.length - 1].totalAmountSpent));
 
-        if (obj) totalReceived += parseFloat(obj.amount) - markedAsDoneAmount;
+        if (obj) totalReceived += markedAsDoneAmount - parseFloat(obj.amount);
       } else {
         const payBackAmountFinal = innerArray.reduce((acc, obj) => {
           if (obj.name === username && obj.markAsDone) {
