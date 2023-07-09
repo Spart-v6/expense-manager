@@ -38,7 +38,7 @@ const AllSections = ({
 }) => {
   const allColors = useDynamicColors();
   const renderPayAndReceive = (payBack, receive) => {
-    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null; // Return null if both values are 0
+    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null;
     return payBack !== 0 ? (
       <View style={{ flexDirection: "row", gap: 5 }}>
         <MyText
@@ -87,7 +87,7 @@ const AllSections = ({
   };
 
   const renderArrow = (payBack, receive) => {
-    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null; // Return null if both values are 0
+    if (parseInt(payBack) === 0 && parseInt(receive) === 0) return null;
     return payBack !== 0 ? (
       <AntDesign name="arrowright" size={25} color="red" />
     ) : (
@@ -114,19 +114,18 @@ const AllSections = ({
   const renderItem = useCallback(
     ({ item }) => {
       const subArray = item;
-      const { sectionName, totalAmountSpent, whoPaid, groupIdentity } =
+      const { sectionName, totalAmountSpent, whoPaid, groupIdentity, dateOfSection } =
         subArray[subArray.length - 1];
       const { id } = subArray.find((obj) => obj.hasOwnProperty("id"));
       const tempAmount = subArray.find((obj) => obj.name === username);
       const amount = tempAmount ? tempAmount.amount : 0;
-      const removeMarkAsDoneAmount = subArray.reduce((acc, obj) => {
-        if (obj.markAsDone && obj.name !== username) {
-          const amount = parseFloat(obj.amount);
-          acc -= amount;
+      const finalReceive = subArray.slice(0, subArray.length - 1).reduce((acc, obj) => {
+        if (!obj.markAsDone && obj.name !== username) {
+          const amount = parseFloat(+obj.amount);
+          acc += amount;
         }
         return acc;
-      }, parseFloat(subArray[subArray.length - 1].totalAmountSpent));
-
+      }, 0);
       // for pay back, checking whether "you" have marked as done
       const payBackAmountFinal = subArray.reduce((acc, obj) => {
         if (obj.markAsDone && obj.name === username) {
@@ -142,7 +141,7 @@ const AllSections = ({
         whoPaid.length === 0 ||
         whoPaid.toLowerCase() === username?.toLowerCase()
       )
-        receive = (removeMarkAsDoneAmount - +amount).toFixed(2);
+        receive = (finalReceive).toFixed(2);
       else payBack = parseInt(payBackAmountFinal).toFixed(2);
 
       return (
@@ -406,17 +405,16 @@ const SplitSection = ({ navigation, route }) => {
         whoPaid.length === 0 ||
         whoPaid.toLowerCase() === username?.toLowerCase()
       ) {
-        const obj = innerArray.find((obj) => obj.name === username);
 
-        const markedAsDoneAmount = innerArray.reduce((acc, obj) => {
-          if (obj.markAsDone && obj.name !== username) {
+        const markedAsDoneAmount = innerArray.slice(0, innerArray.length - 1).reduce((acc, obj) => {
+          if (!obj.markAsDone && obj.name !== username) {
             const amount = parseFloat(obj.amount);
-            acc -= amount;
+            acc += amount;
           }
           return acc;
-        }, parseFloat(innerArray[innerArray.length - 1].totalAmountSpent));
+        }, 0);
 
-        if (obj) totalReceived += markedAsDoneAmount - parseFloat(obj.amount);
+        totalReceived += markedAsDoneAmount;
       } else {
         const payBackAmountFinal = innerArray.reduce((acc, obj) => {
           if (obj.name === username && obj.markAsDone) {
