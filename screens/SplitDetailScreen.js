@@ -9,6 +9,7 @@ import MyText from "../components/MyText";
 import useDynamicColors from "../commons/useDynamicColors";
 import React, { useState, useCallback } from "react";
 import { getUsernameFromStorage } from "../helper/constants";
+import moment from "moment";
 
 const Item = ({ item, onPress, whoPaid, username }) => {
   const allColors = useDynamicColors();
@@ -94,6 +95,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
   const [currentSecId] = useState(route.params.id);
   const [groupIdentity] = useState(route.params.groupIdentity);
   const [whoPaid] = useState(route.params.whoPaid);
+  const [dateOfSection] = useState(route.params.dateOfSection);
 
   const filteredData = currentSectionData?.filter(
     (obj) => obj.hasOwnProperty("amount") && obj.hasOwnProperty("name")
@@ -121,16 +123,21 @@ const SplitDetailScreen = ({ navigation, route }) => {
           needInfo={true}
         />
         <View style={{ margin: 20, flex: 1, gap: 20, marginTop: 10 }}>
-          <MyText style={{ color: allColors.universalColor }}>
-            {`Total amount ${totalAmount}/- is paid by${
-              currentSectionData[currentSectionData.length - 1].whoPaid
+          <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+            <MyText style={{ color: allColors.universalColor }}>
+              {`Total amount ${totalAmount}/- is paid by${
+                currentSectionData[currentSectionData.length - 1].whoPaid
                 .length === 0
-                ? " you"
-                : ` ${
+                  ? " you"
+                  : ` ${
                     currentSectionData[currentSectionData.length - 1].whoPaid
                   }`
-            }`}
-          </MyText>
+                }`}
+            </MyText>
+            <MyText style={{ color: allColors.universalColor }}>
+              {moment(dateOfSection, 'DD/MM/YYYY').format('Do MMMM YYYY')}
+            </MyText>
+          </View>
           <FlashList
             scrollEnabled={false}
             data={currentSectionData}

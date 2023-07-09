@@ -153,6 +153,7 @@ const AllSections = ({
               id,
               groupIdentity,
               whoPaid,
+              dateOfSection
             })
           }
           style={{ marginTop: 20 }}
@@ -392,7 +393,6 @@ const SplitSection = ({ navigation, route }) => {
     dispatch(deleteSections(selectedSectionToDelete));
   };
 
-  // console.log(specificGroupSection)
 
   useEffect(() => {
     let totalReceived = 0;

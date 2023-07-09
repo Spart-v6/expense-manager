@@ -113,7 +113,10 @@ const AppHeader = ({
         </>
       ) : (
         <Appbar.Content
-          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary}}>{ isUpdate ? "Update Expense" : title}</MyText>}
+          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary, maxWidth: Dimensions.get("screen").width / 1.3}} 
+          ellipsizeMode='tail' numberOfLines={2}>
+            { isUpdate ? "Update Expense" : title}
+          </MyText>}
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
