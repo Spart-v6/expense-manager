@@ -82,7 +82,7 @@ const SettingsScreen = ({ navigation }) => {
     if (newSwitchValue) {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Expense Reminder 🪙",
+          title: "Expense Reminder",
           body: 'Don\'t forget to add your expenses for today!',
           data: { headToThisScreen: 'PlusMoreHome' },
         },
