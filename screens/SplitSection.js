@@ -444,7 +444,7 @@ const SplitSection = ({ navigation, route }) => {
             <Card style={{ backgroundColor: allColors.receiveGreenBg }}>
               <Card.Title
                 title={"Receive"}
-                titleStyle={{ color: allColors.universalColor }}
+                titleStyle={{ color: allColors.receiveGreenTextBg }}
               />
               <MyText
                 style={{
@@ -452,7 +452,7 @@ const SplitSection = ({ navigation, route }) => {
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
-                  color: allColors.universalColor,
+                  color: allColors.receiveGreenTextBg,
                 }}
               >
                 {formatNumberWithCurrency(totalReceive, currency.curr)}
@@ -463,7 +463,7 @@ const SplitSection = ({ navigation, route }) => {
             <Card style={{ backgroundColor: allColors.payRedBg }}>
               <Card.Title
                 title={"Pay"}
-                titleStyle={{ color: allColors.universalColor }}
+                titleStyle={{ color: allColors.payRedTextBg }}
               />
               <MyText
                 style={{
@@ -471,7 +471,7 @@ const SplitSection = ({ navigation, route }) => {
                   padding: 16,
                   paddingTop: 0,
                   marginTop: -15,
-                  color: allColors.universalColor,
+                  color: allColors.payRedTextBg,
                 }}
               >
                 {formatNumberWithCurrency(totalPay, currency.curr)}
