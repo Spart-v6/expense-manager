@@ -96,6 +96,11 @@ export const addSections = payload => ({
   payload: payload
 });
 
+export const updateSections = payload => ({
+  type: types.UPDATE_SECTIONS,
+  payload
+});
+
 export const deleteSections = payload => ({
   type: types.DELETE_SECTIONS,
   payload
@@ -121,3 +126,28 @@ export const storeRecurrType = payload => ({
   type: types.STORE_RECURR_TYPE,
   payload
 });
+
+// for recent transactions
+
+export const addRecentTransactions = payload => ({
+  type: types.ADD_RECENT_TRANSACTIONS,
+  payload
+});
+
+export const updateRecentTransactions = (sameId, updatedObj) => {
+  return {
+    type: types.UPDATE_RECENT_TRANSACTIONS,
+    payload: { sameId, updatedObj }
+  }
+};
+
+export const deleteRecentTransactions = payload => ({
+  type: types.DELETE_RECENT_TRANSACTIONS,
+  payload
+});
+
+export const storeRecentTransactions = payload => ({
+  type: types.STORE_RECENT_TRANSACTIONS,
+  payload
+});
+

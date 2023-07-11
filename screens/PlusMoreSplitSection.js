@@ -1,9 +1,11 @@
 import { View, SafeAreaView, ScrollView, StyleSheet } from "react-native";
-import { Text, TextInput, Button } from "react-native-paper";
+import { TextInput, Button, TouchableRipple } from "react-native-paper";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
+import MyDatePicker from "../components/DatePicker";
+import { IconComponent } from "../components/IconPickerModal";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
 import { getUsernameFromStorage } from "../helper/constants";
@@ -38,6 +40,23 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [totalAmountLeft, setTotalAmountLeft] = React.useState(0);
   const [selectedItem, setSelectedItem] = React.useState(null);
 
+  // for date
+  const [dateValue, setDateValue] = React.useState(moment().format("DD/MM/YYYY"));
+  const [open, setOpen] = React.useState(false);
+  const [tempDate, setTempDate] = React.useState(moment().format("YYYY/MM/DD"));
+  const [selectedMonth, setSelectedMonth] = React.useState(moment().format("MMMM"));
+  const [selectedYear, setSelectedYear] = React.useState(moment().year());
+  const [selectedDate, setSelectedDate] = React.useState(moment().date());
+
+  const fetchDates = obj => {
+    const { selectedDate, selectedMonth, selectedYear } = obj;
+    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
+    const month = moment().month(selectedMonth).format('MM');
+    const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
+    setTempDate(formattedDate);
+    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
+  }
+
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
     route.params.currGrpMems.sort()
   );
@@ -70,6 +89,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         underlineColor={allColors.textColorPrimary}
         textColor={allColors.universalColor}
         selectionColor={allColors.textSelectionColor}
+        placeholder={label === "Paid by" && "You paid? Leave it blank"}
         activeUnderlineColor={allColors.textColorPrimary}
         contentStyle={{fontFamily: "Rubik_400Regular"}}
         value={value}
@@ -78,6 +98,41 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         autoCorrect={false}
       />
     )
+  };
+
+  const dateTextInput = (name) => {
+    return (
+      <TouchableRipple
+        style={{
+          backgroundColor: 'transparent',
+          flex: 1,
+          paddingLeft: 0,
+          paddingTop: 15,
+        }}
+        onPress={() => setOpen(true)}
+        rippleColor={allColors.rippleColor} 
+      >
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>
+          <IconComponent
+            name={"calendar"}
+            category={"MaterialCommunityIcons"}
+            size={25}
+            color={allColors.addBtnColors}
+          />
+           <TextInput
+            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
+            contentStyle={{fontFamily: "Rubik_400Regular"}}
+            placeholderTextColor={allColors.textColorSecondary}
+            disabled
+            underlineColor={'transparent'}
+            activeUnderlineColor={'transparent'}
+            placeholder={name}
+            underlineColorAndroid={'red'}
+            underlineStyle={{backgroundColor: 'transparent'}}
+          />
+        </View>
+      </TouchableRipple>
+    );
   };
 
   const commonCheckBox = (vall, setter, text) => {
@@ -175,7 +230,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         return {
           name,
           amount,
-          isChecked: true
+          isChecked: true,
+          markAsDone: false
         };
       });
     const finalRes = result.concat({ 
@@ -184,7 +240,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       whoPaid,
       id: Math.random() * 10,
       groupIdentity,
-      dateOfSection: moment().format("DD/MM/YYYY"),
+      dateOfSection: dateValue,
       timeOfSection: moment().format('HH:mm:ss')
     });
     const isValidNumber = input => {
@@ -262,8 +318,19 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       />
       <View style={{ marginLeft: 20, marginRight: 20, marginBottom: 10, gap: 20, flex: 1 }}>
         {commonTextSection("Section name", sectionName, setSectionName, "default")}
-        {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
-        {commonTextSection("You paid? Leave empty if paid", whoPaid, setWhoPaid, "default")}
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1, marginRight: 10 }}>
+            {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
+          </View>
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            {commonTextSection("Paid by", whoPaid, setWhoPaid, "default")}
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", marginBottom: 10 }}>
+          {dateTextInput(dateValue)}
+        </View>
+
         <MyText style={{color: allColors.universalColor}}>Select members for this section</MyText>
         <View
           style={{
@@ -370,6 +437,21 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         </Button>
       </View>
       {error && <SnackbarComponent errorMsg={errorMsg}/>}
+              
+      <MyDatePicker 
+        open={open} 
+        setOpen={setOpen} 
+        fetchDates={fetchDates}
+        selectedDate={selectedDate}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        setSelectedDate={setSelectedDate}
+        setSelectedMonth={setSelectedMonth}
+        setSelectedYear={setSelectedYear}
+        disableTheDates={false}
+        screen={"PlusMoreSplitSection"}
+      />
+
     </SafeAreaView>
   );
 };

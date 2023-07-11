@@ -37,12 +37,12 @@ const Expenses = ({ item, index, onPress }) => {
     <TouchableRipple onPress={handlePress} rippleColor={allColors.rippleColor} centered>
       <>
         <View style={{height: 55, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
-          <View style={{flexDirection: "row", gap: 20, alignItems: 'center'}}>
-            <View style={{ borderRadius: 50, justifyContent: "center", alignItems:"center", marginLeft: 0}}>
+          <View style={{flexDirection: "row", gap: 15, alignItems: 'center'}}>
+            <View style={{ justifyContent: "center", alignItems:"center", marginLeft: 0}}>
               <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
                 {dateFormat}
               </MyText>
-              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+              <MyText variant="titleMedium" style={{color: allColors.universalColor, width: Dimensions.get("screen").width * 0.1, textAlign: "center"}}>
                 {dayOfWeekFormat}
               </MyText>
             </View>

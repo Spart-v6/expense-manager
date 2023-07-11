@@ -94,7 +94,7 @@ const DetailedExpenseCard = ({exp}) => {
   return (
     <FlashList
       data={exp}
-      estimatedItemSize={70}
+      estimatedItemSize={400}
       keyExtractor={(item, index) => item.id.toString()}
       renderItem={renderItem}
       contentContainerStyle={{padding: 20}}

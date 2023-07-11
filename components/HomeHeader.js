@@ -1,15 +1,18 @@
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Tooltip } from "react-native-paper";
-import React from "react";
+import React, { useCallback } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import MyText from "../components/MyText";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { storeData } from "../redux/actions";
 
 const makeStyles = allColors =>
   StyleSheet.create({
@@ -242,6 +245,7 @@ const ExpenseCard = ({ expenseArray, currency }) => {
 };
 
 const HomeHeader = () => {
+  const dispatch = useDispatch();
   //fetching currency
   const [currency, setCurrency] = React.useState({
     curr: "$"
@@ -254,6 +258,23 @@ const HomeHeader = () => {
     };
     fetchCurrency();
   }, []);
+
+  // #region fetching all expenses in home header
+  useFocusEffect(
+    useCallback(() => {
+      fetchExpensesData();
+    }, [])
+  );
+
+  const fetchExpensesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_EXPENSES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeData(newData));
+    } catch (e) {}
+  };
+
+  // #endregion
 
   const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
 

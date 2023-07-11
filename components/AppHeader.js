@@ -20,6 +20,7 @@ const AppHeader = ({
   needSearch,
   isUpdateCardScreen = false,
   isInfoPressed,
+  needInfo = false
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
@@ -112,7 +113,10 @@ const AppHeader = ({
         </>
       ) : (
         <Appbar.Content
-          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary}}>{ isUpdate ? "Update Expense" : title}</MyText>}
+          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary, maxWidth: Dimensions.get("screen").width / 1.3}} 
+          ellipsizeMode='tail' numberOfLines={2}>
+            { isUpdate ? "Update Expense" : title}
+          </MyText>}
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
@@ -134,7 +138,7 @@ const AppHeader = ({
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
       {
-        title === "Add Card" && (
+        needInfo && (
           <Appbar.Action icon={({ color, size }) => (
               <Feather name="info" size={20} color={allColors.textColorPrimary}/>
           )} onPress={handleInfoPress}/>

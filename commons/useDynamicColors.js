@@ -49,8 +49,10 @@ const useDynamicColors = () => {
       addBtnColors: PlatformColor("@android:color/system_accent1_300"),
       defaultHomeRecurrCard: PlatformColor("@android:color/system_accent1_700"),
       defaultAccSplitRecCard: PlatformColor("@android:color/system_accent2_800"),
-      receiveGreenBg: "#4CAF50",
-      payRedBg: "#F44336",
+      receiveGreenBg: "#073b00",
+      receiveGreenTextBg: "#b4f095",
+      payRedBg: "#611511",
+      payRedTextBg: "#eed1cf",
     }
     else return {
       // API < 31
@@ -88,8 +90,10 @@ const useDynamicColors = () => {
       addBtnColors: '#EF9A9A',
       defaultHomeRecurrCard: '#EF9A9A',
       defaultAccSplitRecCard: '#EF9A9A',
-      receiveGreenBg: "#4CAF50",
-      payRedBg: "#F44336",
+      receiveGreenBg: "#073b00",
+      receiveGreenTextBg: "#b4f095",
+      payRedBg: "#611511",
+      payRedTextBg: "#eed1cf",
   }});
 
   useEffect(() => {
@@ -145,8 +149,10 @@ const useDynamicColors = () => {
                                         "#039BE5", "#039BE5"),
         defaultAccSplitRecCard: getColor("@android:color/system_accent3_100", "@android:color/system_accent2_800", colorScheme, 
                                           "#5eb4c0ba", "#5eb4c0ba"),
-        receiveGreenBg: colorScheme === "dark" ? "#4CAF50" : "#00E676" ,
-        payRedBg: colorScheme === "dark" ? "#F44336" : "#FF1744",
+        receiveGreenBg: colorScheme === "dark" ? "#073b00" : "#b7f397" ,
+        receiveGreenTextBg: colorScheme === "dark" ? "#b4f095" : "#0b2906" ,
+        payRedBg: colorScheme === "dark" ? "#611511" : "#ffc1bc",
+        payRedTextBg: colorScheme === "dark" ? "#eed1cf" : "#572724",
       };
 
       setColors(dynamicColors);
