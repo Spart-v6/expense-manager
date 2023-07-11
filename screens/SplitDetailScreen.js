@@ -89,7 +89,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
     fetchUsername();
   }, []);
   
-  // Works when u go inside a section
+  // Works when u go inside a section (summary)
   const [isInfoPressed, setIsInfoPressed] = useState(false);
   const [currentSectionData] = useState(route.params.subArray);
   const [currentSecId] = useState(route.params.id);
@@ -125,7 +125,7 @@ const SplitDetailScreen = ({ navigation, route }) => {
         <View style={{ margin: 20, flex: 1, gap: 20, marginTop: 10 }}>
           <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
             <MyText style={{ color: allColors.universalColor }}>
-              {`Total amount ${totalAmount}/- is paid by${
+              {`Total amount ${parseFloat(totalAmount).toFixed(2)}/- is paid by${
                 currentSectionData[currentSectionData.length - 1].whoPaid
                 .length === 0
                   ? " you"

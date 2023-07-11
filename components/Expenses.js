@@ -49,7 +49,7 @@ const Expenses = ({ item, index, onPress }) => {
 
             <View style={{flexDirection: 'column', gap: 2, flex: 1}}>
               <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
-                <MyText style={{fontSize: 20, color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}} numberOfLines={1} ellipsizeMode="tail">
+                <MyText style={{fontSize: 20, color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8}} numberOfLines={1} ellipsizeMode="tail">
                   {item.name}
                 </MyText>
 
