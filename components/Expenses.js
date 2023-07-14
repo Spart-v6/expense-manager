@@ -48,8 +48,8 @@ const Expenses = ({ item, index, onPress }) => {
             </View>
 
             <View style={{flexDirection: 'column', gap: 2, flex: 1}}>
-              <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
-                <MyText style={{fontSize: 20, color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8}} numberOfLines={1} ellipsizeMode="tail">
+              <View style={{flexDirection: 'row', justifyContent: "space-between", gap: 15}}>
+                <MyText style={{flex: 1, fontSize: 20, color: allColors.universalColor,  flexShrink: 1}} numberOfLines={1} ellipsizeMode="tail">
                   {item.name}
                 </MyText>
 
@@ -57,14 +57,29 @@ const Expenses = ({ item, index, onPress }) => {
                   {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
                 </MyText>
               </View>
-              <View style={{flexDirection: 'row' , justifyContent:"space-between"}}>
-                <MyText variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8 }}>
-                    {item.desc}
-                </MyText>
-                <MyText variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, textAlign:"right",  maxWidth: Dimensions.get("window").width / 6}} >
-                  {item.selectedCard}
-                </MyText>
-
+              <View style={{ flexDirection: 'row', justifyContent: "space-between"}}>
+                <View style={{ flex: 1 }}>
+                  {item.desc?.length > 1 && (
+                    <MyText
+                      variant="titleSmall"
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={{ color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.7 }}
+                    >
+                      {item.desc}
+                    </MyText>
+                  )}
+                </View>
+                <View style={{ maxWidth: Dimensions.get("window").width / 4 }}>
+                  <MyText
+                    variant="titleSmall"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ color: allColors.universalColor, textAlign: "right", paddingLeft: 9 }}
+                  >
+                    {item.selectedCard}
+                  </MyText>
+                </View>
               </View>
             </View>
           </View>

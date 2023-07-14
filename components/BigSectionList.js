@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo } from "react";
 import {
   KeyboardAvoidingView,
   SafeAreaView,
@@ -7,23 +7,36 @@ import {
   Dimensions,
 } from "react-native";
 import moment from "moment";
-import { Appbar, List, Subheading } from "react-native-paper";
 import Expenses from "./Expenses";
 import useDynamicColors from "../commons/useDynamicColors";
 import BigList from "react-native-big-list";
-import sections from "../helper/dammy.json";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addData, storeData, storeRecurrences, updateRecurrences } from "../redux/actions";
+import { storeData } from "../redux/actions";
 import MyText from "../components/MyText";
+import formatNumberWithCurrency from "../helper/formatter";
+import { getCurrencyFromStorage } from "../helper/constants";
 
 export default function BigSectionList({ filter }) {
   const navigation = useNavigation();
   const allColors = useDynamicColors();
   const dispatch = useDispatch();
   const styles = makeStyles(allColors);
+
+  const [currency, setCurrency] = React.useState({
+    curr: "$"
+  });
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       fetchExpensesData();
@@ -96,10 +109,16 @@ export default function BigSectionList({ filter }) {
 
   const renderSectionHeader = (section) => {
     let sectionTitle = "";
-    if (filter === "Daily")
+    let totalAmount = 0;
+    if (filter === "Daily") {
       sectionTitle = sectionListData[section].map(({ date }) =>
         moment(date, "YYYY/MM/DD").format("Do MMMM YYYY")
       )[0];
+      sectionListData[section].forEach(({ amount, type }) => {
+        if (type === "Expense") totalAmount -= +amount;
+        else if (type === "Income") totalAmount += +amount;
+      });
+    }
     if (filter === "Weekly") {
       sectionTitle = sectionListData[section].map(({ date }) => {
         const startDate = date;
@@ -108,6 +127,10 @@ export default function BigSectionList({ filter }) {
         const weekString = `${startWeek} week of ${year}`;
         return weekString;
       })[0];
+      sectionListData[section].forEach(({ amount, type }) => {
+        if (type === "Expense") totalAmount -= +amount;
+        else if (type === "Income") totalAmount += +amount;
+      });
     }
     if (filter === "Monthly") {
       sectionTitle = sectionListData[section].map(({ date }) => {
@@ -116,26 +139,50 @@ export default function BigSectionList({ filter }) {
         const monthString = `${month}, ${year}`;
         return monthString;
       })[0];
+      sectionListData[section].forEach(({ amount, type }) => {
+        if (type === "Expense") totalAmount -= +amount;
+        else if (type === "Income") totalAmount += +amount;
+      });
     }
     if (filter === "Yearly") {
       sectionTitle = sectionListData[section].map(({ date }) => {
         const year = moment(date, "YYYY/MM/DD").format("YYYY");
         return year;
       })[0];
+      sectionListData[section].forEach(({ amount, type }) => {
+        if (type === "Expense") totalAmount -= +amount;
+        else if (type === "Income") totalAmount += +amount;
+      });
     }
 
     return (
-      <View style={styles.outerContainer}>
-        <>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
-            }}
-          >
-            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{sectionTitle}</MyText>
-          </View>
-        </>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', width: "95%"}}>
+        <View style={styles.outerContainer}>
+          <>
+            <View
+              style={{
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                flexDirection: "row",
+                width: '100%',
+              }}
+              >
+              <MyText variant="titleMedium" style={{color: allColors.textColorPrimary}}>{sectionTitle}</MyText>
+              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+                {totalAmount > 0 ? 
+                  "+" + formatNumberWithCurrency(totalAmount, currency.curr)
+                  : formatNumberWithCurrency(totalAmount, currency.curr)
+                }
+              </MyText>
+            </View>
+          </>
+        </View>
+        <View
+          style={{
+            ...StyleSheet.absoluteFill,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          }}
+        />
       </View>
     );
   };
@@ -180,11 +227,13 @@ const makeStyles = allColors =>
         alignSelf: "center",
       },
       outerContainer: {
-        width: "95%",
+        width: "100%",
+        height: "100%",
         justifyContent: "center",
         alignSelf: "center",
         alignItems: "flex-start",
         paddingLeft: 5,
+        paddingRight: 5,
         backgroundColor: allColors.backgroundColorPrimary,
     },
 });
