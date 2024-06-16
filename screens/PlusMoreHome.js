@@ -70,7 +70,7 @@ const makeStyles = allColors => StyleSheet.create({
     backgroundColor: allColors.backgroundColorDatesSelected,
     text: {
       color: allColors.textColorPrimary,
-      fontFamily: "Rubik_500Medium"
+      fontFamily: "Karla_400Regular"
     },
   },
   centeredView: {
@@ -326,7 +326,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           autoComplete="off"
           textContentType="none"
           value={name}
-          contentStyle={{fontFamily: "Rubik_400Regular"}}
+          contentStyle={{fontFamily: "Karla_400Regular"}}
           placeholder={resolvedPlaceholder}
           onChangeText={handleTextCheck}
           keyboardType={keyboardType}
@@ -376,7 +376,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           />
            <TextInput
             style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
-            contentStyle={{fontFamily: "Rubik_400Regular"}}
+            contentStyle={{fontFamily: "Karla_400Regular"}}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
             underlineColor={'transparent'}
@@ -509,7 +509,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         </View>
 
         <View style={{ ...styles.commonStyles, height: 150 }}>
-          <MyText style={{color: allColors.universalColor}} variant="smal">Payment network</MyText>
+          <MyText style={{color: allColors.universalColor}} variant="bodyLarge">Payment network</MyText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TouchableOpacity
               style={styles.commonTouchableStyle}
@@ -567,7 +567,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontFamily: "Rubik_500Medium",
+                fontFamily: "Karla_400Regular",
                 fontSize: 18,
               }}
             >
@@ -613,7 +613,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             backgroundColor: allColors.backgroundColorLessPrimary,
           }}
         >
-          <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Rubik_400Regular"}}>Choose a category</Dialog.Title>
+          <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Karla_400Regular"}}>Choose a category</Dialog.Title>
           <FrequentCategories
             handleSelectedCategory={handleSelectedCategory}
           />

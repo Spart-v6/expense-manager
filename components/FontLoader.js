@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, SafeAreaView, StatusBar } from "react-native";
-import { useFonts, Rubik_500Medium, Rubik_400Regular } from "@expo-google-fonts/rubik";
+import { useFonts, Karla_400Regular } from "@expo-google-fonts/karla";
 import * as Font from "expo-font";
 
 export default function FontLoader({ children }) {
@@ -9,8 +9,8 @@ export default function FontLoader({ children }) {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        Rubik_500Medium,
-        Rubik_400Regular
+        Karla_400Regular,
+        Karla_400Regular,
       });
 
       setFontsLoaded(true);

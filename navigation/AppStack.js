@@ -121,7 +121,7 @@ const TabButton = (props) => {
               size={20}
             />
           </Animated.View>
-          <MyText style={[{ color: allColors.universalColor }, focused && {fontFamily: "Rubik_500Medium"}]}>{item.label}</MyText>
+          <MyText style={[{ color: allColors.universalColor }, focused && {fontFamily: "Karla_400Regular"}]}>{item.label}</MyText>
         </View>
       </View>
     </TouchableOpacity>

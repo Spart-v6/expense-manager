@@ -35,24 +35,42 @@ const WelcomeScreen1 = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 0.3, gap: 20}}>
-        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+      <View style={{ flex: 0.3, gap: 20 }}>
+        <StatusBar
+          translucent
+          backgroundColor={"transparent"}
+          barStyle={allColors.barStyle}
+        />
         <View style={styles.content}>
-          <MyText variant="displayMedium" style={{color: allColors.universalColor}}> Welcome </MyText>
-          <MyText variant="bodyMedium" style={{paddingLeft: 10, color: allColors.universalColor}}>
-            Empower Your Finances: Track, Split, Recur, and Master Your Expenses!
+          <MyText
+            variant="displayMedium"
+            style={{ color: allColors.universalColor }}
+          >
+            {" "}
+            Welcome{" "}
+          </MyText>
+          <MyText
+            variant="bodyMedium"
+            style={{ paddingLeft: 10, color: allColors.universalColor }}
+          >
+            Empower Your Finances: Track, Split, Recur, and Master Your
+            Expenses!
           </MyText>
         </View>
-        <View style={{gap: 10, margin: 20 }}>
+        <View style={{ gap: 10, margin: 20 }}>
           <TextInput
-            label={<MyText style={{color: allColors.universalColor}}>{"Your name"}</MyText>}
+            label={
+              <MyText style={{ color: allColors.universalColor }}>
+                {"Your name"}
+              </MyText>
+            }
             style={{ backgroundColor: "transparent" }}
             value={username}
             selectionColor={allColors.textSelectionColor}
             textColor={allColors.universalColor}
-            underlineColor={error ? 'red' : allColors.textColorPrimary}
-            contentStyle={{fontFamily: "Rubik_400Regular"}}
-            activeUnderlineColor={error ? 'red' : allColors.textColorPrimary}
+            underlineColor={error ? "red" : allColors.textColorPrimary}
+            contentStyle={{ fontFamily: "Karla_400Regular" }}
+            activeUnderlineColor={error ? "red" : allColors.textColorPrimary}
             onChangeText={(text) => setUsername(text)}
           />
 
@@ -68,13 +86,13 @@ const WelcomeScreen1 = ({ navigation }) => {
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
               width: 150,
-              alignSelf: "center"
+              alignSelf: "center",
             }}
           >
             <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontFamily: "Rubik_500Medium",
+                fontFamily: "Karla_400Regular",
                 fontSize: 18,
               }}
             >
@@ -87,18 +105,19 @@ const WelcomeScreen1 = ({ navigation }) => {
   );
 };
 
-const makeStyles = () => StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  content: {
-    marginTop: 20,
-    marginBottom: 40,
-    marginLeft: 20,
-    marginRight: 20,
-  },
-});
+const makeStyles = () =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    content: {
+      marginTop: 20,
+      marginBottom: 40,
+      marginLeft: 20,
+      marginRight: 20,
+    },
+  });
 
 export default WelcomeScreen1;

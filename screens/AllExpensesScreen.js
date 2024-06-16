@@ -34,7 +34,7 @@ const makeStyles = (allColors) =>
       borderRadius: 20,
       text: {
         color: allColors.textColorPrimary,
-        fontFamily: "Rubik_500Medium",
+        fontFamily: "Karla_400Regular",
       },
     },
     notSelected: {

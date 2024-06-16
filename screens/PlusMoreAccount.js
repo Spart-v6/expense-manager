@@ -10,13 +10,13 @@ import moment from "moment";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { addCard } from "../redux/actions";
 import SnackbarComponent from "../commons/snackbar";
-import Feather from 'react-native-vector-icons/Feather';
+import Feather from "react-native-vector-icons/Feather";
 
-const makeStyles = allColors =>
+const makeStyles = (allColors) =>
   StyleSheet.create({
     safeView: {
-      flex: 1
-    }, 
+      flex: 1,
+    },
     commonStyles: {
       marginLeft: 20,
       marginRight: 20,
@@ -38,14 +38,15 @@ const makeStyles = allColors =>
       backgroundColor: allColors.innerTextFieldColor,
     },
     addCardBtn: {
-      margin: 20, marginTop: 0
+      margin: 20,
+      marginTop: 0,
     },
     bannerContainer: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
-    }
+    },
   });
 
 const PlusMoreAccount = ({ navigation }) => {
@@ -91,13 +92,12 @@ const PlusMoreAccount = ({ navigation }) => {
     setCreditCard(false);
     setChecked("debit");
   };
-  
+
   const handleCreditCardPress = () => {
     setDebitCard(false);
     setCreditCard(true);
     setChecked("credit");
   };
-  
 
   const textInput = (name, setter, placeholder) => {
     return (
@@ -114,7 +114,7 @@ const PlusMoreAccount = ({ navigation }) => {
         textColor={allColors.universalColor}
         underlineColor="transparent"
         activeUnderlineColor="transparent"
-        contentStyle={{fontFamily: "Rubik_400Regular"}}
+        contentStyle={{ fontFamily: "Karla_400Regular" }}
         placeholderTextColor={allColors.placeholderTextColor}
         autoComplete="off"
         textContentType="none"
@@ -133,7 +133,7 @@ const PlusMoreAccount = ({ navigation }) => {
       paymentNetwork: paymentNetwork,
       month: month,
       year: year,
-      checked
+      checked,
     };
 
     const checkError = () => {
@@ -145,8 +145,8 @@ const PlusMoreAccount = ({ navigation }) => {
         setErrorMsg("Please enter a payment network");
         return true;
       }
-      const parsedMonth = moment(month, 'M', true);
-      const parsedYear = moment(year, 'YY', true);
+      const parsedMonth = moment(month, "M", true);
+      const parsedYear = moment(year, "YY", true);
       if (year.length > 0 || month.length > 0) {
         const isValidMonth = parsedMonth.isValid() && parsedMonth.month() < 12;
         const isValidYear = parsedYear.isValid();
@@ -156,7 +156,7 @@ const PlusMoreAccount = ({ navigation }) => {
         }
       }
       return false;
-    }
+    };
     if (checkError()) {
       setError(true);
       clearTimeout(timeoutRef.current);
@@ -170,14 +170,23 @@ const PlusMoreAccount = ({ navigation }) => {
   return (
     <>
       <SafeAreaView style={styles.safeView}>
-        <AppHeader title={btnName} navigation={navigation} isInfoPressed={val => setIsInfoPressed(val)} needInfo={true}/>
-        <View style={{flex: 1}}>
+        <AppHeader
+          title={btnName}
+          navigation={navigation}
+          isInfoPressed={(val) => setIsInfoPressed(val)}
+          needInfo={true}
+        />
+        <View style={{ flex: 1 }}>
           <View style={{ ...styles.commonStyles, marginTop: 0 }}>
             {textInput(cardHolderName, setCardHolderName, "Cardholder name")}
           </View>
 
           <View style={{ ...styles.commonStyles }}>
-            {textInput(paymentNetwork, setPaymentNetwork, "Payment network (e.g., VISA)")}
+            {textInput(
+              paymentNetwork,
+              setPaymentNetwork,
+              "Payment network (e.g., VISA)"
+            )}
           </View>
           <View
             style={{
@@ -185,19 +194,26 @@ const PlusMoreAccount = ({ navigation }) => {
               ...styles.commonStyles,
             }}
           >
-            <MyText variant="titleSmall" style={{color: allColors.universalColor}}>
+            <MyText
+              variant="titleSmall"
+              style={{ color: allColors.universalColor }}
+            >
               Expiry Date (optional)
             </MyText>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TextInput
-                label={<MyText style={{color: allColors.universalColor}} >MM</MyText>}
-                style={{ width: 80 ,backgroundColor: "transparent" }}
+                label={
+                  <MyText style={{ color: allColors.universalColor }}>
+                    MM
+                  </MyText>
+                }
+                style={{ width: 80, backgroundColor: "transparent" }}
                 underlineColor={allColors.textColorPrimary}
                 allowFontScaling={false}
                 textColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
-                contentStyle={{fontFamily: "Rubik_400Regular"}}
+                contentStyle={{ fontFamily: "Karla_400Regular" }}
                 value={month}
                 onChangeText={handleMonthChange}
                 keyboardType={"number-pad"}
@@ -205,21 +221,25 @@ const PlusMoreAccount = ({ navigation }) => {
                 autoCorrect={false}
               />
               <MyText
-                  variant="titleMedium"
-                  allowFontScaling={false}
-                  style={{ color: allColors.universalColor }}
-                >
-                  /
-                </MyText>
+                variant="titleMedium"
+                allowFontScaling={false}
+                style={{ color: allColors.universalColor }}
+              >
+                /
+              </MyText>
               <TextInput
-                label={<MyText style={{color: allColors.universalColor}}>YY</MyText>}
+                label={
+                  <MyText style={{ color: allColors.universalColor }}>
+                    YY
+                  </MyText>
+                }
                 style={{ width: 80, backgroundColor: "transparent" }}
                 allowFontScaling={false}
                 underlineColor={allColors.textColorPrimary}
                 textColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
-                contentStyle={{fontFamily: "Rubik_400Regular"}}
+                contentStyle={{ fontFamily: "Karla_400Regular" }}
                 value={year}
                 ref={yearInputRef}
                 onChangeText={handleYearChange}
@@ -229,13 +249,13 @@ const PlusMoreAccount = ({ navigation }) => {
               />
             </View>
           </View>
- 
+
           <View
             style={{
               ...styles.commonStyles,
               flexDirection: "row",
               marginRight: 0,
-              gap: 20
+              gap: 20,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -247,7 +267,9 @@ const PlusMoreAccount = ({ navigation }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
               />
-              <MyText style={{color: allColors.universalColor}}>Debit Card</MyText>
+              <MyText style={{ color: allColors.universalColor }}>
+                Debit Card
+              </MyText>
             </View>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <BouncyCheckbox
@@ -258,7 +280,9 @@ const PlusMoreAccount = ({ navigation }) => {
                 innerIconStyle={{ borderRadius: 50, borderColor: "grey" }}
                 iconStyle={{ borderRadius: 50 }}
               />
-              <MyText style={{color: allColors.universalColor}}>Credit Card</MyText>
+              <MyText style={{ color: allColors.universalColor }}>
+                Credit Card
+              </MyText>
             </View>
           </View>
         </View>
@@ -270,7 +294,7 @@ const PlusMoreAccount = ({ navigation }) => {
               backgroundColor: allColors.addBtnColors,
               borderRadius: 15,
               borderTopRightRadius: 15,
-              borderTopLeftRadius: 15
+              borderTopLeftRadius: 15,
             }}
             mode="contained"
             labelStyle={{ fontSize: 15 }}
@@ -279,7 +303,7 @@ const PlusMoreAccount = ({ navigation }) => {
             <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontFamily: "Rubik_500Medium",
+                fontFamily: "Karla_400Regular",
                 fontSize: 18,
               }}
             >
@@ -288,33 +312,50 @@ const PlusMoreAccount = ({ navigation }) => {
           </Button>
         </View>
       </SafeAreaView>
-      {error && <SnackbarComponent errorMsg={errorMsg}/>}
-      
+      {error && <SnackbarComponent errorMsg={errorMsg} />}
+
       <Portal>
         <View style={styles.bannerContainer}>
           <Banner
             visible={isInfoPressed}
-            style={{backgroundColor: allColors.backgroundColorLessPrimary}}
+            style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
             actions={[
               {
-                label: 'OK',
+                label: "OK",
                 onPress: () => setIsInfoPressed(false),
-                style: {marginRight: 20},
-                textColor: allColors.universalColor
-              }
+                style: { marginRight: 20 },
+                textColor: allColors.universalColor,
+              },
             ]}
-            
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <View style={{flexDirection: 'row', gap: 5, justifyContent: "center", alignItems: 'center'}}>
-                <Feather name="info" size={20} color={allColors.textColorPrimary}/>
-                <MyText style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.2}} numberOfLines={4}>
-                  The details you provide here are for visualization purposes only and are not collected in any way. Feel free to add any information, even if it's not accurate.
-                </MyText>
-              </View>
-        </Banner>
+              <Feather
+                name="info"
+                size={20}
+                color={allColors.textColorPrimary}
+              />
+              <MyText
+                style={{
+                  color: allColors.universalColor,
+                  maxWidth: Dimensions.get("window").width / 1.2,
+                }}
+                numberOfLines={4}
+              >
+                The details you provide here are for visualization purposes only
+                and are not collected in any way. Feel free to add any
+                information, even if it's not accurate.
+              </MyText>
+            </View>
+          </Banner>
         </View>
       </Portal>
-
     </>
   );
 };

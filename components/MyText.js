@@ -1,4 +1,4 @@
-import { Text } from 'react-native-paper';
+import { Text } from "react-native-paper";
 
 const withContent = (WrappedComponent) => {
   return ({ children, ...rest }) => {
@@ -8,7 +8,7 @@ const withContent = (WrappedComponent) => {
 
 const MyText = ({ style, content, ...rest }) => {
   return (
-    <Text style={[{ fontFamily: "Rubik_400Regular" }, style]} {...rest}>
+    <Text style={[{ fontFamily: "Karla_400Regular" }, style]} {...rest}>
       {content}
     </Text>
   );

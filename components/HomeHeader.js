@@ -5,8 +5,8 @@ import useDynamicColors from "../commons/useDynamicColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Feather from "react-native-vector-icons/Feather";
 import MyText from "../components/MyText";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
@@ -14,7 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { storeData } from "../redux/actions";
 
-const makeStyles = allColors =>
+const makeStyles = (allColors) =>
   StyleSheet.create({
     card: {
       backgroundColor: allColors.defaultHomeRecurrCard,
@@ -34,7 +34,7 @@ const makeStyles = allColors =>
       flex: 1,
     },
     incomeContent: {
-      flexDirection: 'row',
+      flexDirection: "row",
       justifyContent: "space-between",
       paddingLeft: 16,
       paddingTop: 16,
@@ -52,7 +52,7 @@ const makeStyles = allColors =>
       flex: 1,
     },
     expenseContent: {
-      flexDirection: 'row',
+      flexDirection: "row",
       justifyContent: "space-between",
       paddingLeft: 16,
       paddingTop: 16,
@@ -71,12 +71,12 @@ const makeStyles = allColors =>
       flexDirection: "row",
       alignItems: "center",
       marginTop: 10,
-      gap: 20
+      gap: 20,
     },
     text: {
       fontSize: 16,
     },
-});
+  });
 
 const MyBezierLineChart = (colors, chartData) => {
   const data = {
@@ -119,7 +119,7 @@ const MyBezierLineChart = (colors, chartData) => {
           paddingRight: 3,
           paddingLeft: 15,
           paddingBottom: 0,
-          borderRadius: 10
+          borderRadius: 10,
         }}
       />
     </>
@@ -132,38 +132,49 @@ const DashboardCard = ({ currency }) => {
   const styles = makeStyles(allColors);
 
   const totalValue = expenseData?.reduce((acc, curr) => {
-    if (curr.type === "Income") return acc + +curr.amount; 
+    if (curr.type === "Income") return acc + +curr.amount;
     else if (curr.type === "Expense") return acc - +curr.amount;
     else return acc;
   }, 0);
 
   const currentMonth = moment().month() + 1;
-  const filteredArr = expenseData?.filter(item => moment(item.date,"YYYY/MM/DD").month() + 1 === currentMonth);
+  const filteredArr = expenseData?.filter(
+    (item) => moment(item.date, "YYYY/MM/DD").month() + 1 === currentMonth
+  );
 
-  const {totalIncomeForMonth, totalExpenseForMonth} = filteredArr?.length > 0
-  ? filteredArr?.reduce((acc, item) => {
-      if (item.type === "Income") acc.totalIncomeForMonth += (+item.amount);
-      else if (item.type === "Expense") acc.totalExpenseForMonth += (+item.amount);
-      return acc;
-    },
-    {totalIncomeForMonth: 0, totalExpenseForMonth: 0}
-  )
-  : {totalIncomeForMonth: 0, totalExpenseForMonth: 0};
+  const { totalIncomeForMonth, totalExpenseForMonth } =
+    filteredArr?.length > 0
+      ? filteredArr?.reduce(
+          (acc, item) => {
+            if (item.type === "Income") acc.totalIncomeForMonth += +item.amount;
+            else if (item.type === "Expense")
+              acc.totalExpenseForMonth += +item.amount;
+            return acc;
+          },
+          { totalIncomeForMonth: 0, totalExpenseForMonth: 0 }
+        )
+      : { totalIncomeForMonth: 0, totalExpenseForMonth: 0 };
 
   return (
     <Card style={[styles.card]}>
       <Card.Title
         title="My balance"
-        titleStyle={{ color: allColors.textColorPrimary, fontSize: 18, fontFamily: "Rubik_400Regular" }}
+        titleStyle={{
+          color: allColors.textColorPrimary,
+          fontSize: 18,
+          fontFamily: "Karla_400Regular",
+        }}
       />
-      <MyText style={{
-        fontSize: 30,
-        textAlignVertical: "center",
-        padding: 16,
-        paddingTop: 0,
-        marginTop: -15,
-        color: allColors.textColorSecondary,
-      }}>
+      <MyText
+        style={{
+          fontSize: 30,
+          textAlignVertical: "center",
+          padding: 16,
+          paddingTop: 0,
+          marginTop: -15,
+          color: allColors.textColorSecondary,
+        }}
+      >
         {formatNumberWithCurrency(totalValue, currency)}
       </MyText>
       <Card.Content>
@@ -171,22 +182,36 @@ const DashboardCard = ({ currency }) => {
           variant="titleLarge"
           style={{ color: allColors.textColorPrimary }}
         >
-           {moment().format("MMMM")} month
+          {moment().format("MMMM")} month
         </MyText>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
-            <MyText style={{ color: allColors.textColorPrimary }}>Income</MyText>
-            <View style={{flexDirection:"row", gap: 2}}>
-              <AntDesign name="caretup" size={10} color={allColors.successColor} style={{alignSelf:"center"}}/>
+            <MyText style={{ color: allColors.textColorPrimary }}>
+              Income
+            </MyText>
+            <View style={{ flexDirection: "row", gap: 2 }}>
+              <AntDesign
+                name="caretup"
+                size={10}
+                color={allColors.successColor}
+                style={{ alignSelf: "center" }}
+              />
               <MyText style={{ color: allColors.textColorFive }}>
                 + {formatNumberWithCurrency(totalIncomeForMonth, currency)}
               </MyText>
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <MyText style={{ color: allColors.textColorPrimary }}>Expense</MyText>
-            <View style={{flexDirection:"row", gap: 2}}>
-              <AntDesign name="caretdown" size={10} color={allColors.warningColor} style={{alignSelf:"center"}}/>
+            <MyText style={{ color: allColors.textColorPrimary }}>
+              Expense
+            </MyText>
+            <View style={{ flexDirection: "row", gap: 2 }}>
+              <AntDesign
+                name="caretdown"
+                size={10}
+                color={allColors.warningColor}
+                style={{ alignSelf: "center" }}
+              />
               <MyText style={{ color: allColors.textColorFive }}>
                 - {formatNumberWithCurrency(totalExpenseForMonth, currency)}
               </MyText>
@@ -206,17 +231,38 @@ const IncomeCard = ({ incomeArray, currency }) => {
   return (
     <View style={styles.incomeCard}>
       <View style={styles.incomeContent}>
-        <Feather name="trending-up" size={20} color={allColors.successColor} style={{alignSelf:"center"}}/>
-        <Tooltip title={formatNumberWithCurrency(totalIncome, currency)}  
-          theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >
+        <Feather
+          name="trending-up"
+          size={20}
+          color={allColors.successColor}
+          style={{ alignSelf: "center" }}
+        />
+        <Tooltip
+          title={formatNumberWithCurrency(totalIncome, currency)}
+          theme={{
+            colors: {
+              onSurface: allColors.backgroundColorSecondary,
+              surface: allColors.textColorFour,
+            },
+          }}
+        >
           <View>
-            <MyText style={{ color: allColors.successColor, maxWidth: Dimensions.get("window").width / 4 }} numberOfLines={1} ellipsizeMode="tail" variant="labelSmall" allowFontScaling={false}>
+            <MyText
+              style={{
+                color: allColors.successColor,
+                maxWidth: Dimensions.get("window").width / 4,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              variant="labelSmall"
+              allowFontScaling={false}
+            >
               + {formatNumberWithCurrency(totalIncome, currency)}
             </MyText>
           </View>
         </Tooltip>
       </View>
-      <View>{MyBezierLineChart("#4bba38", incomeArray)}</View> 
+      <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
     </View>
   );
 };
@@ -229,11 +275,32 @@ const ExpenseCard = ({ expenseArray, currency }) => {
   return (
     <View style={styles.expenseCard}>
       <View style={styles.expenseContent}>
-        <Feather name="trending-down" size={20} color={allColors.warningColor} style={{alignSelf:"center"}}/>
-        <Tooltip title={formatNumberWithCurrency(totalExpense, currency)}  
-          theme={{ colors: { onSurface: allColors.backgroundColorSecondary, surface: allColors.textColorFour } }} >  
+        <Feather
+          name="trending-down"
+          size={20}
+          color={allColors.warningColor}
+          style={{ alignSelf: "center" }}
+        />
+        <Tooltip
+          title={formatNumberWithCurrency(totalExpense, currency)}
+          theme={{
+            colors: {
+              onSurface: allColors.backgroundColorSecondary,
+              surface: allColors.textColorFour,
+            },
+          }}
+        >
           <View>
-            <MyText style={{ color: allColors.warningColor, maxWidth: Dimensions.get("window").width / 4 }}numberOfLines={1} ellipsizeMode="tail" variant="labelSmall" allowFontScaling={false}>
+            <MyText
+              style={{
+                color: allColors.warningColor,
+                maxWidth: Dimensions.get("window").width / 4,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              variant="labelSmall"
+              allowFontScaling={false}
+            >
               - {formatNumberWithCurrency(totalExpense, currency)}
             </MyText>
           </View>
@@ -248,7 +315,7 @@ const HomeHeader = () => {
   const dispatch = useDispatch();
   //fetching currency
   const [currency, setCurrency] = React.useState({
-    curr: "$"
+    curr: "$",
   });
 
   React.useEffect(() => {
@@ -285,31 +352,35 @@ const HomeHeader = () => {
     const newIncomeArray = expenseData
       ?.filter((item) => item?.type === "Income")
       ?.sort((a, b) => {
-        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(moment(b.date, "YYYY/MM/DD"));
+        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(
+          moment(b.date, "YYYY/MM/DD")
+        );
         if (dateComparison !== 0) return dateComparison;
         else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
       })
       ?.map((item) => +item?.amount);
-  
+
     const newExpenseArray = expenseData
       ?.filter((item) => item?.type === "Expense")
       ?.sort((a, b) => {
-        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(moment(b.date, "YYYY/MM/DD"));
+        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(
+          moment(b.date, "YYYY/MM/DD")
+        );
         if (dateComparison !== 0) return dateComparison;
         else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
       })
       ?.map((item) => +item?.amount);
-  
+
     setIncomeArray(newIncomeArray);
     setExpenseArray(newExpenseArray);
   }, [expenseData]);
 
   return (
     <View>
-      <DashboardCard currency={currency.curr}/>
+      <DashboardCard currency={currency.curr} />
       <View style={{ flexDirection: "row" }}>
-        <IncomeCard incomeArray={incomeArray} currency={currency.curr}/>
-        <ExpenseCard expenseArray={expenseArray} currency={currency.curr}/>
+        <IncomeCard incomeArray={incomeArray} currency={currency.curr} />
+        <ExpenseCard expenseArray={expenseArray} currency={currency.curr} />
       </View>
     </View>
   );

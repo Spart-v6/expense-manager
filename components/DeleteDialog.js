@@ -12,7 +12,7 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subt
       onDismiss={hideDialog}
       style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
     >
-      <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Rubik_400Regular"}}>Delete {title}?</Dialog.Title>
+      <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Karla_400Regular"}}>Delete {title}?</Dialog.Title>
       <Dialog.Content>
         <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
           The {content} will be removed permanently {subtitle}

@@ -3,9 +3,16 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
-import { Portal, TextInput, Text, Dialog, Button, TouchableRipple } from "react-native-paper";
+import {
+  Portal,
+  TextInput,
+  Text,
+  Dialog,
+  Button,
+  TouchableRipple,
+} from "react-native-paper";
 import BouncyCheckboxGroup from "react-native-bouncy-checkbox-group";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
@@ -16,7 +23,12 @@ import BackChip from "../components/BackChip";
 import { IconComponent } from "../components/IconPickerModal";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { addRecurrences, storeCard, addNewRecurrType, storeRecurrType } from "../redux/actions";
+import {
+  addRecurrences,
+  storeCard,
+  addNewRecurrType,
+  storeRecurrType,
+} from "../redux/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import SnackbarComponent from "../commons/snackbar";
@@ -31,59 +43,60 @@ const datesObj = [
 
 const typeOfPayment = [
   { id: 0, name: "Income", type: "+" },
-  { id: 1, name: "Expense", type: "-" }
-]
+  { id: 1, name: "Expense", type: "-" },
+];
 
-const makeStyles = allColors => StyleSheet.create({
-  btn: {
-    borderColor: "transparent",
-    borderRadius: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-  },
-  textbtn: {
-    color: allColors.textColorSecondary
-  },
-  selected: {
-    borderRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    backgroundColor: allColors.backgroundColorDatesSelected,
-    text: {
-      color: allColors.textColorPrimary,
-      fontWeight: 700,
+const makeStyles = (allColors) =>
+  StyleSheet.create({
+    btn: {
+      borderColor: "transparent",
+      borderRadius: 10,
+      borderTopRightRadius: 10,
+      borderTopLeftRadius: 10,
     },
-  },
-  commonStyles: {
-    gap: 5,
-    marginTop: 20,
-  },
-  commonTouchableStyle: {
-    marginRight: 20
-  },
-  moreCardStyle: {
-    padding: 15,
-    borderRadius: 10,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    backgroundColor: allColors.backgroundColorDates,
-    height: 100,
-    width: 125,
-  },
-  highlightedCardStyle: {
-    backgroundColor: allColors.backgroundColorSecondary,
-    color: allColors.textColorPrimary,
-  },
-  monthAndYearInput: {
-    borderRadius: 15,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderColor: "black",
-    borderWidth: 2,
-    backgroundColor: allColors.backgroundColorQuinary,
-  },
-});
+    textbtn: {
+      color: allColors.textColorSecondary,
+    },
+    selected: {
+      borderRadius: 20,
+      borderTopRightRadius: 20,
+      borderTopLeftRadius: 20,
+      backgroundColor: allColors.backgroundColorDatesSelected,
+      text: {
+        color: allColors.textColorPrimary,
+        fontWeight: 700,
+      },
+    },
+    commonStyles: {
+      gap: 5,
+      marginTop: 20,
+    },
+    commonTouchableStyle: {
+      marginRight: 20,
+    },
+    moreCardStyle: {
+      padding: 15,
+      borderRadius: 10,
+      flexDirection: "column",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      backgroundColor: allColors.backgroundColorDates,
+      height: 100,
+      width: 125,
+    },
+    highlightedCardStyle: {
+      backgroundColor: allColors.backgroundColorSecondary,
+      color: allColors.textColorPrimary,
+    },
+    monthAndYearInput: {
+      borderRadius: 15,
+      borderTopRightRadius: 15,
+      borderTopLeftRadius: 15,
+      borderColor: "black",
+      borderWidth: 2,
+      backgroundColor: allColors.backgroundColorQuinary,
+    },
+  });
 
 const PlusMoreRecurrence = ({ navigation }) => {
   const allColors = useDynamicColors();
@@ -131,12 +144,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
     setChipName(text);
   };
 
-  const handlePress = e => {
+  const handlePress = (e) => {
     setSelectedCardID(e.id);
     setSelectedCardInExpense(e.paymentNetwork);
   };
 
-  const incomeExpenseBtns = name => {
+  const incomeExpenseBtns = (name) => {
     return (
       <Button
         onPress={() =>
@@ -149,7 +162,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
         labelStyle={{ fontSize: 15 }}
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
-        <MyText style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
+        <MyText
+          style={[
+            styles.textbtn,
+            selectedButton === name && styles.selected.text,
+          ]}
+        >
           {name}
         </MyText>
       </Button>
@@ -158,8 +176,8 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
   const commonText = (name, setter, placeholder, keyboardType) => {
     const handleTextCheck = (val) => {
-      if (keyboardType === 'number-pad') {
-        val = val.replace(',', '.');
+      if (keyboardType === "number-pad") {
+        val = val.replace(",", ".");
         const regex = /^\d{0,10}(\.\d{0,2})?$/;
         if (!regex.test(val)) {
           return;
@@ -170,20 +188,22 @@ const PlusMoreRecurrence = ({ navigation }) => {
     return (
       <>
         <TextInput
-          style={[{
-            borderRadius: 15,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
-            borderColor: allColors.placeholderTextColor,
-            borderWidth: 2,
-            backgroundColor: allColors.innerTextFieldColor
-          }]}
+          style={[
+            {
+              borderRadius: 15,
+              borderTopRightRadius: 15,
+              borderTopLeftRadius: 15,
+              borderColor: allColors.placeholderTextColor,
+              borderWidth: 2,
+              backgroundColor: allColors.innerTextFieldColor,
+            },
+          ]}
           selectionColor={allColors.textSelectionColor}
           textColor={allColors.universalColor}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
           placeholderTextColor={allColors.placeholderTextColor}
-          contentStyle={{fontFamily: "Rubik_400Regular"}}
+          contentStyle={{ fontFamily: "Karla_400Regular" }}
           autoComplete="off"
           textContentType="none"
           value={name}
@@ -193,27 +213,35 @@ const PlusMoreRecurrence = ({ navigation }) => {
         />
       </>
     );
-  }
+  };
 
   // #region New dates stuff
-  const [selectedStartMonth, setSelectedStartMonth] = useState(moment().format("MMMM"));
-  const [selectedStartYear, setSelectedStartYear] = useState(moment().year())
+  const [selectedStartMonth, setSelectedStartMonth] = useState(
+    moment().format("MMMM")
+  );
+  const [selectedStartYear, setSelectedStartYear] = useState(moment().year());
   const [selectedStartDate, setSelectedStartDate] = useState(moment().date());
 
-  const [newStartDate, setNewStartDate] = useState(moment().format('YYYY/MM/DD'));
-  const [newStartDatePh, setNewStartDatePh] = useState(moment().format('DD/MM/YYYY'));
+  const [newStartDate, setNewStartDate] = useState(
+    moment().format("YYYY/MM/DD")
+  );
+  const [newStartDatePh, setNewStartDatePh] = useState(
+    moment().format("DD/MM/YYYY")
+  );
   const [startDateOpen, setStartDateOpen] = useState(false);
 
   const handleNewDatePress = () => setStartDateOpen(true);
 
-  const fetchStartDates = obj => {
+  const fetchStartDates = (obj) => {
     const { selectedDate, selectedMonth, selectedYear } = obj;
     const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format('MM');
-    const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
+    const month = moment().month(selectedMonth).format("MM");
+    const formattedDate = moment(
+      `${selectedYear}-${month}-${paddedDate}`
+    ).format("YYYY/MM/DD");
     setNewStartDate(formattedDate);
     setNewStartDatePh(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  }
+  };
 
   const dateInput = () => (
     <View
@@ -224,8 +252,19 @@ const PlusMoreRecurrence = ({ navigation }) => {
         gap: 5,
       }}
     >
-      <TouchableRipple  rippleColor={allColors.rippleColor} onPress={() => handleNewDatePress()}>
-        <View style={{flexDirection: 'row', alignItems: "center", gap: 0, padding: 10, paddingLeft: 0}}>
+      <TouchableRipple
+        rippleColor={allColors.rippleColor}
+        onPress={() => handleNewDatePress()}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 0,
+            padding: 10,
+            paddingLeft: 0,
+          }}
+        >
           <IconComponent
             name={"calendar"}
             category={"MaterialCommunityIcons"}
@@ -233,15 +272,19 @@ const PlusMoreRecurrence = ({ navigation }) => {
             color={allColors.addBtnColors}
           />
           <TextInput
-            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
+            style={{
+              backgroundColor: "transparent",
+              height: 20,
+              width: "100%",
+            }}
             placeholderTextColor={allColors.textColorSecondary}
-            contentStyle={{fontFamily: "Rubik_400Regular"}}
+            contentStyle={{ fontFamily: "Karla_400Regular" }}
             disabled
-            underlineColor={'transparent'}
-            activeUnderlineColor={'transparent'}
+            underlineColor={"transparent"}
+            activeUnderlineColor={"transparent"}
             placeholder={newStartDatePh}
-            underlineColorAndroid={'red'}
-            underlineStyle={{backgroundColor: 'transparent'}}
+            underlineColorAndroid={"red"}
+            underlineStyle={{ backgroundColor: "transparent" }}
           />
         </View>
       </TouchableRipple>
@@ -249,12 +292,12 @@ const PlusMoreRecurrence = ({ navigation }) => {
   );
   // #endregion
 
-  const handleFrequencyChange = e => {
+  const handleFrequencyChange = (e) => {
     setSelectedFrequency(e);
-  }
+  };
 
   // #region recurrence type stuff
-  
+
   useFocusEffect(
     useCallback(() => {
       fetchAllRecurrTypes();
@@ -276,8 +319,9 @@ const PlusMoreRecurrence = ({ navigation }) => {
     setAddNewRecurrenceName("");
   };
 
-  const allRecurrTypes = useSelector(state => state.recurrTypeReducer.allRecurrTypes);
-
+  const allRecurrTypes = useSelector(
+    (state) => state.recurrTypeReducer.allRecurrTypes
+  );
 
   const handleAddRecurrence = () => {
     const recurrenceDetails = {
@@ -285,18 +329,23 @@ const PlusMoreRecurrence = ({ navigation }) => {
       time: moment().format("HH:mm:ss"),
       recurrenceName: recName,
       recurrenceAmount: amount,
-      recurrenceStartDate: selectedStartDate.toString() + " " + moment().month(selectedStartMonth).format('MM').toString() + " " + selectedStartYear.toString().slice(-2),
+      recurrenceStartDate:
+        selectedStartDate.toString() +
+        " " +
+        moment().month(selectedStartMonth).format("MM").toString() +
+        " " +
+        selectedStartYear.toString().slice(-2),
       paymentType: selectedButton,
       frequency: selectedFrequency?.text ? selectedFrequency.text : "",
       recurrenceType: chipName,
       paymentNetwork: selectedCardInExpense,
-      accCardSelected: selectedCardID
+      accCardSelected: selectedCardID,
     };
 
-    const isValidNumber = input => {
-      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
+    const isValidNumber = (input) => {
+      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
       return numberRegex.test(input);
-    }
+    };
     const checkError = () => {
       if (recName.length === 0) {
         setErrorMsg("Please enter a recurrence name");
@@ -323,7 +372,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
         return true;
       }
       return false;
-    }
+    };
     if (checkError()) {
       setError(true);
       clearTimeout(timeoutRef.current);
@@ -343,165 +392,197 @@ const PlusMoreRecurrence = ({ navigation }) => {
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
       <View style={{ flex: 1 }}>
-
-      <ScrollView style={{ margin: 20 }} contentContainerStyle={{ gap: 10, flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 10,
-          }}
+        <ScrollView
+          style={{ margin: 20 }}
+          contentContainerStyle={{ gap: 10, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
         >
-          {incomeExpenseBtns("Income")}
-          {incomeExpenseBtns("Expense")}
-        </View>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+            }}
+          >
+            {incomeExpenseBtns("Income")}
+            {incomeExpenseBtns("Expense")}
+          </View>
 
+          <View style={{ marginTop: 10, gap: 20 }}>
+            {commonText(recName, setRecName, "Recurrence Name", "default")}
+            {commonText(amount, setAmount, "Amount", "number-pad")}
+          </View>
 
-        <View style={{ marginTop: 10, gap: 20 }}>
-          {commonText(recName, setRecName, "Recurrence Name", "default")}
-          {commonText(amount, setAmount, "Amount", "number-pad")}
-        </View>
+          {/* Start and end date */}
+          <View style={{ flexDirection: "row", gap: 20, marginTop: 10 }}>
+            {dateInput("Starting Date")}
+          </View>
 
-        {/* Start and end date */}
-        <View style={{ flexDirection: "row", gap: 20, marginTop: 10 }}>
-          {dateInput("Starting Date")}
-        </View>
-
-        {/* Frequency */}
-        <View style={{ marginTop: 10, gap: 5 }}>
-          <MyText variant="titleSmall" style={{color: allColors.universalColor}}>Frequency</MyText>
-          <ScrollView contentContainerStyle={{flexDirection: "row", gap: 10 }} horizontal showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-            <BouncyCheckboxGroup
-              data={datesObj.map((item) => ({
-                id: item.id.toString(),
-                text: item.text,
-                style: { marginRight: 15 },
-              }))}
-              checkboxProps={{
-                textStyle: { textDecorationLine: "none" },
-                textContainerStyle: { marginLeft: 5 },
-                innerIconStyle: { borderColor: "grey" },
-                fillColor: "transparent",
-                iconImageStyle: { tintColor: allColors.textColorPrimary }
-              }}
-              onChange={handleFrequencyChange}
-            />
-          </ScrollView>
-        </View>
-
-        {/* Recurrence type scroll */}
-        <View style={{ marginTop: 10, gap: 5 }}>
-          <MyText variant="titleSmall" style={{ marginTop: 10, color: allColors.universalColor }}>
-            Recurrence Type
-          </MyText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setOpenNewRecurrence(true)}
-              style={{
-                backgroundColor: allColors.backgroundColorDates,
-                borderRadius: 6,
-                justifyContent: "center",
-                alignItems: "center",
-                alignSelf: "flex-start",
-                flexDirection: "row",
-                padding: 10,
-                gap: 8,
-                marginRight: 10,
-              }}
+          {/* Frequency */}
+          <View style={{ marginTop: 10, gap: 5 }}>
+            <MyText
+              variant="titleSmall"
+              style={{ color: allColors.universalColor }}
             >
-              <IconComponent
-                name={"plus-circle"}
-                category={"Feather"}
-                size={20}
-                color={allColors.addBtnColors}
+              Frequency
+            </MyText>
+            <ScrollView
+              contentContainerStyle={{ flexDirection: "row", gap: 10 }}
+              horizontal
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+            >
+              <BouncyCheckboxGroup
+                data={datesObj.map((item) => ({
+                  id: item.id.toString(),
+                  text: item.text,
+                  style: { marginRight: 15 },
+                }))}
+                checkboxProps={{
+                  textStyle: { textDecorationLine: "none" },
+                  textContainerStyle: { marginLeft: 5 },
+                  innerIconStyle: { borderColor: "grey" },
+                  fillColor: "transparent",
+                  iconImageStyle: { tintColor: allColors.textColorPrimary },
+                }}
+                onChange={handleFrequencyChange}
               />
-              <MyText style={{color: allColors.universalColor}}>Add new</MyText>
-            </TouchableOpacity>
-            {allRecurrTypes.length > 0 &&
-              allRecurrTypes.map((item, index) => (
-                <BackChip
-                  key={index}
-                  index={index}
-                  onPress={handleChipPress}
-                  isClicked={clickedIndex === index}
-                  text={item.name}
-                />
-              ))}
-          </ScrollView>
-        </View>
+            </ScrollView>
+          </View>
 
-        {/* Payment network cards */}
-        <View style={{ ...styles.commonStyles, height: 150 }}>
-          <MyText style={{color: allColors.universalColor}}>Payment network</MyText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              style={styles.commonTouchableStyle}
-              onPress={() => navigation.navigate("PlusMoreAccount")}
-              activeOpacity={0.5}
+          {/* Recurrence type scroll */}
+          <View style={{ marginTop: 10, gap: 5 }}>
+            <MyText
+              variant="titleSmall"
+              style={{ marginTop: 10, color: allColors.universalColor }}
             >
-              <View style={styles.moreCardStyle}>
+              Recurrence Type
+            </MyText>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setOpenNewRecurrence(true)}
+                style={{
+                  backgroundColor: allColors.backgroundColorDates,
+                  borderRadius: 6,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "flex-start",
+                  flexDirection: "row",
+                  padding: 10,
+                  gap: 8,
+                  marginRight: 10,
+                }}
+              >
                 <IconComponent
                   name={"plus-circle"}
                   category={"Feather"}
-                  size={30}
+                  size={20}
                   color={allColors.addBtnColors}
                 />
-                <MyText
-                  variant="bodyLarge"
-                  style={{ color: allColors.textColorFive }}
-                >
+                <MyText style={{ color: allColors.universalColor }}>
                   Add new
                 </MyText>
-              </View>
-            </TouchableOpacity>
-            {cardsData?.length !== 0 &&
-              cardsData
-                ?.filter((item) => item?.paymentNetwork)
-                .map((e, index) => (
-                  <Chip
+              </TouchableOpacity>
+              {allRecurrTypes.length > 0 &&
+                allRecurrTypes.map((item, index) => (
+                  <BackChip
                     key={index}
-                    data={e}
-                    onPress={handlePress}
-                    isClicked={selectedCardID === e.id}
-                    text={e.paymentNetwork}
-                    styles={styles}
-                    name={e.cardHolderName}
-                    cardName={e.checked}
+                    index={index}
+                    onPress={handleChipPress}
+                    isClicked={clickedIndex === index}
+                    text={item.name}
                   />
                 ))}
-          </ScrollView>
-        </View>
+            </ScrollView>
+          </View>
 
-        {/* Add button */}
-        <View style={{ flexDirection: "column-reverse", flex: 1 }}>
-          <Button
-            onPress={handleAddRecurrence}
-            mode="contained"
-            labelStyle={{ fontSize: 15 }}
-            textColor={"black"}
-            style={{
-              borderColor: "transparent",
-              backgroundColor: allColors.addBtnColors,
-              borderRadius: 15,
-              borderTopRightRadius: 15,
-              borderTopLeftRadius: 15,
-            }}
-          >
-            <MyText
+          {/* Payment network cards */}
+          <View style={{ ...styles.commonStyles, height: 150 }}>
+            <MyText style={{ color: allColors.universalColor }}>
+              Payment network
+            </MyText>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <TouchableOpacity
+                style={styles.commonTouchableStyle}
+                onPress={() => navigation.navigate("PlusMoreAccount")}
+                activeOpacity={0.5}
+              >
+                <View style={styles.moreCardStyle}>
+                  <IconComponent
+                    name={"plus-circle"}
+                    category={"Feather"}
+                    size={30}
+                    color={allColors.addBtnColors}
+                  />
+                  <MyText
+                    variant="bodyLarge"
+                    style={{ color: allColors.textColorFive }}
+                  >
+                    Add new
+                  </MyText>
+                </View>
+              </TouchableOpacity>
+              {cardsData?.length !== 0 &&
+                cardsData
+                  ?.filter((item) => item?.paymentNetwork)
+                  .map((e, index) => (
+                    <Chip
+                      key={index}
+                      data={e}
+                      onPress={handlePress}
+                      isClicked={selectedCardID === e.id}
+                      text={e.paymentNetwork}
+                      styles={styles}
+                      name={e.cardHolderName}
+                      cardName={e.checked}
+                    />
+                  ))}
+            </ScrollView>
+          </View>
+
+          {/* Add button */}
+          <View style={{ flexDirection: "column-reverse", flex: 1 }}>
+            <Button
+              onPress={handleAddRecurrence}
+              mode="contained"
+              labelStyle={{ fontSize: 15 }}
+              textColor={"black"}
               style={{
-                color: allColors.backgroundColorPrimary,
-                fontFamily: "Rubik_500Medium",
-                fontSize: 18,
+                borderColor: "transparent",
+                backgroundColor: allColors.addBtnColors,
+                borderRadius: 15,
+                borderTopRightRadius: 15,
+                borderTopLeftRadius: 15,
               }}
             >
-              Add Recurrence
-            </MyText>
-          </Button>
-        </View>
-      </ScrollView>
-
+              <MyText
+                style={{
+                  color: allColors.backgroundColorPrimary,
+                  fontFamily: "Karla_400Regular",
+                  fontSize: 18,
+                }}
+              >
+                Add Recurrence
+              </MyText>
+            </Button>
+          </View>
+        </ScrollView>
       </View>
-      {<MyDatePicker open={startDateOpen} setOpen={setStartDateOpen} fetchDates={fetchStartDates} selectedDate={selectedStartDate} selectedMonth={selectedStartMonth} selectedYear={selectedStartYear} setSelectedDate={setSelectedStartDate} setSelectedMonth={setSelectedStartMonth} setSelectedYear={setSelectedStartYear} disableTheDates={false} disablePreviousDates={true} screen={"Recurrence"}/>
+      {
+        <MyDatePicker
+          open={startDateOpen}
+          setOpen={setStartDateOpen}
+          fetchDates={fetchStartDates}
+          selectedDate={selectedStartDate}
+          selectedMonth={selectedStartMonth}
+          selectedYear={selectedStartYear}
+          setSelectedDate={setSelectedStartDate}
+          setSelectedMonth={setSelectedStartMonth}
+          setSelectedYear={setSelectedStartYear}
+          disableTheDates={false}
+          disablePreviousDates={true}
+          screen={"Recurrence"}
+        />
       }
 
       <Portal>
@@ -511,18 +592,29 @@ const PlusMoreRecurrence = ({ navigation }) => {
           onDismiss={() => setOpenNewRecurrence(false)}
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
         >
-          <Dialog.Title style={{color: allColors.textColorSecondary, fontFamily: "Rubik_400Regular"}}>Add new recurrence type</Dialog.Title>
+          <Dialog.Title
+            style={{
+              color: allColors.textColorSecondary,
+              fontFamily: "Karla_400Regular",
+            }}
+          >
+            Add new recurrence type
+          </Dialog.Title>
           <Dialog.Content>
-            <TextInput 
-              label={<MyText style={{color: allColors.universalColor}}>{"Name"}</MyText>}
+            <TextInput
+              label={
+                <MyText style={{ color: allColors.universalColor }}>
+                  {"Name"}
+                </MyText>
+              }
               value={addNewRecurrenceName}
               onChangeText={(val) => setAddNewRecurrenceName(val)}
               textColor={allColors.universalColor}
-              style={{backgroundColor: 'transparent'}}
+              style={{ backgroundColor: "transparent" }}
               underlineColor={allColors.textColorPrimary}
               selectionColor={allColors.textSelectionColor}
               activeUnderlineColor={allColors.textColorPrimary}
-              contentStyle={{fontFamily: "Rubik_400Regular"}}
+              contentStyle={{ fontFamily: "Karla_400Regular" }}
               keyboardType="default"
               autoFocus
             />
@@ -546,14 +638,11 @@ const PlusMoreRecurrence = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      {error && <SnackbarComponent errorMsg={errorMsg}/>}
+      {error && <SnackbarComponent errorMsg={errorMsg} />}
     </SafeAreaView>
   );
 };
 
 export default PlusMoreRecurrence;
 
-
-
-
-  // TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly
+// TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly

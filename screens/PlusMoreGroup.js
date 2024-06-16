@@ -74,20 +74,20 @@ const PlusMoreGroup = ({ navigation }) => {
     const checkError = () => {
       const tempArr = [...textInputs];
       tempArr.push({ id: idCounter, showCross: true, value: username });
-      const values = tempArr.map(obj => obj.value.trim().toLowerCase());
+      const values = tempArr.map((obj) => obj.value.trim().toLowerCase());
 
       // Check for duplicate values
       const duplicateValues = [];
       const uniqueValues = new Set();
-      
-      values.forEach(value => {
+
+      values.forEach((value) => {
         if (uniqueValues.has(value)) {
           duplicateValues.push(value);
         } else {
           uniqueValues.add(value);
         }
       });
-      
+
       if (duplicateValues.length > 0) {
         setErrorMsg("Please use unique names");
         return true;
@@ -143,7 +143,7 @@ const PlusMoreGroup = ({ navigation }) => {
             activeUnderlineColor="transparent"
             underlineColor="transparent"
             placeholderTextColor={allColors.placeholderTextColor}
-            contentStyle={{fontFamily: "Rubik_400Regular"}}
+            contentStyle={{ fontFamily: "Karla_400Regular" }}
             autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
@@ -155,14 +155,14 @@ const PlusMoreGroup = ({ navigation }) => {
         <View style={styles.line} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <MyText style={{color: allColors.universalColor}}>Add names</MyText>
+          <MyText style={{ color: allColors.universalColor }}>Add names</MyText>
           <View style={[styles.rowContainer]}>
             <TextInput
               style={styles.textInput}
               selectionColor={allColors.textSelectionColor}
               textColor={allColors.universalColor}
               placeholderTextColor={allColors.placeholderTextColor}
-              contentStyle={{fontFamily: "Rubik_400Regular"}}
+              contentStyle={{ fontFamily: "Karla_400Regular" }}
               underlineColorAndroid="transparent"
               activeUnderlineColor="transparent"
               underlineColor="transparent"
@@ -181,7 +181,7 @@ const PlusMoreGroup = ({ navigation }) => {
                 underlineColor="transparent"
                 autoFocus={index > 0}
                 placeholderTextColor={allColors.placeholderTextColor}
-                contentStyle={{fontFamily: "Rubik_400Regular"}}
+                contentStyle={{ fontFamily: "Karla_400Regular" }}
                 autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
@@ -211,7 +211,7 @@ const PlusMoreGroup = ({ navigation }) => {
           <Octicons
             name="plus"
             size={50}
-          color={allColors.addBtnColors}
+            color={allColors.addBtnColors}
             style={{ alignSelf: "center" }}
           />
         </TouchableOpacity>
@@ -233,7 +233,7 @@ const PlusMoreGroup = ({ navigation }) => {
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Rubik_500Medium",
+              fontFamily: "Karla_400Regular",
               fontSize: 18,
             }}
           >
@@ -246,44 +246,45 @@ const PlusMoreGroup = ({ navigation }) => {
   );
 };
 
-const makeStyles = allColors => StyleSheet.create({
-  container: {
-    backgroundColor: "transparent",
-    borderRadius: 8,
-    gap: 20,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textInput: {
-    flex: 1,
-    borderRadius: 15,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
-    backgroundColor: allColors.innerTextFieldColor,
-    borderColor: allColors.placeholderTextColor,
-    borderWidth: 2,
-    margin: 10,
-    marginLeft: 0,
-  },
-  iconContainer: {
-    marginLeft: 8,
-    marginRight: 10,
-  },
-  plusIconContainer: {
-    alignSelf: "flex-end",
-    padding: 10,
-  },
-  line: {
-    backgroundColor: allColors.backgroundColorQuinary,
-    height: 2,
-    borderRadius: 100,
-    width: "50%",
-    opacity: 0.5,
-    alignSelf: "center",
-  },
-});
+const makeStyles = (allColors) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: "transparent",
+      borderRadius: 8,
+      gap: 20,
+    },
+    rowContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    textInput: {
+      flex: 1,
+      borderRadius: 15,
+      borderTopRightRadius: 15,
+      borderTopLeftRadius: 15,
+      backgroundColor: allColors.innerTextFieldColor,
+      borderColor: allColors.placeholderTextColor,
+      borderWidth: 2,
+      margin: 10,
+      marginLeft: 0,
+    },
+    iconContainer: {
+      marginLeft: 8,
+      marginRight: 10,
+    },
+    plusIconContainer: {
+      alignSelf: "flex-end",
+      padding: 10,
+    },
+    line: {
+      backgroundColor: allColors.backgroundColorQuinary,
+      height: 2,
+      borderRadius: 100,
+      width: "50%",
+      opacity: 0.5,
+      alignSelf: "center",
+    },
+  });
 
 export default PlusMoreGroup;

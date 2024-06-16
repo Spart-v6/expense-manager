@@ -6,7 +6,7 @@ import {
   StyleSheet,
   StatusBar,
   Dimensions,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { Button } from "react-native-paper";
 import React from "react";
@@ -79,7 +79,7 @@ const currencyObj = [
 const WelcomeScreen = ({ navigation, route }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
-  const windowWidth = Dimensions.get('window').width;
+  const windowWidth = Dimensions.get("window").width;
 
   const [clickedCurrency, setClickedCurrency] = React.useState({
     name: currencyObj[0].name,
@@ -89,7 +89,7 @@ const WelcomeScreen = ({ navigation, route }) => {
     iconType: currencyObj[0].iconType,
   });
   const [isCurrencyClicked, setIsCurrencyClicked] = React.useState(() => {
-    if(route.params) {
+    if (route.params) {
       return {
         name: route.params.updatedCurr.name,
         id: route.params.updatedCurr.id,
@@ -140,7 +140,7 @@ const WelcomeScreen = ({ navigation, route }) => {
           {
             width: itemWidth,
             borderRadius: 26,
-            marginBottom: 20, 
+            marginBottom: 20,
           },
           isCurrencyClicked.id === item.id && {
             backgroundColor: allColors.addBtnColors,
@@ -160,7 +160,18 @@ const WelcomeScreen = ({ navigation, route }) => {
                 size={20}
                 color={allColors.addBtnColors}
               />
-              <MyText variant="titleMedium" style={{ color: allColors.universalColor, maxWidth:  Dimensions.get("window").width / 2 }} allowFontScaling={false} ellipsizeMode="tail" numberOfLines={3}>{item.name}</MyText>
+              <MyText
+                variant="titleMedium"
+                style={{
+                  color: allColors.universalColor,
+                  maxWidth: Dimensions.get("window").width / 2,
+                }}
+                allowFontScaling={false}
+                ellipsizeMode="tail"
+                numberOfLines={3}
+              >
+                {item.name}
+              </MyText>
             </View>
           </View>
         </TouchableOpacity>
@@ -178,7 +189,11 @@ const WelcomeScreen = ({ navigation, route }) => {
         flex: 1,
       }}
     >
-      <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+      <StatusBar
+        translucent
+        backgroundColor={"transparent"}
+        barStyle={allColors.barStyle}
+      />
       <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>
         <SimpleLineIcons
           name="globe-alt"
@@ -186,14 +201,20 @@ const WelcomeScreen = ({ navigation, route }) => {
           color={allColors.textColorPrimary}
           style={{ alignSelf: "center" }}
         />
-        <MyText variant="displaySmall" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}}>
+        <MyText
+          variant="displaySmall"
+          style={{
+            color: allColors.universalColor,
+            maxWidth: Dimensions.get("window").width / 2,
+          }}
+        >
           Select currency
         </MyText>
       </View>
 
       <ScrollView style={{ flex: 1, marginTop: 10 }}>
         <FlatList
-          scrollEnabled={false} 
+          scrollEnabled={false}
           data={currencyObj}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
@@ -201,12 +222,14 @@ const WelcomeScreen = ({ navigation, route }) => {
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 10,
-            justifyContent: 'space-between',
+            justifyContent: "space-between",
           }}
-          />
+        />
       </ScrollView>
-      
-      <View style={{ flex : 0.1, justifyContent: 'center', alignItems :'flex-end' }}>
+
+      <View
+        style={{ flex: 0.1, justifyContent: "center", alignItems: "flex-end" }}
+      >
         <Button
           onPress={handleContinue}
           mode="contained"
@@ -223,10 +246,10 @@ const WelcomeScreen = ({ navigation, route }) => {
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Rubik_500Medium",
+              fontFamily: "Karla_400Regular",
               fontSize: 18,
             }}
-            >
+          >
             Continue
           </MyText>
         </Button>
@@ -235,19 +258,20 @@ const WelcomeScreen = ({ navigation, route }) => {
   );
 };
 
-const makeStyles = allColors => StyleSheet.create({
-  item: {
-    flex: 1,
-    marginTop: 8,
-    marginBottom: 8,
-    height: 120,
-    marginRight: 10,
-    marginLeft: 10,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    backgroundColor: allColors.backgroundColorLessPrimary,
-  },
-});
+const makeStyles = (allColors) =>
+  StyleSheet.create({
+    item: {
+      flex: 1,
+      marginTop: 8,
+      marginBottom: 8,
+      height: 120,
+      marginRight: 10,
+      marginLeft: 10,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "flex-start",
+      backgroundColor: allColors.backgroundColorLessPrimary,
+    },
+  });
 
 export default WelcomeScreen;

@@ -41,26 +41,34 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [selectedItem, setSelectedItem] = React.useState(null);
 
   // for date
-  const [dateValue, setDateValue] = React.useState(moment().format("DD/MM/YYYY"));
+  const [dateValue, setDateValue] = React.useState(
+    moment().format("DD/MM/YYYY")
+  );
   const [open, setOpen] = React.useState(false);
   const [tempDate, setTempDate] = React.useState(moment().format("YYYY/MM/DD"));
-  const [selectedMonth, setSelectedMonth] = React.useState(moment().format("MMMM"));
+  const [selectedMonth, setSelectedMonth] = React.useState(
+    moment().format("MMMM")
+  );
   const [selectedYear, setSelectedYear] = React.useState(moment().year());
   const [selectedDate, setSelectedDate] = React.useState(moment().date());
 
-  const fetchDates = obj => {
+  const fetchDates = (obj) => {
     const { selectedDate, selectedMonth, selectedYear } = obj;
     const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format('MM');
-    const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
+    const month = moment().month(selectedMonth).format("MM");
+    const formattedDate = moment(
+      `${selectedYear}-${month}-${paddedDate}`
+    ).format("YYYY/MM/DD");
     setTempDate(formattedDate);
     setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  }
+  };
 
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
     route.params.currGrpMems.sort()
   );
-  const [groupIdentity, setGroupIdentity] = React.useState(route.params.grpIdentity);
+  const [groupIdentity, setGroupIdentity] = React.useState(
+    route.params.grpIdentity
+  );
 
   const [amountOfEachMember, setAmountOfEachMember] = React.useState({});
   // Setting isChecked true initially ( all members are checked intially )
@@ -72,8 +80,8 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
 
   const commonTextSection = (label, value, setter, keyboardType) => {
     const handleTextCheck = (val) => {
-      if (keyboardType === 'number-pad') {
-        val = val.replace(',', '.');
+      if (keyboardType === "number-pad") {
+        val = val.replace(",", ".");
         const regex = /^\d{0,10}(\.\d{0,2})?$/;
         if (!regex.test(val)) {
           return;
@@ -84,51 +92,57 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
 
     return (
       <TextInput
-        label={<MyText style={{color: allColors.universalColor}}>{label}</MyText>}
+        label={
+          <MyText style={{ color: allColors.universalColor }}>{label}</MyText>
+        }
         style={{ backgroundColor: "transparent" }}
         underlineColor={allColors.textColorPrimary}
         textColor={allColors.universalColor}
         selectionColor={allColors.textSelectionColor}
         placeholder={label === "Paid by" && "You paid? Leave it blank"}
         activeUnderlineColor={allColors.textColorPrimary}
-        contentStyle={{fontFamily: "Rubik_400Regular"}}
+        contentStyle={{ fontFamily: "Karla_400Regular" }}
         value={value}
         onChangeText={handleTextCheck}
         keyboardType={keyboardType}
         autoCorrect={false}
       />
-    )
+    );
   };
 
   const dateTextInput = (name) => {
     return (
       <TouchableRipple
         style={{
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           flex: 1,
           paddingLeft: 0,
           paddingTop: 15,
         }}
         onPress={() => setOpen(true)}
-        rippleColor={allColors.rippleColor} 
+        rippleColor={allColors.rippleColor}
       >
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
           <IconComponent
             name={"calendar"}
             category={"MaterialCommunityIcons"}
             size={25}
             color={allColors.addBtnColors}
           />
-           <TextInput
-            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
-            contentStyle={{fontFamily: "Rubik_400Regular"}}
+          <TextInput
+            style={{
+              backgroundColor: "transparent",
+              height: 20,
+              width: "100%",
+            }}
+            contentStyle={{ fontFamily: "Karla_400Regular" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
-            underlineColor={'transparent'}
-            activeUnderlineColor={'transparent'}
+            underlineColor={"transparent"}
+            activeUnderlineColor={"transparent"}
             placeholder={name}
-            underlineColorAndroid={'red'}
-            underlineStyle={{backgroundColor: 'transparent'}}
+            underlineColorAndroid={"red"}
+            underlineStyle={{ backgroundColor: "transparent" }}
           />
         </View>
       </TouchableRipple>
@@ -147,14 +161,14 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           iconStyle={{ borderRadius: 50 }}
           style={{ paddingLeft: 5 }}
         />
-        <MyText style={{color: allColors.universalColor}}>{text}</MyText>
+        <MyText style={{ color: allColors.universalColor }}>{text}</MyText>
       </View>
-    )
-  }
+    );
+  };
 
   const handleInputChange = (name, value, keyboardType) => {
-    if (keyboardType === 'number-pad') {
-      value = value.replace(',', '.');
+    if (keyboardType === "number-pad") {
+      value = value.replace(",", ".");
       const regex = /^\d{0,10}(\.\d{0,2})?$/;
       if (!regex.test(value)) {
         return;
@@ -231,56 +245,72 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           name,
           amount,
           isChecked: true,
-          markAsDone: false
+          markAsDone: false,
         };
       });
-    const finalRes = result.concat({ 
+    const finalRes = result.concat({
       sectionName,
       totalAmountSpent,
       whoPaid,
       id: Math.random() * 10,
       groupIdentity,
       dateOfSection: dateValue,
-      timeOfSection: moment().format('HH:mm:ss')
+      timeOfSection: moment().format("HH:mm:ss"),
     });
-    const isValidNumber = input => {
-      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
+    const isValidNumber = (input) => {
+      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
       return numberRegex.test(input);
-    }
+    };
     const checkTotalMembersAmount = () => {
       let sum = 0;
       for (let key in amountOfEachMember) {
-        if (amountOfEachMember.hasOwnProperty(key)) sum += +amountOfEachMember[key];
+        if (amountOfEachMember.hasOwnProperty(key))
+          sum += +amountOfEachMember[key];
       }
       return sum;
-    }
+    };
 
     const checkError = () => {
-      if (sectionName.length === 0) { setErrorMsg("Please fill the section name"); return true; }
-      if (!isValidNumber(totalAmountSpent)) {setErrorMsg("Please enter a valid amount"); return true;}
+      if (sectionName.length === 0) {
+        setErrorMsg("Please fill the section name");
+        return true;
+      }
+      if (!isValidNumber(totalAmountSpent)) {
+        setErrorMsg("Please enter a valid amount");
+        return true;
+      }
 
       // checks for whoPaid, whoPaid really exists inn the array
       const lastObject = finalRes[finalRes.length - 1];
       const restObjects = finalRes.slice(0, finalRes.length - 1);
-      const isWhoPaidValid = restObjects.some(obj => obj.name === lastObject.whoPaid);
-      const doesWhoPaidReallyExists = restObjects.slice(0, restObjects.length - 1).find(obj => obj.whoPaid === whoPaid);
+      const isWhoPaidValid = restObjects.some(
+        (obj) => obj.name === lastObject.whoPaid
+      );
+      const doesWhoPaidReallyExists = restObjects
+        .slice(0, restObjects.length - 1)
+        .find((obj) => obj.whoPaid === whoPaid);
       if (!isWhoPaidValid && !doesWhoPaidReallyExists) {
         if (whoPaid !== "") {
           setErrorMsg("The member is not selected or it does not exist");
-          return true; 
+          return true;
         }
       }
-      const isAmountNan = restObjects.some(obj => obj.amount === "NaN")
+      const isAmountNan = restObjects.some((obj) => obj.amount === "NaN");
       if (isAmountNan) {
-        setErrorMsg("Please enter correct amount or percentage for the members");
+        setErrorMsg(
+          "Please enter correct amount or percentage for the members"
+        );
         return true;
       }
-      if (checkTotalMembersAmount() > totalAmountSpent + 1) { // +- 1 
-        setErrorMsg("Individual members total amount must be less than or equal to the total amount spent");
+      if (checkTotalMembersAmount() > totalAmountSpent + 1) {
+        // +- 1
+        setErrorMsg(
+          "Individual members total amount must be less than or equal to the total amount spent"
+        );
         return true;
       }
       return false;
-    }
+    };
     if (checkError()) {
       setError(true);
       clearTimeout(timeoutRef.current);
@@ -316,11 +346,29 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         navigation={navigation}
         isPlus={true}
       />
-      <View style={{ marginLeft: 20, marginRight: 20, marginBottom: 10, gap: 20, flex: 1 }}>
-        {commonTextSection("Section name", sectionName, setSectionName, "default")}
-        <View style={{ flexDirection: 'row' }}>
+      <View
+        style={{
+          marginLeft: 20,
+          marginRight: 20,
+          marginBottom: 10,
+          gap: 20,
+          flex: 1,
+        }}
+      >
+        {commonTextSection(
+          "Section name",
+          sectionName,
+          setSectionName,
+          "default"
+        )}
+        <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 1, marginRight: 10 }}>
-            {commonTextSection("Total amount spent", totalAmountSpent, setTotalAmountSpent, "number-pad")}
+            {commonTextSection(
+              "Total amount spent",
+              totalAmountSpent,
+              setTotalAmountSpent,
+              "number-pad"
+            )}
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
             {commonTextSection("Paid by", whoPaid, setWhoPaid, "default")}
@@ -331,7 +379,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           {dateTextInput(dateValue)}
         </View>
 
-        <MyText style={{color: allColors.universalColor}}>Select members for this section</MyText>
+        <MyText style={{ color: allColors.universalColor }}>
+          Select members for this section
+        </MyText>
         <View
           style={{
             flexDirection: "row",
@@ -340,19 +390,40 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           }}
         >
           {commonCheckBox(divideEqually, setDivideEqually, "Divide Equally")}
-          {commonCheckBox(divideByPercent, setDivideByPercent, "Divide by percent")}
+          {commonCheckBox(
+            divideByPercent,
+            setDivideByPercent,
+            "Divide by percent"
+          )}
         </View>
 
         {divideByPercent && (
           <View
             style={{ flexDirection: "row", justifyContent: "center", gap: 30 }}
           >
-            <MyText style={[{color: allColors.universalColor},percentageLeft < 0 && {color: allColors.errorColor}]}>{percentageLeft.toFixed(2)}% left</MyText>
-            <MyText style={[{color: allColors.universalColor},totalAmountLeft < 0 && {color: allColors.errorColor}]}>{totalAmountLeft.toFixed(2)} left</MyText>
+            <MyText
+              style={[
+                { color: allColors.universalColor },
+                percentageLeft < 0 && { color: allColors.errorColor },
+              ]}
+            >
+              {percentageLeft.toFixed(2)}% left
+            </MyText>
+            <MyText
+              style={[
+                { color: allColors.universalColor },
+                totalAmountLeft < 0 && { color: allColors.errorColor },
+              ]}
+            >
+              {totalAmountLeft.toFixed(2)} left
+            </MyText>
           </View>
         )}
 
-        <ScrollView style={!divideByPercent && { marginTop: 35.8 }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={!divideByPercent && { marginTop: 35.8 }}
+          showsVerticalScrollIndicator={false}
+        >
           {currentGroupMembers?.map((name, index) => (
             <View key={index} style={styles.allGrpMems}>
               <BouncyCheckbox
@@ -366,9 +437,18 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               />
               <View style={styles.grpTexts}>
                 <View style={{ flexDirection: "column" }}>
-                  <MyText style={{color: allColors.universalColor, maxWidth: 250}} numberOfLines={1} ellipsizeMode="tail">{name}</MyText>
+                  <MyText
+                    style={{ color: allColors.universalColor, maxWidth: 250 }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {name}
+                  </MyText>
                   {divideByPercent && amountOfEachMember[name] && (
-                    <MyText variant="labelSmall" style={{color: allColors.universalColor}}>
+                    <MyText
+                      variant="labelSmall"
+                      style={{ color: allColors.universalColor }}
+                    >
                       {handleDividePercent(amountOfEachMember[name])}
                     </MyText>
                   )}
@@ -383,7 +463,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                 >
                   <TextInput
                     label={
-                      <MyText style={{color: allColors.universalColor}}>
+                      <MyText style={{ color: allColors.universalColor }}>
                         {divideByPercent ? "Percent" : "Amount"}
                       </MyText>
                     }
@@ -393,18 +473,24 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                       height: 50,
                     }}
                     value={amountOfEachMember[name] || ""}
-                    onChangeText={(value) => handleInputChange(name, value, "number-pad")}
+                    onChangeText={(value) =>
+                      handleInputChange(name, value, "number-pad")
+                    }
                     disabled={!isChecked[name]}
                     keyboardType="number-pad"
                     textColor={allColors.universalColor}
                     selectionColor={allColors.textSelectionColor}
-                    contentStyle={{fontFamily: "Rubik_400Regular"}}
+                    contentStyle={{ fontFamily: "Karla_400Regular" }}
                     underlineColor={allColors.textColorPrimary}
                     activeUnderlineColor={allColors.textColorPrimary}
                     scrollEnabled={true}
                     textAlignVertical="top"
                   />
-                  {divideByPercent && <MyText style={{color: allColors.universalColor}}>%</MyText>}
+                  {divideByPercent && (
+                    <MyText style={{ color: allColors.universalColor }}>
+                      %
+                    </MyText>
+                  )}
                 </View>
               </View>
             </View>
@@ -428,7 +514,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Rubik_500Medium",
+              fontFamily: "Karla_400Regular",
               fontSize: 18,
             }}
           >
@@ -436,11 +522,11 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           </MyText>
         </Button>
       </View>
-      {error && <SnackbarComponent errorMsg={errorMsg}/>}
-              
-      <MyDatePicker 
-        open={open} 
-        setOpen={setOpen} 
+      {error && <SnackbarComponent errorMsg={errorMsg} />}
+
+      <MyDatePicker
+        open={open}
+        setOpen={setOpen}
         fetchDates={fetchDates}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
@@ -451,7 +537,6 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         disableTheDates={false}
         screen={"PlusMoreSplitSection"}
       />
-
     </SafeAreaView>
   );
 };
