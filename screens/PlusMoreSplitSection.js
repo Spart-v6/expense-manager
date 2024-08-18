@@ -95,6 +95,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         label={
           <MyText style={{ color: allColors.universalColor }}>{label}</MyText>
         }
+        cursorColor={allColors.universalColor}
         style={{ backgroundColor: "transparent" }}
         underlineColor={allColors.textColorPrimary}
         textColor={allColors.universalColor}
@@ -135,6 +136,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               height: 20,
               width: "100%",
             }}
+            cursorColor={allColors.universalColor}
             contentStyle={{ fontFamily: "Karla_400Regular" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
@@ -476,6 +478,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                     onChangeText={(value) =>
                       handleInputChange(name, value, "number-pad")
                     }
+                    cursorColor={allColors.universalColor}
                     disabled={!isChecked[name]}
                     keyboardType="number-pad"
                     textColor={allColors.universalColor}

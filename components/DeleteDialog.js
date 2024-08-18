@@ -29,8 +29,8 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subt
           rippleColor={allColors.rippleColor}
           centered
         >
-          <View style={{padding: 10}}>
-            <MyText style={{ color: allColors.addBtnColors }}>Sure</MyText>
+          <View style={{padding: 10, backgroundColor: allColors.addBtnColors, borderRadius: 10 }}>
+            <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Sure</MyText>
           </View>
         </TouchableRipple>
       </Dialog.Actions>

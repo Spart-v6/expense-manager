@@ -11,13 +11,21 @@ import {
   Button,
   Dialog,
   Portal,
-  TouchableRipple 
+  TouchableRipple,
 } from "react-native-paper";
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addData, deleteData, updateData, storeCard, addRecentTransactions, updateRecentTransactions, deleteRecentTransactions } from "../redux/actions";
+import {
+  addData,
+  deleteData,
+  updateData,
+  storeCard,
+  addRecentTransactions,
+  updateRecentTransactions,
+  deleteRecentTransactions,
+} from "../redux/actions";
 import moment from "moment";
 import Icon1 from "react-native-vector-icons/Octicons";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -47,82 +55,86 @@ const FrequentCategories = ({ handleSelectedCategory }) => {
       }}
     >
       <View>
-        <IconPickerModal onSelectIcon={handleSelectIcon} textColor={allColors.textColorFive}/>
+        <IconPickerModal
+          onSelectIcon={handleSelectIcon}
+          textColor={allColors.textColorFive}
+        />
       </View>
     </View>
   );
 };
 
-const makeStyles = allColors => StyleSheet.create({
-  btn: {
-    borderColor: "transparent",
-    borderRadius: 10,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-  },
-  textbtn: {
-    color: allColors.textColorSecondary
-  },
-  selected: {
-    borderRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    backgroundColor: allColors.backgroundColorDatesSelected,
-    text: {
+const makeStyles = (allColors) =>
+  StyleSheet.create({
+    btn: {
+      borderColor: "transparent",
+      borderRadius: 10,
+      borderTopRightRadius: 10,
+      borderTopLeftRadius: 10,
+    },
+    textbtn: {
+      color: allColors.textColorSecondary,
+    },
+    selected: {
+      borderRadius: 20,
+      borderTopRightRadius: 20,
+      borderTopLeftRadius: 20,
+      backgroundColor: allColors.backgroundColorDatesSelected,
+      text: {
+        color: allColors.textColorPrimary,
+        fontFamily: "Karla_400Regular",
+      },
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22,
+      backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: allColors.backgroundColorLessPrimary,
+      borderRadius: 20,
+      width: "90%",
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    commonStyles: {
+      gap: 20,
+      marginTop: 20,
+    },
+    commonTouchableStyle: {
+      marginRight: 10,
+    },
+    moreCardStyle: {
+      padding: 15,
+      borderRadius: 10,
+      flexDirection: "column",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      backgroundColor: allColors.backgroundColorDates,
+      height: 100,
+      width: 125,
+    },
+    highlightedCardStyle: {
+      backgroundColor: allColors.backgroundColorSecondary,
       color: allColors.textColorPrimary,
-      fontFamily: "Karla_400Regular"
     },
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: allColors.backgroundColorLessPrimary,
-    borderRadius: 20,
-    width: "90%",
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    commonCardIconStyle: {
+      padding: 5,
+      backgroundColor: allColors.backgroundColorQuaternary,
+      borderRadius: 50,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  commonStyles: {
-    gap: 20,
-    marginTop: 20,
-  },
-  commonTouchableStyle: {
-    marginRight: 20,
-  },
-  moreCardStyle: {
-    padding: 15,
-    borderRadius: 10,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    backgroundColor: allColors.backgroundColorDates,
-    height: 100,
-    width: 125,
-  },
-  highlightedCardStyle: {
-    backgroundColor: allColors.backgroundColorSecondary,
-    color: allColors.textColorPrimary,
-  },
-  commonCardIconStyle: {
-    padding: 5,
-    backgroundColor: allColors.backgroundColorQuaternary,
-    borderRadius: 50,
-  },
-});
+  });
 
 const PlusMoreHome = ({ navigation, route }) => {
   const allColors = useDynamicColors();
@@ -225,18 +237,20 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [selectedMonth, setSelectedMonth] = useState(() => {
     if (route.params) {
       const [year, month, day] = route.params.updateItem.date.split("/");
-      const newMonth = moment().month(month - 1).format('MMMM');
+      const newMonth = moment()
+        .month(month - 1)
+        .format("MMMM");
       return newMonth;
     }
-    return moment().format("MMMM")
+    return moment().format("MMMM");
   });
   const [selectedYear, setSelectedYear] = useState(() => {
     if (route.params) {
       const [year, month, day] = route.params.updateItem.date.split("/");
       return +year;
     }
-    return moment().year()
-  })
+    return moment().year();
+  });
   const [selectedDate, setSelectedDate] = useState(() => {
     if (route.params) {
       const [year, month, day] = route.params.updateItem.date.split("/");
@@ -268,14 +282,25 @@ const PlusMoreHome = ({ navigation, route }) => {
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
         {/* TODO: Limit the amount digits to 10 only */}
-        <MyText style={[styles.textbtn, selectedButton === name && styles.selected.text]}>
+        <MyText
+          style={[
+            styles.textbtn,
+            selectedButton === name && styles.selected.text,
+          ]}
+        >
           {name}
         </MyText>
       </Button>
     );
   };
 
-  const commonTextInput = (name, setter, placeholder, keyboardType, style = {}) => {
+  const commonTextInput = (
+    name,
+    setter,
+    placeholder,
+    keyboardType,
+    style = {}
+  ) => {
     const defaultPlaceholder = "";
     let resolvedPlaceholder =
       placeholder === "Income"
@@ -285,8 +310,8 @@ const PlusMoreHome = ({ navigation, route }) => {
         : placeholder || defaultPlaceholder;
 
     const handleTextCheck = (val) => {
-      if (keyboardType === 'number-pad') {
-        val = val.replace(',', '.');
+      if (keyboardType === "number-pad") {
+        val = val.replace(",", ".");
         const regex = /^\d{0,10}(\.\d{0,2})?$/;
         if (!regex.test(val)) {
           return;
@@ -322,11 +347,12 @@ const PlusMoreHome = ({ navigation, route }) => {
           textColor={allColors.universalColor}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
+          cursorColor={allColors.universalColor}
           placeholderTextColor={allColors.placeholderTextColor}
           autoComplete="off"
           textContentType="none"
           value={name}
-          contentStyle={{fontFamily: "Karla_400Regular"}}
+          contentStyle={{ fontFamily: "Karla_400Regular" }}
           placeholder={resolvedPlaceholder}
           onChangeText={handleTextCheck}
           keyboardType={keyboardType}
@@ -359,31 +385,36 @@ const PlusMoreHome = ({ navigation, route }) => {
     return (
       <TouchableRipple
         style={{
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           flex: 1,
           paddingLeft: 0,
-          paddingTop: 15,
+          paddingTop: 12,
+          paddingBottom: 12,
         }}
         onPress={() => setOpen(true)}
-        rippleColor={allColors.rippleColor} 
       >
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 0}}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
           <IconComponent
             name={"calendar"}
             category={"MaterialCommunityIcons"}
             size={25}
             color={allColors.addBtnColors}
           />
-           <TextInput
-            style={{ backgroundColor: "transparent", height: 20, width: "100%" }}
-            contentStyle={{fontFamily: "Karla_400Regular"}}
+          <TextInput
+            style={{
+              backgroundColor: "transparent",
+              height: 20,
+              width: "100%",
+            }}
+            contentStyle={{ fontFamily: "Karla_400Regular" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
-            underlineColor={'transparent'}
-            activeUnderlineColor={'transparent'}
+            underlineColor={"transparent"}
+            activeUnderlineColor={"transparent"}
+            cursorColor={allColors.universalColor}
             placeholder={name}
-            underlineColorAndroid={'red'}
-            underlineStyle={{backgroundColor: 'transparent'}}
+            underlineColorAndroid={"red"}
+            underlineStyle={{ backgroundColor: "transparent" }}
           />
         </View>
       </TouchableRipple>
@@ -413,16 +444,16 @@ const PlusMoreHome = ({ navigation, route }) => {
       selectedCategory: selectedCategory,
       accCardSelected: selectedCardID,
     };
-    const isValidNumber = input => {
-      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;      
+    const isValidNumber = (input) => {
+      const numberRegex = /^[0-9]+(\.[0-9]{1,2})?$/;
       return numberRegex.test(input);
-    }
+    };
     const checkError = () => {
       if (expenseName.length === 0) {
         setErrorMsg("Please enter a expense name");
         return true;
       }
-      if (!isValidNumber(amountValue)) { 
+      if (!isValidNumber(amountValue)) {
         setErrorMsg("Please enter a valid amount value");
         return true;
       }
@@ -431,7 +462,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         return true;
       }
       return false;
-    }
+    };
     if (checkError()) {
       setError(true);
       clearTimeout(timeoutRef.current);
@@ -470,11 +501,13 @@ const PlusMoreHome = ({ navigation, route }) => {
   const fetchDates = (obj) => {
     const { selectedDate, selectedMonth, selectedYear } = obj;
     const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format('MM');
-    const formattedDate = moment(`${selectedYear}-${month}-${paddedDate}`).format('YYYY/MM/DD');
+    const month = moment().month(selectedMonth).format("MM");
+    const formattedDate = moment(
+      `${selectedYear}-${month}-${paddedDate}`
+    ).format("YYYY/MM/DD");
     setTempDate(formattedDate);
     setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -485,102 +518,141 @@ const PlusMoreHome = ({ navigation, route }) => {
         isUpdate={isUpdatePressed}
         isDeletePressed={(val) => setIsDeleteBtnPressed(val)}
       />
-      <View style={{flex: 1}}>
-
-      <ScrollView style={{ margin: 20 }} contentContainerStyle={{flexGrow: 1,justifyContent: 'flex-end', gap: 10}} showsVerticalScrollIndicator={false}>
-        <View
-          style={{
-            flexDirection: "row",
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={{ margin: 20 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "flex-end",
             gap: 10,
           }}
+          showsVerticalScrollIndicator={false}
         >
-          {incomeExpenseBtns("Income")}
-          {incomeExpenseBtns("Expense")}
-        </View>
-
-        <View style={{ marginTop: 10, gap: 20 }}>
-          {commonTextInput(expenseName, setExpenseName, selectedButton, "default")}
-          {commonTextInput(amountValue, setAmountValue, "Amount", "number-pad")}
-          {commonTextInput(description, setDescription, "Description", "default")}
-        </View>
-
-        <View style={{ flexDirection: "row", marginRight: 10 }}>
-          {dateTextInput(dateValue)}
-        </View>
-
-        <View style={{ ...styles.commonStyles, height: 150 }}>
-          <MyText style={{color: allColors.universalColor}} variant="bodyLarge">Payment network</MyText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              style={styles.commonTouchableStyle}
-              onPress={() => navigation.navigate("PlusMoreAccount")}
-              activeOpacity={0.5}
-            >
-              <View style={styles.moreCardStyle}>
-                <IconComponent
-                  name={"plus-circle"}
-                  category={"Feather"}
-                  size={30}
-                  color={allColors.addBtnColors}
-                />
-                <MyText
-                  variant="bodyLarge"
-                  style={{ color: allColors.textColorFive }}
-                >
-                  Add new
-                </MyText>
-              </View>
-            </TouchableOpacity>
-            {cardsData?.length !== 0 &&
-              cardsData
-                ?.filter((item) => item?.paymentNetwork)
-                .map((e, index) => (
-                  <Chip
-                    key={index}
-                    data={e}
-                    onPress={handlePress}
-                    isClicked={selectedCardID === e.id}
-                    text={e.paymentNetwork}
-                    styles={styles}
-                    name={e.cardHolderName}
-                    cardName={e.checked}
-                  />
-                ))}
-          </ScrollView>
-        </View>
-        <View style={{flex: 1}}/>
-
-        <View>
-          <Button
-            onPress={handleAddOrUpdateExpense}
-            mode="contained"
-            labelStyle={{ fontSize: 15 }}
-            textColor={"black"}
+          <View
             style={{
-              borderColor: "transparent",
-              backgroundColor: allColors.addBtnColors,
-              borderRadius: 15,
-              borderTopRightRadius: 15,
-              borderTopLeftRadius: 15
+              flexDirection: "row",
+              gap: 10,
             }}
           >
+            {incomeExpenseBtns("Income")}
+            {incomeExpenseBtns("Expense")}
+          </View>
+
+          <View style={{ marginTop: 10, gap: 20 }}>
+            {commonTextInput(
+              expenseName,
+              setExpenseName,
+              selectedButton,
+              "default"
+            )}
+            {commonTextInput(
+              amountValue,
+              setAmountValue,
+              "Amount",
+              "number-pad"
+            )}
+            {commonTextInput(
+              description,
+              setDescription,
+              "Description",
+              "default"
+            )}
+          </View>
+
+          <View style={{ flexDirection: "row", marginRight: 10 }}>
+            {dateTextInput(dateValue)}
+          </View>
+
+          <View style={{ ...styles.commonStyles, height: 150 }}>
             <MyText
+              style={{ color: allColors.universalColor }}
+              variant="bodyLarge"
+            >
+              Payment network
+            </MyText>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ alignItems: "center" }}
+            >
+              <View
+                style={{
+                  alignItems: "center",
+                  padding: 1,
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.commonTouchableStyle}
+                  onPress={() => navigation.navigate("PlusMoreAccount")}
+                  activeOpacity={0.5}
+                >
+                  <View style={styles.moreCardStyle}>
+                    <IconComponent
+                      name={"plus-circle"}
+                      category={"Feather"}
+                      size={25}
+                      color={allColors.addBtnColors}
+                    />
+                    <MyText
+                      variant="bodyLarge"
+                      style={{ color: allColors.textColorFive }}
+                    >
+                      Add new
+                    </MyText>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              {cardsData?.length !== 0 &&
+                cardsData
+                  ?.filter((item) => item?.paymentNetwork)
+                  .map((e, index) => (
+                    <Chip
+                      key={index}
+                      data={e}
+                      onPress={handlePress}
+                      isClicked={selectedCardID === e.id}
+                      text={e.paymentNetwork}
+                      styles={styles}
+                      name={e.cardHolderName}
+                      cardName={e.checked}
+                    />
+                  ))}
+            </ScrollView>
+          </View>
+          <View style={{ flex: 1 }} />
+
+          <View>
+            <Button
+              onPress={handleAddOrUpdateExpense}
+              mode="contained"
+              labelStyle={{ fontSize: 15 }}
+              textColor={"black"}
               style={{
-                color: allColors.backgroundColorPrimary,
-                fontFamily: "Karla_400Regular",
-                fontSize: 18,
+                borderColor: "transparent",
+                backgroundColor: allColors.addBtnColors,
+                borderRadius: 15,
+                borderTopRightRadius: 15,
+                borderTopLeftRadius: 15,
               }}
             >
-              {btnName}
-            </MyText>
-          </Button>
-        </View>
-      </ScrollView>
+              <MyText
+                style={{
+                  color: allColors.backgroundColorPrimary,
+                  fontFamily: "Karla_400Regular",
+                  fontSize: 18,
+                }}
+              >
+                {btnName}
+              </MyText>
+            </Button>
+          </View>
+        </ScrollView>
       </View>
 
-       <MyDatePicker 
-        open={open} 
-        setOpen={setOpen} 
+      <MyDatePicker
+        open={open}
+        setOpen={setOpen}
         fetchDates={fetchDates}
         selectedDate={selectedDate}
         selectedMonth={selectedMonth}
@@ -613,13 +685,18 @@ const PlusMoreHome = ({ navigation, route }) => {
             backgroundColor: allColors.backgroundColorLessPrimary,
           }}
         >
-          <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Karla_400Regular"}}>Choose a category</Dialog.Title>
-          <FrequentCategories
-            handleSelectedCategory={handleSelectedCategory}
-          />
+          <Dialog.Title
+            style={{
+              color: allColors.universalColor,
+              fontFamily: "Karla_400Regular",
+            }}
+          >
+            Choose a category
+          </Dialog.Title>
+          <FrequentCategories handleSelectedCategory={handleSelectedCategory} />
         </Dialog>
       </Portal>
-      {error && <SnackbarComponent errorMsg={errorMsg}/>}
+      {error && <SnackbarComponent errorMsg={errorMsg} />}
     </SafeAreaView>
   );
 };

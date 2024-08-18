@@ -139,11 +139,13 @@ const WelcomeScreen = ({ navigation, route }) => {
         style={[
           {
             width: itemWidth,
-            borderRadius: 26,
-            marginBottom: 20,
+            borderRadius: 25,
+            // marginBottom: 20,
           },
           isCurrencyClicked.id === item.id && {
-            backgroundColor: allColors.addBtnColors,
+            borderColor: allColors.addBtnColors,
+            borderWidth: 2,
+            borderRadius: 14,
           },
         ]}
       >
@@ -212,7 +214,7 @@ const WelcomeScreen = ({ navigation, route }) => {
         </MyText>
       </View>
 
-      <ScrollView style={{ flex: 1, marginTop: 10 }}>
+      <ScrollView style={{ flex: 1, marginTop: 10,  }}>
         <FlatList
           scrollEnabled={false}
           data={currencyObj}
@@ -228,7 +230,7 @@ const WelcomeScreen = ({ navigation, route }) => {
       </ScrollView>
 
       <View
-        style={{ flex: 0.1, justifyContent: "center", alignItems: "flex-end" }}
+        style={{ flex: 0, justifyContent: "center", alignItems: "flex-end" }}
       >
         <Button
           onPress={handleContinue}
@@ -262,11 +264,11 @@ const makeStyles = (allColors) =>
   StyleSheet.create({
     item: {
       flex: 1,
-      marginTop: 8,
-      marginBottom: 8,
+      marginTop: 5,
+      marginBottom: 5,
       height: 120,
-      marginRight: 10,
-      marginLeft: 10,
+      marginRight: 5,
+      marginLeft: 5,
       borderRadius: 20,
       justifyContent: "center",
       alignItems: "flex-start",

@@ -3,9 +3,9 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
-  Vibration,
   StyleSheet,
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
@@ -95,7 +95,9 @@ const SplitMoneyScreen = ({ navigation }) => {
   const handleLongDeleteGroup = (identity) => {
     setSelectedItemToDelete(identity);
     setDeleteDialogVisible(true);
-    Vibration.vibrate(1);
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Warning
+    )
   };
 
   const handleDelete = () => {

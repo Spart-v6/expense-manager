@@ -5,7 +5,6 @@ import MyText from "./MyText";
 import React from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from "moment";
 
@@ -18,7 +17,6 @@ const AppHeader = ({
   isUpdate,
   isDeletePressed,
   needSearch,
-  isUpdateCardScreen = false,
   isInfoPressed,
   needInfo = false
 }) => {
@@ -124,17 +122,13 @@ const AppHeader = ({
         <Appbar.Action
         icon={({ color, size }) => (
           <View style={{ alignItems: 'center' }}>
-            <Feather name="circle" size={25} color={allColors.textColorPrimary} style={{ position: 'absolute' }}/>
-            <AntDesign name="user" size={18} color={allColors.textColorPrimary} style={{ marginTop: 4, marginLeft: 1 }}/>
+            <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ position: 'absolute' }} />
           </View>
           )}
           onPress={() => navigation.navigate("SettingsScreen")}
         />
       )}
       {isPlus && isUpdate && (
-        <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
-      )}
-      {isUpdateCardScreen && (
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
       {

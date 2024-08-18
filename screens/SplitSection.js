@@ -2,9 +2,9 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  Vibration,
   Dimensions,
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 import { FAB, Card, Avatar, Portal } from "react-native-paper";
 import AppHeader from "../components/AppHeader";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -385,7 +385,9 @@ const SplitSection = ({ navigation, route }) => {
   const handleDeleteSection = (identity) => {
     setSelectedSectionToDelete(identity);
     setDeleteDialogVisible(true);
-    Vibration.vibrate(1);
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Warning
+    )
   };
 
   const handleDelete = () => {

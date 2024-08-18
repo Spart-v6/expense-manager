@@ -68,7 +68,7 @@ const makeStyles = (allColors) =>
       },
     },
     commonStyles: {
-      gap: 5,
+      gap: 20,
       marginTop: 20,
     },
     commonTouchableStyle: {
@@ -200,6 +200,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           ]}
           selectionColor={allColors.textSelectionColor}
           textColor={allColors.universalColor}
+          cursorColor={allColors.universalColor}
           underlineColor="transparent"
           activeUnderlineColor="transparent"
           placeholderTextColor={allColors.placeholderTextColor}
@@ -277,6 +278,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               height: 20,
               width: "100%",
             }}
+            cursorColor={allColors.universalColor}
             placeholderTextColor={allColors.textColorSecondary}
             contentStyle={{ fontFamily: "Karla_400Regular" }}
             disabled
@@ -501,27 +503,39 @@ const PlusMoreRecurrence = ({ navigation }) => {
             <MyText style={{ color: allColors.universalColor }}>
               Payment network
             </MyText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <TouchableOpacity
-                style={styles.commonTouchableStyle}
-                onPress={() => navigation.navigate("PlusMoreAccount")}
-                activeOpacity={0.5}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ alignItems: "center" }}
+            >
+              <View
+                style={{
+                  alignItems: "center",
+                  padding: 1,
+                  justifyContent: "center",
+                }}
               >
-                <View style={styles.moreCardStyle}>
-                  <IconComponent
-                    name={"plus-circle"}
-                    category={"Feather"}
-                    size={30}
-                    color={allColors.addBtnColors}
-                  />
-                  <MyText
-                    variant="bodyLarge"
-                    style={{ color: allColors.textColorFive }}
-                  >
-                    Add new
-                  </MyText>
-                </View>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.commonTouchableStyle}
+                  onPress={() => navigation.navigate("PlusMoreAccount")}
+                  activeOpacity={0.5}
+                >
+                  <View style={styles.moreCardStyle}>
+                    <IconComponent
+                      name={"plus-circle"}
+                      category={"Feather"}
+                      size={25}
+                      color={allColors.addBtnColors}
+                    />
+                    <MyText
+                      variant="bodyLarge"
+                      style={{ color: allColors.textColorFive }}
+                    >
+                      Add new
+                    </MyText>
+                  </View>
+                </TouchableOpacity>
+              </View>
               {cardsData?.length !== 0 &&
                 cardsData
                   ?.filter((item) => item?.paymentNetwork)
@@ -608,6 +622,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
                 </MyText>
               }
               value={addNewRecurrenceName}
+              cursorColor={allColors.universalColor}
               onChangeText={(val) => setAddNewRecurrenceName(val)}
               textColor={allColors.universalColor}
               style={{ backgroundColor: "transparent" }}

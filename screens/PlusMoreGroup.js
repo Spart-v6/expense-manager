@@ -141,6 +141,7 @@ const PlusMoreGroup = ({ navigation }) => {
             textColor={allColors.universalColor}
             underlineColorAndroid="transparent"
             activeUnderlineColor="transparent"
+            cursorColor={allColors.universalColor}
             underlineColor="transparent"
             placeholderTextColor={allColors.placeholderTextColor}
             contentStyle={{ fontFamily: "Karla_400Regular" }}
@@ -161,6 +162,7 @@ const PlusMoreGroup = ({ navigation }) => {
               style={styles.textInput}
               selectionColor={allColors.textSelectionColor}
               textColor={allColors.universalColor}
+              cursorColor={allColors.universalColor}
               placeholderTextColor={allColors.placeholderTextColor}
               contentStyle={{ fontFamily: "Karla_400Regular" }}
               underlineColorAndroid="transparent"
@@ -176,6 +178,7 @@ const PlusMoreGroup = ({ navigation }) => {
                 style={styles.textInput}
                 selectionColor={allColors.textSelectionColor}
                 textColor={allColors.universalColor}
+                cursorColor={allColors.universalColor}
                 underlineColorAndroid="transparent"
                 activeUnderlineColor="transparent"
                 underlineColor="transparent"

@@ -5,9 +5,9 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Vibration,
   Dimensions
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 import { FAB, Card, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import { FlashList } from "@shopify/flash-list";
@@ -62,7 +62,9 @@ const RecurrenceScreen = ({ navigation }) => {
   const handleLongPress = (item) => {
     setSelectedItemToDelete(item);
     setDeleteDialogVisible(true);
-    Vibration.vibrate(1);
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Warning
+    );
   };
 
   const handleDelete = () => {
@@ -79,9 +81,8 @@ const RecurrenceScreen = ({ navigation }) => {
             numberOfLines={1} ellipsizeMode="tail">
               {item.recurrenceName}
             </MyText>
-            <MyText variant="titleLarge" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 3}}
-            numberOfLines={1} ellipsizeMode="tail"
-            >
+            <MyText variant="titleLarge" style={[{maxWidth: Dimensions.get("window").width / 3}, item.paymentType === "Expense" ? {color: allColors.payRedTextBg}: {color: allColors.receiveGreenTextBg}]}
+            numberOfLines={1} ellipsizeMode="tail">
               {formatNumberWithCurrency(item.recurrenceAmount, currency.curr)}
             </MyText>
           </View>
@@ -190,7 +191,7 @@ const RecurrenceScreen = ({ navigation }) => {
 };
 const makeStyles = allColors => StyleSheet.create({
   card: {
-    backgroundColor: allColors.defaultAccSplitRecCard,
+    backgroundColor: allColors.backgroundColorLessPrimary,
     marginTop: 8,
     marginBottom: 8,
     elevation: 4,

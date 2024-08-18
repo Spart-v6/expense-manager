@@ -9,8 +9,8 @@ import {
   Dimensions,
   ScrollView,
   TouchableWithoutFeedback,
-  Vibration,
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 import { Dialog, Portal, Button, Divider } from "react-native-paper";
 import MyText from "./MyText";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -60,7 +60,7 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
     const handleDatePress = () => {
       setSelectedDate(item);
       onDateChange(item);
-      Vibration.vibrate(1);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     }
 
     if (item === null) return <View style={styles.nullCell} />;
@@ -70,10 +70,10 @@ const Calendar = ({ year, month, onDateChange, selectedDate, setSelectedDate, di
     const datesToBeDisabledInRecc = !disableTheDates && disable30DaysPrior && disablePreviousDates;
 
     const disableDateInScreen = () => {
-      if (screen === "Home") {
+      if (screen === "Home") { // future dates disables (perfect no changes required)
         return disableDates;
       }
-      else {
+      else { // dates disabled for plus more recurrence screen (need to enable future dates, previous dates are perfectc only one month back u can add)
         return datesToBeDisabledInRecc;
       }
     }
@@ -177,11 +177,12 @@ const MyDatePicker = ({
 
     const handleYearPress = () => {
       handleShowMoreYear();
-      setSelectedYear(isSelected ? null : +item.name);
+      setSelectedYear(isSelected ? moment().year() : +item.name);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     };
 
     return (
-      <TouchableOpacity onPress={handleYearPress} activeOpacity={0.5}>
+      <TouchableOpacity onPress={handleYearPress}>
         <View style={[styles.itemContainer, item.name === selectedYear && { backgroundColor: allColors.textColorPrimary, borderRadius: 50 }]}>
           <MyText variant="titleMedium" style={[{ color: allColors.universalColor} ,item.name === selectedYear &&{color: allColors.backgroundColorSecondary}]} allowFontScaling={false}>
             {item.name}
@@ -412,8 +413,16 @@ const MyDatePicker = ({
             <Button onPress={closeModal}>
               <MyText style={{ color: allColors.textColorPrimary }}>Cancel</MyText>
             </Button>
-            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={disableDates || datesToBeDisabledInRecc}>
-              <MyText style={[{ color: allColors.textColorPrimary }, disableDates || datesToBeDisabledInRecc && {color : allColors.textColorTertiary}]}>OK</MyText>
+            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={screen === "Home" ? disableDates : datesToBeDisabledInRecc}>
+            <MyText
+                style={[
+                  { color: allColors.textColorPrimary },
+                  screen === "Home" ? disableDates && { color: allColors.textColorTertiary }
+                    : datesToBeDisabledInRecc && { color: allColors.textColorTertiary },
+                ]}
+              >
+                OK
+              </MyText>
             </Button>
           </Dialog.Actions>
         </Dialog>

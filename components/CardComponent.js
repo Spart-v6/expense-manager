@@ -1,17 +1,20 @@
 import { View, StyleSheet, Dimensions, FlatList } from "react-native";
-import { Card } from "react-native-paper";
+import { Card, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { storeCard } from "../redux/actions";
+import { deleteCard, deleteData, deleteRecentTransactions, deleteRecurrences, storeCard, storeRecurrences } from "../redux/actions";
 import { FontAwesome5 } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MyText from "./MyText";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 import capitalizeSentence from "../helper/capEachWord";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import DeleteDialog from "./DeleteDialog";
+import * as Haptics from 'expo-haptics';
 
 const makeStyles = allColors =>
   StyleSheet.create({
@@ -20,11 +23,65 @@ const makeStyles = allColors =>
       borderRadius: 25,
       margin: 16,
       padding: 16,
+      position: "relative",
+      overflow: "hidden",
+      borderColor: '#141212',
+      borderWidth: 2,
+      shadowColor: '#000',
+      shadowOpacity: 1,
+      
     },
     content: {
       flexDirection: "row",
       alignItems: "center",
       marginTop: 30,
+    },
+    svgContainer: {
+      position: 'absolute',
+      right: -70,
+      top: -90,
+      opacity: 0.3,
+      width: 350,
+      height: 350,
+    },
+    lineContainer: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    line1: {
+      width: 300,
+      height: 40,
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      transform: [{ rotate: '45deg' }],
+      position: 'absolute',
+      top: -50,
+      right: -100,
+      opacity: 0.7
+    },
+    line2: {
+      width: 300,
+      height: 40,
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      transform: [{ rotate: '45deg' }],
+      position: 'absolute',
+      top: 0,
+      right: -80,
+      opacity: 0.6
+    },
+    line3: {
+      width: 300,
+      height: 40,
+      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+      transform: [{ rotate: '45deg' }],
+      position: 'absolute',
+      top: 50,
+      right: -60,
+      opacity: 0.5
     },
 });
 
@@ -66,12 +123,71 @@ const CardComponent = () => {
   const allCards = useSelector(state => state.cardReducer.allCards);
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
+  const [selectedCardToDel, setSelectedCardToDel] = useState(null);
+  const [isDeleteDialogVisible, setDeleteDialogVisible] = useState(false);
+
+  
+  // Code only when deleting a specific card, all related expenses and recurrences will be removed
+  const filteredArray = expensesData.filter(
+    (expense) => expense?.accCardSelected === selectedCardToDel
+  );
+
+  // #region Fetching recurrence data: delete a recurrence when deleting a card if it has a card associated with it.
+  useFocusEffect(
+    useCallback(() => {
+      fetchRecurrencesData();
+    }, [])
+  );
+
+  const fetchRecurrencesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_RECURRENCES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeRecurrences(newData));
+    } catch (e) {}
+  };
+
+  const recurrencesData = useSelector(
+    (state) => state.recurrenceReducer.allRecurrences
+  );
+  // #endregion
+
+
+  const hideDialog = () => setDeleteDialogVisible(false);
+
+  const handleAccountCardDelete = item => {
+    setSelectedCardToDel(item.id);
+    setDeleteDialogVisible(true);
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Warning
+    )
+  }
+
+  const handleAccountCardDeleteForever = () => {
+    setDeleteDialogVisible(false);
+    for (const obj of filteredArray) { dispatch(deleteData(obj.id)); dispatch(deleteRecentTransactions(obj.id)); }
+    for (const obj of recurrencesData) { 
+      if (obj.accCardSelected === selectedCardToDel) {
+        dispatch(deleteRecurrences(obj.id));
+      }
+    }
+    dispatch(deleteCard(selectedCardToDel));
+  }
+
   
   const renderItem = useCallback(({ item: crd }) => (
-    <Card
-      style={[styles.card]}
+    <TouchableOpacity
+      onLongPress={() => handleAccountCardDelete(crd)}
+      activeOpacity={0.8}
       onPress={() => navigation.navigate("CardDetailsScreen", { card: crd })}
     >
+
+    <Card style={[styles.card]}>
+      <View style={styles.lineContainer}>
+        <View style={styles.line1} />
+        <View style={styles.line2} />
+        <View style={styles.line3} />
+      </View>
       <Card.Content>
         <View
           style={{
@@ -137,9 +253,6 @@ const CardComponent = () => {
             }}
           >
             <View>
-              <MyText variant="titleMedium" style={{ color: allColors.universalColor }}>
-                Card holder name
-              </MyText>
               <MyText
                 variant="headlineSmall"
                 style={{
@@ -155,14 +268,11 @@ const CardComponent = () => {
             <View>
               {crd?.month === '' || crd?.year === '' ? (
                 <MyText variant="titleSmall" style={{ color: allColors.textColorPrimary }}>
-                  Valid Forever
+                  
                 </MyText>
               ) : (
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
-                  <MyText variant="titleMedium" style={{ color: allColors.textColorPrimary }}>
-                    Expiry
-                  </MyText>
-                  <View style={{ flexDirection: 'row', gap: 5 }}>
+                  <View style={{ flexDirection: 'row', gap: 5, opacity: 0.6 }}>
                     <MyText variant="headlineSmall" style={{ color: allColors.textColorPrimary }}>
                       {crd?.month}
                     </MyText>
@@ -180,9 +290,12 @@ const CardComponent = () => {
         </View>
       </Card.Content>
     </Card>
+    </TouchableOpacity>
+
   ), [currency, allColors]);
 
   return (
+    <>
     <View style={{ flex :1 }}>
     {
       allCards?.length > 0 ? (
@@ -207,6 +320,18 @@ const CardComponent = () => {
       )
     }
     </View>
+      <Portal>
+        <DeleteDialog
+          visible={isDeleteDialogVisible}
+          hideDialog={hideDialog}
+          deleteExpense={handleAccountCardDeleteForever}
+          allColors={allColors}
+          title={"card"}
+          content={"card"}
+          subtitle={", along with its expenses and associated recurrences."}
+        />
+      </Portal>
+    </>
   );
 };
 

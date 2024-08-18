@@ -107,12 +107,13 @@ const PlusMoreAccount = ({ navigation }) => {
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
           borderColor: allColors.placeholderTextColor,
-          borderWidth: 2,
+          borderWidth: 1,
           backgroundColor: allColors.innerTextFieldColor,
         }}
         selectionColor={allColors.textSelectionColor}
         textColor={allColors.universalColor}
         underlineColor="transparent"
+        cursorColor={allColors.universalColor}
         activeUnderlineColor="transparent"
         contentStyle={{ fontFamily: "Karla_400Regular" }}
         placeholderTextColor={allColors.placeholderTextColor}
@@ -185,7 +186,7 @@ const PlusMoreAccount = ({ navigation }) => {
             {textInput(
               paymentNetwork,
               setPaymentNetwork,
-              "Payment network (e.g., VISA)"
+              "Payment network (e.g., Visa, GPay)"
             )}
           </View>
           <View
@@ -211,6 +212,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 underlineColor={allColors.textColorPrimary}
                 allowFontScaling={false}
                 textColor={allColors.universalColor}
+                cursorColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
                 contentStyle={{ fontFamily: "Karla_400Regular" }}
@@ -237,6 +239,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 allowFontScaling={false}
                 underlineColor={allColors.textColorPrimary}
                 textColor={allColors.universalColor}
+                cursorColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
                 contentStyle={{ fontFamily: "Karla_400Regular" }}

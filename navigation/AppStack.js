@@ -25,11 +25,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import useDynamicColors from "../commons/useDynamicColors";
 import * as NavigationBar from "expo-navigation-bar";
 import { View, TouchableOpacity, ActivityIndicator, StatusBar, Dimensions, Animated } from "react-native";
+import { processColor, PlatformColor } from 'react-native';
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
+AsyncStorage.removeItem('hasAnimated');
 const navOptions = () => ({
   headerShown: false,
 });
@@ -46,9 +47,9 @@ const TabArr = [
   {
     route: "Accounts",
     label: "Accounts",
-    icon: "bank-outline",
-    focused: "bank",
-    category: "MaterialCommunityIcons",
+    icon: "card-outline",
+    focused: "card",
+    category: "Ionicons",
     component: AccountsScreen,
   },
   {
@@ -247,6 +248,8 @@ const WelcomeNavigator = () => (
 );
 
 const AppStack = () => {
+  // const color = processColor(PlatformColor('@android:color/system_neutral2_900'));
+  // NavigationBar.setBackgroundColorAsync(color);
   const allColors = useDynamicColors();
   NavigationBar.setBackgroundColorAsync("#000");
   const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");

@@ -32,6 +32,7 @@ export const IconComponent = ({ name, category, size=30, color=useDynamicColors(
   return <IconLibrary name={name} size={size} color={color} />;
 };
 
+// Icon library, can be found when adding expense
 const ITEM_WIDTH = 95; // Width of each item in the grid
 const NUM_COLUMNS = 3; // Number of columns in the grid
 

@@ -23,7 +23,8 @@
           "icon": "./assets/icon.png",
           "color": "#0B0B0B"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "assetBundlePatterns": [
       "**/*"

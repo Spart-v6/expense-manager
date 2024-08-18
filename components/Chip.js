@@ -16,22 +16,19 @@ const Chip = ({ data, onPress, isClicked, text, styles, name, cardName }) => {
         style={[
           {
             alignItems: "center",
-            padding: 2,
+            padding: 1,
             justifyContent: "center",
-            borderRadius: 6,
-            alignSelf: "flex-start",
             marginRight: 10,
-            borderRadius: 12,
           },
-          isClicked && { backgroundColor: allColors.addBtnColors },
+          isClicked && { borderColor: allColors.addBtnColors, borderWidth: 2, borderRadius: 14 },
         ]}
       >
         <TouchableOpacity
           onPress={handlePress}
-          activeOpacity={0.95}
+          activeOpacity={0.75}
           style={[
             styles.moreCardStyle,
-            { height: 97, borderRadius: 10, gap: 15 },
+            { height: 100, borderRadius: 10, gap: 15 },
           ]}
         >
           <IconComponent
