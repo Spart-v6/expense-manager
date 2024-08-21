@@ -14,6 +14,7 @@ import useDynamicColors from "./commons/useDynamicColors";
 import FontLoader from "./components/FontLoader";
 import MyText from "./components/MyText";
 import { View, SafeAreaView, StatusBar, Image, ActivityIndicator } from "react-native";
+import SplashScreen from "./screens/SplashScreen";
 
 const theme = {
   ...DefaultTheme,
@@ -38,6 +39,9 @@ const App = () => {
   const [notification, setNotification] = React.useState(false);
   const notificationListener = React.useRef();
   const responseListener = React.useRef();
+
+  // For splash scree animation
+  const [animationDone, setAnimationDone] = React.useState(false);
 
   React.useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -105,12 +109,17 @@ const App = () => {
 
   // #endregion
 
+  console.log("Animation done? " + animationDone);
+
   const handleLogginIn = () => {
-    if (loading) return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary }}>
-        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
-        <ActivityIndicator size="large" color={allColors.textColorFive}/>
-      </SafeAreaView>
+    if (!loading) return (
+      // <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary, justifyContent: 'center', alignContent: "center", alignItems: "center" }}>
+      //   <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+      //   <ActivityIndicator size="large" color={allColors.textColorFive}/>
+      // </SafeAreaView>
+      <>
+        <SplashScreen setAnimationDone={setAnimationDone} />
+      </>
     );
   
     if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;

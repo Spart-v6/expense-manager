@@ -4,10 +4,10 @@
     "slug": "thrifty-expense-manager",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/newIcons/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/newIcons/splash.png",
       "resizeMode": "cover",
       "backgroundColor": "#0B0B0B"
     },
@@ -36,7 +36,7 @@
       "package": "com.ankur24.expensemanager",
       "versionCode": 7,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/newIcons/adaptive-icon.png",
         "backgroundColor": "#0B0B0B"
       },
       "softwareKeyboardLayoutMode": "pan",

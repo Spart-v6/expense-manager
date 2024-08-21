@@ -75,7 +75,7 @@ const currencyObj = [
     iconType: "FontAwesome5",
   },
 ];
-
+// This is currencyScreen
 const WelcomeScreen = ({ navigation, route }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
@@ -134,18 +134,20 @@ const WelcomeScreen = ({ navigation, route }) => {
 
   const renderItem = ({ item }) => {
     const itemWidth = (windowWidth - 60) / 2;
+    const isSelected = isCurrencyClicked.id === item.id;
+
     return (
       <View
         style={[
           {
             width: itemWidth,
-            borderRadius: 25,
-            // marginBottom: 20,
+            margin: 10,
+            padding: isSelected ? 1 : 2,
           },
           isCurrencyClicked.id === item.id && {
             borderColor: allColors.addBtnColors,
-            borderWidth: 2,
-            borderRadius: 14,
+            borderWidth: 3,
+            borderRadius: 20
           },
         ]}
       >
@@ -222,9 +224,9 @@ const WelcomeScreen = ({ navigation, route }) => {
           keyExtractor={(item) => item.id}
           numColumns={2}
           contentContainerStyle={{
-            paddingHorizontal: 20,
-            paddingTop: 10,
-            justifyContent: "space-between",
+            // paddingHorizontal: 20,
+            // paddingTop: 10,
+            // justifyContent: "space-between",
           }}
         />
       </ScrollView>
@@ -264,11 +266,11 @@ const makeStyles = (allColors) =>
   StyleSheet.create({
     item: {
       flex: 1,
-      marginTop: 5,
-      marginBottom: 5,
+      // marginTop: 5,
+      // marginBottom: 5,
       height: 120,
-      marginRight: 5,
-      marginLeft: 5,
+      // marginRight: 5,
+      // marginLeft: 5,
       borderRadius: 20,
       justifyContent: "center",
       alignItems: "flex-start",
