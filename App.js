@@ -108,36 +108,40 @@ const App = () => {
   
 
   // #endregion
-
-  console.log("Animation done? " + animationDone);
+  // <SplashScreen setAnimationDone={setAnimationDone} />
 
   const handleLogginIn = () => {
-    if (!loading) return (
-      // <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary, justifyContent: 'center', alignContent: "center", alignItems: "center" }}>
-      //   <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
-      //   <ActivityIndicator size="large" color={allColors.textColorFive}/>
-      // </SafeAreaView>
-      <>
-        <SplashScreen setAnimationDone={setAnimationDone} />
-      </>
-    );
-  
-    if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
-    return (
-      <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
-        <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
-        <View style={{marginTop: 100, justifyContent: 'center', alignItems: 'center'}}>
-          <Image source={require('./assets/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
-        </View>
-        <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
 
-          <MyText variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </MyText>
-          {authMsg === "failed" && (
+    if(animationDone) {      
+      if (loading) return (
+          <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary, justifyContent: 'center', alignContent: "center", alignItems: "center" }}>
+          <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+          <ActivityIndicator size="large" color={allColors.textColorFive}/>
+        </SafeAreaView>
+      );
+      
+      if (!isBiometricAuthOn || (authorize || savedBiometricsNotAvl)) return <AppStack/>;
+      return (
+        <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
+          <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
+          <View style={{marginTop: 100, justifyContent: 'center', alignItems: 'center'}}>
+            <Image source={require('./assets/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
+          </View>
+          <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
+
+            <MyText variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </MyText>
+            {authMsg === "failed" && (
               <MyText style={{color: allColors.universalColor}}>{warningMsg}</MyText>
-          )}
-        </View>
-      </SafeAreaView>
-    )
+            )}
+          </View>
+        </SafeAreaView>
+      )
+    }
+    else {
+      return (
+        <SplashScreen setAnimationDone={setAnimationDone} />
+      )
+    }
   };
 
   return (
