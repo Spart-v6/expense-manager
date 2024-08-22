@@ -54,7 +54,7 @@ const App = () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  }, [animationDone]);
 
 
   // #region Biometrics
@@ -104,7 +104,7 @@ const App = () => {
     }
     retrieveLockState();
     handleBiometricAuth();
-  }, [isBiometricAuthOn]);
+  }, [isBiometricAuthOn, animationDone]);
   
 
   // #endregion
@@ -137,11 +137,7 @@ const App = () => {
         </SafeAreaView>
       )
     }
-    else {
-      return (
-        <SplashScreen setAnimationDone={setAnimationDone} />
-      )
-    }
+    else return <SplashScreen setAnimationDone={setAnimationDone} />;
   };
 
   return (
