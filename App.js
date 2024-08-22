@@ -112,7 +112,7 @@ const App = () => {
 
   const handleLogginIn = () => {
 
-    if(animationDone) {      
+    if(animationDone) {
       if (loading) return (
           <SafeAreaView style={{ flex: 1, backgroundColor: allColors.backgroundColorPrimary, justifyContent: 'center', alignContent: "center", alignItems: "center" }}>
           <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
