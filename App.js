@@ -125,9 +125,9 @@ const App = () => {
         <SafeAreaView style={{flex: 1, backgroundColor: allColors.backgroundColorPrimary}}>
           <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
           <View style={{marginTop: 100, justifyContent: 'center', alignItems: 'center'}}>
-            <Image source={require('./assets/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
+            <Image source={require('./assets/newIcons/adaptive-icon.png')} style={{ width: 100, height: 100 }}/>
           </View>
-          <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100}}>
+          <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100, gap: 10}}>
 
             <MyText variant="titleLarge" style={{color: allColors.universalColor}}> Authentication {authMsg} </MyText>
             {authMsg === "failed" && (

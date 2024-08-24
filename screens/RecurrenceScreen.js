@@ -27,7 +27,16 @@ import formatNumberWithCurrency from "../helper/formatter";
 import { getCurrencyFromStorage } from "../helper/constants";
 import * as Notifications from "expo-notifications";
 import DeleteDialog from "../components/DeleteDialog";
+import { Path, Svg } from "react-native-svg";
 
+
+const RightSideSVG = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="24" height="24" fill="black" fill-opacity="0.01"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.876 15.124C7.467 16.0927 8.3205 16.874 9.33752 17.3773C10.3545 17.8807 11.4934 18.0854 12.622 17.9677C13.7507 17.85 14.8228 17.4148 15.7142 16.7126C16.6055 16.0103 17.2795 15.0698 17.658 14H19.748C19.3645 15.4823 18.5638 16.8235 17.441 17.8645C16.3181 18.9054 14.9202 19.6024 13.4131 19.8727C11.906 20.1431 10.3531 19.9754 8.9384 19.3897C7.52374 18.8039 6.30682 17.8246 5.432 16.568L3 19V13H9L6.876 15.124ZM17.125 8.875C16.5337 7.90617 15.6799 7.12478 14.6626 6.62146C13.6452 6.11813 12.5061 5.91348 11.3772 6.03124C10.2483 6.149 9.17589 6.58434 8.28434 7.28678C7.3928 7.98922 6.71863 8.92999 6.34 10H4.25C4.63336 8.51711 5.4341 7.17532 6.55719 6.13387C7.68028 5.09243 9.07858 4.39505 10.5861 4.12448C12.0937 3.85392 13.6472 4.02154 15.0624 4.60745C16.4775 5.19336 17.6949 6.17296 18.57 7.43L21 5V11H15L17.125 8.875Z" fill="#D3D3D3" fill-opacity="0.31"/>
+  </svg>
+
+);
 const RecurrenceScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
@@ -191,7 +200,7 @@ const RecurrenceScreen = ({ navigation }) => {
 };
 const makeStyles = allColors => StyleSheet.create({
   card: {
-    backgroundColor: allColors.backgroundColorLessPrimary,
+    backgroundColor: allColors.defaultAccSplitRecCard,
     marginTop: 8,
     marginBottom: 8,
     elevation: 4,

@@ -382,6 +382,8 @@ const PlusMoreHome = ({ navigation, route }) => {
   };
 
   const dateTextInput = (name) => {
+    // converting date to human-readable format
+    const humanReadbleDate = moment(name, "DD/MM/YYYY").format("Do MMM YY");
     return (
       <TouchableRipple
         style={{
@@ -412,7 +414,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             underlineColor={"transparent"}
             activeUnderlineColor={"transparent"}
             cursorColor={allColors.universalColor}
-            placeholder={name}
+            placeholder={humanReadbleDate}
             underlineColorAndroid={"red"}
             underlineStyle={{ backgroundColor: "transparent" }}
           />

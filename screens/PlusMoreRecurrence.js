@@ -244,54 +244,58 @@ const PlusMoreRecurrence = ({ navigation }) => {
     setNewStartDatePh(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
   };
 
-  const dateInput = () => (
-    <View
-      style={{
-        flexDirection: "column",
-        flex: 0.5,
-        justifyContent: "center",
-        gap: 5,
-      }}
-    >
-      <TouchableRipple
-        rippleColor={allColors.rippleColor}
-        onPress={() => handleNewDatePress()}
+  const dateInput = () => {
+    // converting date to human-readable format
+    const humanReadbleDate = moment(newStartDatePh, "DD/MM/YYYY").format("Do MMM YY");
+    return (
+      <View
+        style={{
+          flexDirection: "column",
+          flex: 0.5,
+          justifyContent: "center",
+          gap: 5,
+        }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 0,
-            padding: 10,
-            paddingLeft: 0,
-          }}
+        <TouchableRipple
+          rippleColor={allColors.rippleColor}
+          onPress={() => handleNewDatePress()}
         >
-          <IconComponent
-            name={"calendar"}
-            category={"MaterialCommunityIcons"}
-            size={25}
-            color={allColors.addBtnColors}
-          />
-          <TextInput
+          <View
             style={{
-              backgroundColor: "transparent",
-              height: 20,
-              width: "100%",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 0,
+              padding: 10,
+              paddingLeft: 0,
             }}
-            cursorColor={allColors.universalColor}
-            placeholderTextColor={allColors.textColorSecondary}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
-            disabled
-            underlineColor={"transparent"}
-            activeUnderlineColor={"transparent"}
-            placeholder={newStartDatePh}
-            underlineColorAndroid={"red"}
-            underlineStyle={{ backgroundColor: "transparent" }}
-          />
-        </View>
-      </TouchableRipple>
-    </View>
-  );
+          >
+            <IconComponent
+              name={"calendar"}
+              category={"MaterialCommunityIcons"}
+              size={25}
+              color={allColors.addBtnColors}
+            />
+            <TextInput
+              style={{
+                backgroundColor: "transparent",
+                height: 20,
+                width: "100%",
+              }}
+              cursorColor={allColors.universalColor}
+              placeholderTextColor={allColors.textColorSecondary}
+              contentStyle={{ fontFamily: "Karla_400Regular" }}
+              disabled
+              underlineColor={"transparent"}
+              activeUnderlineColor={"transparent"}
+              placeholder={humanReadbleDate}
+              underlineColorAndroid={"red"}
+              underlineStyle={{ backgroundColor: "transparent" }}
+            />
+          </View>
+        </TouchableRipple>
+      </View>
+    );
+  }
   // #endregion
 
   const handleFrequencyChange = (e) => {
@@ -396,7 +400,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ margin: 20 }}
-          contentContainerStyle={{ gap: 10, flexGrow: 1 }}
+          contentContainerStyle={{ gap: 10, flexGrow: 1, justifyContent: 'flex-end' }}
           showsVerticalScrollIndicator={false}
         >
           <View

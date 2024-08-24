@@ -36,16 +36,16 @@ const SplashScreen = ({ setAnimationDone }) => {
         Animated.timing(pathTranslate, {
           toValue: 800,
           duration: 1000,
-          easing: Easing.inOut(Easing.cubic),
+          easing: Easing.inOut(Easing.exp),
           useNativeDriver: true,
         }),
         // Pause in the center for 2 seconds
-        Animated.delay(1000),
+        Animated.delay(500),
         // Continue to the right side of the screen
         Animated.timing(pathTranslate, {
           toValue: 2000,
           duration: 500,
-          easing: Easing.in(Easing.cubic),
+          easing: Easing.in(Easing.exp),
           useNativeDriver: true,
         }),
         // Fade out as the path exits
@@ -64,14 +64,14 @@ const SplashScreen = ({ setAnimationDone }) => {
     const path3Animation = createPathAnimation(path3Translate, path3Opacity);
 
     // Run the animations in a staggered fashion
-    Animated.stagger(10, [
+    Animated.stagger(5, [
       path1Animation,
       path2Animation,
       path3Animation,
     ]).start(() => {
       setTimeout(() => {
         setAnimationDone(true);
-      }, 500);
+      }, 200);
     });
   }, []);
 
