@@ -2,7 +2,7 @@
   "expo": {
     "name": "Thrifty",
     "slug": "thrifty-expense-manager",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "orientation": "portrait",
     "icon": "./assets/newIcons/icon.png",
     "userInterfaceStyle": "automatic",
@@ -12,7 +12,7 @@
       "backgroundColor": "#0B0B0B"
     },
     "notification": {
-      "icon": "./assets/newIcons/notify-icon.png",
+      "icon": "./assets/newIcons/notify-ico.png",
       "androidMode": "default",
       "androidCollapsedTitle": "Expense Reminder"
     },
@@ -20,8 +20,9 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/newIcons/icon.png",
-          "color": "#0B0B0B"
+          "icon": "./assets/newIcons/notify-ico.png",
+          "color": "#0B0B0B",
+          "defaultChannel": "default"
         }
       ],
       "expo-asset"
@@ -34,7 +35,7 @@
     },
     "android": {
       "package": "com.ankur24.expensemanager",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/newIcons/adaptive-icon.png",
         "backgroundColor": "#0B0B0B"
