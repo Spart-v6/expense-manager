@@ -47,20 +47,35 @@ const Expenses = ({ item, index, onPress }) => {
               </MyText>
             </View>
 
-            <View style={{flexDirection: 'column', gap: 2, flex: 1}}>
-              <View style={{flexDirection: 'row', justifyContent: "space-between"}}>
-                <MyText style={{fontSize: 20, color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 2}} numberOfLines={1} ellipsizeMode="tail">
+            <View style={{flexDirection: 'row', flex: 1, justifyContent: "space-between", alignItems: "center"}}>
+              <View>
+                <MyText style={{fontSize: 20, alignItems: "center" ,color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.7}} numberOfLines={1} ellipsizeMode="tail">
                   {item.name}
                 </MyText>
-
-                <MyText variant="titleSmall" numberOfLines={1} style={{color: item.type === "Income" ? allColors.successColor : allColors.warningColor,  maxWidth: Dimensions.get("window").width / 3, textAlign:"right"}} ellipsizeMode="tail">
+                {
+                  item.desc &&
+                  <MyText variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8 }}>
+                    {item.desc}
+                  </MyText>
+                }
+              </View>
+              <View>
+                <MyText
+                    variant="titleSmall"
+                    numberOfLines={1}
+                    style={{
+                      color:
+                        item.type === "Income"
+                          ? allColors.successColor
+                          : allColors.warningColor,
+                      maxWidth: Dimensions.get("window").width / 3,
+                      textAlign: "right",
+                    }}
+                    ellipsizeMode="tail"
+                  >
                   {item.type === "Income" ? "+" : "-"}{formatNumberWithCurrency(item.amount, currency.curr)}
                 </MyText>
-              </View>
-              <View style={{flexDirection: 'row' , justifyContent:"space-between"}}>
-                <MyText variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor,  maxWidth: Dimensions.get("window").width / 1.8 }}>
-                    {item.desc}
-                </MyText>
+
                 <MyText variant="titleSmall" numberOfLines={1} ellipsizeMode="tail" style={{color: allColors.universalColor, textAlign:"right",  maxWidth: Dimensions.get("window").width / 6}} >
                   {item.selectedCard}
                 </MyText>

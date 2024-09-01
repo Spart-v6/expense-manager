@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   SafeAreaView,
@@ -7,10 +7,11 @@ import {
   Dimensions,
 } from "react-native";
 import moment from "moment";
-import { Appbar, List, Subheading } from "react-native-paper";
+import { Appbar, Button, Divider, List, Menu, Subheading, Text, TouchableRipple } from "react-native-paper";
 import Expenses from "./Expenses";
 import useDynamicColors from "../commons/useDynamicColors";
-import BigList from "react-native-big-list";
+// Import FlashList instead of BigList
+import { FlashList } from "@shopify/flash-list";
 import sections from "../helper/dammy.json";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -18,12 +19,34 @@ import { useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addData, storeData, storeRecurrences, updateRecurrences } from "../redux/actions";
 import MyText from "../components/MyText";
+import Octicons from "react-native-vector-icons/Octicons";
+import { Chip } from 'react-native-paper';
+import { IconComponent } from "./IconPickerModal";
+import { getCurrencyFromStorage } from "../helper/constants";
+import formatNumberWithCurrency from "../helper/formatter";
 
-export default function BigSectionList({ filter }) {
+export default function BigSectionList() {
   const navigation = useNavigation();
   const allColors = useDynamicColors();
   const dispatch = useDispatch();
   const styles = makeStyles(allColors);
+
+  const [filter, setFilter] = useState("Daily");
+  const [visible, setVisible] = React.useState(false);
+  
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+  const [currency, setCurrency] = React.useState({curr: "$"});
+
+  React.useEffect(() => {
+    const fetchCurrency = async () => {
+      const storedCurrency = await getCurrencyFromStorage();
+      setCurrency(storedCurrency);
+    };
+    fetchCurrency();
+  }, []);
+
+
   useFocusEffect(
     useCallback(() => {
       fetchExpensesData();
@@ -40,50 +63,176 @@ export default function BigSectionList({ filter }) {
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
-  // Sort expenses data by date and time
-  const sortedData = useMemo(() => {
-    return expensesData.sort((a, b) => {
-      const aMoment = moment(`${a.date} ${a.time}`, "YYYY/MM/DD HH:mm:ss");
-      const bMoment = moment(`${b.date} ${b.time}`, "YYYY/MM/DD HH:mm:ss");
-      return bMoment - aMoment;
+  const parseDateString = (dateString) => moment(dateString, 'YYYY/MM/DD');
+  const parseDateTimeString = (date, time) => {
+    return moment(`${date} ${time}`, 'YYYY/MM/DD HH:mm:ss');
+  };
+
+  const sortedData = expensesData.sort((a, b) => {
+    return parseDateTimeString(b.date, b.time) - parseDateTimeString(a.date, a.time);
+  });
+
+  const groupByWeek = (data) => {
+    const grouped = {};
+  
+    data.forEach(item => {
+      const date = parseDateString(item.date);
+      const weekNumber = date.week(); // Get ISO week number
+      const year = date.format('YYYY'); // Get the year in YYYY format
+      
+      const key = `${year}-W${weekNumber}`; // Combine year and week number as the key
+  
+      if (!grouped[key]) {
+        grouped[key] = {
+          week: weekNumber,
+          year: year,
+          items: [],
+          totalAmount: 0
+        };
+      }
+  
+      const amount = parseFloat(item.amount);
+      grouped[key].totalAmount += item.type === "Income" ? amount : -amount;
+  
+      grouped[key].items.push(item);
     });
-  }, [expensesData]);
+  
+    return grouped;
+  };
 
-  // Group expenses data based on the selected filter
+  const groupByMonth = (data) => {
+    const grouped = {};
+  
+    data.forEach(item => {
+      const date = parseDateString(item.date);
+      const monthName = date.format('MMMM'); // Get month name
+      const year = date.format('YYYY'); // Get year
+  
+      const key = `${year}-${monthName}`; // Combine year and month name as the key
+  
+      if (!grouped[key]) {
+        grouped[key] = {
+          month: monthName,
+          year: year,
+          items: [],
+          totalAmount: 0
+        };
+      }
+  
+      const amount = parseFloat(item.amount);
+      grouped[key].totalAmount += item.type === "Income" ? amount : -amount;
+  
+      grouped[key].items.push(item);
+    });
+  
+    return grouped;
+  };
 
-  const groupedData = useMemo(() => {
-    switch (filter) {
-      case "Daily":
-        return groupByDay(sortedData).map((group) => group.data.flat());
-      case "Weekly":
-        return groupByWeek(sortedData).map((group) => group.data.flat());
-      case "Monthly":
-        return groupByMonth(sortedData).map((group) => group.data.flat());
-      case "Yearly":
-        return groupByYear(sortedData).map((group) => group.data.flat());
-      default:
-        return sortedData;
-    }
-  }, [filter, sortedData]);
+  const groupByYear = (data) => {
+    const grouped = {};
+  
+    data.forEach(item => {
+      const date = parseDateString(item.date);
+      const year = date.format('YYYY'); // Get year
+  
+      const key = year; // Year is the key
+  
+      if (!grouped[key]) {
+        grouped[key] = {
+          year: year,
+          items: [],
+          totalAmount: 0
+        };
+      }
+  
+      const amount = parseFloat(item.amount);
+      grouped[key].totalAmount += item.type === "Income" ? amount : -amount;
+  
+      grouped[key].items.push(item);
+    });
+  
+    return grouped;
+  };
+  
+  const groupedData = groupByWeek(sortedData);
+  const groupedDataByMonth = groupByMonth(sortedData);
+  const groupedDataByYear = groupByYear(sortedData);
 
-  const sectionListData = JSON.parse(JSON.stringify(groupedData));
+  const getWeekHeaders = (groupedData) => {
+    const dataWithHeaders = [];
+    
+    Object.keys(groupedData).forEach(key => {
+      const { week, year, items, totalAmount } = groupedData[key];
+      dataWithHeaders.push({ 
+        header: `Week ${week} of ${year} - ${totalAmount.toFixed(2)}`, 
+        totalAmount 
+      });
+      items.forEach(item => {
+        dataWithHeaders.push(item);
+      });
+    });
+  
+    return dataWithHeaders;
+  };
+  
+  const getMonthHeaders = (groupedData) => {
+    const dataWithHeaders = [];
+    
+    Object.keys(groupedData).forEach(key => {
+      const { month, year, items, totalAmount } = groupedData[key];
+      dataWithHeaders.push({ 
+        header: `${month} ${year} - ${totalAmount.toFixed(2)}`, 
+        totalAmount 
+      });
+      items.forEach(item => {
+        dataWithHeaders.push(item);
+      });
+    });
+  
+    return dataWithHeaders;
+  };
+
+  const getYearHeaders = (groupedData) => {
+    const dataWithHeaders = [];
+    
+    Object.keys(groupedData).forEach(key => {
+      const { year, items, totalAmount } = groupedData[key];
+      dataWithHeaders.push({ 
+        header: `${year} - ${totalAmount.toFixed(2)}`, 
+        totalAmount 
+      });
+      items.forEach(item => {
+        dataWithHeaders.push(item);
+      });
+    });
+  
+    return dataWithHeaders;
+  };
 
   const renderItem = ({ item, index }) => {
-    return (
-      <View
-        style={{ alignItems: "center", width: "95%", alignSelf: "center" }}
-        key={Math.random()}
-      >
-        <View>
-          <Expenses
-            item={item}
-            index={index}
-            onPress={(item) =>
-              navigation.navigate("PlusMoreHome", { updateItem: item })
-            }
-          />
-          <View style={styles.separator} />
+    if (item.header) {
+      // Split the string at the first occurrence of ' - '
+      const [leftText, ...rest] = item.header.split(' - ');
+      const rightText = rest.join(' - '); // Join the rest back to handle negative numbers
+
+      return (
+        <View style={{flexDirection: "row", justifyContent: "space-between", paddingLeft: 15, paddingRight: 15, paddingTop: 10}}>
+          <MyText variant="titleMedium" style={{color: 'white'}}>{leftText}</MyText>
+          <MyText variant="titleMedium" style={{color: 'white'}}>{formatNumberWithCurrency(rightText, currency.curr)}</MyText>
         </View>
+      );
+    }
+    
+    return (
+      <View style={{paddingLeft: 20, paddingRight: 20}}>
+        <Expenses
+          index={index}
+          item={item}
+          onPress={(item) =>
+            navigation.navigate("PlusMoreHome", { updateItem: item })
+          }
+        />
+        <View style={styles.separator} />
       </View>
     );
   };
@@ -94,72 +243,71 @@ export default function BigSectionList({ filter }) {
     </View>
   )
 
-  const renderSectionHeader = (section) => {
-    let sectionTitle = "";
-    if (filter === "Daily")
-      sectionTitle = sectionListData[section].map(({ date }) =>
-        moment(date, "YYYY/MM/DD").format("Do MMMM YYYY")
-      )[0];
-    if (filter === "Weekly") {
-      sectionTitle = sectionListData[section].map(({ date }) => {
-        const startDate = date;
-        const startWeek = moment(startDate, "YYYY/MM/DD").format("Wo");
-        const year = moment(startDate, "YYYY/MM/DD").format("YYYY");
-        const weekString = `${startWeek} week of ${year}`;
-        return weekString;
-      })[0];
-    }
-    if (filter === "Monthly") {
-      sectionTitle = sectionListData[section].map(({ date }) => {
-        const month = moment(date, "YYYY/MM/DD").format("MMMM");
-        const year = moment(date, "YYYY/MM/DD").format("YYYY");
-        const monthString = `${month}, ${year}`;
-        return monthString;
-      })[0];
-    }
-    if (filter === "Yearly") {
-      sectionTitle = sectionListData[section].map(({ date }) => {
-        const year = moment(date, "YYYY/MM/DD").format("YYYY");
-        return year;
-      })[0];
-    }
-
-    return (
-      <View style={styles.outerContainer}>
-        <>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "flex-start",
-            }}
-          >
-            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>{sectionTitle}</MyText>
-          </View>
-        </>
-      </View>
-    );
-  };
+  const dataToShow = () => {
+    if (filter === "Daily") return sortedData;
+    if (filter === "Weekly") return getWeekHeaders(groupedData);
+    if (filter === "Monthly") return getMonthHeaders(groupedDataByMonth);
+    if (filter === "Yearly") return getYearHeaders(groupedDataByYear);
+    return sortedData;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingRight: 20,
+          paddingLeft: 20,
+          alignContent: 'center',
+          alignItems: 'center'
+      }}>
+        <View>
+          <Chip icon={() => ( <IconComponent name="information" category={"MaterialCommunityIcons"} color={allColors.addBtnColors} size={20} /> )} mode="outlined">{filter}</Chip>
+        </View>
+        <Menu
+          anchorPosition="bottom"
+          contentStyle={{right: 0, top: 70, backgroundColor: allColors.bottomTabColor}}
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
+            <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openMenu}>
+              <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
+                <MyText variant="bodyLarge" style={{fontWeight: "bold"}}>Filters</MyText>
+                <Octicons
+                  name="filter"
+                  size={20}
+                  color={allColors.addBtnColors}
+                  style={{ alignSelf: "center" }}
+                />
+              </View>
+            </TouchableRipple>
+            </View>
+          }
+          >
+          <Menu.Item onPress={() => {setFilter("Weekly"); closeMenu()}} title="Weekly"/>
+          <Menu.Item onPress={() => {setFilter("Monthly"); closeMenu()}} title="Monthly" />
+          <Menu.Item onPress={() => {setFilter("Yearly"); closeMenu()}} title="Yearly" />
+          <Divider />
+          <Menu.Item onPress={() => {setFilter("Daily"); closeMenu()}} title="Reset" />
+        </Menu>
+      </View>
       <KeyboardAvoidingView style={styles.container}>
         {
-          sectionListData.length > 0 ? (
-            <BigList
-            style={styles.container}
-            sections={sectionListData}
-            // Item
-            itemHeight={70}
-            renderItem={renderItem}
-            renderEmpty={renderEmpty}
-            controlItemRender
-            // Section
-            sectionHeaderHeight={40}
-            renderSectionHeader={renderSectionHeader}
-            bounces={true}
-            />
-          ):
-          (
+          sortedData.length > 0 ? (
+            <View style={{flex: 1, paddingTop: 5}}>
+              
+              <FlashList
+                data={dataToShow()}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                estimatedItemSize={200}
+                alwaysBounceVertical
+                // ...other props
+              />
+            </View>
+          ) 
+          : (
             renderEmpty()
           )
         }
@@ -188,74 +336,3 @@ const makeStyles = allColors =>
         backgroundColor: allColors.backgroundColorPrimary,
     },
 });
-
-// Helper functions to group expenses data
-
-const groupByDay = (data) => {
-  return data.reduce((acc, item) => {
-    const date = moment(item.date, "YYYY/MM/DD").format("Do MMMM, YYYY");
-    const index = acc.findIndex((group) => group.title === date);
-    if (index >= 0) {
-      acc[index].data.push(item);
-    } else {
-      acc.push({
-        title: date,
-        data: [item],
-      });
-    }
-    return acc;
-  }, []);
-};
-
-const groupByWeek = (data) => {
-  return data.reduce((acc, item) => {
-    const week = moment(item.date, "YYYY/MM/DD").format("W");
-    const year = moment(item.date, "YYYY/MM/DD").format("YYYY");
-    const title = `${week}th Week of ${year}`;
-    const index = acc.findIndex((group) => group.title === title);
-    if (index >= 0) {
-      acc[index].data.push(item);
-    } else {
-      acc.push({
-        title: title,
-        data: [item],
-      });
-    }
-    return acc;
-  }, []);
-};
-
-const groupByMonth = (data) => {
-  return data.reduce((acc, item) => {
-    const month = moment(item.date, "YYYY/MM/DD").format("MMMM");
-    const year = moment(item.date, "YYYY/MM/DD").format("YYYY");
-    const title = `${month}, ${year}`;
-    const index = acc.findIndex((group) => group.title === title);
-    if (index >= 0) {
-      acc[index].data.push(item);
-    } else {
-      acc.push({
-        title: title,
-        data: [item],
-      });
-    }
-    return acc;
-  }, []);
-};
-
-const groupByYear = (data) => {
-  return data.reduce((acc, item) => {
-    const year = moment(item.date, "YYYY/MM/DD").format("YYYY");
-    const title = year;
-    const index = acc.findIndex((group) => group.title === title);
-    if (index >= 0) {
-      acc[index].data.push(item);
-    } else {
-      acc.push({
-        title: title,
-        data: [item],
-      });
-    }
-    return acc;
-  }, []);
-};

@@ -45,7 +45,7 @@ const useDynamicColors = () => {
 
       backgroundColorDatesSelected: PlatformColor("@android:color/system_accent1_700"),
       backgroundColorDates: PlatformColor("@android:color/system_neutral1_800"),
-      rippleColor: "rgba(255, 255, 255, .50)",
+      rippleColor: "rgba(255, 255, 255, .10)",
       innerTextFieldColor: PlatformColor("@android:color/system_accent1_100"),
       addBtnColors: PlatformColor("@android:color/system_accent1_300"),
       defaultHomeRecurrCard: PlatformColor("@android:color/system_accent1_800"),
@@ -87,7 +87,7 @@ const useDynamicColors = () => {
 
       backgroundColorDatesSelected: '#EF9A9A',
       backgroundColorDates: '#EF9A9A',
-      rippleColor: "rgba(255, 255, 255, .50)",
+      rippleColor: "rgba(255, 255, 255, .10)",
       innerTextFieldColor: '#EF9A9A',
       addBtnColors: '#EF9A9A',
       defaultHomeRecurrCard: '#EF9A9A',
@@ -143,7 +143,7 @@ const useDynamicColors = () => {
                                               "#039BE5", "#039BE5"),
         backgroundColorDates: getColor("@android:color/system_neutral1_100", "@android:color/system_neutral1_800", colorScheme , 
                                       "#90A4AE", "#90A4AE"),
-        rippleColor: colorScheme === "dark" ? "rgba(255, 255, 255, .50)" : "rgba(0, 0, 0, .30)" ,
+        rippleColor: colorScheme === "dark" ? "rgba(255, 255, 255, .10)" : "rgba(0, 0, 0, .30)" ,
         innerTextFieldColor: getColor("@android:color/system_accent2_100", "@android:color/system_neutral2_600", colorScheme, 
                                     "#3d79813d", "#3d79813d"),
         addBtnColors: getColor("@android:color/system_accent1_600", "@android:color/system_accent1_300", colorScheme, 

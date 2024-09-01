@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from "react";
-import { View, FlatList, Dimensions } from "react-native";
+import { View, Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { addData, addRecentTransactions, storeRecurrences, updateRecurrences } from "../redux/actions";
 import { storeRecentTransactions } from "../redux/actions";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { FlashList } from "@shopify/flash-list";
 
 const Separator = () => {
   return (
@@ -144,16 +145,16 @@ const RecentTransaction = () => {
   // #endregion
 
   return (
-    <View>
+    <View style={{marginBottom: 80}}>
       {
         recentData.length > 0 ? (
-          <FlatList
+          <FlashList
             scrollEnabled={false}
             data={recentData}
             keyExtractor={(item, index) => item.id + index}
             renderItem={renderItem}
             ItemSeparatorComponent={Separator}
-            style={{marginBottom: 80}}
+            estimatedItemSize={100}
           />
         )
         :

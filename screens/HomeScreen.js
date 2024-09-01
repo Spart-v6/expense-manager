@@ -41,7 +41,7 @@ const HomeScreen = ({ navigation, route }) => {
           <View style={{margin: 16, gap: 10, marginTop: 0}}>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
               <MyText style={{padding: 15, paddingLeft: 0, color: allColors.universalColor}} variant="titleMedium">
-                Recent transactions
+                Recently added
               </MyText>
               <TouchableOpacity
                 style={{
