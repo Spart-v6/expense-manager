@@ -45,6 +45,7 @@ const HomeScreen = ({ navigation, route }) => {
   // For snackbar variables
   const [showSnackbar, setShowSnackbar] = React.useState(false);
   const [snackbarContent, setSnackbarContent] = React.useState("");
+  const [gotchaError, setGotchaError] = React.useState(false);
   const onToggleSnackBar = () => setShowSnackbar(!showSnackbar);
   const onDismissSnackBar = () => setShowSnackbar(false);
   // Snackbar variables ends
@@ -59,7 +60,7 @@ const HomeScreen = ({ navigation, route }) => {
         type: ['application/json'], // Allowing both CSV and JSON 
         // type: ['text/csv', 'application/json'], // Allowing both CSV and JSON 
       });
-            
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const fileUri = result.assets[0].uri;
         const mimeType = result.assets[0].mimeType;
@@ -82,7 +83,7 @@ const HomeScreen = ({ navigation, route }) => {
           validateImportedData(jsonData, "json");
 
           onToggleSnackBar();
-          setSnackbarContent("JSON file has been uploaded and processed successfully");
+          if(!gotchaError) setSnackbarContent("JSON file has been uploaded and processed successfully");
         }
       } else {
         hideDialog();
@@ -116,12 +117,18 @@ const HomeScreen = ({ navigation, route }) => {
   const cardsData = useSelector((state) => state.cardReducer.allCards);
 
   const validateImportedData = (data, type) => {
+    // validating if the array is empty
+    if(data.length === 0) {
+      onToggleSnackBar();
+      setSnackbarContent(`Error: No data to add.`);
+      setGotchaError(true);
+      return;
+    }
+
     if (type === 'csv') {
       // TODO: This feature will be added in the future
     }
     if (type === 'json') {
-      var gotchaError = false;
-
       const validCardsMap = new Map();
       cardsData.forEach(card => {
         if (!validCardsMap.has(card.paymentNetwork)) {
@@ -133,40 +140,62 @@ const HomeScreen = ({ navigation, route }) => {
       data.forEach(expense => {
         const { selectedCard, card_h_name, amount, name, desc, date, type } = expense;
 
+        // validating if the array contains one object which is empty
+        const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
+        const hasSingleEmptyObject = data.length === 1 && isEmptyObject(data[0]);
+        if(hasSingleEmptyObject) {
+          setGotchaError(true);
+          onToggleSnackBar();
+          setSnackbarContent(`Error: No data to add.`);
+          return;
+        }
+
         // Validating selectedCard and card holder name
         if (validCardsMap.has(selectedCard)) {
           if (!validCardsMap.get(selectedCard).has(card_h_name)) {
+            setGotchaError(true);
+            onToggleSnackBar();
             setSnackbarContent(`Error: Imported card holder name "${card_h_name}" and payment network "${selectedCard}" do not match existing card details.`);
-            gotchaError = true;
+            return;
           }
         } else {
-          gotchaError =  true;
+          setGotchaError(true);
+          onToggleSnackBar();
           setSnackbarContent(`Error: "${selectedCard}" does not exist in the card details.`);
+          return;
         }
 
         // validating amount
         if (isNaN(amount) || amount <= 0 || amount.length > 9) {
+          onToggleSnackBar();
           setSnackbarContent(`Error: Amount "${amount}" in expenseData is not a positive number or is not less than 10 digits`);
-          gotchaError = true;
+          setGotchaError(true);
+          return;
         }
 
         // validating date
         if (date && date.trim() !== "" && !moment(date, "YYYY/MM/DD", true).isValid()) {
+          onToggleSnackBar();
           setSnackbarContent(`Error: Date "${date}" in expenseData is not in the correct format.`);
-          gotchaError = true;
+          setGotchaError(true);
+          return;
         }
 
 
         // validating type
         if (type !== "Income" && type !== "Expense") {
+          onToggleSnackBar();
           setSnackbarContent(`Error: Type "${type}" in expenseData is not either "Income" or "Expense"`);
-          gotchaError = true;
+          setGotchaError(true);
+          return;
         }
 
         // valdating name
         if(name === undefined || name.length === 0) {
+          onToggleSnackBar();
           setSnackbarContent(`Error: Name "${name}" in expenseData is either empty or is undefined`);
-          gotchaError = true;
+          setGotchaError(true);
+          return;
         }
 
       });
