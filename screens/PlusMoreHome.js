@@ -686,6 +686,11 @@ const PlusMoreHome = ({ navigation, route }) => {
             height: 400,
             backgroundColor: allColors.backgroundColorLessPrimary,
           }}
+          theme={{
+            colors: {
+              backdrop: "#00000099",
+            },
+          }}
         >
           <Dialog.Title
             style={{

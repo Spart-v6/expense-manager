@@ -5,6 +5,7 @@ import {
   StyleSheet,
   View,
   Dimensions,
+  ActivityIndicator
 } from "react-native";
 import moment from "moment";
 import { Appbar, Button, Divider, List, Menu, Subheading, Text, TouchableRipple } from "react-native-paper";
@@ -31,6 +32,7 @@ export default function BigSectionList() {
   const dispatch = useDispatch();
   const styles = makeStyles(allColors);
 
+  const [loading, setLoading] = useState(true); // Loading state
   const [filter, setFilter] = useState("Daily");
   const [visible, setVisible] = React.useState(false);
   
@@ -55,10 +57,12 @@ export default function BigSectionList() {
 
   const fetchExpensesData = async () => {
     try {
+      setLoading(true); // Set loading to true when fetching starts
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeData(newData));
     } catch (e) {}
+    finally { setLoading(false) }
   };
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
@@ -292,6 +296,11 @@ export default function BigSectionList() {
           <Menu.Item onPress={() => {setFilter("Daily"); closeMenu()}} title="Reset" />
         </Menu>
       </View>
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      ) : (
       <KeyboardAvoidingView style={styles.container}>
         {
           sortedData.length > 0 ? (
@@ -312,6 +321,7 @@ export default function BigSectionList() {
           )
         }
       </KeyboardAvoidingView>
+      )}
     </SafeAreaView>
   );
 }
@@ -334,5 +344,10 @@ const makeStyles = allColors =>
         alignItems: "flex-start",
         paddingLeft: 5,
         backgroundColor: allColors.backgroundColorPrimary,
+    },
+    loaderContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
     },
 });

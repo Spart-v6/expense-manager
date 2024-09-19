@@ -421,6 +421,11 @@ const SettingsScreen = ({ navigation }) => {
           visible={openChangeName}
           onDismiss={() => setOpenChangeName(false)}
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+          theme={{
+            colors: {
+              backdrop: "#00000099",
+            },
+          }}
         >
           <Dialog.Title
             style={{

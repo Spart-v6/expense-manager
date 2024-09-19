@@ -609,6 +609,11 @@ const PlusMoreRecurrence = ({ navigation }) => {
           dismissable
           onDismiss={() => setOpenNewRecurrence(false)}
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+          theme={{
+            colors: {
+              backdrop: "#00000099",
+            },
+          }}
         >
           <Dialog.Title
             style={{

@@ -11,6 +11,11 @@ const DeleteDialog = ({ visible, hideDialog, deleteExpense, title, content, subt
       visible={visible}
       onDismiss={hideDialog}
       style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+      theme={{
+        colors: {
+          backdrop: "#00000099",
+        },
+      }}
     >
       <Dialog.Title style={{color: allColors.universalColor, fontFamily: "Karla_400Regular"}}>Delete {title}?</Dialog.Title>
       <Dialog.Content>
