@@ -41,6 +41,7 @@ const useDynamicColors = () => {
       errorColor: "#d32f2f",
       barStyle: "light-content",
       universalColor: "#F5F5F5",
+      universalColorInverted: "#333333",
       sameColor: "#333333",
 
       backgroundColorDatesSelected: PlatformColor("@android:color/system_accent1_700"),
@@ -83,6 +84,7 @@ const useDynamicColors = () => {
       errorColor: "#d32f2f",
       barStyle: "light-content",
       universalColor: "#F5F5F5",
+      universalColorInverted: "#333333",
       sameColor: "#333333",
 
       backgroundColorDatesSelected: '#EF9A9A',
@@ -135,6 +137,7 @@ const useDynamicColors = () => {
         errorColor: "#d32f2f",
         barStyle: colorScheme === "dark" ? "light-content" : "dark-content",
         universalColor: colorScheme === "dark" ? "#F5F5F5" : "#333333",
+        universalColorInverted: colorScheme === "dark" ? "#333333" : "#F5F5F5",
         sameColor: colorScheme === "dark" ? "#333333" : "#F5F5F5",
         tabBtnColor: getColor("@android:color/system_accent2_200", "@android:color/system_neutral1_500", colorScheme),
 
@@ -150,7 +153,7 @@ const useDynamicColors = () => {
                                 "#1565C0","#1565C0"),
         defaultHomeRecurrCard: getColor("@android:color/system_accent1_200", "@android:color/system_accent1_800", colorScheme, 
                                         "#039BE5", "#039BE5"),
-        defaultAccSplitRecCard: getColor("@android:color/system_accent3_100", "@android:color/system_accent2_800", colorScheme, 
+        defaultAccSplitRecCard: getColor("@android:color/system_accent1_200", "@android:color/system_accent2_800", colorScheme, 
                                           "#5eb4c0ba", "#5eb4c0ba"),
         receiveGreenBg: colorScheme === "dark" ? "#073b00" : "#b7f397" ,
         receiveGreenTextBg: colorScheme === "dark" ? "#b4f095" : "#0b2906" ,

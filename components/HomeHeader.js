@@ -196,7 +196,7 @@ const DashboardCard = ({ currency }) => {
                 color={allColors.successColor}
                 style={{ alignSelf: "center" }}
               />
-              <MyText style={{ color: allColors.textColorFive }}>
+              <MyText style={{ color: allColors.textColorSecondary }}>
                 + {formatNumberWithCurrency(totalIncomeForMonth, currency)}
               </MyText>
             </View>
@@ -212,7 +212,7 @@ const DashboardCard = ({ currency }) => {
                 color={allColors.warningColor}
                 style={{ alignSelf: "center" }}
               />
-              <MyText style={{ color: allColors.textColorFive }}>
+              <MyText style={{ color: allColors.textColorSecondary }}>
                 - {formatNumberWithCurrency(totalExpenseForMonth, currency)}
               </MyText>
             </View>

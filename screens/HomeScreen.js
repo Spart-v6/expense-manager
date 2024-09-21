@@ -4,9 +4,9 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
-import { FAB, Button, Dialog, Portal, Snackbar } from "react-native-paper";
+import { FAB, Dialog, Portal, Snackbar, Divider } from "react-native-paper";
 import { HomeHeader, ExpensesList } from "../components";
 import React, { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -28,6 +28,7 @@ const AppHeaderMemoized = React.memo(AppHeader);
 
 const HomeScreen = ({ navigation, route }) => {
   const allColors = useDynamicColors();
+  const styles = makeStyles(allColors);
   const dispatch = useDispatch();
 
   // for animating next and back dialog box screen
@@ -138,7 +139,7 @@ const HomeScreen = ({ navigation, route }) => {
       });
 
       data.forEach(expense => {
-        const { selectedCard, card_h_name, amount, name, desc, date, type } = expense;
+        const { paymentNetwork: selectedCard, cardHolderName: card_h_name, amount, name, desc, date, type } = expense;
 
         // validating if the array contains one object which is empty
         const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -218,7 +219,7 @@ const HomeScreen = ({ navigation, route }) => {
     data.forEach(expense => {
       const { selectedCard, card_h_name, amount, name, desc, date, type } = expense;
 
-      const selectedCardId = getCardId(selectedCard, card_h_name);
+      const selectedCardId = getCardId(card_h_name, selectedCard);
 
       const currentTime = moment().add(timeOffset, 'seconds').format("HH:mm:ss");
 
@@ -318,18 +319,21 @@ const HomeScreen = ({ navigation, route }) => {
             entering={SlideInLeft.duration(300)}
             exiting={SlideOutLeft.duration(300)}
           >
-            <Dialog.Title>Upload a JSON file</Dialog.Title>
-            <Dialog.Content>
-              <MyText variant="bodyLarge" style={{ fontWeight: 'bold' }}>File upload instructions</MyText>
-              <MyText variant="bodyMedium">1. Type of Expense (Income or Expense)</MyText>
-              <MyText variant="bodyMedium">2. Expense name</MyText>
-              <MyText variant="bodyMedium">3. Amount</MyText>
-              <MyText variant="bodyMedium">4. Description (optional)</MyText>
-              <MyText variant="bodyMedium">5. Date (Current date will be used if not provided)</MyText>
-              <MyText variant="bodyMedium">6. Payment network (Card name and payment network must match exactly in Accounts)</MyText>
+            <Dialog.Title style={{color: allColors.universalColor}}>Upload a JSON file</Dialog.Title>
+            <Divider/>
+            <Dialog.Content style={{paddingTop: 10}}>
+              <MyText variant="bodyLarge" style={{ fontWeight: 'bold', color: allColors.universalColor }}>File upload instructions</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>1. Type of Expense (Income or Expense)</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>2. Expense name</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>3. Amount</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>4. Description (optional)</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>5. Date (Current date will be used if not provided)</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>6. Payment network (Card name and payment network must match exactly in Accounts)</MyText>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={nextStep} contentStyle={{backgroundColor: allColors.addBtnColors}} style={{width: "30%"}} textColor={allColors.universalColor}>Next</Button>
+              <TouchableOpacity onPress={nextStep} style={styles.button} activeOpacity={0.5}>
+                <MyText style={styles.buttonText}>Next</MyText>
+              </TouchableOpacity>
             </Dialog.Actions>
           </Animated.View>
         )}
@@ -340,25 +344,30 @@ const HomeScreen = ({ navigation, route }) => {
             entering={SlideInRight.duration(300)}
             exiting={SlideOutRight.duration(300)}
           >
-            <Dialog.Title>File Upload Format</Dialog.Title>
-            <Dialog.Content>
-              <MyText variant="bodyMedium" style={{ fontWeight: 'bold' }}>Please ensure the file is properly formatted before uploading.</MyText>
-              <MyText variant="bodyMedium" style={{ fontWeight: 'bold' }}>Below is an example for reference:</MyText>
-              <MyText variant="bodyMedium">{'[{'}</MyText>
-              <MyText variant="bodyMedium"> {'"amount" : "100"'} </MyText>
-              <MyText variant="bodyMedium"> {'"date" : "YYYY/MM/DD"'} </MyText>
-              <MyText variant="bodyMedium"> {'"desc" : "It is optional"'} </MyText>
-              <MyText variant="bodyMedium"> {'"name" : "The name of expense"'} </MyText>
-              <MyText variant="bodyMedium"> {'"selectedCard" : "Should be existing card with exact name"'} </MyText>
-              <MyText variant="bodyMedium"> {'"card_h_name" : "Card holder name, must match with existing card"'} </MyText>
-              <MyText variant="bodyMedium"> {'"type" : "Income"'} </MyText>
-              <MyText variant="bodyMedium">{'},'} </MyText>
-              <MyText variant="bodyMedium">{'// and more ...'} </MyText>
-              <MyText variant="bodyMedium">{']'} </MyText>
+            <Dialog.Title style={{color: allColors.universalColor}}>File Upload Format</Dialog.Title>
+            <Divider/>
+            <Dialog.Content style={{paddingTop: 10}}>
+              <MyText variant="bodyMedium" style={{ fontWeight: 'bold', color: allColors.universalColor }}>Please ensure the file is properly formatted before uploading.</MyText>
+              <MyText variant="bodyMedium" style={{ fontWeight: 'bold', color: allColors.universalColor }}>Below is an example for reference:</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{'[{'}</MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"amount" : "100",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"date" : "YYYY/MM/DD",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"desc" : "It is optional",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"name" : "The name of expense",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"paymentNetwork" : "Payment network, must match with existing card",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"cardHolderName" : "Card holder name, must match with existing card",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}> {'"type" : "Income",'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{'},'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{'// and more ...'} </MyText>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>{']'} </MyText>
             </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={previousStep} contentStyle={{backgroundColor: allColors.addBtnColors}} style={{width: "30%"}} textColor={allColors.universalColor}>Back</Button>
-              <Button onPress={importFile} contentStyle={{backgroundColor: allColors.addBtnColors}} style={{width: "30%"}} textColor={allColors.universalColor}>Attach file</Button>
+            <Dialog.Actions style={{gap: 10}}>
+              <TouchableOpacity onPress={previousStep} style={styles.button} activeOpacity={0.5}>
+                <MyText style={styles.buttonText}>Back</MyText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={importFile} style={styles.button} activeOpacity={0.5}>
+                <MyText style={styles.buttonText}>Attach file</MyText>
+              </TouchableOpacity>
             </Dialog.Actions>
           </Animated.View>
         )}
@@ -381,5 +390,22 @@ const HomeScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+
+const makeStyles = allColors =>
+  StyleSheet.create({
+    button: {
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: allColors.textColorFour,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+});
 
 export default HomeScreen;

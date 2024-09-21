@@ -410,20 +410,20 @@ const MyDatePicker = ({
             )}
           </Dialog.Content>
           <Dialog.Actions style={{marginTop: 10, height: 60}}>
-            <Button onPress={closeModal}>
-              <MyText style={{ color: allColors.textColorPrimary }}>Cancel</MyText>
-            </Button>
-            <Button onPress={submitDates} contentStyle={{ width: 60 }} disabled={screen === "Home" ? disableDates : datesToBeDisabledInRecc}>
-            <MyText
-                style={[
-                  { color: allColors.textColorPrimary },
-                  screen === "Home" ? disableDates && { color: allColors.textColorTertiary }
-                    : datesToBeDisabledInRecc && { color: allColors.textColorTertiary },
-                ]}
-              >
-                OK
-              </MyText>
-            </Button>
+              <TouchableOpacity onPress={closeModal} style={styles.button} activeOpacity={0.5}>
+                <MyText style={styles.buttonText}>Cancel</MyText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={submitDates} style={styles.button} activeOpacity={0.5} disabled={screen === "Home" ? disableDates : datesToBeDisabledInRecc}>
+                <MyText
+                  style={[
+                    styles.buttonText,
+                    screen === "Home" ? disableDates && { color: allColors.textColorTertiary }
+                      : datesToBeDisabledInRecc && { color: allColors.textColorTertiary },
+                  ]}
+                >
+                  OK
+                </MyText>
+              </TouchableOpacity>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -509,6 +509,19 @@ StyleSheet.create({
     left: -10,
     right: -10,
     bottom: -10,
+  },
+  button: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: allColors.textColorFour,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

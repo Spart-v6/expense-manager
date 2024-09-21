@@ -496,6 +496,7 @@ const SplitSection = ({ navigation, route }) => {
                 shadowColor: "transparent",
               },
               tabBarPressOpacity: 1,
+              tabBarPressColor: "transparent",
             }}
           >
             <Tab.Screen name="Sections">

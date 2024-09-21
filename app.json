@@ -2,7 +2,7 @@
   "expo": {
     "name": "Thrifty",
     "slug": "thrifty-expense-manager",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "orientation": "portrait",
     "icon": "./assets/newIcons/icon.png",
     "userInterfaceStyle": "automatic",
@@ -36,7 +36,7 @@
     },
     "android": {
       "package": "com.ankur24.expensemanager",
-      "versionCode": 14,
+      "versionCode": 15,
       "adaptiveIcon": {
         "foregroundImage": "./assets/newIcons/adaptive-icon.png",
         "backgroundColor": "#0B0B0B"

@@ -220,9 +220,9 @@ export default function BigSectionList() {
       const rightText = rest.join(' - '); // Join the rest back to handle negative numbers
 
       return (
-        <View style={{flexDirection: "row", justifyContent: "space-between", paddingLeft: 15, paddingRight: 15, paddingTop: 10}}>
-          <MyText variant="titleMedium" style={{color: 'white'}}>{leftText}</MyText>
-          <MyText variant="titleMedium" style={{color: 'white'}}>{formatNumberWithCurrency(rightText, currency.curr)}</MyText>
+        <View style={[{flexDirection: "row", justifyContent: "space-between", paddingLeft: 15, paddingRight: 15, paddingTop: 25}, index === 0 && {paddingTop: 10}]}>
+          <MyText variant="titleMedium" style={{color:allColors.universalColor}}>{leftText}</MyText>
+          <MyText variant="titleMedium" style={{color:allColors.universalColor}}>{formatNumberWithCurrency(rightText, currency.curr)}</MyText>
         </View>
       );
     }
@@ -266,18 +266,18 @@ export default function BigSectionList() {
           alignItems: 'center'
       }}>
         <View>
-          <Chip icon={() => ( <IconComponent name="information" category={"MaterialCommunityIcons"} color={allColors.addBtnColors} size={20} /> )} mode="outlined">{filter}</Chip>
+          <Chip icon={() => ( <IconComponent name="information" category={"MaterialCommunityIcons"} color={allColors.addBtnColors} size={20} /> )} style={{backgroundColor: allColors.backgroundColorDatesSelected, borderColor: allColors.universalColor}} textStyle={{color: allColors.universalColor}} mode="outlined">{filter}</Chip>
         </View>
         <Menu
           anchorPosition="bottom"
-          contentStyle={{right: 0, top: 70, backgroundColor: allColors.bottomTabColor}}
+          contentStyle={{right: 0, top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
           visible={visible}
           onDismiss={closeMenu}
           anchor={
             <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
             <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openMenu}>
               <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
-                <MyText variant="bodyLarge" style={{fontWeight: "bold"}}>Filters</MyText>
+                <MyText variant="bodyLarge" style={{fontWeight: "bold", color: allColors.universalColor}}>Filters</MyText>
                 <Octicons
                   name="filter"
                   size={20}
@@ -289,22 +289,22 @@ export default function BigSectionList() {
             </View>
           }
           >
-          <Menu.Item onPress={() => {setFilter("Weekly"); closeMenu()}} title="Weekly"/>
-          <Menu.Item onPress={() => {setFilter("Monthly"); closeMenu()}} title="Monthly" />
-          <Menu.Item onPress={() => {setFilter("Yearly"); closeMenu()}} title="Yearly" />
-          <Divider />
-          <Menu.Item onPress={() => {setFilter("Daily"); closeMenu()}} title="Reset" />
+          <Menu.Item onPress={() => {setFilter("Weekly"); closeMenu()}} title="Weekly" titleStyle={{color: allColors.universalColor}}/>
+          <Menu.Item onPress={() => {setFilter("Monthly"); closeMenu()}} title="Monthly" titleStyle={{color: allColors.universalColor}}/>
+          <Menu.Item onPress={() => {setFilter("Yearly"); closeMenu()}} title="Yearly" titleStyle={{color: allColors.universalColor}}/>
+          <Divider style={styles.line}/>
+          <Menu.Item onPress={() => {setFilter("Daily"); closeMenu()}} title="Reset" titleStyle={{color: allColors.universalColor}}/>
         </Menu>
       </View>
       {loading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color={allColors.universalColor} />
         </View>
       ) : (
       <KeyboardAvoidingView style={styles.container}>
         {
           sortedData.length > 0 ? (
-            <View style={{flex: 1, paddingTop: 5}}>
+            <View style={{flex: 1, paddingTop: 5, paddingBottom: 20}}>
               
               <FlashList
                 data={dataToShow()}
@@ -312,7 +312,6 @@ export default function BigSectionList() {
                 keyExtractor={(item, index) => index.toString()}
                 estimatedItemSize={200}
                 alwaysBounceVertical
-                // ...other props
               />
             </View>
           ) 
@@ -349,5 +348,12 @@ const makeStyles = allColors =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
+    },
+    line: {
+      height: 2,
+      borderRadius: 100,
+      width: "100%",
+      opacity: 0.5,
+      alignSelf: "center",
     },
 });

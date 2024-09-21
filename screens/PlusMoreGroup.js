@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
-import { Text, TextInput, Button } from "react-native-paper";
+import { Text, TextInput, Button, Divider } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Octicons from "react-native-vector-icons/Octicons";
 import useDynamicColors from "../commons/useDynamicColors";
@@ -153,7 +153,7 @@ const PlusMoreGroup = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.line} />
+        <Divider style={styles.line}/>
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <MyText style={{ color: allColors.universalColor }}>Add names</MyText>
@@ -281,7 +281,6 @@ const makeStyles = (allColors) =>
       padding: 10,
     },
     line: {
-      backgroundColor: allColors.backgroundColorQuinary,
       height: 2,
       borderRadius: 100,
       width: "50%",
