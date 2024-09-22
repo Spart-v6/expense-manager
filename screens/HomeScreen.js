@@ -402,7 +402,7 @@ const makeStyles = allColors =>
       justifyContent: 'center',
     },
     buttonText: {
-      color: allColors.textColorFour,
+      color: allColors.textColorSecondary,
       fontSize: 16,
       fontWeight: '700',
     },
