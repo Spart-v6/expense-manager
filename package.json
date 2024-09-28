@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@animatereactnative/stagger": "^0.3.0",
+    "@dietime/react-native-date-picker": "^1.2.1",
     "@expo-google-fonts/karla": "^0.2.3",
     "@expo-google-fonts/poppins": "^0.2.3",
     "@expo-google-fonts/rubik": "^0.2.3",

@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   Dimensions
 } from "react-native";
-import { Button, Dialog, Portal, TextInput, TouchableRipple } from "react-native-paper";
+import { Button, Dialog, Portal, Text, TextInput, HelperText } from "react-native-paper";
 import { ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
-import { storeCard, storeData } from "../redux/actions";
+import { deleteData, deleteRecentTransactions, storeCard, storeData } from "../redux/actions";
 import AnimatedEntryScreen from "../components/AnimatedEntryScreen";
 import { IconComponent } from "../components/IconPickerModal";
 import AppHeader from "../components/AppHeader";
@@ -27,9 +27,9 @@ import moment from "moment";
 const AppHeaderMemoized = React.memo(AppHeader);
 
 const AllExpensesScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const allColors = useDynamicColors();
   // #region =========== Fetching card details here
-  const dispatch = useDispatch();
   useFocusEffect(
     useCallback(() => {
       fetchAllCardsData();
@@ -45,78 +45,104 @@ const AllExpensesScreen = ({ navigation }) => {
   };
   // #endregion =========== End
 
+  // #region fetching expenses for deletetion purpose
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchExpensesData();
+    }, [])
+  );
+
+  const fetchExpensesData = async () => {
+    try {
+      const res = await AsyncStorage.getItem("ALL_EXPENSES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeData(newData));
+    } catch (e) {}
+  };
+
+  const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
+  // #endregion
+
+
   const [onDeleteRange, setOnDeleteRange] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const showDialog = () => setOnDeleteRange(true);
-  const hideDialog = () => setOnDeleteRange(false);
+  const hideDialog = () => {
+    setOnDeleteRange(false);
+    setIsSubmitted(false);
+  }
 
-  const [open, setOpen] = useState(false);
-  const [startSelectedDate, setStartSelectedDate] = useState(moment().date());
-  const [startSelectedMonth, setStartSelectedMonth] = useState(moment().format("MMMM"));
-  const [startSelectedYear, setStartSelectedYear] = useState(moment().year());
+  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState("");
 
-  // const [endSelectedDate, setEndSelectedDate] = useState(moment().date());
-  // const [endSelectedMonth, setEndSelectedMonth] = useState(moment().format("MMMM"));
-  // const [endSelectedYear, setEndSelectedYear] = useState(moment().year());
+  const validateDate = (date) => {
+    const dateRegex = /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/;
+    
+    if (!dateRegex.test(date)) return false;
 
-  // const [date, setDate] = useState(moment().format("YYYY/MM/DD"));
-  // const [formattedDate, setFormattedDate] = useState(moment().format("YYYY/MM/DD"));
-
-  const fetchDates = (obj) => {
-    const { selectedDate, selectedMonth, selectedYear } = obj;
-    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format("MM");
-    const formattedDate = moment(
-      `${selectedYear}-${month}-${paddedDate}`
-    ).format("YYYY/MM/DD");
-    console.log("The formatted date is " + formattedDate);
-    // setDate(formattedDate);
-    // setFormattedDate(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
+    const [year, month, day] = date.split('/').map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    return day <= daysInMonth;
   };
 
+  const filterByDateRange = (data, startDate, endDate) => {
+    const start = moment(startDate, 'YYYY/MM/DD');
+    const end = moment(endDate, 'YYYY/MM/DD');
 
-  const dateTextInput = name => {
-    // converting date to human-readable format
-    const humanReadbleDate = moment(name, "DD/MM/YYYY").format("Do MMM YY");
-    return (
-      <TouchableRipple
-        style={{
-          backgroundColor: "transparent",
-          flex: 1,
-          paddingLeft: 0,
-          paddingTop: 12,
-          paddingBottom: 12,
-        }}
-        onPress={() => setOpen(true)}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
-          <IconComponent
-            name={"calendar"}
-            category={"MaterialCommunityIcons"}
-            size={25}
-            color={allColors.addBtnColors}
-          />
-          <TextInput
-            style={{
-              backgroundColor: "transparent",
-              height: 20,
-              width: "100%",
-            }}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
-            placeholderTextColor={allColors.textColorSecondary}
-            disabled
-            underlineColor={"transparent"}
-            activeUnderlineColor={"transparent"}
-            cursorColor={allColors.universalColor}
-            placeholder={humanReadbleDate}
-            underlineColorAndroid={"red"}
-            underlineStyle={{ backgroundColor: "transparent" }}
-          />
-        </View>
-      </TouchableRipple>
-    );
+    return data.filter(item => {
+      const itemDate = moment(item.date, 'YYYY/MM/DD');
+      return itemDate.isSameOrAfter(start) && itemDate.isSameOrBefore(end); 
+    });
   };
   
+
+  const hasErrors = () => {
+    return isSubmitted && !validateDate(startDate) && !validateDate(endDate);
+  };
+
+
+  const textInput = (label, setter, placeholder) => {
+
+    return (
+      <View>
+        <TextInput
+          label={
+            <MyText style={{ color: allColors.universalColor }}>
+              {label}
+            </MyText>
+          }
+          style={{
+            width: 120,
+            backgroundColor: 'transparent',
+          }}
+          selectionColor={allColors.textSelectionColor}
+          textColor={allColors.universalColor}
+          underlineColor={allColors.textColorPrimary}
+          cursorColor={allColors.universalColor}
+          activeUnderlineColor={allColors.textColorPrimary}
+          contentStyle={{ fontFamily: "Karla_400Regular" }}
+          placeholderTextColor={allColors.placeholderTextColor}
+          autoComplete="off"
+          textContentType="none"
+          placeholder={placeholder}
+          onChangeText={(val) => setter(val)}
+          keyboardType={"default"}
+        />
+      </View>
+    );
+  };
+
+  const handleSubmit = () => {
+    setIsSubmitted(true); 
+    if (validateDate(startDate) && validateDate(endDate)) {
+      const filteredData = filterByDateRange(expensesData, startDate, endDate);
+      for (const obj of filteredData) { dispatch(deleteData(obj.id)); dispatch(deleteRecentTransactions(obj.id)); }
+      hideDialog();
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
@@ -141,39 +167,17 @@ const AllExpensesScreen = ({ navigation }) => {
             },
           }}>
           <Dialog.Title>Delete Expenses on range</Dialog.Title>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row', backgroundColor: 'red', justifyContent: "center", alignItems: "center"}}>
-              <MyText> Start Date {dateTextInput(date)} </MyText>
-              <MyDatePicker 
-                open={open}
-                setOpen={setOpen}
-                fetchDates={fetchDates}
-                selectedDate={startSelectedDate}
-                selectedMonth={startSelectedMonth}
-                selectedYear={startSelectedYear}
-                setSelectedDate={setStartSelectedDate}
-                setSelectedMonth={setStartSelectedMonth}
-                setSelectedYear={setStartSelectedYear}
-              />
+          <Dialog.Content style={{gap: 10}}>
+            <View style={{flexDirection: 'row', gap: 30}}>
+              {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
+              {textInput("End Date", setEndDate, "YYYY/MM/DD")}
             </View>
-            {/* <View style={{flexDirection: 'row', backgroundColor: 'red', justifyContent: "center", alignItems: "center"}}>
-              <MyText> End Date {dateTextInput(date)} </MyText>
-              <MyDatePicker 
-                open={open}
-                setOpen={setOpen}
-                fetchDates={fetchDates}
-                selectedDate={endSelectedDate}
-                selectedMonth={endSelectedMonth}
-                selectedYear={endSelectedYear}
-                setSelectedDate={setEndSelectedDate}
-                setSelectedMonth={setEndSelectedMonth}
-                setSelectedYear={setEndSelectedYear}
-              />
-            </View> */}
-  
+            <HelperText type="error" visible={hasErrors()} variant="labelMedium">
+              Invalid format! Use YYYY/MM/DD and ensure valid month, day and year
+            </HelperText>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={hideDialog}>Done</Button>
+            <Button onPress={handleSubmit}>Delete</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
