@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions
 } from "react-native";
-import { Button, Dialog, Portal, Text, TextInput, HelperText } from "react-native-paper";
+import { Button, Dialog, Portal, Text, TextInput, HelperText, TouchableRipple } from "react-native-paper";
 import { ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useState, useCallback } from "react";
@@ -167,7 +167,7 @@ const AllExpensesScreen = ({ navigation }) => {
             },
           }}>
           <Dialog.Title>Delete Expenses on range</Dialog.Title>
-          <Dialog.Content style={{gap: 10}}>
+          <Dialog.Content >
             <View style={{flexDirection: 'row', gap: 30}}>
               {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
               {textInput("End Date", setEndDate, "YYYY/MM/DD")}
@@ -177,7 +177,15 @@ const AllExpensesScreen = ({ navigation }) => {
             </HelperText>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={handleSubmit}>Delete</Button>
+            <TouchableRipple
+                onPress={handleSubmit}
+                rippleColor={allColors.rippleColor}
+                centered
+            >
+              <View style={{padding: 10, backgroundColor: allColors.addBtnColors, borderRadius: 10 }}>
+                <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Delete</MyText>
+              </View>
+            </TouchableRipple>
           </Dialog.Actions>
         </Dialog>
       </Portal>

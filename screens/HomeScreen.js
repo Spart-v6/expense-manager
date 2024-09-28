@@ -96,7 +96,9 @@ const HomeScreen = ({ navigation, route }) => {
     } catch (error) {
       hideDialog();
       onToggleSnackBar();
+      console.log(error.message);
       setSnackbarContent("Error importing file ", error);
+
     } finally {
       setLoading(false);
     }
@@ -107,7 +109,7 @@ const HomeScreen = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       fetchAllCardsData();
-    }, [])
+    }, [dispatch])
   );
 
   const fetchAllCardsData = async () => {
@@ -122,17 +124,12 @@ const HomeScreen = ({ navigation, route }) => {
   const cardsData = useSelector((state) => state.cardReducer.allCards);
 
   const validateImportedData = (data, type) => {
-    // validating if the array is empty
-    if(data.length === 0) {
-      onToggleSnackBar();
-      setSnackbarContent(`Error: No data to add.`);
-      setGotchaError(true);
-      return;
+    let validationErrors = [];
+    
+    if (data.length === 0) {
+      validationErrors.push(`Error: No data to add.`);
     }
-
-    if (type === 'csv') {
-      // TODO: This feature will be added in the future
-    }
+  
     if (type === 'json') {
       const validCardsMap = new Map();
       cardsData.forEach(card => {
@@ -141,92 +138,71 @@ const HomeScreen = ({ navigation, route }) => {
         }
         validCardsMap.get(card.paymentNetwork).add(card.cardHolderName);
       });
-
-      data.forEach(expense => {
-        const { paymentNetwork: selectedCard, cardHolderName: card_h_name, amount, name, desc, date, type } = expense;
-
-        // validating if the array contains one object which is empty
-        const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
-        const hasSingleEmptyObject = data.length === 1 && isEmptyObject(data[0]);
-        if(hasSingleEmptyObject) {
-          setGotchaError(true);
-          onToggleSnackBar();
-          setSnackbarContent(`Error: No data to add.`);
-          return;
-        }
-
-        // Validating selectedCard and card holder name
-        if (validCardsMap.has(selectedCard)) {
-          if (!validCardsMap.get(selectedCard).has(card_h_name)) {
-            setGotchaError(true);
-            onToggleSnackBar();
-            setSnackbarContent(`Error: Imported card holder name "${card_h_name}" and payment network "${selectedCard}" do not match existing card details.`);
+  
+      const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
+      const hasSingleEmptyObject = data.length === 1 && isEmptyObject(data[0]);
+  
+      if (hasSingleEmptyObject) {
+        validationErrors.push(`Error: No data to add.`);
+      } else {
+        data.forEach(expense => {
+          const { paymentNetwork: selectedCard, cardHolderName: card_h_name, amount, name, desc, date, type } = expense;
+  
+          if (!validCardsMap.has(selectedCard)) {
+            validationErrors.push(`Error: "${selectedCard}" does not exist in the card details.`);
             return;
           }
-        } else {
-          setGotchaError(true);
-          onToggleSnackBar();
-          setSnackbarContent(`Error: "${selectedCard}" does not exist in the card details.`);
-          return;
-        }
-
-        // validating amount
-        if (isNaN(amount) || amount <= 0 || amount.length > 9) {
-          onToggleSnackBar();
-          setSnackbarContent(`Error: Amount "${amount}" in expenseData is not a positive number or is not less than 10 digits`);
-          setGotchaError(true);
-          return;
-        }
-
-        // validating date
-        if (date && date.trim() !== "" && !moment(date, "YYYY/MM/DD", true).isValid()) {
-          onToggleSnackBar();
-          setSnackbarContent(`Error: Date "${date}" in expenseData is not in the correct format.`);
-          setGotchaError(true);
-          return;
-        }
-
-
-        // validating type
-        if (type !== "Income" && type !== "Expense") {
-          onToggleSnackBar();
-          setSnackbarContent(`Error: Type "${type}" in expenseData is not either "Income" or "Expense"`);
-          setGotchaError(true);
-          return;
-        }
-
-        // valdating name
-        if(name === undefined || name.length === 0) {
-          onToggleSnackBar();
-          setSnackbarContent(`Error: Name "${name}" in expenseData is either empty or is undefined`);
-          setGotchaError(true);
-          return;
-        }
-
-      });
-
-      if(!gotchaError) {
-        insertImportedData(data, type);
+          
+          if (!validCardsMap.get(selectedCard).has(card_h_name)) {
+            validationErrors.push(`Error: Imported card holder name "${card_h_name}" and payment network "${selectedCard}" do not match existing card details.`);
+            return;
+          }
+  
+          if (isNaN(amount) || amount <= 0 || amount.length > 9) {
+            validationErrors.push(`Error: Amount "${amount}" in expenseData is not a positive number or is greater than 9 digits.`);
+          }
+  
+          if (date && date.trim() !== "" && !moment(date, "YYYY/MM/DD", true).isValid()) {
+            validationErrors.push(`Error: Date "${date}" in expenseData is not in the correct format.`);
+          }
+  
+          if (type !== "Income" && type !== "Expense") {
+            validationErrors.push(`Error: Type "${type}" in expenseData is not either "Income" or "Expense"`);
+          }
+  
+          if (!name || name.length === 0) {
+            validationErrors.push(`Error: Name "${name}" in expenseData is either empty or is undefined`);
+          }
+        });
       }
     }
-    else return;
-  }
+
+    if (validationErrors.length > 0) {
+      setGotchaError(true);
+      setSnackbarContent(validationErrors.join("\n"));
+      onToggleSnackBar();
+      return;
+    } else {
+      insertImportedData(data, type);
+    }
+  };
 
   const insertImportedData = (data, type) => {
-    const getCardId =(cardHolderName, paymentNetwork) => {
+    const getCardId = (cardHolderName, paymentNetwork) => {
       const card = cardsData.find(card => card.cardHolderName === cardHolderName && card.paymentNetwork === paymentNetwork);
-      if (card) return card.id;
-      else return -1;
-    }
-    
-    let timeOffset = 0; 
+      return card ? card.id : -1;
+    };
+  
+    let timeOffset = 0;
+    let allExpenses = [];
+    let recentTransactions = [];
+  
     data.forEach(expense => {
-      const { selectedCard, card_h_name, amount, name, desc, date, type } = expense;
-
+      const { paymentNetwork: selectedCard, cardHolderName: card_h_name, amount, name, desc, date, type } = expense;
+  
       const selectedCardId = getCardId(card_h_name, selectedCard);
-
       const currentTime = moment().add(timeOffset, 'seconds').format("HH:mm:ss");
-
+  
       const expenseToBeInserted = {
         id: Math.random() + 10 + Math.random(),
         time: currentTime,
@@ -239,12 +215,15 @@ const HomeScreen = ({ navigation, route }) => {
         selectedCategory: null,
         accCardSelected: selectedCardId,
       };
-
-      dispatch(addData(expenseToBeInserted));
-      dispatch(addRecentTransactions(expenseToBeInserted));
-
+  
+      allExpenses.push(expenseToBeInserted);
+      recentTransactions.push(expenseToBeInserted);
+  
       timeOffset += 1;
     });
+
+    dispatch(addData(allExpenses));
+    dispatch(addRecentTransactions(recentTransactions));
   };
   
   return (
@@ -396,7 +375,7 @@ const HomeScreen = ({ navigation, route }) => {
         visible={showSnackbar}
         onDismiss={onDismissSnackBar}
         duration={5000}
-        style={{backgroundColor: allColors.backgroundColorQuinary}}
+        style={{backgroundColor: allColors.backgroundColorQuinary, height: 50}}
         action={{
           label: "Dismiss",
           onPress: () => {
