@@ -329,6 +329,8 @@ const HomeScreen = ({ navigation, route }) => {
               <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>4. Description (optional)</MyText>
               <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>5. Date (Current date will be used if not provided)</MyText>
               <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>6. Payment network (Card name and payment network must match exactly in Accounts)</MyText>
+              <Divider/>
+              <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>Note: Only files up to 5MB can be uploaded.</MyText>
             </Dialog.Content>
             <Dialog.Actions>
               <TouchableOpacity onPress={nextStep} style={styles.button} activeOpacity={0.5}>

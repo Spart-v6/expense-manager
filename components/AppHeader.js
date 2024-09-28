@@ -1,14 +1,15 @@
 import { Appbar, Button } from "react-native-paper";
 import { IconComponent } from "./IconPickerModal";
-import { View, Animated, Dimensions } from "react-native";
+import { View, Animated, Dimensions, AppState } from "react-native";
 import MyText from "./MyText";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from "moment";
 
-const AppHeader = ({
+const AppHeader = React.memo((({
   title,
   isParent,
   isHome,
@@ -18,15 +19,59 @@ const AppHeader = ({
   isDeletePressed,
   needSearch,
   isInfoPressed,
-  needInfo = false
+  needInfo = false,
+  onUpload,
+  setOnUpload,
+  setOnDeleteRange,
+  deleteExpensesInRange = false,
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
   const statusBarHeight = screenHeight * 0.05;
+  
+  // const [counter, setCounter] = useState(1);
 
+  // const [appState, setAppState] = useState(AppState.currentState);
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener('change', (nextAppState) => {
+  //     console.log('AppState changed to:', nextAppState);
+  //     setAppState(nextAppState);
+      
+  //     if (nextAppState === 'active') {
+  //       setCounter(1);
+  //       console.log('App has started or resumed');
+  //     } else if (nextAppState === 'background') {
+  //       setCounter(0);
+  //       console.log('App is running in the background');
+  //     } else if (nextAppState === 'inactive') {
+  //       setCounter(0);
+  //       console.log('App is inactive');
+  //     }
+  //   });
+
+  //   // Cleanup subscription on unmount
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+  const handleUpload = React.useCallback(() => {
+    setOnUpload(prev => !prev);
+  }, [setOnUpload]);
+  
+  const handleSettingsPress = React.useCallback(() => {
+    navigation.navigate("SettingsScreen");
+  }, [navigation]);
+
+  const handleOpenDeleteDialog = React.useCallback(() => { 
+    setOnDeleteRange(prev => !prev);
+  }, [setOnDeleteRange]);
+  
 
   const GreetAndSearch = React.memo(({greeting, username}) => {
     const [showGreeting, setShowGreeting] = React.useState(true);
+    // if counter = 1, do not animate
     const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
 
     const fadeAnimation = React.useRef(new Animated.Value(0)).current;
@@ -119,13 +164,34 @@ const AppHeader = ({
         />
       )}
       {isHome && (
+        <Appbar.Action icon={({color, size }) => (
+          <View style={{ alignItems: 'center' }}>
+            <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{  }} />
+          </View>
+        )}
+          onPress={handleUpload} 
+          animated={false}
+        />
+      )}
+      {deleteExpensesInRange && (
+        <Appbar.Action icon={({color, size }) => (
+          <View style={{ alignItems: 'center' }}>
+            <MaterialIcons name="delete-sweep" size={20} color={allColors.textColorPrimary} style={{  }} />
+          </View>
+        )}
+          onPress={handleOpenDeleteDialog} 
+          animated={false}
+        />
+      )}
+      {isHome && (
         <Appbar.Action
         icon={({ color, size }) => (
           <View style={{ alignItems: 'center' }}>
-            <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ position: 'absolute' }} />
+            <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ }} />
           </View>
           )}
-          onPress={() => navigation.navigate("SettingsScreen")}
+          onPress={handleSettingsPress}
+          animated={false}
         />
       )}
       {isPlus && isUpdate && (
@@ -140,6 +206,6 @@ const AppHeader = ({
       }
     </Appbar.Header>
   );
-};
+}))
 
 export default AppHeader;
