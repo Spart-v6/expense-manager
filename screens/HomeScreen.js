@@ -97,7 +97,7 @@ const HomeScreen = ({ navigation, route }) => {
       hideDialog();
       onToggleSnackBar();
       console.log(error.message);
-      setSnackbarContent("Error importing file ", error);
+      setSnackbarContent("Error importing file ");
 
     } finally {
       setLoading(false);
@@ -125,7 +125,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const validateImportedData = (data, type) => {
     let validationErrors = [];
-    
+  
     if (data.length === 0) {
       validationErrors.push(`Error: No data to add.`);
     }
@@ -133,10 +133,12 @@ const HomeScreen = ({ navigation, route }) => {
     if (type === 'json') {
       const validCardsMap = new Map();
       cardsData.forEach(card => {
-        if (!validCardsMap.has(card.paymentNetwork)) {
-          validCardsMap.set(card.paymentNetwork, new Set());
+        const paymentNetworkTrimmed = card.paymentNetwork.trim();
+        const cardHolderNameTrimmed = card.cardHolderName.trim();
+        if (!validCardsMap.has(paymentNetworkTrimmed)) {
+          validCardsMap.set(paymentNetworkTrimmed, new Set());
         }
-        validCardsMap.get(card.paymentNetwork).add(card.cardHolderName);
+        validCardsMap.get(paymentNetworkTrimmed).add(cardHolderNameTrimmed);
       });
   
       const isEmptyObject = obj => Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -147,14 +149,16 @@ const HomeScreen = ({ navigation, route }) => {
       } else {
         data.forEach(expense => {
           const { paymentNetwork: selectedCard, cardHolderName: card_h_name, amount, name, desc, date, type } = expense;
+          const selectedCardTrimmed = selectedCard.trim();
+          const card_h_nameTrimmed = card_h_name.trim();
   
-          if (!validCardsMap.has(selectedCard)) {
-            validationErrors.push(`Error: "${selectedCard}" does not exist in the card details.`);
+          if (!validCardsMap.has(selectedCardTrimmed)) {
+            validationErrors.push(`Error: "${selectedCardTrimmed}" does not exist in the card details.`);
             return;
           }
-          
-          if (!validCardsMap.get(selectedCard).has(card_h_name)) {
-            validationErrors.push(`Error: Imported card holder name "${card_h_name}" and payment network "${selectedCard}" do not match existing card details.`);
+  
+          if (!validCardsMap.get(selectedCardTrimmed).has(card_h_nameTrimmed)) {
+            validationErrors.push(`Error: Imported card holder name "${card_h_nameTrimmed}" and payment network "${selectedCardTrimmed}" do not match existing card details.`);
             return;
           }
   
@@ -189,7 +193,9 @@ const HomeScreen = ({ navigation, route }) => {
 
   const insertImportedData = (data, type) => {
     const getCardId = (cardHolderName, paymentNetwork) => {
-      const card = cardsData.find(card => card.cardHolderName === cardHolderName && card.paymentNetwork === paymentNetwork);
+      const card = cardsData.find(
+        card => card.cardHolderName.trim() === cardHolderName.trim() && card.paymentNetwork.trim() === paymentNetwork.trim()
+      );
       return card ? card.id : -1;
     };
   
