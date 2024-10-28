@@ -6,7 +6,9 @@ import React, { useEffect, useState } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { getUsernameFromStorage } from "../helper/constants";
 import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from "moment";
 
 const AppHeader = React.memo((({
@@ -24,6 +26,7 @@ const AppHeader = React.memo((({
   setOnUpload,
   setOnDeleteRange,
   deleteExpensesInRange = false,
+  onClearAll 
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
@@ -67,6 +70,10 @@ const AppHeader = React.memo((({
   const handleOpenDeleteDialog = React.useCallback(() => { 
     setOnDeleteRange(prev => !prev);
   }, [setOnDeleteRange]);
+
+  const goToNotificationScreen = React.useCallback(() => {
+    navigation.navigate("NotificationsScreen");
+  });
   
 
   const GreetAndSearch = React.memo(({greeting, username}) => {
@@ -166,6 +173,16 @@ const AppHeader = React.memo((({
       {isHome && (
         <Appbar.Action icon={({color, size }) => (
           <View style={{ alignItems: 'center' }}>
+            <Ionicons name="notifications-outline" size={20} color={allColors.textColorPrimary} style={{  }} />
+          </View>
+        )}
+          onPress={goToNotificationScreen} 
+          animated={false}
+        />
+      )}
+      {isHome && (
+        <Appbar.Action icon={({color, size }) => (
+          <View style={{ alignItems: 'center' }}>
             <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{  }} />
           </View>
         )}
@@ -204,6 +221,17 @@ const AppHeader = React.memo((({
           )} onPress={handleInfoPress}/>
         )
       }
+      { title === "Notifications" && (
+        <Appbar.Action
+          icon={({ color, size }) => (
+            <View style={{ alignItems: 'center' }}>
+              <MaterialCommunityIcons name="notification-clear-all" size={20} color={allColors.textColorPrimary} style={{ }} />
+            </View>
+            )}
+          onPress={onClearAll}
+          animated={false}
+        />
+      )}
     </Appbar.Header>
   );
 }))
