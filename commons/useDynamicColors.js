@@ -55,6 +55,10 @@ const useDynamicColors = () => {
       receiveGreenTextBg: "#b4f095",
       payRedBg: "#611511",
       payRedTextBg: "#eed1cf",
+
+      splashScreenIcon1: PlatformColor("@android:color/system_accent1_200"),
+      splashScreenIcon2: PlatformColor("@android:color/system_accent2_600"),
+      splashScreenIcon3: PlatformColor("@android:color/system_accent1_500")
     }
     else return {
       // API < 31
@@ -98,6 +102,10 @@ const useDynamicColors = () => {
       receiveGreenTextBg: "#b4f095",
       payRedBg: "#611511",
       payRedTextBg: "#eed1cf",
+
+      splashScreenIcon1: "#FEDF3F",
+      splashScreenIcon2: "#FE9142",
+      splashScreenIcon3: "#FEB64D",
   }});
 
   useEffect(() => {
@@ -159,6 +167,15 @@ const useDynamicColors = () => {
         receiveGreenTextBg: colorScheme === "dark" ? "#b4f095" : "#0b2906" ,
         payRedBg: colorScheme === "dark" ? "#611511" : "#ffc1bc",
         payRedTextBg: colorScheme === "dark" ? "#eed1cf" : "#572724",
+
+        // for splash screen icon
+        splashScreenIcon1: getColor("@android:color/system_accent1_200", "@android:color/system_accent1_200", colorScheme, 
+                                    "#FEDF3F", "#FEDF3F"),
+        splashScreenIcon2: getColor("@android:color/system_accent2_600", "@android:color/system_accent2_600", colorScheme, 
+                                    "#FE9142", "#FE9142"),
+        splashScreenIcon3: getColor("@android:color/system_accent1_500", "@android:color/system_accent1_500", colorScheme, 
+                                    "#FEB64D", "#FEB64D"),
+
       };
 
       setColors(dynamicColors);
