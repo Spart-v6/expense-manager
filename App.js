@@ -33,6 +33,7 @@ Notifications.setNotificationHandler({
   })
 });
 
+
 const App = () => {
   const allColors = useDynamicColors();
 

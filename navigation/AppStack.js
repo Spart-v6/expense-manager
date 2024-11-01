@@ -19,6 +19,7 @@ import SplitDetailScreen from "../screens/SplitDetailScreen";
 import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
+import NotificationsScreen from "../screens/NotificationsScreen";
 import MyText from "../components/MyText";
 import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -224,6 +225,11 @@ const TabNavigator = () => (
     <Stack.Screen
       name="WelcomeScreen"
       component={WelcomeScreen}
+      options={navOptions}
+    />
+    <Stack.Screen
+      name="NotificationsScreen"
+      component={NotificationsScreen}
       options={navOptions}
     />
   </Stack.Navigator>
