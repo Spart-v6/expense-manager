@@ -1,43 +1,27 @@
-import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, PermissionsAndroid, Platform } from "react-native";
+import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, PermissionsAndroid, Platform, FlatList, ScrollView } from "react-native";
 import useDynamicColors from "../commons/useDynamicColors";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
-import { Button, Card } from "react-native-paper";
+import { Button, Card, Portal, Dialog } from "react-native-paper";
 import Entypo from 'react-native-vector-icons/Entypo';
 import SmsAndroid from 'react-native-get-sms-android';
 import moment from "moment";
+import { readSms, addSms, deleteSms, fetchStoredSms, fetchAlreadyStoredSmses } from "../redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchSmses } from "../helper/smsService";
 
 const NotificationsScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const smsList = useSelector((state) => state.smsReducer.smsList);
+
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
 
   const [isCardVisible, setIsCardVisible] = useState(true);
   const [clearAll, setClearAll] = useState(false); // For clearing all notifications
-
-  const pan = useRef(new Animated.ValueXY()).current;
-
-  // Configure the PanResponder for swipe gestures
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) =>
-        Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 5,
-      onPanResponderMove: Animated.event([null, { dx: pan.x }], { useNativeDriver: false }),
-      onPanResponderRelease: (_, gestureState) => {
-        const swipeThreshold = 300;
-
-        // Check if swipe exceeds the threshold for right or left
-        if (gestureState.dx > swipeThreshold) {
-          handleSwipeRight();
-        } else if (gestureState.dx < -swipeThreshold) {
-          handleSwipeLeft();
-        } else {
-          // Reset position if swipe was not strong enough
-          Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
-        }
-      },
-    })
-  ).current;
+  const [openFetchSmsDialog, setOpenFetchSmsDialog] = useState(false);
 
   const hideCard = () => {
     Animated.timing(pan, {
@@ -62,97 +46,109 @@ const NotificationsScreen = ({ navigation }) => {
     hideCard();
   };
 
+  // #region Read/Store/Del sms
 
-  async function requestSmsPermission() {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_SMS,
-        {
-          title: 'SMS Permission',
-          message: 'This app requires access to your SMS messages to fetch transaction information.',
-          buttonPositive: 'OK'
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return false;
-  }
-
-  async function fetchFilteredMessages(fromDate, toDate) {
-    const hasPermission = await requestSmsPermission();
-    if (!hasPermission) {
-      console.log('SMS permission not granted');
-      return;
-    }
-
-    const fromTimestamp = moment(fromDate, 'YYYY-MM-DD').valueOf();
-    const toTimestamp = moment(toDate, 'YYYY-MM-DD').valueOf();
-
-    const filter = {
-      box: 'inbox', // Inbox messages only
-      minDate: fromTimestamp,
-      maxDate: toTimestamp,
+  useEffect(() => {
+    dispatch(readSms());
+    const loadStoredSms = async () => {
+      try {
+          const storedSms = await AsyncStorage.getItem('smsList');
+          const smsList = storedSms ? JSON.parse(storedSms) : [];
+          dispatch(fetchAlreadyStoredSmses(smsList));
+      } catch (error) {
+          console.error("Error loading SMS from AsyncStorage:", error);
+      }
     };
 
-    SmsAndroid.list(
-      JSON.stringify(filter),
-      (fail) => {
-        console.log('Failed with this error: ' + fail);
+    loadStoredSms();
+  }, [dispatch]);
+
+  const handleFetchSms = async () => {
+    try {
+        const smsMessages = await fetchSmses();
+
+        if (smsMessages && smsMessages.length > 0) {
+            dispatch(addSms(smsMessages));
+        } else {
+            console.log("No SMS messages fetched or an error occurred.");
+        }
+    } catch (error) {
+        console.error("Error fetching SMS messages:", error);
+    } finally {
+        setOpenFetchSmsDialog(false);
+    }
+  };
+
+  const handleDeleteSms = (id) => {
+      dispatch(deleteSms(id));
+  };
+
+  // #endregion
+
+
+  const NotificationCard = ({ sms, allColors, handleDeleteSms }) => {
+    const isCrediOrDebit = sms.transactionType === 'credited' ? 1 : 0;
+    const txnMsg = isCrediOrDebit ? 'Credited to' : 'Debited from';
+
+    const pan = useRef(new Animated.ValueXY()).current;
+  
+    const panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 5,
+      onPanResponderMove: Animated.event([null, { dx: pan.x }], { useNativeDriver: false }),
+      onPanResponderRelease: (_, gestureState) => {
+        const swipeThreshold = 200;
+  
+        if (gestureState.dx > swipeThreshold || gestureState.dx < -swipeThreshold) {
+          // Swipe action based on direction
+          Animated.timing(pan, {
+            toValue: { x: gestureState.dx > 0 ? 500 : -500, y: 0 },
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => {
+            handleDeleteSms(sms.msgId);
+          });
+        } else {
+          // Reset position if swipe threshold not met
+          Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
+        }
       },
-      (count, smsList) => {
-        const messages = JSON.parse(smsList);
-         // Map to store bank codes and their corresponding names
-        const bankNamesMap = {
-          "JD-ICICIT": "ICICI Bank",
-          "AX-DBSBNK": "DBS Bank",
-          // more banks, check body of message first
-        };
-
-        console.log("All messages +=== ", messages);
-
-        const transactionDetails = messages
-          .filter((msg) =>
-            msg.body.toLowerCase().includes('credited') || msg.body.toLowerCase().includes('debited')
-          )
-        .map((msg) => {
-          const bankName = bankNamesMap[msg.address] || "Unknown Bank";
-          const body = msg.body.toLowerCase();
-
-          // Detect transaction type as first occurrence of "credited" or "debited"
-          const transactionTypeMatch = body.match(/\b(credited|debited)\b/i);
-          const transactionType = transactionTypeMatch ? transactionTypeMatch[1].toLowerCase() : null;
-
-          // Extract amount using a regex pattern
-          const amountMatch = body.match(/(?:rs|inr)[\s]*([\d,]+(\.\d{2})?)/i);
-          const amount = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : null;
-
-          // Extract date in various formats (e.g., "31-Oct-24" or "31-10-2024")
-          const dateMatch = body.match(/(\d{2}-[A-Za-z]{3}-\d{2,4}|\d{2}-\d{2}-\d{4})/);
-          const transactionDate = dateMatch ? dateMatch[0] : null;
-
-          return {
-            bank: bankName,
-            amount,
-            date: transactionDate,
-            transactionType,
-          };
-        });
-        console.log('Transaction Details:', transactionDetails);
     });
-  }
+  
+    return (
+      <Animated.View style={[styles.card, { transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
+        <TouchableOpacity onLongPress={() => {}} activeOpacity={0.8}>
+          <Card style={styles.card}>
+            <Card.Content style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <View>
+                <MyText>{`${moment(sms.date).format('DD MMM \'YY')}`}</MyText>
+                <MyText>{`${txnMsg}: ${sms.bank} Bank`}</MyText>
+              </View>
+              <View >
+                <MyText style={[
+                  isCrediOrDebit ? { color: allColors.successColor } : { color: allColors.warningColor },
+                ]}>
+                  {`${isCrediOrDebit ? '+' : '-'}${sms.amount}`}
+                </MyText>
+              </View>
+            </Card.Content>
+          </Card>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
-  const readSMS = () => {
-    console.log("Calling fetchFileretedMessages function ");
-    fetchFilteredMessages('2024-10-30', '2024-11-02');
-  }
-
+  const renderItem = useCallback(({ item: sms }) => (
+    <NotificationCard sms={sms} allColors={allColors} handleDeleteSms={handleDeleteSms} />
+  ), [allColors, handleDeleteSms]);  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Notifications" navigation={navigation} onClearAll={clearNotifications} />
       <View>
         <Button
-          onPress={readSMS}
+          // onPress={handleFetchSms}
+          onPress={() => setOpenFetchSmsDialog(!openFetchSmsDialog)}
           mode="contained"
           labelStyle={{ fontSize: 15 }}
           textColor={"black"}
@@ -176,22 +172,52 @@ const NotificationsScreen = ({ navigation }) => {
         </Button>
       </View>
       <View style={{ flex: 1, marginLeft: 20, marginTop: 20, marginRight: 20, gap: 10 }}>
-        {isCardVisible && !clearAll && (
-          <Animated.View style={[styles.card, { transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
-            <TouchableOpacity onLongPress={() => {}} activeOpacity={0.8}>
-              <Card style={styles.card}>
-                <Card.Content style={{ gap: 10 }}>
-                  <Entypo name="dot-single" size={10} color={allColors.universalColor} style={{ alignSelf: "center" }} />
-                  <View></View>
-                  <View style={styles.container}>
-                    <View style={styles.textContainer}></View>
-                  </View>
-                </Card.Content>
-              </Card>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
+        {/*  */}
+         <FlatList
+            data={smsList}
+            keyExtractor={(item) => item.msgId.toString()}
+            renderItem={renderItem}
+            scrollEnabled={false}
+        />
       </View>
+      <Portal>
+        <Dialog
+          visible={openFetchSmsDialog}
+          onDismiss={() => setOpenFetchSmsDialog(false)}
+          style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+          theme={{
+            colors: {
+              backdrop: "#00000099",
+            },
+          }}
+        >
+          <Dialog.Title
+            style={{
+              color: allColors.textColorSecondary,
+              fontFamily: "Karla_400Regular",
+            }}
+          >
+            Import transaction messages
+          </Dialog.Title>
+          <Dialog.Content>
+            <View style={{}}>
+              <MyText>
+                Start date
+              </MyText>
+              <MyText>
+                End date
+              </MyText>
+            </View>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={handleFetchSms}>
+              <MyText style={{ color: allColors.textColorPrimary }}>
+                Next
+              </MyText>
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };

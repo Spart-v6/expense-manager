@@ -25,6 +25,15 @@
           "defaultChannel": "default"
         }
       ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Camera",
+            "Microphone"
+          ]
+        }
+      ],
       "expo-asset",
       "expo-font"
     ],
@@ -43,7 +52,8 @@
       },
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
-        "NOTIFICATIONS"
+        "NOTIFICATIONS",
+        "android.permission.READ_SMS"
       ]
     },
     "web": {

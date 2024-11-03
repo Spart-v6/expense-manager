@@ -151,3 +151,31 @@ export const storeRecentTransactions = payload => ({
   payload
 });
 
+// For fetching transactions from SMS (Notifications Screen)
+
+export const addSms = smsList => {
+  return {
+      type: types.ADD_SMS,
+      payload: smsList,
+  };
+};
+
+export const readSms = () => {
+  return {
+      type: types.READ_SMS,
+  };
+};
+
+export const deleteSms = smsId => {
+  return {
+      type: types.DEL_SMS,
+      payload: smsId,
+  };
+};
+
+export const fetchAlreadyStoredSmses = smsList => {
+  return { 
+    type: types.SET_SMS, 
+    payload: smsList 
+  }
+}
