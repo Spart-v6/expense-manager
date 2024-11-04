@@ -27,7 +27,7 @@ const smsReducer = (state = initialState, action) => {
     switch (action.type) {
         case types.ADD_SMS:
             const newSmsList = action.payload.filter(
-                (newSms) => !state.smsList.some((sms) => sms.id === newSms.id)
+                (newSms) => !state.smsList.some((sms) => sms.msgId === newSms.msgId)
             );
             const updatedSmsList = [...state.smsList, ...newSmsList];
 
@@ -48,7 +48,7 @@ const smsReducer = (state = initialState, action) => {
             return state;
 
         case types.DEL_SMS:
-            const filteredSmsList = state.smsList.filter((sms) => sms.id !== action.payload);
+            const filteredSmsList = state.smsList.filter((sms) => sms.msgId !== action.payload);
 
             saveSmsToStorage(filteredSmsList);
 

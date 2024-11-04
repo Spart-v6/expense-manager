@@ -1,136 +1,109 @@
-import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, PermissionsAndroid, Platform, FlatList, ScrollView } from "react-native";
-import useDynamicColors from "../commons/useDynamicColors";
+import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, LayoutAnimation, UIManager, Platform, FlatList } from "react-native";
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { readSms, addSms, deleteSms, fetchAlreadyStoredSmses } from "../redux/actions";
+import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
-import { Button, Card, Portal, Dialog } from "react-native-paper";
-import Entypo from 'react-native-vector-icons/Entypo';
-import SmsAndroid from 'react-native-get-sms-android';
-import moment from "moment";
-import { readSms, addSms, deleteSms, fetchStoredSms, fetchAlreadyStoredSmses } from "../redux/actions";
-import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
+import * as Haptics from 'expo-haptics';
 import { fetchSmses } from "../helper/smsService";
+import { Button, Card, Portal, Dialog } from "react-native-paper";
 
 const NotificationsScreen = ({ navigation }) => {
+  if (Platform.OS === 'android') {
+    UIManager.setLayoutAnimationEnabledExperimental &&
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+
   const dispatch = useDispatch();
   const smsList = useSelector((state) => state.smsReducer.smsList);
-
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
-
-  const [isCardVisible, setIsCardVisible] = useState(true);
-  const [clearAll, setClearAll] = useState(false); // For clearing all notifications
   const [openFetchSmsDialog, setOpenFetchSmsDialog] = useState(false);
 
-  const hideCard = () => {
-    Animated.timing(pan, {
-      toValue: { x: pan.x._value > 0 ? 500 : -500, y: 0 },
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsCardVisible(false);
-    });
-  };
-
   const clearNotifications = () => {
-    setClearAll(true);
-    hideCard();
+    smsList.forEach((sms, index) => {
+      setTimeout(() => {
+        handleDeleteSms(sms.msgId);
+      }, index * 50);
+    });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
   };
 
-  const handleSwipeRight = () => {
-    hideCard();
-  };
-
-  const handleSwipeLeft = () => {
-    hideCard();
-  };
-
-  // #region Read/Store/Del sms
-
+  // Load stored SMS on first render
   useEffect(() => {
     dispatch(readSms());
     const loadStoredSms = async () => {
       try {
-          const storedSms = await AsyncStorage.getItem('smsList');
-          const smsList = storedSms ? JSON.parse(storedSms) : [];
-          dispatch(fetchAlreadyStoredSmses(smsList));
+        const storedSms = await AsyncStorage.getItem('smsList');
+        const smsList = storedSms ? JSON.parse(storedSms) : [];
+        dispatch(fetchAlreadyStoredSmses(smsList));
       } catch (error) {
-          console.error("Error loading SMS from AsyncStorage:", error);
+        console.error("Error loading SMS from AsyncStorage:", error);
       }
     };
-
     loadStoredSms();
   }, [dispatch]);
 
   const handleFetchSms = async () => {
     try {
-        const smsMessages = await fetchSmses();
-
-        if (smsMessages && smsMessages.length > 0) {
-            dispatch(addSms(smsMessages));
-        } else {
-            console.log("No SMS messages fetched or an error occurred.");
-        }
+      const smsMessages = await fetchSmses();
+      if (smsMessages && smsMessages.length > 0) {
+        dispatch(addSms(smsMessages));
+      }
     } catch (error) {
-        console.error("Error fetching SMS messages:", error);
+      console.error("Error fetching SMS messages:", error);
     } finally {
-        setOpenFetchSmsDialog(false);
+      setOpenFetchSmsDialog(false);
     }
   };
 
   const handleDeleteSms = (id) => {
-      dispatch(deleteSms(id));
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    dispatch(deleteSms(id));
   };
 
-  // #endregion
-
-
-  const NotificationCard = ({ sms, allColors, handleDeleteSms }) => {
-    const isCrediOrDebit = sms.transactionType === 'credited' ? 1 : 0;
-    const txnMsg = isCrediOrDebit ? 'Credited to' : 'Debited from';
-
+  const NotificationCard = ({ sms }) => {
     const pan = useRef(new Animated.ValueXY()).current;
-  
+
     const panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
         Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 5,
       onPanResponderMove: Animated.event([null, { dx: pan.x }], { useNativeDriver: false }),
       onPanResponderRelease: (_, gestureState) => {
-        const swipeThreshold = 200;
-  
-        if (gestureState.dx > swipeThreshold || gestureState.dx < -swipeThreshold) {
-          // Swipe action based on direction
+        const swipeThreshold = 100;
+        if (Math.abs(gestureState.dx) > swipeThreshold) {
           Animated.timing(pan, {
             toValue: { x: gestureState.dx > 0 ? 500 : -500, y: 0 },
             duration: 200,
             useNativeDriver: true,
           }).start(() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
             handleDeleteSms(sms.msgId);
           });
         } else {
-          // Reset position if swipe threshold not met
           Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
         }
       },
     });
-  
+
+    const isCreditOrDebit = sms.transactionType === 'credited' ? 1 : 0;
+    const txnMsg = isCreditOrDebit ? 'Credited to' : 'Debited from';
+
     return (
-      <Animated.View style={[styles.card, { transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
-        <TouchableOpacity onLongPress={() => {}} activeOpacity={0.8}>
+      <Animated.View style={[{ transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
+        <TouchableOpacity activeOpacity={0.8}>
           <Card style={styles.card}>
-            <Card.Content style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Card.Content style={styles.cardContent}>
               <View>
                 <MyText>{`${moment(sms.date).format('DD MMM \'YY')}`}</MyText>
                 <MyText>{`${txnMsg}: ${sms.bank} Bank`}</MyText>
               </View>
-              <View >
-                <MyText style={[
-                  isCrediOrDebit ? { color: allColors.successColor } : { color: allColors.warningColor },
-                ]}>
-                  {`${isCrediOrDebit ? '+' : '-'}${sms.amount}`}
-                </MyText>
-              </View>
+              <MyText style={[{ color: isCreditOrDebit ? allColors.successColor : allColors.warningColor }]}>
+                {`${isCreditOrDebit ? '+' : '-'}${sms.amount}`}
+              </MyText>
             </Card.Content>
           </Card>
         </TouchableOpacity>
@@ -138,16 +111,16 @@ const NotificationsScreen = ({ navigation }) => {
     );
   };
 
-  const renderItem = useCallback(({ item: sms }) => (
-    <NotificationCard sms={sms} allColors={allColors} handleDeleteSms={handleDeleteSms} />
-  ), [allColors, handleDeleteSms]);  
+  const renderItem = useCallback(
+    ({ item: sms }) => <NotificationCard sms={sms} />,
+    [allColors]
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader title="Notifications" navigation={navigation} onClearAll={clearNotifications} />
       <View>
         <Button
-          // onPress={handleFetchSms}
           onPress={() => setOpenFetchSmsDialog(!openFetchSmsDialog)}
           mode="contained"
           labelStyle={{ fontSize: 15 }}
@@ -158,6 +131,8 @@ const NotificationsScreen = ({ navigation }) => {
             borderRadius: 15,
             borderTopRightRadius: 15,
             borderTopLeftRadius: 15,
+            marginLeft: 20,
+            marginRight: 20
           }}
         >
           <MyText
@@ -171,47 +146,27 @@ const NotificationsScreen = ({ navigation }) => {
           </MyText>
         </Button>
       </View>
-      <View style={{ flex: 1, marginLeft: 20, marginTop: 20, marginRight: 20, gap: 10 }}>
-        {/*  */}
-         <FlatList
-            data={smsList}
-            keyExtractor={(item) => item.msgId.toString()}
-            renderItem={renderItem}
-            scrollEnabled={false}
-        />
-      </View>
+      <FlatList
+        data={smsList}
+        keyExtractor={(item) => item.msgId.toString()}
+        renderItem={renderItem}
+        style={{ padding: 20 }}
+      />
       <Portal>
-        <Dialog
-          visible={openFetchSmsDialog}
-          onDismiss={() => setOpenFetchSmsDialog(false)}
+        <Dialog visible={openFetchSmsDialog} onDismiss={() => setOpenFetchSmsDialog(false)} 
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
-          theme={{
-            colors: {
-              backdrop: "#00000099",
-            },
-          }}
+          theme={{ colors: { backdrop: "#00000099" }}}
         >
-          <Dialog.Title
-            style={{
-              color: allColors.textColorSecondary,
-              fontFamily: "Karla_400Regular",
-            }}
-          >
-            Import transaction messages
-          </Dialog.Title>
+          <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Karla_400Regular"}}>Import transaction messages</Dialog.Title>
           <Dialog.Content>
-            <View style={{}}>
-              <MyText>
-                Start date
-              </MyText>
-              <MyText>
-                End date
-              </MyText>
+            <View>
+              <MyText>Start date</MyText>
+              <MyText>End date</MyText>
             </View>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={handleFetchSms}>
-              <MyText style={{ color: allColors.textColorPrimary }}>
+              <MyText style={{ color: allColors.textColorPrimary, fontWeight: "700" }}>
                 Next
               </MyText>
             </Button>
@@ -226,24 +181,14 @@ const makeStyles = (allColors) =>
   StyleSheet.create({
     card: {
       backgroundColor: allColors.defaultAccSplitRecCard,
-      marginTop: 8,
-      marginBottom: 8,
+      marginVertical: 8,
       elevation: 4,
       borderRadius: 8,
     },
-    container: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    textContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      maxWidth: 200,
-    },
-    bulletText: {
-      fontSize: 16,
-      color: allColors.universalColor,
-      paddingHorizontal: 5,
+    cardContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      backgroundColor: 'transparent',
     },
   });
 
