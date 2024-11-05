@@ -53,7 +53,7 @@ const makeStyles = allColors =>
       bottom: 0,
       right: 0,
       width: '40%', 
-      opacity: 0.08,
+      opacity: 0.20,
     },
   });
 

@@ -1,16 +1,16 @@
-import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, LayoutAnimation, UIManager, Platform, FlatList } from "react-native";
+import { View, SafeAreaView, StyleSheet, TouchableOpacity, Animated, PanResponder, LayoutAnimation, UIManager, Platform, FlatList, Dimensions } from "react-native";
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { readSms, addSms, deleteSms, fetchAlreadyStoredSmses } from "../redux/actions";
 import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
-import { MaterialCommunityIcons } from "react-native-vector-icons";
+import { MaterialCommunityIcons, Feather } from "react-native-vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 import * as Haptics from 'expo-haptics';
 import { fetchSmses } from "../helper/smsService";
-import { Button, Card, Portal, Dialog, TextInput, Divider } from "react-native-paper";
+import { Button, Card, Portal, Dialog, TextInput, Divider, Banner } from "react-native-paper";
 
 const NotificationsScreen = ({ navigation }) => {
   if (Platform.OS === 'android') {
@@ -23,8 +23,9 @@ const NotificationsScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
   const [openFetchSmsDialog, setOpenFetchSmsDialog] = useState(false);
-  const [numberOfDays, setNumberOfDays] = useState('1');
+  const [numberOfDays, setNumberOfDays] = useState('0');
   const [dateRangeToDisplay, setDateRangeToDisplay] = useState(moment().format('MMM DD, \'YY'));
+  const [isInfoPressed, setIsInfoPressed] = useState(false);
 
   const clearNotifications = () => {
     smsList.forEach((sms, index) => {
@@ -119,10 +120,14 @@ const NotificationsScreen = ({ navigation }) => {
           <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
               <View>
-                <MyText>{`${moment(sms.date).format('DD MMM \'YY')}`}</MyText>
-                <MyText>{`${txnMsg}: ${sms.bank} Bank`}</MyText>
+                <MyText numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 4}} ellipsizeMode="tail">
+                  {`${moment(sms.date).format('DD MMM \'YY')}`}
+                </MyText>
+                <MyText numberOfLines={1} variant="bodyMedium" style={{color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 2}} ellipsizeMode="tail">
+                  {`${txnMsg}: ${sms.bank} Bank`}
+                </MyText>
               </View>
-              <MyText style={[{ color: isCreditOrDebit ? allColors.successColor : allColors.warningColor }]}>
+              <MyText style={[{maxWidth: Dimensions.get("window").width / 3, color: isCreditOrDebit ? allColors.successColor : allColors.warningColor }]}>
                 {`${isCreditOrDebit ? '+' : '-'}${sms.amount}`}
               </MyText>
             </Card.Content>
@@ -139,7 +144,13 @@ const NotificationsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <AppHeader title="Notifications" navigation={navigation} onClearAll={clearNotifications} />
+      <AppHeader
+        title="Notifications"
+        navigation={navigation}
+        onClearAll={clearNotifications}
+        isInfoPressed={(val) => setIsInfoPressed(val)}
+        needInfo={true}
+      />
       <View>
         <Button
           onPress={() => setOpenFetchSmsDialog(!openFetchSmsDialog)}
@@ -197,15 +208,14 @@ const NotificationsScreen = ({ navigation }) => {
           <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Karla_400Regular"}}>Import SMS transactions messages</Dialog.Title>
           <Dialog.Content style={{gap: 15}}>
             <View style={{justifyContent: "center", alignItems: "flex-start"}}>
-              <MyText variant="bodyMedium">This will only fetch transaction-related SMS messages, focusing specifically on UPI payments within the specified date range.
-                No other messages will be accessed or processed.</MyText>
-                <MyText variant="bodyMedium">
-                  <MyText style={{ fontWeight: 'bold' }}>Note:</MyText> The date range is limited to the past 7 days.
+              <MyText variant="bodyMedium" style={{ color: allColors.universalColor }}>Please read more about this from (i) button at top</MyText>
+                <MyText variant="bodyMedium" style={{ color: allColors.universalColor }}>
+                  <MyText style={{ fontWeight: 'bold', color: allColors.universalColor }}>Note:</MyText> The date range is limited to the past 7 days.
                 </MyText>
             </View>
             <Divider style={{backgroundColor: allColors.textColorPrimary}} bold/>
             <View>
-              <MyText>Enter the number of previous days to fetch data:</MyText>
+              <MyText style={{ color: allColors.universalColor }}>Enter the number of previous days to fetch data:</MyText>
               <TextInput
                   style={{ width: 80, backgroundColor: "transparent" }}
                   allowFontScaling={false}
@@ -224,7 +234,7 @@ const NotificationsScreen = ({ navigation }) => {
               />
             </View>
             <View>
-              <MyText>Date range is from {dateRangeToDisplay} to {moment().format('MMM DD, \'YY')}</MyText>
+              <MyText style={{ color: allColors.universalColor }}>Current date range is from {dateRangeToDisplay} to {moment().format('MMM DD, \'YY')}</MyText>
             </View>
           </Dialog.Content>
           <Dialog.Actions>
@@ -235,6 +245,48 @@ const NotificationsScreen = ({ navigation }) => {
             </Button>
           </Dialog.Actions>
         </Dialog>
+      </Portal>
+
+      <Portal>
+        <View style={styles.bannerContainer}>
+          <Banner
+            visible={isInfoPressed}
+            style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
+            actions={[
+              {
+                label: "OK",
+                onPress: () => setIsInfoPressed(false),
+                style: { marginRight: 20 },
+                textColor: allColors.universalColor,
+              },
+            ]}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Feather
+                name="info"
+                size={20}
+                color={allColors.textColorPrimary}
+              />
+              <MyText
+                style={{
+                  color: allColors.universalColor,
+                  maxWidth: Dimensions.get("window").width / 1.2,
+                }}
+                numberOfLines={4}
+              >
+                This will only fetch transaction-related SMS messages, focusing specifically on UPI payments within the specified date range.
+                No other messages will be accessed or processed.
+              </MyText>
+            </View>
+          </Banner>
+        </View>
       </Portal>
     </SafeAreaView>
   );
@@ -252,6 +304,12 @@ const makeStyles = (allColors) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       backgroundColor: 'transparent',
+    },
+    bannerContainer: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
     },
   });
 

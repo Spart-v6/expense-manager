@@ -166,13 +166,13 @@ const AllExpensesScreen = ({ navigation }) => {
               backdrop: "#00000099",
             },
           }}>
-          <Dialog.Title>Delete Expenses on range</Dialog.Title>
+          <Dialog.Title style={{color: allColors.universalColor}}>Delete Expenses on range</Dialog.Title>
           <Dialog.Content >
             <View style={{flexDirection: 'row', gap: 30}}>
               {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
               {textInput("End Date", setEndDate, "YYYY/MM/DD")}
             </View>
-            <HelperText type="error" visible={hasErrors()} variant="labelMedium">
+            <HelperText type="error" visible={hasErrors()} variant="labelMedium" style={{color: allColors.warningColor}}>
               Invalid format! Use YYYY/MM/DD and ensure valid month, day and year
             </HelperText>
           </Dialog.Content>
