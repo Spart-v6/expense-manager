@@ -248,11 +248,6 @@ const MyDatePicker = ({
     setTitleMonth(rest);
   }, [selectedDate, selectedMonth, selectedYear]);
 
-  useEffect(() => {
-    if (selectedMonth === todayMonth) setSelectedDate(todayDate);
-    else setSelectedDate(1);
-  }, [selectedMonth, selectedYear])
-
   // #region Animations for left and right arrow btns
   const [animation] = useState(new Animated.Value(0));
   const [animation2] = useState(new Animated.Value(0));

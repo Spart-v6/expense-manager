@@ -5,11 +5,12 @@ import { readSms, addSms, deleteSms, fetchAlreadyStoredSmses } from "../redux/ac
 import useDynamicColors from "../commons/useDynamicColors";
 import MyText from "../components/MyText";
 import AppHeader from "../components/AppHeader";
+import { MaterialCommunityIcons } from "react-native-vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 import * as Haptics from 'expo-haptics';
 import { fetchSmses } from "../helper/smsService";
-import { Button, Card, Portal, Dialog } from "react-native-paper";
+import { Button, Card, Portal, Dialog, TextInput, Divider } from "react-native-paper";
 
 const NotificationsScreen = ({ navigation }) => {
   if (Platform.OS === 'android') {
@@ -22,6 +23,8 @@ const NotificationsScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
   const [openFetchSmsDialog, setOpenFetchSmsDialog] = useState(false);
+  const [numberOfDays, setNumberOfDays] = useState('1');
+  const [dateRangeToDisplay, setDateRangeToDisplay] = useState(moment().format('MMM DD, \'YY'));
 
   const clearNotifications = () => {
     smsList.forEach((sms, index) => {
@@ -49,7 +52,7 @@ const NotificationsScreen = ({ navigation }) => {
 
   const handleFetchSms = async () => {
     try {
-      const smsMessages = await fetchSmses();
+      const smsMessages = await fetchSmses(moment(dateRangeToDisplay, 'MMM DD, \'YY').format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD'));
       if (smsMessages && smsMessages.length > 0) {
         dispatch(addSms(smsMessages));
       }
@@ -64,6 +67,24 @@ const NotificationsScreen = ({ navigation }) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     dispatch(deleteSms(id));
   };
+
+  const handleToExpenseScreen = sms => {
+    navigation.navigate("PlusMoreHome", { sms: sms })
+  }
+
+  const handleDateChange = val => {
+    // Remove any non-numeric characters
+    const numericVal = val.replace(/[^0-9]/g, '');
+
+    // Only set the value if it's within the range 0-7
+    if (numericVal !== '' && numericVal >= 0 && numericVal <= 7) {
+      setNumberOfDays(numericVal);
+      setDateRangeToDisplay(moment().subtract(parseInt(numericVal, 10), 'days').format('MMM DD, \'YY'));
+    } else if (numericVal === '') {
+      setNumberOfDays('');
+      setDateRangeToDisplay(moment().format('MMM DD, \'YY'));
+    }
+  }
 
   const NotificationCard = ({ sms }) => {
     const pan = useRef(new Animated.ValueXY()).current;
@@ -94,7 +115,7 @@ const NotificationsScreen = ({ navigation }) => {
 
     return (
       <Animated.View style={[{ transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
-        <TouchableOpacity activeOpacity={0.8}>
+        <TouchableOpacity onPress={() => handleToExpenseScreen(sms)} activeOpacity={0.8}>
           <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
               <View>
@@ -146,22 +167,64 @@ const NotificationsScreen = ({ navigation }) => {
           </MyText>
         </Button>
       </View>
-      <FlatList
-        data={smsList}
-        keyExtractor={(item) => item.msgId.toString()}
-        renderItem={renderItem}
-        style={{ padding: 20 }}
-      />
+        {
+          smsList.length > 0 ? (
+            <FlatList
+              data={smsList}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              style={{ padding: 20 }}
+              alwaysBounceVertical
+            />
+          ) 
+          : (
+            <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+              <MaterialCommunityIcons
+                name="android-messages"
+                size={60}
+                color={allColors.textColorPrimary}
+              />
+              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>No transactions found</MyText>
+              <MyText variant="bodySmall" style={{color: allColors.universalColor}}>Tap the button above to fetch your latest transactions from SMS</MyText>
+            </View>
+          )
+        }
       <Portal>
         <Dialog visible={openFetchSmsDialog} onDismiss={() => setOpenFetchSmsDialog(false)} 
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
           theme={{ colors: { backdrop: "#00000099" }}}
         >
-          <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Karla_400Regular"}}>Import transaction messages</Dialog.Title>
-          <Dialog.Content>
+          <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Karla_400Regular"}}>Import SMS transactions messages</Dialog.Title>
+          <Dialog.Content style={{gap: 15}}>
+            <View style={{justifyContent: "center", alignItems: "flex-start"}}>
+              <MyText variant="bodyMedium">This will only fetch transaction-related SMS messages, focusing specifically on UPI payments within the specified date range.
+                No other messages will be accessed or processed.</MyText>
+                <MyText variant="bodyMedium">
+                  <MyText style={{ fontWeight: 'bold' }}>Note:</MyText> The date range is limited to the past 7 days.
+                </MyText>
+            </View>
+            <Divider style={{backgroundColor: allColors.textColorPrimary}} bold/>
             <View>
-              <MyText>Start date</MyText>
-              <MyText>End date</MyText>
+              <MyText>Enter the number of previous days to fetch data:</MyText>
+              <TextInput
+                  style={{ width: 80, backgroundColor: "transparent" }}
+                  allowFontScaling={false}
+                  underlineColor={allColors.textColorPrimary}
+                  textColor={allColors.universalColor}
+                  cursorColor={allColors.universalColor}
+                  selectionColor={allColors.textSelectionColor}
+                  activeUnderlineColor={allColors.textColorPrimary}
+                  contentStyle={{ fontFamily: "Karla_400Regular" }}
+                  value={numberOfDays}
+                  onChangeText={val => handleDateChange(val)}
+                  keyboardType={"number-pad"}
+                  maxLength={1}
+                  autoCorrect={false}
+                  autoComplete="off"
+              />
+            </View>
+            <View>
+              <MyText>Date range is from {dateRangeToDisplay} to {moment().format('MMM DD, \'YY')}</MyText>
             </View>
           </Dialog.Content>
           <Dialog.Actions>

@@ -106,8 +106,8 @@ const PlusMoreAccount = ({ navigation }) => {
           borderRadius: 15,
           borderTopRightRadius: 15,
           borderTopLeftRadius: 15,
-          borderColor: allColors.placeholderTextColor,
-          borderWidth: 1,
+          borderColor: allColors.textColorPrimary,
+          borderWidth: 2,
           backgroundColor: allColors.innerTextFieldColor,
         }}
         selectionColor={allColors.textSelectionColor}

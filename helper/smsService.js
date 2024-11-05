@@ -104,6 +104,6 @@ const gettingAmountLogic = (msg) => {
     return amount;
 }
 
-export const fetchSmses = async () => {
-    return await fetchFilteredMessages('2024-10-30', '2024-11-02');
+export const fetchSmses = async (from, to) => {
+    return await fetchFilteredMessages(from, to);
 }

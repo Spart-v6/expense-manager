@@ -58,6 +58,8 @@ const makeStyles = (allColors) =>
       color: allColors.textColorSecondary,
     },
     selected: {
+      borderColor: allColors.textColorPrimary,
+      borderWidth: 1,
       borderRadius: 20,
       borderTopRightRadius: 20,
       borderTopLeftRadius: 20,
@@ -193,7 +195,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
-              borderColor: allColors.placeholderTextColor,
+              borderColor: allColors.textColorPrimary,
               borderWidth: 2,
               backgroundColor: allColors.innerTextFieldColor,
             },

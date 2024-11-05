@@ -134,7 +134,7 @@ const PlusMoreGroup = ({ navigation }) => {
               borderTopLeftRadius: 15,
               backgroundColor: allColors.innerTextFieldColor,
               marginBottom: 20,
-              borderColor: allColors.placeholderTextColor,
+              borderColor: allColors.textColorPrimary,
               borderWidth: 2,
             }}
             selectionColor={allColors.textSelectionColor}
@@ -267,7 +267,7 @@ const makeStyles = (allColors) =>
       borderTopRightRadius: 15,
       borderTopLeftRadius: 15,
       backgroundColor: allColors.innerTextFieldColor,
-      borderColor: allColors.placeholderTextColor,
+      borderColor: allColors.textColorPrimary,
       borderWidth: 2,
       margin: 10,
       marginLeft: 0,

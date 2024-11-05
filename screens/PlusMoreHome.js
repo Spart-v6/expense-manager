@@ -25,6 +25,7 @@ import {
   addRecentTransactions,
   updateRecentTransactions,
   deleteRecentTransactions,
+  deleteSms,
 } from "../redux/actions";
 import moment from "moment";
 import Icon1 from "react-native-vector-icons/Octicons";
@@ -76,6 +77,8 @@ const makeStyles = (allColors) =>
       color: allColors.textColorSecondary,
     },
     selected: {
+      borderColor: allColors.textColorPrimary,
+      borderWidth: 1,
       borderRadius: 20,
       borderTopRightRadius: 20,
       borderTopLeftRadius: 20,
@@ -150,7 +153,11 @@ const PlusMoreHome = ({ navigation, route }) => {
   //  states for the icon picker dialog
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(() => {
-    if (route.params) return route.params.updateItem.selectedCategory;
+    if (route.params) {
+      if (route.params.updateItem){
+        return route.params.updateItem.selectedCategory;
+      }
+    }
     return null;
   });
 
@@ -165,30 +172,66 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [btnName, setBtnName] = useState("Add Expense");
 
   const [expenseName, setExpenseName] = useState(() => {
-    if (route.params) return route.params.updateItem.name;
+    if (route.params) {
+      if (route.params.updateItem) {
+        return route.params.updateItem.name;
+      }
+    }
     return "";
   });
+
   const [amountValue, setAmountValue] = useState(() => {
-    if (route.params) return route.params.updateItem.amount;
+    if (route.params) {
+      if (route.params.updateItem) {
+        return route.params.updateItem.amount;
+      }
+      if (route.params.sms) {
+        return route.params.sms.amount;
+      }
+    }
     return "";
   });
+
   const [selectedButton, setSelectedButton] = useState(() => {
-    if (route.params) return route.params.updateItem.type;
+    if (route.params){
+      if (route.params.updateItem) {
+        return route.params.updateItem.type;
+      }
+      if (route.params.sms){
+        return route.params.sms.transactionType === "debited" ? "Expense" : "Income";
+      }
+    }
     return "Expense";
   });
 
   const [description, setDescription] = useState(() => {
-    if (route.params) return route.params.updateItem.desc;
+    if (route.params) {
+      if (route.params.updateItem) {
+        return route.params.updateItem.desc;
+      }
+      if (route.params.sms) {
+        return 'Transaction via ' + route.params.sms.bank;
+      }
+    }
     return "";
   });
 
   // cards
   const [selectedCardInExpense, setSelectedCardInExpense] = useState(() => {
-    if (route.params) return route.params.updateItem.selectedCard;
+    if (route.params) {
+      if (route.params.updateItem) {
+        return route.params.updateItem.selectedCard;
+      }
+    }
     return "";
   });
+
   const [selectedCardID, setSelectedCardID] = useState(() => {
-    if (route.params) return route.params.updateItem.accCardSelected;
+    if (route.params) {
+      if (route.params.updateItem) { 
+        return route.params.updateItem.accCardSelected;
+      }
+    }
     return 0;
   });
 
@@ -218,9 +261,12 @@ const PlusMoreHome = ({ navigation, route }) => {
   // Date variables
   const [dateValue, setDateValue] = useState(() => {
     if (route.params) {
-      return moment(route.params.updateItem.date, "YYYY/MM/DD").format(
-        "DD/MM/YYYY"
-      );
+      if (route.params.updateItem) {
+        return moment(route.params.updateItem.date, "YYYY/MM/DD").format("DD/MM/YYYY");
+      }
+      if (route.params.sms) {
+        return moment(route.params.sms.date, "YYYY-MM-DD").format("DD/MM/YYYY");
+      }
     }
     return moment().format("DD/MM/YYYY");
   });
@@ -228,35 +274,68 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   const [tempDate, setTempDate] = useState(() => {
     if (route.params) {
-      const dateString = route.params.updateItem.date;
-      return dateString;
+      if (route.params.updateItem) {
+        return route.params.updateItem.date;
+      }
+      if (route.params.sms) {
+        return moment(route.params.sms.date, "YYYY-MM-DD").format("YYYY/MM/DD");
+      }
     }
     return moment().format("YYYY/MM/DD");
   });
 
   const [selectedMonth, setSelectedMonth] = useState(() => {
     if (route.params) {
-      const [year, month, day] = route.params.updateItem.date.split("/");
-      const newMonth = moment()
-        .month(month - 1)
-        .format("MMMM");
-      return newMonth;
+      if (route.params.updateItem) {
+        const [year, month, day] = route.params.updateItem.date.split("/");
+        const newMonth = moment().month(month - 1).format("MMMM");
+        return newMonth;
+      }
+      if (route.params.sms) {
+        const [year, month, day] = route.params.sms.date.split("-");
+        const newMonth = moment().month(month - 1).format("MMMM");
+        return newMonth;
+      }
     }
     return moment().format("MMMM");
   });
+
   const [selectedYear, setSelectedYear] = useState(() => {
     if (route.params) {
-      const [year, month, day] = route.params.updateItem.date.split("/");
-      return +year;
+      if (route.params.updateItem) {
+        const [year, month, day] = route.params.updateItem.date.split("/");
+        return +year;
+      }
+      if (route.params.sms) {
+        const [year, month, day] = route.params.sms.date.split("-");
+        return +year;
+      }
     }
     return moment().year();
   });
+
   const [selectedDate, setSelectedDate] = useState(() => {
     if (route.params) {
-      const [year, month, day] = route.params.updateItem.date.split("/");
-      return +day;
+      if (route.params.updateItem) {
+        const [year, month, day] = route.params.updateItem.date.split("/");
+        return +day;
+      }
+      if (route.params.sms) {
+        const [year, month, day] = route.params.sms.date.split("-");
+        return +day;
+      }
     }
-    return moment().date();
+    else return moment().date();
+  });
+
+  // Getting msgId (from notifications screen) so that current notification will be deleted that got recently added to expense screen
+  const [msgIdFrmNotiScreen, setMsgIdFrmNotiScreen] = useState(() => {
+    if (route.params) {
+      if (route.params.sms) {
+        return route.params.sms.msgId;
+      }
+    }
+    return "";
   });
 
   //Delete variables
@@ -267,7 +346,6 @@ const PlusMoreHome = ({ navigation, route }) => {
     [route?.params?.updateItem]
   );
 
-  // TODO: Add border color to income and expense buttons
   const incomeExpenseBtns = (name) => {
     return (
       <Button
@@ -281,7 +359,6 @@ const PlusMoreHome = ({ navigation, route }) => {
         labelStyle={{ fontSize: 15 }}
         style={[styles.btn, selectedButton === name && styles.selected]}
       >
-        {/* TODO: Limit the amount digits to 10 only */}
         <MyText
           style={[
             styles.textbtn,
@@ -334,7 +411,7 @@ const PlusMoreHome = ({ navigation, route }) => {
               borderRadius: 15,
               borderTopRightRadius: 15,
               borderTopLeftRadius: 15,
-              borderColor: allColors.placeholderTextColor,
+              borderColor: allColors.textColorPrimary,
               borderWidth: 2,
               backgroundColor: allColors.innerTextFieldColor,
               ...style,
@@ -475,17 +552,22 @@ const PlusMoreHome = ({ navigation, route }) => {
       dispatch(updateData(valuesToChange.id, updateExpense));
       dispatch(updateRecentTransactions(valuesToChange.id, updateExpense));
     } else {
+      // also works for (when adding via notifications)
       dispatch(addData(expense));
       dispatch(addRecentTransactions(expense));
+      // Deleting the notification from notificationsScreen coz that expense is now added to expense (home) screen
+      dispatch(deleteSms(msgIdFrmNotiScreen));
     }
     navigation.goBack();
   };
 
   useEffect(() => {
     if (route.params) {
-      setValuesToChange(memoizedObj);
-      setIsUpdatePressed(true);
-      setBtnName("Update Expense");
+      if (route.params.updateItem) {
+        setValuesToChange(memoizedObj);
+        setIsUpdatePressed(true);
+        setBtnName("Update Expense");
+      }
     }
   }, [memoizedObj]);
 
@@ -514,7 +596,7 @@ const PlusMoreHome = ({ navigation, route }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
-        title="Add Expenses"
+        title="Add Expense"
         navigation={navigation}
         isPlus={true}
         isUpdate={isUpdatePressed}
