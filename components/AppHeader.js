@@ -218,7 +218,7 @@ const AppHeader = React.memo((({
         needInfo && (
           <Appbar.Action icon={({ color, size }) => (
               <Feather name="info" size={20} color={allColors.textColorPrimary}/>
-          )} onPress={handleInfoPress}/>
+          )} onPress={handleInfoPress} animated={false}/>
         )
       }
       { title === "Notifications" && (

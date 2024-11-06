@@ -51,9 +51,14 @@ async function fetchFilteredMessages(fromDate, toDate) {
                 };
 
                 const transactionDetails = messages
-                    .filter((msg) =>
-                        msg.body.toLowerCase().includes('credited') || msg.body.toLowerCase().includes('debited')
-                    )
+                    .filter((msg) => {
+                        // msg.body.toLowerCase().includes('credited') || msg.body.toLowerCase().includes('debited')
+                        const containsTransactionKeyword = /\bcredited\b|\bdebited\b/.test(msg.body);
+                        const excludesRequestPhrase = !msg.body.includes("has requested money");
+                        const excludesApprovalPhrase = !msg.body.includes("On approval");
+
+                        return containsTransactionKeyword && excludesRequestPhrase && excludesApprovalPhrase;
+                })
                 .map((msg) => {
                     const msg_id = msg._id;
                     // Extract the bank suffix by splitting on the hyphen (-)
@@ -62,24 +67,29 @@ async function fetchFilteredMessages(fromDate, toDate) {
 
                     const bankName = bankSuffixMap[bankSuffix] || "Unknown Bank";
 
-                    const body = msg.body.toLowerCase();
-
-                    // Detect transaction type as first occurrence of "credited" or "debited"
-                    const transactionTypeMatch = body.match(/\b(credited|debited)\b/i);
-                    const transactionType = transactionTypeMatch ? transactionTypeMatch[1].toLowerCase() : null;
+                    // Detect transaction type as first small-case occurrence of "credited" or "debited"
+                    const transactionTypeMatch = msg.body.match(/\b(credited|debited)\b/);
+                    const transactionType = transactionTypeMatch ? transactionTypeMatch[1] : null;
 
                     // get amount
                     const amount = gettingAmountLogic(msg);
 
-                    // Extract date in various formats 
-                    let date = null;
-                    const dateMatch = msg.body.match(/(\d{2}[-/]\d{2}[-/]\d{4}|\d{2}[-/](?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[-/]\d{2}|\d{2}(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d{2})/i);
-                    
-                    if (dateMatch) {
-                        date = moment(dateMatch[1], ["DD-MM-YYYY", "DD/MM/YYYY", "DD-MMM-YY", "DD-MMM-YYYY", "DDMMMYY"]).format("YYYY-MM-DD");
+                    const date = moment(msg.date, 'x').format("YYYY-MM-DD");
+
+                    if (!transactionType || amount === "0.00" || bankName === "Unknown Bank") {
+                        // Skip invalid or unrecognized transactions
+                        return {
+                            unknown: true,
+                            msgId: msg_id,
+                            bank: bankName,
+                            amount,
+                            date,
+                            transactionType: 'debited',
+                        }
                     }
 
                     return {
+                        unknown: false,
                         msgId: msg_id,
                         bank: bankName,
                         amount,

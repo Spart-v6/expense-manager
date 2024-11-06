@@ -31,7 +31,7 @@ const NotificationsScreen = ({ navigation }) => {
     smsList.forEach((sms, index) => {
       setTimeout(() => {
         handleDeleteSms(sms.msgId);
-      }, index * 50);
+      }, index * 10); // change the animation speed here
     });
     LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
   };
@@ -53,6 +53,7 @@ const NotificationsScreen = ({ navigation }) => {
 
   const handleFetchSms = async () => {
     try {
+      // to - adding one more day to 'to' (2nd arg in fetchSmses) coz it's inclusive 
       const smsMessages = await fetchSmses(moment(dateRangeToDisplay, 'MMM DD, \'YY').format('YYYY-MM-DD'), moment().add(1, 'days').format('YYYY-MM-DD'));
       if (smsMessages && smsMessages.length > 0) {
         dispatch(addSms(smsMessages));
@@ -77,8 +78,8 @@ const NotificationsScreen = ({ navigation }) => {
     // Remove any non-numeric characters
     const numericVal = val.replace(/[^0-9]/g, '');
 
-    // Only set the value if it's within the range 0-7
-    if (numericVal !== '' && numericVal >= 0 && numericVal <= 7) {
+    // Only set the value if it's within the range 0-31
+    if (numericVal !== '' && numericVal >= 0 && numericVal <= 31) {
       setNumberOfDays(numericVal);
       setDateRangeToDisplay(moment().subtract(parseInt(numericVal, 10), 'days').format('MMM DD, \'YY'));
     } else if (numericVal === '') {
@@ -87,7 +88,7 @@ const NotificationsScreen = ({ navigation }) => {
     }
   }
 
-  const NotificationCard = ({ sms }) => {
+  const NotificationCard = React.memo(({ sms, index }) => {
     const pan = useRef(new Animated.ValueXY()).current;
 
     const panResponder = PanResponder.create({
@@ -115,7 +116,13 @@ const NotificationsScreen = ({ navigation }) => {
     const txnMsg = isCreditOrDebit ? 'Credited to' : 'Debited from';
 
     return (
-      <Animated.View style={[{ transform: [{ translateX: pan.x }] }]} {...panResponder.panHandlers}>
+      <Animated.View
+        style={[
+          { transform: [{ translateX: pan.x }] },
+          index === smsList.length - 1 && { marginBottom: 50 }
+        ]}
+        {...panResponder.panHandlers}
+      >
         <TouchableOpacity onPress={() => handleToExpenseScreen(sms)} activeOpacity={0.8}>
           <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
@@ -135,10 +142,10 @@ const NotificationsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </Animated.View>
     );
-  };
+  });
 
   const renderItem = useCallback(
-    ({ item: sms }) => <NotificationCard sms={sms} />,
+    ({ item: sms, index }) => <NotificationCard sms={sms}  index={index} />,
     [allColors]
   );
 
@@ -184,8 +191,11 @@ const NotificationsScreen = ({ navigation }) => {
               data={smsList}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
-              style={{ padding: 20 }}
+              style={{ marginTop: 10, paddingLeft: 20, paddingRight: 20, paddingBottom: 20 }}
               alwaysBounceVertical
+              initialNumToRender={10} // start with fewer items
+              maxToRenderPerBatch={10} // increase if performance allows
+              windowSize={5}// renders more screens worth of items in advance
             />
           ) 
           : (
@@ -228,7 +238,7 @@ const NotificationsScreen = ({ navigation }) => {
                   value={numberOfDays}
                   onChangeText={val => handleDateChange(val)}
                   keyboardType={"number-pad"}
-                  maxLength={1}
+                  maxLength={2}
                   autoCorrect={false}
                   autoComplete="off"
               />
