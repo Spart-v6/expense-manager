@@ -61,6 +61,7 @@ async function fetchFilteredMessages(fromDate, toDate) {
                 })
                 .map((msg) => {
                     const msg_id = msg._id;
+                    // TODO: add logic to check the amount comes first, then money comes then dates, not other other way around
                     // Extract the bank suffix by splitting on the hyphen (-)
                     const addressParts = msg.address.split('-');
                     const bankSuffix = addressParts.length > 1 ? addressParts[1] : '';

@@ -105,7 +105,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
 
-  // #region =========== Fetching card details here (required for validting imported data)
+  // #region  Fetching card details here (required for validting imported data)
   useFocusEffect(
     useCallback(() => {
       fetchAllCardsData();

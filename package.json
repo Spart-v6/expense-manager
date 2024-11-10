@@ -1,6 +1,6 @@
 {
   "name": "expense-manager",
-  "version": "1.0.0",
+  "version": "2.1.3",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -58,8 +58,10 @@
     "react-native-svg-transformer": "^1.5.0",
     "react-native-tab-view": "^3.5.1",
     "react-native-vector-icons": "^9.2.0",
+    "react-native-version": "^4.0.0",
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
+    "redux-thunk": "^2.4.2",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {

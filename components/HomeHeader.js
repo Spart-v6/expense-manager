@@ -1,6 +1,6 @@
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Tooltip } from "react-native-paper";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
@@ -12,7 +12,7 @@ import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { storeData } from "../redux/actions";
+import { loadTotalsFromStorage, storeData } from "../redux/actions";
 
 const makeStyles = (allColors) =>
   StyleSheet.create({
@@ -128,32 +128,15 @@ const MyBezierLineChart = (colors, chartData) => {
 
 const DashboardCard = ({ currency }) => {
   const allColors = useDynamicColors();
-  const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
   const styles = makeStyles(allColors);
 
-  const totalValue = expenseData?.reduce((acc, curr) => {
-    if (curr.type === "Income") return acc + +curr.amount;
-    else if (curr.type === "Expense") return acc - +curr.amount;
-    else return acc;
-  }, 0);
+  const totalIncome = useSelector((state) => state.expenseReducer.totalIncome);
+  const totalExpense = useSelector((state) => state.expenseReducer.totalExpense);
 
-  const currentMonth = moment().month() + 1;
-  const filteredArr = expenseData?.filter(
-    (item) => moment(item.date, "YYYY/MM/DD").month() + 1 === currentMonth
-  );
+  const totalExpenseForMonth = useSelector((state) => state.expenseReducer.totalExpenseForMonth);
+  const totalIncomeForMonth = useSelector((state) => state.expenseReducer.totalIncomeForMonth);
 
-  const { totalIncomeForMonth, totalExpenseForMonth } =
-    filteredArr?.length > 0
-      ? filteredArr?.reduce(
-          (acc, item) => {
-            if (item.type === "Income") acc.totalIncomeForMonth += +item.amount;
-            else if (item.type === "Expense")
-              acc.totalExpenseForMonth += +item.amount;
-            return acc;
-          },
-          { totalIncomeForMonth: 0, totalExpenseForMonth: 0 }
-        )
-      : { totalIncomeForMonth: 0, totalExpenseForMonth: 0 };
+  const totalValue = totalIncome - totalExpense;
 
   return (
     <Card style={[styles.card]}>
@@ -223,10 +206,10 @@ const DashboardCard = ({ currency }) => {
   );
 };
 
-const IncomeCard = ({ incomeArray, currency }) => {
+const IncomeCard = ({ currency }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
-  const totalIncome = incomeArray?.reduce((a, b) => a + b, 0) || 0;
+  const totalIncome = useSelector((state) => state.expenseReducer.totalIncome);
 
   return (
     <View style={styles.incomeCard}>
@@ -262,15 +245,15 @@ const IncomeCard = ({ incomeArray, currency }) => {
           </View>
         </Tooltip>
       </View>
-      <View>{MyBezierLineChart("#4bba38", incomeArray)}</View>
+      {/* <View>{MyBezierLineChart("#4bba38", incomeArray)}</View> */}
     </View>
   );
 };
 
-const ExpenseCard = ({ expenseArray, currency }) => {
+const ExpenseCard = ({ currency }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
-  const totalExpense = expenseArray?.reduce((a, b) => a + b, 0) || 0;
+  const totalExpense = useSelector((state) => state.expenseReducer.totalExpense);
 
   return (
     <View style={styles.expenseCard}>
@@ -306,7 +289,7 @@ const ExpenseCard = ({ expenseArray, currency }) => {
           </View>
         </Tooltip>
       </View>
-      <View>{MyBezierLineChart("#FF0000", expenseArray)}</View>
+      {/* <View>{MyBezierLineChart("#FF0000", expenseArray)}</View> */}
     </View>
   );
 };
@@ -326,61 +309,31 @@ const HomeHeader = () => {
     fetchCurrency();
   }, []);
 
-  // #region fetching all expenses in home header
-  useFocusEffect(
-    useCallback(() => {
-      fetchExpensesData();
-    }, [])
-  );
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth },
+      });
+    };
+  
+    loadData();
+  }, []);
+  
 
-  const fetchExpensesData = async () => {
-    try {
-      const res = await AsyncStorage.getItem("ALL_EXPENSES");
-      let newData = JSON.parse(res);
-      if (newData !== null) dispatch(storeData(newData));
-    } catch (e) {}
-  };
 
-  // #endregion
-
-  const expenseData = useSelector((state) => state.expenseReducer.allExpenses);
-
-  const [incomeArray, setIncomeArray] = React.useState([]);
-  const [expenseArray, setExpenseArray] = React.useState([]);
-
-  React.useEffect(() => {
-    const newIncomeArray = expenseData
-      ?.filter((item) => item?.type === "Income")
-      ?.sort((a, b) => {
-        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(
-          moment(b.date, "YYYY/MM/DD")
-        );
-        if (dateComparison !== 0) return dateComparison;
-        else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
-      })
-      ?.map((item) => +item?.amount);
-
-    const newExpenseArray = expenseData
-      ?.filter((item) => item?.type === "Expense")
-      ?.sort((a, b) => {
-        const dateComparison = moment(a.date, "YYYY/MM/DD").diff(
-          moment(b.date, "YYYY/MM/DD")
-        );
-        if (dateComparison !== 0) return dateComparison;
-        else return moment(a.time, "HH:mm:ss").diff(moment(b.time, "HH:mm:ss"));
-      })
-      ?.map((item) => +item?.amount);
-
-    setIncomeArray(newIncomeArray);
-    setExpenseArray(newExpenseArray);
-  }, [expenseData]);
 
   return (
     <View>
       <DashboardCard currency={currency.curr} />
-      <View style={{ flexDirection: "row" }}>
-        <IncomeCard incomeArray={incomeArray} currency={currency.curr} />
-        <ExpenseCard expenseArray={expenseArray} currency={currency.curr} />
+      <View style={{ flexDirection: "row" }}> 
+        <IncomeCard currency={currency.curr} />
+        <ExpenseCard currency={currency.curr} />
       </View>
     </View>
   );

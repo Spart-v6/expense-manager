@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { constants as types } from "../actionTypes";
 
 // For expenses
@@ -179,3 +180,29 @@ export const fetchAlreadyStoredSmses = smsList => {
     payload: smsList 
   }
 }
+
+
+
+
+
+export const loadTotalsFromStorage = () => async (dispatch) => {
+  try {
+    const totalIncome = await AsyncStorage.getItem("TOTAL_INCOME");
+    const totalExpense = await AsyncStorage.getItem("TOTAL_EXPENSE");
+
+    // Parse and set default values if null
+    const parsedIncome = totalIncome ? JSON.parse(totalIncome) : 0;
+    const parsedExpense = totalExpense ? JSON.parse(totalExpense) : 0;
+
+    // Dispatch the STORE_DATA action with loaded totals
+    dispatch({
+      type: types.STORE_DATA,
+      payload: {
+        totalIncome: parsedIncome,
+        totalExpense: parsedExpense,
+      },
+    });
+  } catch (error) {
+    console.error("Error loading totals from AsyncStorage:", error);
+  }
+};

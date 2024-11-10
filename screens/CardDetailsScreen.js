@@ -33,7 +33,7 @@ const CardDetailsScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
-        title={card?.paymentNetwork}
+        title={card?.cardHolderName}
         navigation={navigation}
         isUpdateCardScreen={true}
       />
