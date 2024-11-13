@@ -73,10 +73,7 @@ const expenseReducer = (state = initialState, action) => {
     
         // Calculate updated totals based on the modified list of expenses
         const { totalIncome: updatedTotalIncome, totalExpense: updatedTotalExpense } = calculateTotals(updatedObjects);
-    
-        console.log("Updated income:", updatedTotalIncome);
-        console.log("Updated expense:", updatedTotalExpense);
-    
+
         // Save the updated expenses and totals to AsyncStorage
         AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedObjects));
         AsyncStorage.setItem("TOTAL_INCOME", JSON.stringify(updatedTotalIncome));
@@ -97,10 +94,7 @@ const expenseReducer = (state = initialState, action) => {
     
       // Calculate the new totals after deletion
       const { totalIncome: updatedTotalIncome, totalExpense: updatedTotalExpense } = calculateTotals(updatedArray);
-    
-      console.log("Income after deletion:", updatedTotalIncome);
-      console.log("Expense after deletion:", updatedTotalExpense);
-    
+
       // Save the updated expenses and totals to AsyncStorage
       AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedArray));
       AsyncStorage.setItem("TOTAL_INCOME", JSON.stringify(updatedTotalIncome));

@@ -145,7 +145,7 @@ const RecentTransaction = () => {
   // #endregion
 
   return (
-    <View style={{marginBottom: 80}}>
+    <View>
       {
         recentData.length > 0 ? (
           <FlashList
@@ -159,7 +159,7 @@ const RecentTransaction = () => {
         )
         :
         (
-          <View style={{justifyContent: "center", gap: 10, alignItems: 'center', height: Dimensions.get("screen").height * 0.3, marginBottom: 100}}>
+          <View style={[{justifyContent: "center", gap: 10, alignItems: 'center', height: Dimensions.get("screen").height * 0.45}, recentData.length > 0 && {marginBottom: 100}]}>
             <SimpleLineIcons name="plus" size={50} color={allColors.textColorPrimary} onPress={() => navigation.navigate("PlusMoreHome")}/>
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Your recent transactions will be shown here.</MyText>

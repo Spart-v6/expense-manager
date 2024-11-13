@@ -10,6 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from "moment";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AppHeader = React.memo((({
   title,
@@ -76,48 +77,83 @@ const AppHeader = React.memo((({
   });
   
 
-  const GreetAndSearch = React.memo(({greeting, username}) => {
-    const [showGreeting, setShowGreeting] = React.useState(true);
-    // if counter = 1, do not animate
-    const greetingText = showGreeting ? `${greeting} ${username}` : 'Search your expenses';
-
-    const fadeAnimation = React.useRef(new Animated.Value(0)).current;
-
+  const GreetAndSearch = ({ greeting, username }) => {
+    const fadeAnimation = React.useRef(new Animated.Value(0)).current; // For greeting animation
+    const finalFadeAnimation = React.useRef(new Animated.Value(0)).current; // For "Search your expenses" fade-in
+    const [hasAnimated, setHasAnimated] = React.useState(false);
+    const [showGreeting, setShowGreeting] = React.useState(true); // Track visibility
+    const [finalText, setFinalText] = React.useState(null); // Control final display text
+    const allColors = useDynamicColors();
+  
     React.useEffect(() => {
-      const fadeIn = Animated.timing(fadeAnimation, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      });
-      const fadeOut = Animated.timing(fadeAnimation, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      });
-
-      const timer = setTimeout(() => {
-        fadeOut.start(() => {
+      const checkAnimationState = async () => {
+        const storedState = await AsyncStorage.getItem('hasAnimated');
+        if (storedState === 'true') {
+          setHasAnimated(true);
           setShowGreeting(false);
-          fadeIn.start();
-        });
-      }, 2000);
-
-      fadeIn.start();
-
-      return () => {
-        clearTimeout(timer);
-        fadeAnimation.setValue(0);
+          setFinalText('Search your expenses');
+          // Smooth fade-in for "Search your expenses"
+          Animated.timing(finalFadeAnimation, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        } else {
+          // Run the initial greeting animation
+          Animated.sequence([
+            Animated.timing(fadeAnimation, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.delay(1000),
+            Animated.timing(fadeAnimation, {
+              toValue: 0,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ]).start(async () => {
+            await AsyncStorage.setItem('hasAnimated', 'true');
+            setHasAnimated(true);
+            setShowGreeting(false);
+            setFinalText('Search your expenses');
+            // Smooth fade-in for "Search your expenses"
+            Animated.timing(finalFadeAnimation, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }).start();
+          });
+        }
       };
-    }, [fadeAnimation]);
-
+      checkAnimationState();
+    }, [fadeAnimation, finalFadeAnimation]);
+  
+    React.useEffect(() => {
+      // Set greeting text when data is ready
+      if (showGreeting && greeting && username) {
+        setFinalText(`${greeting} ${username}`);
+      }
+    }, [greeting, username, showGreeting]);
+  
+    if (!finalText) {
+      // Render nothing until `finalText` is ready
+      return null;
+    }
+  
     return (
-      <Animated.View style={{ opacity: fadeAnimation }}>
+      <Animated.View
+        style={{
+          opacity: showGreeting ? fadeAnimation : finalFadeAnimation,
+        }}
+      >
         <View style={{ marginLeft: 6 }}>
-          <MyText style={{color: allColors.universalColor}} variant="titleMedium">{greetingText}</MyText>
+          <MyText style={{ color: allColors.universalColor }} variant="titleMedium">{finalText}</MyText>
         </View>
       </Animated.View>
     );
-  });
+  };
+  
   const [greeting, setGreeting] = React.useState("");
   const [username, setUsername] = React.useState(null);
 
