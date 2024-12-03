@@ -145,7 +145,7 @@ const RecentTransaction = () => {
   // #endregion
 
   return (
-    <View>
+    <View style={recentData.length > 0 && {marginBottom: 60}}>
       {
         recentData.length > 0 ? (
           <FlashList

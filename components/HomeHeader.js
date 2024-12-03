@@ -133,6 +133,7 @@ const makeStyles = (allColors) =>
 
 const DashboardCard = ({ currency }) => {
   // --- New Swipable UI Cards (uncomment if needed, and comment below one)
+  // #region New Swipable UI Cards
   // const allColors = useDynamicColors();
   // const styles = makeStyles(allColors);
   // const { width } = Dimensions.get('window');
@@ -286,6 +287,7 @@ const DashboardCard = ({ currency }) => {
   //     </Animated.View>
   //   </View>
   // );
+  // #endregion
   
   // --- Old styled UI of cards (comment this one and uncomment above to use new)
 
@@ -303,10 +305,10 @@ const DashboardCard = ({ currency }) => {
   return (
     <Card style={[styles.card]}>
       <Card.Title
-        title="My balance"
+        title="Available Balance"
         titleStyle={{
           color: allColors.textColorPrimary,
-          fontSize: 18,
+          fontSize: 20,
           fontFamily: "Karla_400Regular",
         }}
       />
@@ -324,14 +326,13 @@ const DashboardCard = ({ currency }) => {
       </MyText>
       <Card.Content>
         <MyText
-          variant="titleLarge"
-          style={{ color: allColors.textColorPrimary }}
+          style={{ color: allColors.textColorPrimary, fontSize: 20 }}
         >
-          {moment().format("MMMM")} month
+          Spending in {moment().format("MMMM")}
         </MyText>
         <View style={styles.content}>
           <View style={{ flex: 1 }}>
-            <MyText style={{ color: allColors.textColorPrimary }}>
+            <MyText style={{ color: allColors.textColorPrimary }} variant="titleSmall">
               Income
             </MyText>
             <View style={{ flexDirection: "row", gap: 2 }}>
@@ -341,13 +342,13 @@ const DashboardCard = ({ currency }) => {
                 color={allColors.successColor}
                 style={{ alignSelf: "center" }}
               />
-              <MyText style={{ color: allColors.textColorSecondary }}>
+              <MyText style={{ color: allColors.textColorSecondary }} variant="titleSmall">
                 + {formatNumberWithCurrency(totalIncomeForMonth, currency)}
               </MyText>
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <MyText style={{ color: allColors.textColorPrimary }}>
+            <MyText style={{ color: allColors.textColorPrimary }} variant="titleSmall">
               Expense
             </MyText>
             <View style={{ flexDirection: "row", gap: 2 }}>
@@ -357,7 +358,7 @@ const DashboardCard = ({ currency }) => {
                 color={allColors.warningColor}
                 style={{ alignSelf: "center" }}
               />
-              <MyText style={{ color: allColors.textColorSecondary }}>
+              <MyText style={{ color: allColors.textColorSecondary }} variant="titleSmall">
                 - {formatNumberWithCurrency(totalExpenseForMonth, currency)}
               </MyText>
             </View>

@@ -157,6 +157,7 @@ const NotificationsScreen = ({ navigation }) => {
         onClearAll={clearNotifications}
         isInfoPressed={(val) => setIsInfoPressed(val)}
         needInfo={true}
+        isMenuNeeded={false}
       />
       <View>
         <Button

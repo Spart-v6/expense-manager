@@ -10,7 +10,7 @@ import {
 import { Button, Dialog, Portal, Text, TextInput, HelperText, TouchableRipple } from "react-native-paper";
 import { ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteData, deleteRecentTransactions, storeCard, storeData } from "../redux/actions";
@@ -47,6 +47,23 @@ const AllExpensesScreen = ({ navigation }) => {
 
   // #region fetching expenses for deletetion purpose
   
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+      });
+    };
+  
+    loadData();
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       fetchExpensesData();
@@ -57,11 +74,16 @@ const AllExpensesScreen = ({ navigation }) => {
     try {
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
+      console.log("Ferthced ", newData);
       if (newData !== null) dispatch(storeData(newData));
     } catch (e) {}
   };
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
+
+  console.log(expensesData);
+  
+
   // #endregion
 
 

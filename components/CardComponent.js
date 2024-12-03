@@ -3,7 +3,7 @@ import { Card, Portal } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCard, deleteData, deleteRecentTransactions, deleteRecurrences, storeCard, storeRecurrences } from "../redux/actions";
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -120,6 +120,24 @@ const CardComponent = () => {
   };
   // =========== End
 
+  // New style of fetching expesnes data coz of the introduction of totalIncome and totalExpense tracker
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+      });
+    };
+  
+    loadData();
+  }, []);
+
   const allCards = useSelector(state => state.cardReducer.allCards);
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
@@ -175,7 +193,17 @@ const CardComponent = () => {
   }
 
   
-  const renderItem = useCallback(({ item: crd }) => (
+  const renderItem = useCallback(({ item: crd }) => {
+    
+    const amountToDisplayInCard = expensesData
+      .filter((exp) => exp.accCardSelected === crd.id)
+      .reduce((acc, card) => {
+        if (card.type === "Income") return acc + +card.amount;
+        if (card.type === "Expense") return acc - +card.amount;
+        return acc;
+    }, 0);
+    
+    return (
     <TouchableOpacity
       onLongPress={() => handleAccountCardDelete(crd)}
       activeOpacity={0.8}
@@ -227,20 +255,7 @@ const CardComponent = () => {
             variant="headlineLarge"
             style={{ color: allColors.textColorPrimary }}
           >
-            {formatNumberWithCurrency(
-              expensesData
-                .filter((exp) => exp.accCardSelected === crd.id)
-                ?.reduce((acc, card) => {
-                  if (card.type === 'Income') {
-                    return acc + +card.amount;
-                  } else if (card.type === 'Expense') {
-                    return acc - +card.amount;
-                  } else {
-                    return acc;
-                  }
-                }, 0),
-              currency.curr
-            )}
+            {formatNumberWithCurrency(amountToDisplayInCard, currency.curr)}
           </MyText>
         </View>
         <View style={styles.content}>
@@ -292,7 +307,7 @@ const CardComponent = () => {
     </Card>
     </TouchableOpacity>
 
-  ), [currency, allColors]);
+  )}, [currency, allColors, expensesData]);
 
   return (
     <>
@@ -305,6 +320,7 @@ const CardComponent = () => {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
+          ListEmptyComponent={<MyText>No Cards Available</MyText>} 
       />)
       : 
       (

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from "../screens/HomeScreen";
 import AllExpensesScreen from "../screens/AllExpensesScreen";
 import AccountsScreen from "../screens/AccountsScreen";
@@ -20,6 +21,7 @@ import RecurrenceScreen from "../screens/RecurrenceScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
 import NotificationsScreen from "../screens/NotificationsScreen";
+import FileUploadScreen from "../screens/FileUploadScreen"; 
 import MyText from "../components/MyText";
 import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,10 +29,13 @@ import useDynamicColors from "../commons/useDynamicColors";
 import * as NavigationBar from "expo-navigation-bar";
 import { View, TouchableOpacity, ActivityIndicator, StatusBar, Dimensions, Animated } from "react-native";
 import { processColor, PlatformColor } from 'react-native';
+import CustomDrawerContent from "../components/CustomDrawerContent";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 AsyncStorage.removeItem('hasAnimated');
 const navOptions = () => ({
   headerShown: false,
@@ -163,6 +168,29 @@ const HomeTabs = () => {
   );
 };
 
+const DrawerNavigator = () => {
+  const allColors = useDynamicColors();
+  return (
+    <Drawer.Navigator
+      initialRouteName="HomeTabs"
+      screenOptions={{
+        headerShown: false,
+        drawerStyle: {
+          backgroundColor: allColors.backgroundColorPrimary,
+          width: 240,
+        },
+      }}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      
+    >
+      <Drawer.Screen name="Home" component={TabNavigator} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} />
+      <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+      <Drawer.Screen name="Upload File" component={FileUploadScreen} />
+    </Drawer.Navigator>
+  );
+};
+
 const TabNavigator = () => (
   <Stack.Navigator>
     <Stack.Screen name="HomeTab" component={HomeTabs} options={navOptions} />
@@ -231,6 +259,12 @@ const TabNavigator = () => (
       name="NotificationsScreen"
       component={NotificationsScreen}
       options={navOptions}
+    />
+    <Stack.Screen
+      name="FileUploadScreen"
+      component={FileUploadScreen}
+      options={navOptions}
+      
     />
   </Stack.Navigator>
 );
@@ -302,7 +336,7 @@ const AppStack = () => {
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
       >
-        <StackApp.Screen name="HomeApp" component={TabNavigator} />
+        <StackApp.Screen name="HomeApp" component={DrawerNavigator} />
         <StackApp.Screen
           name="WelcomeNavigator"
           component={WelcomeNavigator}

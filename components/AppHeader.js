@@ -11,6 +11,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from "moment";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DrawerActions } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native";
 
 const AppHeader = React.memo((({
   title,
@@ -23,46 +25,18 @@ const AppHeader = React.memo((({
   needSearch,
   isInfoPressed,
   needInfo = false,
-  onUpload,
-  setOnUpload,
   setOnDeleteRange,
   deleteExpensesInRange = false,
-  onClearAll 
+  onClearAll,
+  isMenuNeeded = true
 }) => {
   const allColors = useDynamicColors();
   const screenHeight = Dimensions.get('window').height;
   const statusBarHeight = screenHeight * 0.05;
-  
-  // const [counter, setCounter] = useState(1);
-
-  // const [appState, setAppState] = useState(AppState.currentState);
-
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener('change', (nextAppState) => {
-  //     console.log('AppState changed to:', nextAppState);
-  //     setAppState(nextAppState);
-      
-  //     if (nextAppState === 'active') {
-  //       setCounter(1);
-  //       console.log('App has started or resumed');
-  //     } else if (nextAppState === 'background') {
-  //       setCounter(0);
-  //       console.log('App is running in the background');
-  //     } else if (nextAppState === 'inactive') {
-  //       setCounter(0);
-  //       console.log('App is inactive');
-  //     }
-  //   });
-
-  //   // Cleanup subscription on unmount
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, []);
 
   const handleUpload = React.useCallback(() => {
-    setOnUpload(prev => !prev);
-  }, [setOnUpload]);
+    navigation.navigate('FileUploadScreen');
+  }, []);
   
   const handleSettingsPress = React.useCallback(() => {
     navigation.navigate("SettingsScreen");
@@ -77,7 +51,7 @@ const AppHeader = React.memo((({
   });
   
 
-  const GreetAndSearch = ({ greeting, username }) => {
+  const GreetAndSearch = React.memo(({ greeting, username }) => {
     const fadeAnimation = React.useRef(new Animated.Value(0)).current; // For greeting animation
     const finalFadeAnimation = React.useRef(new Animated.Value(0)).current; // For "Search your expenses" fade-in
     const [hasAnimated, setHasAnimated] = React.useState(false);
@@ -152,7 +126,7 @@ const AppHeader = React.memo((({
         </View>
       </Animated.View>
     );
-  };
+  });
   
   const [greeting, setGreeting] = React.useState("");
   const [username, setUsername] = React.useState(null);
@@ -183,7 +157,7 @@ const AppHeader = React.memo((({
       style={{ backgroundColor: allColors.backgroundColorPrimary }}
       statusBarHeight={statusBarHeight}
     >
-      {!isParent && (
+      {!isParent && isMenuNeeded && (
         <Button onPress={() => navigation.goBack()}>
           <IconComponent
             name={"keyboard-backspace"}
@@ -192,10 +166,26 @@ const AppHeader = React.memo((({
           />
         </Button>
       )}
+      {!isMenuNeeded && (
+        <View style={{marginLeft: 20, marginRight: 20}}>
+        <TouchableOpacity style={{ padding: 8 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
+          <Feather name="menu" size={20} color={allColors.textColorPrimary} />
+        </TouchableOpacity>
+        </View>
+      )}
       {isHome || needSearch ? (
         <>
-        <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor}/>
-        <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} onPress={searchExpense}/>
+        <View style={{marginLeft: 20}}>
+          <TouchableOpacity style={{ padding: 8 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
+            <Feather name="menu" size={20} color={allColors.textColorPrimary} />
+          </TouchableOpacity>
+        </View>
+        <View style={{flexDirection: 'row', flex: 1, marginRight: 20}}>
+          <TouchableOpacity style={{width: "90%", alignItems: "center"}} onPress={searchExpense}>
+            <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} style={{justifyContent: "center"}} />
+          </TouchableOpacity>
+          <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor}/>
+        </View>
         </>
       ) : (
         <Appbar.Content
@@ -206,7 +196,7 @@ const AppHeader = React.memo((({
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
-      {isHome && (
+      {/* {isHome && (
         <Appbar.Action icon={({color, size }) => (
           <View style={{ alignItems: 'center' }}>
             <Ionicons name="notifications-outline" size={20} color={allColors.textColorPrimary} style={{  }} />
@@ -225,7 +215,7 @@ const AppHeader = React.memo((({
           onPress={handleUpload} 
           animated={false}
         />
-      )}
+      )} */}
       {deleteExpensesInRange && (
         <Appbar.Action icon={({color, size }) => (
           <View style={{ alignItems: 'center' }}>
@@ -236,7 +226,7 @@ const AppHeader = React.memo((({
           animated={false}
         />
       )}
-      {isHome && (
+      {/* {isHome && (
         <Appbar.Action
         icon={({ color, size }) => (
           <View style={{ alignItems: 'center' }}>
@@ -246,7 +236,7 @@ const AppHeader = React.memo((({
           onPress={handleSettingsPress}
           animated={false}
         />
-      )}
+      )} */}
       {isPlus && isUpdate && (
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}
