@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions
 } from "react-native";
-import { Button, Dialog, Portal, Text, TextInput, HelperText, TouchableRipple } from "react-native-paper";
+import { Button, Dialog, Portal, Text, TextInput, HelperText, TouchableRipple, ActivityIndicator } from "react-native-paper";
 import { ExpensesList } from "../components";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useState, useCallback, useEffect } from "react";
@@ -74,14 +74,12 @@ const AllExpensesScreen = ({ navigation }) => {
     try {
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
-      console.log("Ferthced ", newData);
       if (newData !== null) dispatch(storeData(newData));
     } catch (e) {}
   };
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
-  console.log(expensesData);
   
 
   // #endregion
@@ -89,6 +87,7 @@ const AllExpensesScreen = ({ navigation }) => {
 
   const [onDeleteRange, setOnDeleteRange] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isDeletingInProgress, setIsDeletingInProgress] = useState(false);
 
   const showDialog = () => setOnDeleteRange(true);
   const hideDialog = () => {
@@ -160,7 +159,9 @@ const AllExpensesScreen = ({ navigation }) => {
     setIsSubmitted(true); 
     if (validateDate(startDate) && validateDate(endDate)) {
       const filteredData = filterByDateRange(expensesData, startDate, endDate);
+      setIsDeletingInProgress(true);
       for (const obj of filteredData) { dispatch(deleteData(obj.id)); dispatch(deleteRecentTransactions(obj.id)); }
+      setIsDeletingInProgress(false);
       hideDialog();
     }
   };
@@ -178,6 +179,7 @@ const AllExpensesScreen = ({ navigation }) => {
       </View>
       <Portal>
         <Dialog visible={onDeleteRange} onDismiss={hideDialog} 
+          dismissable={!isDeletingInProgress}
           style={{
             backgroundColor: allColors.backgroundColorLessPrimary,
             width: "80%",
@@ -190,21 +192,34 @@ const AllExpensesScreen = ({ navigation }) => {
           }}>
           <Dialog.Title style={{color: allColors.universalColor}}>Delete Expenses on range</Dialog.Title>
           <Dialog.Content >
-            <View style={{flexDirection: 'row', gap: 30}}>
-              {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
-              {textInput("End Date", setEndDate, "YYYY/MM/DD")}
-            </View>
-            <HelperText type="error" visible={hasErrors()} variant="labelMedium" style={{color: allColors.warningColor}}>
-              Invalid format! Use YYYY/MM/DD and ensure valid month, day and year
-            </HelperText>
-          </Dialog.Content>
+            {isDeletingInProgress ? (
+              <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color={allColors.universalColor}/>
+                <MyText variant="bodyMedium" style={{ color: allColors.universalColor }} >
+                  Deleting please wait...
+                </MyText>
+              </View>
+            )
+            :
+              <>
+                  <View style={{flexDirection: 'row', gap: 30}}>
+                    {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
+                    {textInput("End Date", setEndDate, "YYYY/MM/DD")}
+                  </View>
+                  <HelperText type="error" visible={hasErrors()} variant="labelMedium" style={{color: allColors.warningColor}}>
+                    Invalid format! Use YYYY/MM/DD and ensure valid month, day and year
+                  </HelperText>
+              </>
+            }
+            </Dialog.Content>
           <Dialog.Actions>
             <TouchableRipple
                 onPress={handleSubmit}
                 rippleColor={allColors.rippleColor}
                 centered
+                disabled={isDeletingInProgress}
             >
-              <View style={{padding: 10, backgroundColor: allColors.addBtnColors, borderRadius: 10 }}>
+              <View style={[{padding: 10, borderRadius: 10}, isDeletingInProgress ? {backgroundColor: 'grey'} : {backgroundColor: allColors.addBtnColors, }]}>
                 <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Delete</MyText>
               </View>
             </TouchableRipple>
@@ -219,6 +234,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: "relative",
+  },
+  loaderContainer: {
+    gap: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 150,
+    // width: '100%'
   },
 });
 

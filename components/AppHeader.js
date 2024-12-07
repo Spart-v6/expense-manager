@@ -167,7 +167,7 @@ const AppHeader = React.memo((({
         </Button>
       )}
       {!isMenuNeeded && (
-        <View style={{marginLeft: 20, marginRight: 20}}>
+        <View style={{marginLeft: 20}}>
         <TouchableOpacity style={{ padding: 8 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
           <Feather name="menu" size={20} color={allColors.textColorPrimary} />
         </TouchableOpacity>
@@ -175,47 +175,38 @@ const AppHeader = React.memo((({
       )}
       {isHome || needSearch ? (
         <>
-        <View style={{marginLeft: 20}}>
-          <TouchableOpacity style={{ padding: 8 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
+        <View style={{marginLeft: 20, marginRight: 10}}>
+          <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 20, paddingTop: 15, paddingBottom: 15 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
             <Feather name="menu" size={20} color={allColors.textColorPrimary} />
           </TouchableOpacity>
         </View>
-        <View style={{flexDirection: 'row', flex: 1, marginRight: 20}}>
+        <View style={{flexDirection: 'row', flex: 1, marginRight: 20 }}>
           <TouchableOpacity style={{width: "90%", alignItems: "center"}} onPress={searchExpense}>
             <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} style={{justifyContent: "center"}} />
           </TouchableOpacity>
-          <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor}/>
+          <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor} style={{ marginLeft: 5}}/>
         </View>
         </>
       ) : (
         <Appbar.Content
-          title={<MyText variant="titleLarge" style={{color: allColors.textColorSecondary, maxWidth: Dimensions.get("screen").width / 1.3}} 
-          ellipsizeMode='tail' numberOfLines={2}>
-            { isUpdate ? "Update Expense" : title}
-          </MyText>}
+          title={
+            <MyText
+              variant="titleLarge"
+              style={[
+                isParent
+                  ? { marginLeft: 20 }
+                  : { marginLeft: 0 },
+                  { color: allColors.textColorSecondary, maxWidth: Dimensions.get("screen").width / 1.3,}
+              ]}
+              ellipsizeMode="tail"
+              numberOfLines={2}
+            >
+              {isUpdate ? "Update Expense" : title}
+            </MyText>
+          }
           titleStyle={[ {color: allColors.textColorSecondary, marginRight: 20} ,isParent && { marginLeft: 6 }]}
         />
       )}
-      {/* {isHome && (
-        <Appbar.Action icon={({color, size }) => (
-          <View style={{ alignItems: 'center' }}>
-            <Ionicons name="notifications-outline" size={20} color={allColors.textColorPrimary} style={{  }} />
-          </View>
-        )}
-          onPress={goToNotificationScreen} 
-          animated={false}
-        />
-      )}
-      {isHome && (
-        <Appbar.Action icon={({color, size }) => (
-          <View style={{ alignItems: 'center' }}>
-            <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{  }} />
-          </View>
-        )}
-          onPress={handleUpload} 
-          animated={false}
-        />
-      )} */}
       {deleteExpensesInRange && (
         <Appbar.Action icon={({color, size }) => (
           <View style={{ alignItems: 'center' }}>
@@ -226,17 +217,6 @@ const AppHeader = React.memo((({
           animated={false}
         />
       )}
-      {/* {isHome && (
-        <Appbar.Action
-        icon={({ color, size }) => (
-          <View style={{ alignItems: 'center' }}>
-            <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ }} />
-          </View>
-          )}
-          onPress={handleSettingsPress}
-          animated={false}
-        />
-      )} */}
       {isPlus && isUpdate && (
         <Appbar.Action icon="delete" onPress={handleDeleteExpense} color={allColors.universalColor}/>
       )}

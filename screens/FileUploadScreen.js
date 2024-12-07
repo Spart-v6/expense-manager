@@ -79,6 +79,7 @@ const FileUploadScreen = ({ navigation }) => {
           const validationResult = validateImportedData(jsonData, "json");
   
           if (validationResult.success) {
+            onToggleSnackBar();
             setSnackbarContent(
               "JSON file has been uploaded and processed successfully"
             );
@@ -263,13 +264,10 @@ const FileUploadScreen = ({ navigation }) => {
     dispatch(addRecentTransactions(recentTransactions));
   };
 
-  console.log("Snack bar data ", snackbarContent);
-  console.log("Snack bar boolean ", showSnackbar);
-
   return (
     <SafeAreaView style={{ height: 100, flex: 1 }}>
-      <AppHeader title="Upload JSON file" navigation={navigation} isMenuNeeded={false}/>
-      <View style={{ margin: 15, flex: 1, justifyContent: "space-between" }}>
+      <AppHeader title="Upload JSON file" navigation={navigation} isMenuNeeded={false} isParent={true}/>
+      <View style={{ marginLeft: 30, marginRight: 30, marginTop: 20, flex: 1, justifyContent: "space-between" }}>
         <View>
           <View style={{ paddingBottom: 10 }}>
             <MyText
@@ -437,11 +435,12 @@ const FileUploadScreen = ({ navigation }) => {
               flexDirection: "row",
               gap: 5,
               alignItems: "center",
-              margin: 5
+              margin: 20,
+              marginBottom: 40
             }}
           >
-            <Feather name="info" size={20} color={allColors.warningColor} />
-            <MyText style={{ color: allColors.warningColor }}>
+            <Feather name="info" size={20} color={allColors.textColorPrimary} />
+            <MyText style={{ color: allColors.textColorPrimary }} ellipsizeMode='tail' numberOfLines={5}>
               {snackbarContent}
             </MyText>
           </View>

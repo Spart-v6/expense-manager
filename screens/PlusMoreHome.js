@@ -553,7 +553,6 @@ const PlusMoreHome = ({ navigation, route }) => {
       dispatch(updateRecentTransactions(valuesToChange.id, updateExpense));
     } else {
       // also works for (when adding via notifications)
-      console.log("Expense to be added ", expense);
       dispatch(addData(expense));
       dispatch(addRecentTransactions(expense));
       // Deleting the notification from notificationsScreen coz that expense is now added to expense (home) screen

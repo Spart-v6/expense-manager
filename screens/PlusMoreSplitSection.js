@@ -311,6 +311,11 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         );
         return true;
       }
+      // checks if totalAmountLeft has negative value
+      if (totalAmountLeft < 0) {
+        setErrorMsg("The total amount left cannot be negative");
+        return true;
+      }
       return false;
     };
     if (checkError()) {
@@ -338,6 +343,9 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       const sum2 = percentages.reduce((acc, curr) => acc + curr, 0);
       const result = totalAmountSpent - sum2;
       setTotalAmountLeft(result);
+    }
+    if (!totalAmountSpent) {
+      setTotalAmountLeft(0);
     }
   }, [totalAmountSpent, amountOfEachMember, divideByPercent]);
 

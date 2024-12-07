@@ -240,7 +240,7 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <AppHeader title="Settings" navigation={navigation} isMenuNeeded={false}/>
+      <AppHeader title="Settings" navigation={navigation} isMenuNeeded={false} isParent={true}/>
       <View
         style={{
           flex: 1,

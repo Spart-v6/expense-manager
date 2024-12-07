@@ -44,10 +44,6 @@ const expenseReducer = (state = initialState, action) => {
         ...(Array.isArray(action.payload) ? action.payload : [action.payload]),
       ];
 
-      console.log("All expenses ", allExpenses);
-      console.log("updatedExpenses  ", updatedExpenses);
-      console.log("Action , ", action.payload);
-
       const { totalIncome: updatedTotalIncome, totalExpense: updatedTotalExpense } = calculateTotals(updatedExpenses);
       const { totalIncome: totalIncomeForMonth, totalExpense: totalExpenseForMonth } = calculateTotals(updatedExpenses, true);
     

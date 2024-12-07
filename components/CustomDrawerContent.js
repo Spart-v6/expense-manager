@@ -7,10 +7,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Divider } from "react-native-paper";
+import appConfig from '../app.json'; 
 
 const CustomDrawerContent = (props) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
+  const appVersion = appConfig.expo.version;
 
   const { state, navigation } = props;
 
@@ -24,7 +26,7 @@ const CustomDrawerContent = (props) => {
       {...props}
       contentContainerStyle={{
         flex: 1,
-        backgroundColor: allColors.drawerBackground,
+        backgroundColor: allColors.backgroundColorPrimary,
       }}
     >
       {/* Drawer Header */}
@@ -34,50 +36,49 @@ const CustomDrawerContent = (props) => {
         </MyText>
       </View>
 
-      <Divider/>
+      <Divider style={{backgroundColor: allColors.backgroundColorSecondary}} bold={true}/>
 
       {/* Drawer Items */}
       <View style={styles.drawerItemsContainer}>
         <DrawerItem
           label="Home"
-          icon={({focused, color, size}) => <FontAwesome name="home" size={20} color={allColors.textColorPrimary} style={{ }} />}
+          icon={({focused, color, size}) => <FontAwesome name="home" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10 }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
           onPress={() => props.navigation.navigate("Home")}
           style={getDrawerItemStyle("Home")}          
         />
         <DrawerItem
           label="Notifications"
-          icon={({focused, color, size}) => <Ionicons name="notifications-outline" size={20} color={allColors.textColorPrimary} style={{  }} />}
+          icon={({focused, color, size}) => <Ionicons name="notifications-outline" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10 }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
           onPress={() => props.navigation.navigate("Notifications")}
           style={getDrawerItemStyle("Notifications")}          
         />
         <DrawerItem
           label="Upload File"
-          icon={({focused, color, size}) => <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{  }} />}
+          icon={({focused, color, size}) => <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10  }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
           onPress={() => props.navigation.navigate("Upload File")}
           style={getDrawerItemStyle("Upload File")}          
         />
         <DrawerItem
           label="Settings"
-          icon={({focused, color, size}) => <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ }} />}
+          icon={({focused, color, size}) => <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10 }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
           onPress={() => props.navigation.navigate("Settings")}
           style={getDrawerItemStyle("Settings")}          
         />
       </View>
 
-      <Divider />
+      <Divider style={{backgroundColor: allColors.backgroundColorSecondary}} bold={true}/>
 
       {/* Footer */}
       <View style={styles.footerContainer}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => console.log("Logout")}
         >
           <MyText style={[styles.logoutText, { color: allColors.universalColor }]}>
-            v 2.1.3
+            v {appVersion}
           </MyText>
         </TouchableOpacity>
       </View>
@@ -125,8 +126,9 @@ const makeStyles = allColors =>
     fontSize: 16,
     fontWeight: "bold",
     color: 'white',
-    backgroundColor: allColors.backgroundColorSecondary,
-    borderRadius: 8,
+    backgroundColor: allColors.backgroundColorCard,
+    borderRadius: 25,
+    elevation: 1,
   },
   inactiveItem: {
     fontSize: 16,

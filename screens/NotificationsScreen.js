@@ -158,6 +158,7 @@ const NotificationsScreen = ({ navigation }) => {
         isInfoPressed={(val) => setIsInfoPressed(val)}
         needInfo={true}
         isMenuNeeded={false}
+        isParent={true}
       />
       <View>
         <Button
