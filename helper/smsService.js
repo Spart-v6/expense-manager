@@ -1,24 +1,9 @@
 import SmsAndroid from 'react-native-get-sms-android';
 import moment from 'moment';
-import { PermissionsAndroid, Platform } from 'react-native';
-
-async function requestSmsPermission() {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_SMS,
-        {
-          title: 'SMS Permission',
-          message: 'This app requires access to your SMS messages to fetch transaction information.',
-          buttonPositive: 'OK'
-        }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return false;
-}
+import { requestPermission } from "../commons/getPermissions";
 
 async function fetchFilteredMessages(fromDate, toDate) {
-    const hasPermission = await requestSmsPermission();
+    const hasPermission = await requestPermission('sms');
     if (!hasPermission) {
         console.log('SMS permission not granted');
         return;

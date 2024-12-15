@@ -254,7 +254,7 @@ const WelcomeScreen = ({ navigation, route }) => {
               fontSize: 18,
             }}
           >
-            Continue
+            Let's go
           </MyText>
         </Button>
       </View>

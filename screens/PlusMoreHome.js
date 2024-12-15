@@ -34,9 +34,9 @@ import SnackbarComponent from "../commons/snackbar";
 import MyText from "../components/MyText";
 import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
-import MyDatePicker from "../components/DatePicker";
 import DeleteDialog from "../components/DeleteDialog";
 import Chip from "../components/Chip";
+import DatePicker from 'react-native-neat-date-picker'
 
 const FrequentCategories = ({ handleSelectedCategory }) => {
   const allColors = useDynamicColors();
@@ -270,9 +270,8 @@ const PlusMoreHome = ({ navigation, route }) => {
     }
     return moment().format("DD/MM/YYYY");
   });
-  const [open, setOpen] = useState(false);
 
-  const [tempDate, setTempDate] = useState(() => {
+  const [date, setDate] = useState(() => {
     if (route.params) {
       if (route.params.updateItem) {
         return route.params.updateItem.date;
@@ -284,49 +283,17 @@ const PlusMoreHome = ({ navigation, route }) => {
     return moment().format("YYYY/MM/DD");
   });
 
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    if (route.params) {
-      if (route.params.updateItem) {
-        const [year, month, day] = route.params.updateItem.date.split("/");
-        const newMonth = moment().month(month - 1).format("MMMM");
-        return newMonth;
-      }
-      if (route.params.sms) {
-        const [year, month, day] = route.params.sms.date.split("-");
-        const newMonth = moment().month(month - 1).format("MMMM");
-        return newMonth;
-      }
-    }
-    return moment().format("MMMM");
-  });
+  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false)
 
-  const [selectedYear, setSelectedYear] = useState(() => {
-    if (route.params) {
-      if (route.params.updateItem) {
-        const [year, month, day] = route.params.updateItem.date.split("/");
-        return +year;
-      }
-      if (route.params.sms) {
-        const [year, month, day] = route.params.sms.date.split("-");
-        return +year;
-      }
-    }
-    return moment().year();
-  });
+  const openDatePickerSingle = () => setShowDatePickerSingle(true)
 
-  const [selectedDate, setSelectedDate] = useState(() => {
-    if (route.params) {
-      if (route.params.updateItem) {
-        const [year, month, day] = route.params.updateItem.date.split("/");
-        return +day;
-      }
-      if (route.params.sms) {
-        const [year, month, day] = route.params.sms.date.split("-");
-        return +day;
-      }
-    }
-    else return moment().date();
-  });
+  const onCancelSingle = () => setShowDatePickerSingle(false);
+
+  const onConfirmSingle = (output) => {
+    setShowDatePickerSingle(false)
+    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
+    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
+  }
 
   // Getting msgId (from notifications screen) so that current notification will be deleted that got recently added to expense screen
   const [msgIdFrmNotiScreen, setMsgIdFrmNotiScreen] = useState(() => {
@@ -470,7 +437,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           paddingTop: 12,
           paddingBottom: 12,
         }}
-        onPress={() => setOpen(true)}
+        onPress={openDatePickerSingle}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
           <IconComponent
@@ -508,7 +475,7 @@ const PlusMoreHome = ({ navigation, route }) => {
       name: expenseName,
       amount: amountValue,
       desc: description,
-      date: tempDate,
+      date: date,
       selectedCard: selectedCardInExpense,
       selectedCategory: selectedCategory,
       accCardSelected: selectedCardID,
@@ -518,7 +485,7 @@ const PlusMoreHome = ({ navigation, route }) => {
       name: expenseName,
       amount: amountValue,
       desc: description,
-      date: tempDate,
+      date: date,
       selectedCard: selectedCardInExpense,
       selectedCategory: selectedCategory,
       accCardSelected: selectedCardID,
@@ -581,17 +548,6 @@ const PlusMoreHome = ({ navigation, route }) => {
   };
 
   // #endregion
-
-  const fetchDates = (obj) => {
-    const { selectedDate, selectedMonth, selectedYear } = obj;
-    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format("MM");
-    const formattedDate = moment(
-      `${selectedYear}-${month}-${paddedDate}`
-    ).format("YYYY/MM/DD");
-    setTempDate(formattedDate);
-    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -734,18 +690,23 @@ const PlusMoreHome = ({ navigation, route }) => {
         </ScrollView>
       </View>
 
-      <MyDatePicker
-        open={open}
-        setOpen={setOpen}
-        fetchDates={fetchDates}
-        selectedDate={selectedDate}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        setSelectedDate={setSelectedDate}
-        setSelectedMonth={setSelectedMonth}
-        setSelectedYear={setSelectedYear}
-        disableTheDates={true}
-        screen={"Home"}
+      <DatePicker
+        isVisible={showDatePickerSingle}
+        mode={'single'}
+        onCancel={onCancelSingle}
+        onConfirm={onConfirmSingle}
+        maxDate={new Date(moment().format('YYYY-MM-DD'))} // locking till today's date
+        colorOptions={{
+            backgroundColor: allColors.backgroundColorLessPrimary, 
+            changeYearModalColor: allColors.selectedDateColor, 
+            headerColor: allColors.calendarTopColor,
+            weekDaysColor: allColors.selectedDateColor,
+            dateTextColor: allColors.universalColor,
+            selectedDateBackgroundColor: allColors.textColorFive,
+            selectedDateTextColor: allColors.universalColorInverted,
+            headerTextColor: allColors.textColorFive,
+            confirmButtonColor: allColors.textColorFive
+        }}
       />
 
       <Portal>

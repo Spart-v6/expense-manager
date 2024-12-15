@@ -175,16 +175,27 @@ const AppHeader = React.memo((({
       )}
       {isHome || needSearch ? (
         <>
-        <View style={{marginLeft: 20, marginRight: 10}}>
-          <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 20, paddingTop: 15, paddingBottom: 15 }} onPress={() => navigation.dispatch(DrawerActions.openDrawer())} >
-            <Feather name="menu" size={20} color={allColors.textColorPrimary} />
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row', flex: 1, marginRight: 20 }}>
-          <TouchableOpacity style={{width: "90%", alignItems: "center"}} onPress={searchExpense}>
-            <Appbar.Content title={<GreetAndSearch greeting={greeting} username={username}/>} style={{justifyContent: "center"}} />
-          </TouchableOpacity>
-          <Appbar.Action icon="magnify" onPress={searchExpense} color={allColors.universalColor} style={{ marginLeft: 5}}/>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ marginLeft: 15, marginRight: 10 }}>
+            <TouchableOpacity
+              style={{ padding: 15 }}
+              onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+              <Feather name="menu" size={20} color={allColors.textColorPrimary} />
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
+            <Appbar.Content
+              title={<GreetAndSearch greeting={greeting} username={username}/>}
+              style={{ justifyContent: 'center' }}
+            />
+          </View>
+          <View style={{ marginLeft: 10, marginRight: 15 }}>
+            <Appbar.Action
+              icon="magnify"
+              onPress={searchExpense}
+              color={allColors.universalColor}
+            />
+          </View>
         </View>
         </>
       ) : (

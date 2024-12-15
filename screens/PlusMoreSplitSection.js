@@ -4,12 +4,12 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
 import MyText from "../components/MyText";
-import MyDatePicker from "../components/DatePicker";
 import { IconComponent } from "../components/IconPickerModal";
 import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
 import { getUsernameFromStorage } from "../helper/constants";
 import SnackbarComponent from "../commons/snackbar";
+import DatePicker from 'react-native-neat-date-picker'
 import moment from "moment";
 import React from "react";
 
@@ -41,27 +41,20 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [selectedItem, setSelectedItem] = React.useState(null);
 
   // for date
-  const [dateValue, setDateValue] = React.useState(
-    moment().format("DD/MM/YYYY")
-  );
-  const [open, setOpen] = React.useState(false);
-  const [tempDate, setTempDate] = React.useState(moment().format("YYYY/MM/DD"));
-  const [selectedMonth, setSelectedMonth] = React.useState(
-    moment().format("MMMM")
-  );
-  const [selectedYear, setSelectedYear] = React.useState(moment().year());
-  const [selectedDate, setSelectedDate] = React.useState(moment().date());
+  const [dateValue, setDateValue] = React.useState(moment().format("DD/MM/YYYY"));
 
-  const fetchDates = (obj) => {
-    const { selectedDate, selectedMonth, selectedYear } = obj;
-    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format("MM");
-    const formattedDate = moment(
-      `${selectedYear}-${month}-${paddedDate}`
-    ).format("YYYY/MM/DD");
-    setTempDate(formattedDate);
-    setDateValue(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  };
+  const [date, setDate] = React.useState(moment().format("YYYY/MM/DD"));
+  const [showDatePickerSingle, setShowDatePickerSingle] = React.useState(false)
+
+  const openDatePickerSingle = () => setShowDatePickerSingle(true)
+
+  const onCancelSingle = () => setShowDatePickerSingle(false);
+
+  const onConfirmSingle = (output) => {
+    setShowDatePickerSingle(false)
+    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
+    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
+  }
 
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
     route.params.currGrpMems.sort()
@@ -112,6 +105,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   };
 
   const dateTextInput = (name) => {
+    const humanReadbleDate = moment(name, "DD/MM/YYYY").format("Do MMM YY");
     return (
       <TouchableRipple
         style={{
@@ -120,7 +114,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
           paddingLeft: 0,
           paddingTop: 15,
         }}
-        onPress={() => setOpen(true)}
+        onPress={openDatePickerSingle}
         rippleColor={allColors.rippleColor}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
@@ -142,7 +136,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
             disabled
             underlineColor={"transparent"}
             activeUnderlineColor={"transparent"}
-            placeholder={name}
+            placeholder={humanReadbleDate}
             underlineColorAndroid={"red"}
             underlineStyle={{ backgroundColor: "transparent" }}
           />
@@ -535,18 +529,22 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
       </View>
       {error && <SnackbarComponent errorMsg={errorMsg} />}
 
-      <MyDatePicker
-        open={open}
-        setOpen={setOpen}
-        fetchDates={fetchDates}
-        selectedDate={selectedDate}
-        selectedMonth={selectedMonth}
-        selectedYear={selectedYear}
-        setSelectedDate={setSelectedDate}
-        setSelectedMonth={setSelectedMonth}
-        setSelectedYear={setSelectedYear}
-        disableTheDates={false}
-        screen={"PlusMoreSplitSection"}
+      <DatePicker
+        isVisible={showDatePickerSingle}
+        mode={'single'}
+        onCancel={onCancelSingle}
+        onConfirm={onConfirmSingle}
+        colorOptions={{
+          backgroundColor: allColors.backgroundColorLessPrimary, 
+          changeYearModalColor: allColors.selectedDateColor, 
+          headerColor: allColors.calendarTopColor,
+          weekDaysColor: allColors.selectedDateColor,
+          dateTextColor: allColors.universalColor,
+          selectedDateBackgroundColor: allColors.textColorFive,
+          selectedDateTextColor: allColors.universalColorInverted,
+          headerTextColor: allColors.textColorFive,
+          confirmButtonColor: allColors.textColorFive
+        }}
       />
     </SafeAreaView>
   );

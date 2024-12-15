@@ -21,7 +21,7 @@ import MyText from "../components/MyText";
 import * as Notifications from "expo-notifications";
 import useDynamicColors from "../commons/useDynamicColors";
 import BigSectionList from "../components/BigSectionList";
-import MyDatePicker from "../components/DatePicker";
+import DatePicker from 'react-native-neat-date-picker'
 import moment from "moment";
 
 const AppHeaderMemoized = React.memo(AppHeader);
@@ -85,6 +85,31 @@ const AllExpensesScreen = ({ navigation }) => {
   // #endregion
 
 
+  // #region selecting range dates for deleting expenses in range
+  const [showDatePickerRange, setShowDatePickerRange] = useState(false);
+
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const openDatePickerRange = () => setShowDatePickerRange(true)
+
+  const onCancelRange = () => {
+    setShowDatePickerRange(false)
+  }
+
+  const onConfirmRange = async (output) => {
+    setShowDatePickerRange(false);
+    const formattedStartDate = moment(output.startDateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD");
+    const formattedEndDate = moment(output.endDateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD");
+  
+    setStartDate(formattedStartDate);
+    setEndDate(formattedEndDate);
+  
+    handleSubmit(formattedStartDate, formattedEndDate);
+  }
+
+  // #endregion
+
   const [onDeleteRange, setOnDeleteRange] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isDeletingInProgress, setIsDeletingInProgress] = useState(false);
@@ -94,78 +119,29 @@ const AllExpensesScreen = ({ navigation }) => {
     setOnDeleteRange(false);
     setIsSubmitted(false);
   }
-
-  const [endDate, setEndDate] = useState("");
-  const [startDate, setStartDate] = useState("");
-
-  const validateDate = (date) => {
-    const dateRegex = /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])$/;
-    
-    if (!dateRegex.test(date)) return false;
-
-    const [year, month, day] = date.split('/').map(Number);
-    const daysInMonth = new Date(year, month, 0).getDate();
-    return day <= daysInMonth;
-  };
-
-  const filterByDateRange = (data, startDate, endDate) => {
-    const start = moment(startDate, 'YYYY/MM/DD');
-    const end = moment(endDate, 'YYYY/MM/DD');
-
+  const filterByDateRange = (data, start, end) => {  
+    const startDate = moment(start, 'YYYY/MM/DD');
+    const endDate = moment(end, 'YYYY/MM/DD');
+  
     return data.filter(item => {
       const itemDate = moment(item.date, 'YYYY/MM/DD');
-      return itemDate.isSameOrAfter(start) && itemDate.isSameOrBefore(end); 
+      return itemDate.isSameOrAfter(startDate) && itemDate.isSameOrBefore(endDate); 
     });
   };
-  
 
-  const hasErrors = () => {
-    return isSubmitted && !validateDate(startDate) && !validateDate(endDate);
-  };
-
-
-  const textInput = (label, setter, placeholder) => {
-
-    return (
-      <View>
-        <TextInput
-          label={
-            <MyText style={{ color: allColors.universalColor }}>
-              {label}
-            </MyText>
-          }
-          style={{
-            width: 120,
-            backgroundColor: 'transparent',
-          }}
-          selectionColor={allColors.textSelectionColor}
-          textColor={allColors.universalColor}
-          underlineColor={allColors.textColorPrimary}
-          cursorColor={allColors.universalColor}
-          activeUnderlineColor={allColors.textColorPrimary}
-          contentStyle={{ fontFamily: "Karla_400Regular" }}
-          placeholderTextColor={allColors.placeholderTextColor}
-          autoComplete="off"
-          textContentType="none"
-          placeholder={placeholder}
-          onChangeText={(val) => setter(val)}
-          keyboardType={"default"}
-        />
-      </View>
-    );
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitted(true); 
-    if (validateDate(startDate) && validateDate(endDate)) {
+  const handleSubmit = async (startDate, endDate) => {
+      setIsSubmitted(true);
       const filteredData = filterByDateRange(expensesData, startDate, endDate);
       setIsDeletingInProgress(true);
-      for (const obj of filteredData) { dispatch(deleteData(obj.id)); dispatch(deleteRecentTransactions(obj.id)); }
+      for (const obj of filteredData) {
+        dispatch(deleteData(obj.id));
+        dispatch(deleteRecentTransactions(obj.id));
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
       setIsDeletingInProgress(false);
       hideDialog();
-    }
   };
-
+  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
@@ -202,29 +178,44 @@ const AllExpensesScreen = ({ navigation }) => {
             )
             :
               <>
-                  <View style={{flexDirection: 'row', gap: 30}}>
-                    {textInput("Start Date", setStartDate, "YYYY/MM/DD")}
-                    {textInput("End Date", setEndDate, "YYYY/MM/DD")}
-                  </View>
-                  <HelperText type="error" visible={hasErrors()} variant="labelMedium" style={{color: allColors.warningColor}}>
-                    Invalid format! Use YYYY/MM/DD and ensure valid month, day and year
-                  </HelperText>
+                <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
+                  You're about to delete expenses in the selected date range. This may take a while—please don't close the app or navigate away until it's done.
+                </MyText>
               </>
             }
             </Dialog.Content>
           <Dialog.Actions>
             <TouchableRipple
-                onPress={handleSubmit}
+                onPress={openDatePickerRange}
                 rippleColor={allColors.rippleColor}
                 centered
                 disabled={isDeletingInProgress}
             >
               <View style={[{padding: 10, borderRadius: 10}, isDeletingInProgress ? {backgroundColor: 'grey'} : {backgroundColor: allColors.addBtnColors, }]}>
-                <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Delete</MyText>
+                <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Start</MyText>
               </View>
             </TouchableRipple>
           </Dialog.Actions>
         </Dialog>
+      </Portal>
+      <Portal>
+        <DatePicker
+          isVisible={showDatePickerRange}
+          mode={'range'}
+          onCancel={onCancelRange}
+          onConfirm={onConfirmRange}
+          colorOptions={{
+            backgroundColor: allColors.backgroundColorLessPrimary, 
+            changeYearModalColor: allColors.selectedDateColor, 
+            headerColor: allColors.calendarTopColor,
+            weekDaysColor: allColors.selectedDateColor,
+            dateTextColor: allColors.universalColor,
+            selectedDateBackgroundColor: allColors.textColorFive,
+            selectedDateTextColor: allColors.universalColorInverted,
+            headerTextColor: allColors.textColorFive,
+            confirmButtonColor: allColors.textColorFive
+          }}
+        />
       </Portal>
     </SafeAreaView>
   );

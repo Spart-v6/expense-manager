@@ -13,9 +13,9 @@ import Feather from "react-native-vector-icons/Feather";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { addData, addRecentTransactions, storeCard } from "../redux/actions";
+import { addCard, addData, addRecentTransactions, storeCard } from "../redux/actions";
 
-import { View, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native";
+import { View, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 
 import {
   Dialog,
@@ -23,10 +23,12 @@ import {
   Snackbar,
   Divider,
   ActivityIndicator,
+  TouchableRipple,
 } from "react-native-paper";
 import React, { useState, useCallback } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
+import LottieView from "lottie-react-native";
 
 const FileUploadScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
@@ -48,13 +50,30 @@ const FileUploadScreen = ({ navigation }) => {
   const [showSnackbar, setShowSnackbar] = React.useState(false);
   const [snackbarContent, setSnackbarContent] = React.useState("");
   const [gotchaError, setGotchaError] = React.useState(false);
+  const [titleOfImport, setTitleOfImport] = React.useState("");
+  const [typeOfImport, setTypeOfImport] = React.useState("");
   const onToggleSnackBar = () => setShowSnackbar(true);
+
+
+  const [showDialogBox, setShowDialogBox] = React.useState(false);
+  const handleShowDialogBox = type => {
+    if (type === "expense") setTitleOfImport("Importing expenses");
+    if (type === "card") setTitleOfImport("Importing cards");
+    setTypeOfImport(type);
+    setShowDialogBox(true);
+  }
+
   // Snackbar variables ends
 
   const [loading, setLoading] = useState(false);
-  const importFile = async () => {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  const importFile = async (type) => {
     try {
       setLoading(true);
+      setShowSuccess(false);
+      setShowError(false);
       const result = await DocumentPicker.getDocumentAsync({
         type: ["application/json"],
       });
@@ -66,6 +85,7 @@ const FileUploadScreen = ({ navigation }) => {
   
         if (fileSize > 1 * 1024 * 1024) {
           onToggleSnackBar();
+          setShowError(true);
           setSnackbarContent(
             "The file is too large. Please upload a file smaller than 1MB"
           );
@@ -76,25 +96,36 @@ const FileUploadScreen = ({ navigation }) => {
   
         if (mimeType === "application/json") {
           const jsonData = JSON.parse(fileContent);
-          const validationResult = validateImportedData(jsonData, "json");
+          let validationResult = {};
+          if (type === "expense") validationResult = validateImportedExpenseData(jsonData, "json");
+          if (type === "card") validationResult = validateImportedCardsData(jsonData, "json");
+
+          // TODO: add validation part for cards when imported
+          // TODO: Add a dialog box that contains the loading in there only... dismissable of dialog box should be false, meaning if u click outside of dialog box it should not dismiss
+          // TODO: When importing the expense data, in dialog box show a Caution: Cards data should be imported first before importing expense to not cause problems, add three buttons, in dialog box, done, dismiss and import card data (which should call importFile(type = 'card')) function!
+          // TODO: Sso that dialog box for Importing expense data should show loading (like getting ready) then it should show the caution then proceed with imprting
+          // TODO: dialog box for card import data should show getting ready only...
   
           if (validationResult.success) {
             onToggleSnackBar();
             setSnackbarContent(
-              "JSON file has been uploaded and processed successfully"
+              "JSON file has been imported and processed successfully"
             );
           } else {
             onToggleSnackBar();
+            setShowError(true);
             setSnackbarContent(validationResult.errors[0]);
           }
         }
       } else {
         onToggleSnackBar();
+        setShowError(true);
         setSnackbarContent("Document picker canceled or no files selected");
       }
     } catch (error) {
       onToggleSnackBar();
-      console.log(error.message);
+      setShowError(true);
+      console.log("This is the error " + error.message);
       setSnackbarContent("Error importing file ");
     } finally {
       setLoading(false);
@@ -120,7 +151,7 @@ const FileUploadScreen = ({ navigation }) => {
 
   const cardsData = useSelector((state) => state.cardReducer.allCards);
 
-  const validateImportedData = (data, type) => {
+  const validateImportedExpenseData = (data, type) => {
     let validationErrors = [];
   
     if (data.length === 0) {
@@ -211,6 +242,72 @@ const FileUploadScreen = ({ navigation }) => {
     }
   };
 
+  const validateImportedCardsData = (data, type) => {
+    let validationErrors = [];
+  
+    if (data.length === 0) {
+      validationErrors.push(`Error: No data to add.`);
+    }
+
+    if (type === "json") {
+      //  [{"cardHolderName": "Daily Use", "checked": "debit", "id": 10.739132225563198, "month": "", "paymentNetwork": "ICICI", "year": ""}]
+
+      const validCardTypes = ["credit", "debit"];
+  
+      const isEmptyObject = (obj) => Object.keys(obj).length === 0 && obj.constructor === Object;
+      const hasSingleEmptyObject = data.length === 1 && isEmptyObject(data[0]);
+  
+      if (hasSingleEmptyObject) {
+        validationErrors.push(`Error: No data to add.`);
+      } else {
+        data.forEach((card) => {
+          const {
+            cardHolderName,
+            checked,
+            month,
+            year,
+            paymentNetwork
+          } = card;
+          
+          if (!(moment(month, "M", true).isValid() &&  moment(month, "M", true).month() < 12) && month !== "") {
+            validationErrors.push(
+              `Error: Month "${month}" in cardsData is invalid.`
+            );
+          }
+          if (!(moment(year, "YY", true).isValid()) && year !== "") {
+            validationErrors.push(
+              `Error: Month "${month}" in cardsData is invalid.`
+            );
+          }
+  
+          if (!validCardTypes.includes(checked)) {
+            validationErrors.push(
+              `Error: Card Type "${checked}" in cardsData is not either "debit" or "credit"`
+            );
+          }
+  
+          if (!cardHolderName || cardHolderName.length === 0) {
+            validationErrors.push(
+              `Error: cardHolderName "${cardHolderName}" in cardsData is either empty or is undefined`
+            );
+          }
+          if (!paymentNetwork || paymentNetwork.length === 0) {
+            validationErrors.push(
+              `Error: paymentNetwork "${paymentNetwork}" in cardsData is either empty or is undefined`
+            );
+          }
+        });
+      }
+    }
+    
+    if (validationErrors.length > 0) {
+      return { success: false, errors: validationErrors };
+    } else {
+      insertImportedCardsData(data, type);
+      return { success: true, errors: [] };
+    }
+  }
+
   const insertImportedData = (data, type) => {
     const getCardId = (cardHolderName, paymentNetwork) => {
       const card = cardsData.find(
@@ -262,19 +359,57 @@ const FileUploadScreen = ({ navigation }) => {
 
     dispatch(addData(allExpenses));
     dispatch(addRecentTransactions(recentTransactions));
+    setShowSuccess(true);
+    setShowError(false);
   };
 
+  const insertImportedCardsData = (data, type) => {
+    const allCards = [];
+
+    data.forEach(card => {
+      const {
+        cardHolderName,
+        paymentNetwork,
+        month,
+        year,
+        checked,
+      } = card
+
+      const cardDetailsToBeInserted = {
+        id: Math.random() + 10 + Math.random(),
+        cardHolderName: cardHolderName,
+        paymentNetwork: paymentNetwork,
+        month: month,
+        year: year,
+        checked,
+      };
+
+      allCards.push(cardDetailsToBeInserted);  
+    });
+
+    dispatch(addCard(allCards));
+    setShowSuccess(true);
+    setShowError(false);
+  }
+
+  const handleDialogBoxDismissle = val => {
+    setShowDialogBox(val);
+    setShowSuccess(false);
+    setShowError(false);
+    setSnackbarContent("");
+  }
+
   return (
-    <SafeAreaView style={{ height: 100, flex: 1 }}>
-      <AppHeader title="Upload JSON file" navigation={navigation} isMenuNeeded={false} isParent={true}/>
-      <View style={{ marginLeft: 30, marginRight: 30, marginTop: 20, flex: 1, justifyContent: "space-between" }}>
-        <View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <AppHeader title="Import JSON file" navigation={navigation} isMenuNeeded={false} isParent={true}/>
+      <ScrollView style={{ marginLeft: 20, marginRight: 20, marginTop: 0, marginBottom: 20, flex: 1 }} contentContainerStyle={{justifyContent: "space-between", gap: 10}}>
+        <View style={{ padding: 10}}>
           <View style={{ paddingBottom: 10 }}>
             <MyText
               variant="bodyLarge"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ fontWeight: "bold", color: allColors.textColorPrimary }}
             >
-              File upload instructions
+              Instructions for importing expense data
             </MyText>
             <MyText
               variant="bodyMedium"
@@ -413,39 +548,307 @@ const FileUploadScreen = ({ navigation }) => {
             </MyText>
           </View>
           <TouchableOpacity
-            onPress={importFile}
+            onPress={() => handleShowDialogBox("expense")}
             style={styles.button}
             activeOpacity={0.5}
             disabled={loading}
           >
-            <MyText style={styles.buttonText} variant="bodyLarge">Attach file</MyText>
+            <MyText style={styles.buttonText} variant="bodyLarge">Import Expenses</MyText>
           </TouchableOpacity>
-          {loading && (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color={allColors.universalColor}/>
-              <MyText variant="bodyMedium" style={{ color: allColors.universalColor }} >
-                Importing please wait...
-              </MyText>
-            </View>
-          )}
         </View>
-        {showSnackbar && (
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 5,
-              alignItems: "center",
-              margin: 20,
-              marginBottom: 40
-            }}
-          >
-            <Feather name="info" size={20} color={allColors.textColorPrimary} />
-            <MyText style={{ color: allColors.textColorPrimary }} ellipsizeMode='tail' numberOfLines={5}>
-              {snackbarContent}
+  
+        <Divider style={{backgroundColor: allColors.addBtnColors, paddingTop: 2, paddingBottom: 2, borderRadius: 100}} bold/>
+
+        <View style={{ padding: 10}}>
+          <View style={{ paddingBottom: 10 }}>
+            <MyText
+              variant="bodyLarge"
+              style={{ fontWeight: "bold", color: allColors.textColorPrimary }}
+            >
+              Instructions for importing card data
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ fontWeight: "bold", color: allColors.universalColor }}
+            >
+              Make sure it contains:
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              1. Card Holder Name
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              2. Card Type (Credit/Debit)
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              3. Expiry Month (optional, "1 to 12")
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              4. Expiry Year (optional, "YY")
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              5. Payment Network
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              Note: Only files up to 1MB can be uploaded.
             </MyText>
           </View>
-        )}
-      </View>
+
+          <Divider />
+          <View style={{ paddingTop: 10 }}>
+            <MyText
+              variant="bodyLarge"
+              style={{ fontWeight: "bold", color: allColors.universalColor }}
+            >
+              Ensure the file is properly formatted
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ fontWeight: "bold", color: allColors.universalColor }}
+            >
+              Below is an example for reference:
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {"[\n{"}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {'\t"cardHolderName" : "Daily Use",'}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {'\t"checked" : "debit",'}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {'\t"month" : "Optional (0 to 12)",'}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {'\t"year" : "Optional (valid year only)",'}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {
+                '\t"paymentNetwork" : "Payment network",'
+              }
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {"},"}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {"// and more ..."}
+            </MyText>
+            <MyText
+              variant="bodyMedium"
+              style={{ color: allColors.universalColor }}
+            >
+              {"]"}
+            </MyText>
+          </View>
+          <TouchableOpacity
+            onPress={() => handleShowDialogBox("card")}
+            style={styles.button}
+            activeOpacity={0.5}
+            disabled={loading}
+          >
+            <MyText style={styles.buttonText} variant="bodyLarge">Import Cards</MyText>
+          </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+      <Portal>
+        <Dialog 
+          visible={showDialogBox}
+          onDismiss={() => handleDialogBoxDismissle(false)}
+          dismissable={!loading}
+          style={{
+            backgroundColor: allColors.backgroundColorLessPrimary,
+            width: "80%",
+            alignSelf: "center"
+          }}
+          theme={{
+            colors: {
+              backdrop: "#00000099",
+            },
+          }}>
+          <Dialog.Title style={{color: allColors.universalColor}}>{titleOfImport}</Dialog.Title>
+          <Dialog.Content >
+            {loading || showSuccess || showError ? (
+              <View style={styles.loaderContainer}>
+                {showSuccess || showError ? (
+                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center", padding: 10 }}>
+                    {showSuccess && (
+                      <LottieView
+                      source={require("../assets/success.json")}
+                      style={{
+                        width: 50,
+                        height: 50,
+                      }}
+                      autoPlay
+                      loop={false}
+                      colorFilters={[
+                        {
+                          keypath: "tick",
+                          color: allColors.textColorPrimary,
+                        },
+                        {
+                          keypath: "circle",
+                          color: allColors.backgroundColorQuaternary,
+                        },
+                      ]}
+                      />
+                    )}
+                    {showError && (
+                      <LottieView
+                      source={require("../assets/warning.json")}
+                      style={{
+                        width: 50,
+                        height: 50,
+                      }}
+                      autoPlay
+                      loop={false}
+                      colorFilters={[
+                        {
+                          keypath: "Line",
+                          color: allColors.textColorTertiary,
+                        },
+                        {
+                          keypath: "Dot",
+                          color: allColors.textColorTertiary,
+                        },
+                        {
+                          keypath: "Tri Outlines",
+                          color: allColors.backgroundColorQuaternary,
+                        },
+                        {
+                          keypath: "Plate_white",
+                          color: allColors.backgroundColorLessPrimary,
+                        },
+                      ]}
+                      />
+                    )}
+                    <MyText variant="bodySmall" style={{ color: allColors.universalColor, marginLeft: 10, flex: 1 }}
+                      ellipsizeMode='tail' numberOfLines={5}
+                    >
+                      {snackbarContent}
+                    </MyText>
+                </View>
+                ) : (
+                  <>
+                    <ActivityIndicator size="small" color={allColors.universalColor}/>
+                    <MyText variant="bodyMedium" style={{ color: allColors.universalColor }} >
+                      Importing please wait...
+                    </MyText>
+                  </>
+                )}
+              </View>
+            ) : (
+              <>
+                <MyText style={{ color: allColors.universalColor }}>
+                  Getting ready for {titleOfImport}
+                </MyText>
+                <MyText style={{ color: allColors.universalColor }}>
+                  Please note: Import cards first before importing expenses
+                </MyText>
+              </>
+            )}
+            </Dialog.Content>
+          <Dialog.Actions>
+            {
+              typeOfImport === "expense" ?
+              <View style={{flexDirection: "row", gap: 10}}>
+                <TouchableRipple
+                  onPress={() => importFile("expense")}
+                  rippleColor={allColors.rippleColor}
+                  centered
+                  >
+                  <View style={[{padding: 10, borderRadius: 10}, {backgroundColor: allColors.addBtnColors, }]}>
+                    <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Import expense</MyText>
+                  </View>
+                </TouchableRipple>
+                <TouchableRipple
+                  onPress={() => importFile("card")}
+                  rippleColor={allColors.rippleColor}
+                  centered
+                  >
+                  <View style={[{padding: 10, borderRadius: 10}, {backgroundColor: allColors.addBtnColors, }]}>
+                    <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Import Cards</MyText>
+                  </View>
+                </TouchableRipple>
+                <TouchableRipple
+                  onPress={() => handleDialogBoxDismissle((prevVal) => !prevVal)}
+                  rippleColor={allColors.rippleColor}
+                  centered
+                  >
+                  <View style={[{padding: 10, borderRadius: 10}, {backgroundColor: allColors.addBtnColors, }]}>
+                    <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Dismiss</MyText>
+                  </View>
+                </TouchableRipple>
+
+              </View>
+              :
+              <View style={{flexDirection: "row", gap: 10}}>
+                <TouchableRipple
+                  onPress={() => importFile("card")}
+                  rippleColor={allColors.rippleColor}
+                  centered
+                  >
+                  <View style={[{padding: 10, borderRadius: 10}, {backgroundColor: allColors.addBtnColors, }]}>
+                    <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Import Cards</MyText>
+                  </View>
+                </TouchableRipple>
+                <TouchableRipple
+                  onPress={() => handleDialogBoxDismissle((prevVal) => !prevVal)}
+                  rippleColor={allColors.rippleColor}
+                  centered
+                  >
+                  <View style={[{padding: 10, borderRadius: 10}, {backgroundColor: allColors.addBtnColors, }]}>
+                    <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Dismiss</MyText>
+                  </View>
+                </TouchableRipple>
+              </View>
+
+            }
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };
@@ -470,10 +873,11 @@ const makeStyles = (allColors) =>
     },
     loaderContainer: {
       // flex: 1,
+      flexDirection: "row",
       gap: 20,
       justifyContent: "center",
       alignItems: "center",
-      height: 200,
+      height: 50,
       // width: '100%'
     },
   });

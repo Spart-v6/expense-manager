@@ -82,7 +82,9 @@ const SettingsScreen = ({ navigation }) => {
       setPlaceholderUsername(updatedUsername);
       await AsyncStorage.setItem("username", updatedUsername);
       setOpenChangeName(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error updating username: " + error);
+    }
   };
 
   const onToggleSwitch = async () => {
@@ -436,22 +438,35 @@ const SettingsScreen = ({ navigation }) => {
             Update name
           </Dialog.Title>
           <Dialog.Content>
-            <TextInput
-              label={
-                <MyText style={{ color: allColors.universalColor }}>
-                  {"New username"}
+            <View>
+              <View style={{marginBottom: 20}}>
+                <MyText variant="bodyMedium" style={{ color: allColors.universalColor, marginTop: 10 }}>
+                    <MyText style={{ fontWeight: 'bold', color: allColors.universalColor }}>Note:</MyText> Updating your username will only change your profile name moving forward.
                 </MyText>
-              }
-              style={{ backgroundColor: "transparent" }}
-              value={updatedUsername}
-              textColor={allColors.universalColor}
-              underlineColor={allColors.textColorFive}
-              selectionColor={allColors.textSelectionColor}
-              contentStyle={{ fontFamily: "Karla_400Regular" }}
-              activeUnderlineColor={allColors.textColorPrimary}
-              onChangeText={(text) => setUpdatedUsername(text)}
-              autoFocus
-            />
+                <MyText variant="bodySmall" style={{ marginTop: 10, color: allColors.universalColor }}>
+                  1. Your old username will remain unchanged in existing groups or expenses to maintain data consistency.
+                </MyText>
+                <MyText variant="bodySmall" style={{ marginTop: 10, color: allColors.universalColor }}>
+                  2. Any new groups or expenses will use your updated username.
+                </MyText>
+              </View>
+              <TextInput
+                label={
+                  <MyText style={{ color: allColors.universalColor }}>
+                    {"New username"}
+                  </MyText>
+                }
+                style={{ backgroundColor: "transparent" }}
+                value={updatedUsername}
+                textColor={allColors.universalColor}
+                underlineColor={allColors.textColorFive}
+                selectionColor={allColors.textSelectionColor}
+                contentStyle={{ fontFamily: "Karla_400Regular" }}
+                activeUnderlineColor={allColors.textColorPrimary}
+                onChangeText={(text) => setUpdatedUsername(text)}
+                autoFocus
+              />
+            </View>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setOpenChangeName(false)}>

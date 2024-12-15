@@ -32,7 +32,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import SnackbarComponent from "../commons/snackbar";
-import MyDatePicker from "../components/DatePicker";
+import DatePicker from 'react-native-neat-date-picker'
 
 const datesObj = [
   { id: 0, text: "Daily" },
@@ -231,24 +231,25 @@ const PlusMoreRecurrence = ({ navigation }) => {
   const [newStartDatePh, setNewStartDatePh] = useState(
     moment().format("DD/MM/YYYY")
   );
-  const [startDateOpen, setStartDateOpen] = useState(false);
 
-  const handleNewDatePress = () => setStartDateOpen(true);
+  const [dateValue, setDateValue] = useState(moment().format("DD/MM/YYYY"));
 
-  const fetchStartDates = (obj) => {
-    const { selectedDate, selectedMonth, selectedYear } = obj;
-    const paddedDate = selectedDate < 10 ? `0${selectedDate}` : selectedDate;
-    const month = moment().month(selectedMonth).format("MM");
-    const formattedDate = moment(
-      `${selectedYear}-${month}-${paddedDate}`
-    ).format("YYYY/MM/DD");
-    setNewStartDate(formattedDate);
-    setNewStartDatePh(moment(formattedDate, "YYYY/MM/DD").format("DD/MM/YYYY"));
-  };
+  const [date, setDate] = useState(moment().format("YYYY/MM/DD"));
+  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false)
 
-  const dateInput = () => {
+  const openDatePickerSingle = () => setShowDatePickerSingle(true)
+
+  const onCancelSingle = () => setShowDatePickerSingle(false);
+
+  const onConfirmSingle = (output) => {
+    setShowDatePickerSingle(false)
+    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
+    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
+  }
+
+  const dateInput = (name) => {
     // converting date to human-readable format
-    const humanReadbleDate = moment(newStartDatePh, "DD/MM/YYYY").format("Do MMM YY");
+    const humanReadbleDate = moment(name, "DD/MM/YYYY").format("Do MMM YY");
     return (
       <View
         style={{
@@ -260,7 +261,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
       >
         <TouchableRipple
           rippleColor={allColors.rippleColor}
-          onPress={() => handleNewDatePress()}
+          onPress={openDatePickerSingle}
         >
           <View
             style={{
@@ -337,12 +338,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
       time: moment().format("HH:mm:ss"),
       recurrenceName: recName,
       recurrenceAmount: amount,
-      recurrenceStartDate:
-        selectedStartDate.toString() +
-        " " +
-        moment().month(selectedStartMonth).format("MM").toString() +
-        " " +
-        selectedStartYear.toString().slice(-2),
+      recurrenceStartDate: moment(date, "YYYY/MM/DD").format("DD MM YY"),
       paymentType: selectedButton,
       frequency: selectedFrequency?.text ? selectedFrequency.text : "",
       recurrenceType: chipName,
@@ -422,7 +418,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
 
           {/* Start and end date */}
           <View style={{ flexDirection: "row", gap: 20, marginTop: 10 }}>
-            {dateInput("Starting Date")}
+            {dateInput(dateValue)}
           </View>
 
           {/* Frequency */}
@@ -589,19 +585,23 @@ const PlusMoreRecurrence = ({ navigation }) => {
         </ScrollView>
       </View>
       {
-        <MyDatePicker
-          open={startDateOpen}
-          setOpen={setStartDateOpen}
-          fetchDates={fetchStartDates}
-          selectedDate={selectedStartDate}
-          selectedMonth={selectedStartMonth}
-          selectedYear={selectedStartYear}
-          setSelectedDate={setSelectedStartDate}
-          setSelectedMonth={setSelectedStartMonth}
-          setSelectedYear={setSelectedStartYear}
-          disableTheDates={false}
-          disablePreviousDates={true}
-          screen={"Recurrence"}
+        <DatePicker
+          isVisible={showDatePickerSingle}
+          mode={'single'}
+          onCancel={onCancelSingle}
+          onConfirm={onConfirmSingle}
+          minDate={new Date(moment().subtract(1, 'months').format('YYYY-MM-DD'))} // u can set date till 1 month before
+          colorOptions={{
+            backgroundColor: allColors.backgroundColorLessPrimary, 
+            changeYearModalColor: allColors.selectedDateColor, 
+            headerColor: allColors.calendarTopColor,
+            weekDaysColor: allColors.selectedDateColor,
+            dateTextColor: allColors.universalColor,
+            selectedDateBackgroundColor: allColors.textColorFive,
+            selectedDateTextColor: allColors.universalColorInverted,
+            headerTextColor: allColors.textColorFive,
+            confirmButtonColor: allColors.textColorFive
+          }}
         />
       }
 

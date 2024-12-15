@@ -6,6 +6,7 @@ import MyText from "../components/MyText";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Divider } from "react-native-paper";
 import appConfig from '../app.json'; 
 
@@ -55,11 +56,18 @@ const CustomDrawerContent = (props) => {
           style={getDrawerItemStyle("Notifications")}          
         />
         <DrawerItem
-          label="Upload File"
+          label="Import Data"
           icon={({focused, color, size}) => <Feather name="upload" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10  }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
-          onPress={() => props.navigation.navigate("Upload File")}
-          style={getDrawerItemStyle("Upload File")}          
+          onPress={() => props.navigation.navigate("Import Data")}
+          style={getDrawerItemStyle("Import Data")}          
+        />
+        <DrawerItem
+          label="Export Data"
+          icon={({focused, color, size}) => <AntDesign name="export" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10  }} />}
+          labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
+          onPress={() => props.navigation.navigate("Export Data")}
+          style={getDrawerItemStyle("Export Data")}          
         />
         <DrawerItem
           label="Settings"

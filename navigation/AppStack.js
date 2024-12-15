@@ -22,6 +22,8 @@ import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
 import NotificationsScreen from "../screens/NotificationsScreen";
 import FileUploadScreen from "../screens/FileUploadScreen"; 
+import ExportFileScreen from "../screens/ExportFileScreen";
+import LegacyDataScreen from "../screens/LegacyDataScreen";
 import MyText from "../components/MyText";
 import { IconComponent } from "../components/IconPickerModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -30,7 +32,8 @@ import * as NavigationBar from "expo-navigation-bar";
 import { View, TouchableOpacity, ActivityIndicator, StatusBar, Dimensions, Animated } from "react-native";
 import { processColor, PlatformColor } from 'react-native';
 import CustomDrawerContent from "../components/CustomDrawerContent";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { isVersionLessThan } from "../helper/versionCheck";
+import appConfig from '../app.json'; 
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -186,7 +189,8 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Home" component={TabNavigator} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
       <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-      <Drawer.Screen name="Upload File" component={FileUploadScreen} />
+      <Drawer.Screen name="Import Data" component={FileUploadScreen} />
+      <Drawer.Screen name="Export Data" component={ExportFileScreen} />
     </Drawer.Navigator>
   );
 };
@@ -264,7 +268,11 @@ const TabNavigator = () => (
       name="FileUploadScreen"
       component={FileUploadScreen}
       options={navOptions}
-      
+    />
+    <Stack.Screen
+      name="ExportFileScreen"
+      component={ExportFileScreen}
+      options={navOptions}
     />
   </Stack.Navigator>
 );
@@ -294,6 +302,8 @@ const AppStack = () => {
   NavigationBar.setBackgroundColorAsync("#000");
   const [initialRoute, setInitialRoute] = React.useState("WelcomeNavigator");
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isLegacyVersion, setIsLegacyVersion] = React.useState(false);
+  const appVersion = appConfig.expo.version;
 
   React.useEffect(() => {
     const checkWelcomeScreen = async () => {
@@ -310,6 +320,16 @@ const AppStack = () => {
     };
 
     checkWelcomeScreen();
+  }, []);
+
+  React.useEffect(() => {
+    const checkVersion = async () => {
+      const currentVersion = appVersion;
+      const legacy = isVersionLessThan("2.1.4", currentVersion); // TODO: IMP: version check was never implemented, so if user updates the app the current version will be the new version
+
+      setIsLegacyVersion(legacy);
+    };
+    checkVersion();
   }, []);
 
   if (isLoading) {
@@ -329,20 +349,20 @@ const AppStack = () => {
   }
 
   return (
-    <NavigationContainer
+  <NavigationContainer
       theme={{ colors: { background: allColors.backgroundColorPrimary } }}
     >
-      <StackApp.Navigator
-        initialRouteName={initialRoute}
-        screenOptions={{ headerShown: false }}
-      >
-        <StackApp.Screen name="HomeApp" component={DrawerNavigator} />
-        <StackApp.Screen
+      <Stack.Navigator initialRouteName={isLegacyVersion ? "LegacyData" : initialRoute} screenOptions={{ headerShown: false }}>
+        {isLegacyVersion && (
+          <Stack.Screen name="LegacyData" component={LegacyDataScreen} />
+        )}
+        <Stack.Screen name="HomeApp" component={DrawerNavigator} />
+        <Stack.Screen
           name="WelcomeNavigator"
           component={WelcomeNavigator}
           options={{ gestureEnabled: false }}
         />
-      </StackApp.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
