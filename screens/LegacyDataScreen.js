@@ -61,6 +61,7 @@ const LegacyDataScreen = ({ navigation }) => {
   const handleDeleteEverything = async () => {
     try {
       await AsyncStorage.clear();
+      await AsyncStorage.setItem('isLegacyDataCleared', 'true');
       setShowStatus("Success", "All data deleted successfully.");
       navigation.replace("WelcomeNavigator");
       // TODO: add a Proceed button, check if both export expense/card is pressed, if yes then only enable is process button,

@@ -322,14 +322,25 @@ const AppStack = () => {
     checkWelcomeScreen();
   }, []);
 
+  const checkIfLegacyDataCleared = async () => {
+    const isCleared = await AsyncStorage.getItem('isLegacyDataCleared');
+    return isCleared === 'true';
+};
+
   React.useEffect(() => {
     const checkVersion = async () => {
       const currentVersion = appVersion;
-      const legacy = isVersionLessThan("2.1.4", currentVersion); // TODO: IMP: version check was never implemented, so if user updates the app the current version will be the new version
-
+      const legacy = isVersionLessThan("2.1.4", currentVersion);
       setIsLegacyVersion(legacy);
     };
-    checkVersion();
+
+    const checkLegacy = async () => {
+      const showLegacyScreen = await checkIfLegacyDataCleared();
+      if (!showLegacyScreen) checkVersion();
+    }
+
+    checkLegacy();
+
   }, []);
 
   if (isLoading) {
