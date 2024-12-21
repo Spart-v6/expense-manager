@@ -106,7 +106,7 @@ const AppHeader = React.memo((({
     React.useEffect(() => {
       // Set greeting text when data is ready
       if (showGreeting && greeting && username) {
-        setFinalText(`${greeting} ${username}`);
+        setFinalText(`${greeting}, ${username}`);
       }
     }, [greeting, username, showGreeting]);
   
@@ -183,12 +183,12 @@ const AppHeader = React.memo((({
               <Feather name="menu" size={20} color={allColors.textColorPrimary} />
             </TouchableOpacity>
           </View>
-          <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}}>
+          <TouchableOpacity style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center"}} onPress={searchExpense}>
             <Appbar.Content
               title={<GreetAndSearch greeting={greeting} username={username}/>}
               style={{ justifyContent: 'center' }}
             />
-          </View>
+          </TouchableOpacity>
           <View style={{ marginLeft: 10, marginRight: 15 }}>
             <Appbar.Action
               icon="magnify"

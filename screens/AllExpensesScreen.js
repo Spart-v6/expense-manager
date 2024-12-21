@@ -97,6 +97,7 @@ const AllExpensesScreen = ({ navigation }) => {
     setShowDatePickerRange(false)
   }
 
+  // runs after user has selected the date range and pressed okay button
   const onConfirmRange = async (output) => {
     setShowDatePickerRange(false);
     const formattedStartDate = moment(output.startDateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD");
@@ -136,7 +137,7 @@ const AllExpensesScreen = ({ navigation }) => {
       for (const obj of filteredData) {
         dispatch(deleteData(obj.id));
         dispatch(deleteRecentTransactions(obj.id));
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 20));
       }
       setIsDeletingInProgress(false);
       hideDialog();
@@ -177,11 +178,22 @@ const AllExpensesScreen = ({ navigation }) => {
               </View>
             )
             :
-              <>
-                <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
-                  You're about to delete expenses in the selected date range. This may take a while—please don't close the app or navigate away until it's done.
-                </MyText>
-              </>
+              expensesData.length > 0 ?
+                (
+                  <>
+                    <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
+                    You're about to delete expenses in the selected date range. This may take a while—please don't close the app or navigate away until it's done.
+                    </MyText>
+                  </>
+                )
+                :
+                (
+                  <>
+                    <MyText variant="bodyMedium" style={{color: allColors.universalColor}}>
+                    No expenses found to delete
+                    </MyText>
+                  </>
+                )
             }
             </Dialog.Content>
           <Dialog.Actions>
@@ -189,9 +201,9 @@ const AllExpensesScreen = ({ navigation }) => {
                 onPress={openDatePickerRange}
                 rippleColor={allColors.rippleColor}
                 centered
-                disabled={isDeletingInProgress}
+                disabled={isDeletingInProgress || expensesData.length <= 0}
             >
-              <View style={[{padding: 10, borderRadius: 10}, isDeletingInProgress ? {backgroundColor: 'grey'} : {backgroundColor: allColors.addBtnColors, }]}>
+              <View style={[{padding: 10, borderRadius: 10}, isDeletingInProgress || expensesData.length <= 0 ? {backgroundColor: 'grey'} : {backgroundColor: allColors.addBtnColors, }]}>
                 <MyText style={{ color: allColors.sameColor, fontWeight: "800" }}>Start</MyText>
               </View>
             </TouchableRipple>
