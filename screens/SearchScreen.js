@@ -1,11 +1,14 @@
 import { View, SafeAreaView, ScrollView, Dimensions } from "react-native";
 import { Appbar, TextInput } from "react-native-paper";
 import useDynamicColors from "../commons/useDynamicColors";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/Entypo";
-import React from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import MyText from "../components/MyText";
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
+import { useFocusEffect } from "@react-navigation/native";
+import { storeData } from "../redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const displaySearchedResults = (searchArray, text) => {
   const allColors = useDynamicColors();
@@ -58,6 +61,46 @@ const displaySearchedResults = (searchArray, text) => {
 
 const SearchScreen = ({ navigation, route }) => {
   const allColors = useDynamicColors();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
+
+  // #region Fetching expenses
+
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+      });
+    };
+  
+    loadData();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExpensesData();
+    }, [])
+  );
+
+  const fetchExpensesData = async () => {
+    try {
+      setLoading(true); // Set loading to true when fetching starts
+      const res = await AsyncStorage.getItem("ALL_EXPENSES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeData(newData));
+    } catch (e) {}
+    finally { setLoading(false) }
+  };
+
+  // #endregion
+
   const allExpenses = useSelector((state) => state.expenseReducer.allExpenses);
   const [text, setText] = React.useState("");
 

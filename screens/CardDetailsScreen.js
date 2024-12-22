@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import useDynamicColors from "../commons/useDynamicColors";
 import AppHeader from "../components/AppHeader";
@@ -6,6 +6,9 @@ import MyText from "../components/MyText";
 import { useSelector, useDispatch } from "react-redux";
 import Feather from 'react-native-vector-icons/Feather';
 import DetailedExpenseCard from "../components/DetailedExpenseCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { storeData } from "../redux/actions";
 
 const makeStyles = () => 
   StyleSheet.create({
@@ -20,6 +23,45 @@ const CardDetailsScreen = ({ navigation, route }) => {
   const styles = makeStyles();
   const dispatch = useDispatch();
   const [card, setCard] = React.useState({});
+
+  const [loading, setLoading] = React.useState(false);
+
+  // #region Fetching expenses
+
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+      });
+    };
+  
+    loadData();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExpensesData();
+    }, [])
+  );
+
+  const fetchExpensesData = async () => {
+    try {
+      setLoading(true); // Set loading to true when fetching starts
+      const res = await AsyncStorage.getItem("ALL_EXPENSES");
+      let newData = JSON.parse(res);
+      if (newData !== null) dispatch(storeData(newData));
+    } catch (e) {}
+    finally { setLoading(false) }
+  };
+
+  // #endregion
 
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
   const filteredArray = expensesData.filter(

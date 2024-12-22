@@ -74,7 +74,7 @@ const makeStyles = (allColors) =>
       marginTop: 20,
     },
     commonTouchableStyle: {
-      marginRight: 20,
+      marginRight: 10,
     },
     moreCardStyle: {
       padding: 15,

@@ -35,6 +35,25 @@ const ExpensesList = ({ filter }) => {
     setCurrentFilter(filter);
   }, [filter]);
 
+  // #region Fetching expenses
+
+  useEffect(() => {
+    const loadData = async () => {
+      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+    
+      dispatch({
+        type: "SET_INITIAL_TOTALS",
+        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+      });
+    };
+  
+    loadData();
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       fetchExpensesData();
@@ -48,7 +67,8 @@ const ExpensesList = ({ filter }) => {
       if (newData !== null) dispatch(storeData(newData));
     } catch (e) {}
   };
-
+  // #endregion
+    
   const expensesData = useSelector((state) => state.expenseReducer.allExpenses);
 
   const sortedData = expensesData.sort((a, b) => {
