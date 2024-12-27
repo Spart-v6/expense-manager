@@ -96,7 +96,6 @@ const makeStyles = (allColors) =>
     },
     buttonText: {
       color: allColors.backgroundColorPrimary,
-      fontWeight: "700",
     },
     feedback: {
       fontSize: 14,

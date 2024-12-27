@@ -297,7 +297,7 @@ export default function BigSectionList() {
             <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
             <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openMenu}>
               <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
-                <MyText variant="bodyLarge" style={{fontWeight: "bold", color: allColors.universalColor}}>Filters</MyText>
+                <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">Filters</MyText>
                 <Octicons
                   name="filter"
                   size={20}

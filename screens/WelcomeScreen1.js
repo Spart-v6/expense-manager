@@ -69,7 +69,7 @@ const WelcomeScreen1 = ({ navigation }) => {
             selectionColor={allColors.textSelectionColor}
             textColor={allColors.universalColor}
             underlineColor={error ? "red" : allColors.textColorPrimary}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
+            contentStyle={{ fontFamily: "Poppins_400Regular" }}
             activeUnderlineColor={error ? "red" : allColors.textColorPrimary}
             onChangeText={(text) => setUsername(text)}
           />
@@ -92,7 +92,7 @@ const WelcomeScreen1 = ({ navigation }) => {
             <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontFamily: "Karla_400Regular",
+                fontFamily: "Poppins_400Regular",
                 fontSize: 18,
               }}
             >

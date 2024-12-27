@@ -179,7 +179,7 @@ const NotificationsScreen = ({ navigation }) => {
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
               fontSize: 18,
             }}
           >
@@ -217,7 +217,7 @@ const NotificationsScreen = ({ navigation }) => {
           style={{ backgroundColor: allColors.backgroundColorLessPrimary }}
           theme={{ colors: { backdrop: "#00000099" }}}
         >
-          <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Karla_400Regular"}}>Import SMS transactions messages</Dialog.Title>
+          <Dialog.Title style={{ color: allColors.textColorSecondary, fontFamily: "Poppins_400Regular"}}>Import SMS transactions messages</Dialog.Title>
           <Dialog.Content style={{gap: 15}}>
             <View style={{justifyContent: "center", alignItems: "flex-start"}}>
               <MyText variant="bodyMedium" style={{ color: allColors.universalColor }}>Please read more about this from (i) button at top</MyText>
@@ -236,7 +236,7 @@ const NotificationsScreen = ({ navigation }) => {
                   cursorColor={allColors.universalColor}
                   selectionColor={allColors.textSelectionColor}
                   activeUnderlineColor={allColors.textColorPrimary}
-                  contentStyle={{ fontFamily: "Karla_400Regular" }}
+                  contentStyle={{ fontFamily: "Poppins_400Regular" }}
                   value={numberOfDays}
                   onChangeText={val => handleDateChange(val)}
                   keyboardType={"number-pad"}

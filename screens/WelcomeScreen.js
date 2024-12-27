@@ -147,7 +147,7 @@ const WelcomeScreen = ({ navigation, route }) => {
           isCurrencyClicked.id === item.id && {
             borderColor: allColors.addBtnColors,
             borderWidth: 3,
-            borderRadius: 20
+            borderRadius: 20,
           },
         ]}
       >
@@ -216,18 +216,20 @@ const WelcomeScreen = ({ navigation, route }) => {
         </MyText>
       </View>
 
-      <ScrollView style={{ flex: 1, marginTop: 10,  }}>
+      <ScrollView style={{ flex: 1, marginTop: 10 }}>
         <FlatList
           scrollEnabled={false}
           data={currencyObj}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           numColumns={2}
-          contentContainerStyle={{
-            // paddingHorizontal: 20,
-            // paddingTop: 10,
-            // justifyContent: "space-between",
-          }}
+          contentContainerStyle={
+            {
+              // paddingHorizontal: 20,
+              // paddingTop: 10,
+              // justifyContent: "space-between",
+            }
+          }
         />
       </ScrollView>
 
@@ -250,7 +252,7 @@ const WelcomeScreen = ({ navigation, route }) => {
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
               fontSize: 18,
             }}
           >

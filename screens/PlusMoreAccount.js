@@ -115,7 +115,7 @@ const PlusMoreAccount = ({ navigation }) => {
         underlineColor="transparent"
         cursorColor={allColors.universalColor}
         activeUnderlineColor="transparent"
-        contentStyle={{ fontFamily: "Karla_400Regular" }}
+        contentStyle={{ fontFamily: "Poppins_400Regular" }}
         placeholderTextColor={allColors.placeholderTextColor}
         autoComplete="off"
         textContentType="none"
@@ -215,7 +215,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 cursorColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
-                contentStyle={{ fontFamily: "Karla_400Regular" }}
+                contentStyle={{ fontFamily: "Poppins_400Regular" }}
                 value={month}
                 onChangeText={handleMonthChange}
                 keyboardType={"number-pad"}
@@ -242,7 +242,7 @@ const PlusMoreAccount = ({ navigation }) => {
                 cursorColor={allColors.universalColor}
                 selectionColor={allColors.textSelectionColor}
                 activeUnderlineColor={allColors.textColorPrimary}
-                contentStyle={{ fontFamily: "Karla_400Regular" }}
+                contentStyle={{ fontFamily: "Poppins_400Regular" }}
                 value={year}
                 ref={yearInputRef}
                 onChangeText={handleYearChange}
@@ -295,19 +295,20 @@ const PlusMoreAccount = ({ navigation }) => {
             style={{
               borderColor: "transparent",
               backgroundColor: allColors.addBtnColors,
-              borderRadius: 15,
-              borderTopRightRadius: 15,
-              borderTopLeftRadius: 15,
+              borderRadius: 20,
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
             }}
             mode="contained"
-            labelStyle={{ fontSize: 15 }}
+            labelStyle={{ fontSize: 20 }}
             onPress={handleAddOrUpdateCard}
           >
             <MyText
               style={{
                 color: allColors.backgroundColorPrimary,
-                fontFamily: "Karla_400Regular",
-                fontSize: 18,
+                fontFamily: "Poppins_400Regular",
+                fontSize: 20,
+                lineHeight: 35,
               }}
             >
               {btnName}

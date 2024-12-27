@@ -15,7 +15,7 @@ import * as LocalAuth from "expo-local-authentication";
 import useDynamicColors from "./commons/useDynamicColors";
 import FontLoader from "./components/FontLoader";
 import MyText from "./components/MyText";
-import { View, SafeAreaView, StatusBar, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, SafeAreaView, StatusBar, ActivityIndicator, TouchableOpacity, AppState } from "react-native";
 import SplashScreen from "./screens/SplashScreen";
 
 const theme = {
@@ -95,10 +95,11 @@ const App = () => {
   const [warningMsg, setWarningMsg] = useState("");
   const [savedBiometricsNotAvl, setSavedBiometricsNotAvl] = useState(false);
   const [isBiometricAuthOn, setIsBiometricAuthOn] = useState(false);
+  const [shouldLockImmediately, setShouldLockImmediately] = useState(false);
 
   
   const handleBiometricAuth = async () => {
-    if (!isBiometricAuthOn) {
+    if (!isBiometricAuthOn || !shouldLockImmediately) {
       setLoading(false);
       return;
     }
@@ -120,7 +121,10 @@ const App = () => {
     // Log the user in on success
     if (biometricAuth) setAuthorize(biometricAuth.success);
 
-    if (!biometricAuth.success) {
+    if (biometricAuth.success) {
+      setAuthorize(true); // Successful authentication
+      setShouldLockImmediately(false); // Reset immediate lock state after successful authentication
+    } else {
       setAuthMsg("failed");
       setWarningMsg(biometricAuth.warning);
     }
@@ -140,9 +144,35 @@ const App = () => {
       handleBiometricAuth();
     }
   }, [isBiometricAuthOn, animationDone]);
+
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState) => {
+      try {
+        const lockState = await AsyncStorage.getItem("shouldLockImmediately");
+        const immediateLock = JSON.parse(lockState) || false;
+        // console.log("shouldLockImmediately " + immediateLock);
+        setShouldLockImmediately(immediateLock);
+  
+        if (nextAppState === "background" && immediateLock) {
+          // console.log("Going in background with immediate lock ON");
+          setAuthorize(false);
+        }
+      } catch (error) {
+        console.error("Error fetching immediate lock state:", error);
+      }
+    };
+  
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+  
+    return () => {
+      subscription.remove();
+    };
+  }, []);
   
 
   // #endregion
+
+  // AsyncStorage.clear();
 
   const handleLogginIn = () => {
 
@@ -183,7 +213,7 @@ const App = () => {
               <MyText
                 style={{
                   color: allColors.backgroundColorPrimary,
-                  fontFamily: "Karla_400Regular",
+                  fontFamily: "Poppins_400Regular",
                   fontSize: 18,
                 }}
               >

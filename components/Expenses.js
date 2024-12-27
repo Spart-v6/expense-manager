@@ -39,17 +39,17 @@ const Expenses = ({ item, index, onPress }) => {
         <View style={{height: 55, flexDirection: "row", justifyContent: "space-between", alignItems:"center",}}>
           <View style={{flexDirection: "row", gap: 15, alignItems: 'center'}}>
             <View style={{ justifyContent: "center", alignItems:"center", marginLeft: 0}}>
-              <MyText variant="titleMedium" style={{color: allColors.universalColor}}>
+              <MyText variant="titleSmall" style={{color: allColors.universalColor}}>
                 {dateFormat}
               </MyText>
-              <MyText variant="titleMedium" style={{color: allColors.universalColor, width: Dimensions.get("screen").width * 0.1, textAlign: "center"}}>
+              <MyText variant="titleSmall" style={{color: allColors.universalColor, width: Dimensions.get("screen").width * 0.1, textAlign: "center"}}>
                 {dayOfWeekFormat}
               </MyText>
             </View>
 
             <View style={{flexDirection: 'row', flex: 1, justifyContent: "space-between", alignItems: "center"}}>
               <View>
-                <MyText style={{fontSize: 20, alignItems: "center" ,color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.7}} numberOfLines={1} ellipsizeMode="tail">
+                <MyText style={{fontSize: 19, alignItems: "center" ,color: allColors.universalColor, maxWidth: Dimensions.get("window").width / 1.7}} numberOfLines={1} ellipsizeMode="tail">
                   {item.name}
                 </MyText>
                 {

@@ -407,13 +407,15 @@ const FileUploadScreen = ({ navigation }) => {
           <View style={{ paddingBottom: 10 }}>
             <MyText
               variant="bodyLarge"
-              style={{ fontWeight: "bold", color: allColors.textColorPrimary }}
+              style={{ color: allColors.textColorPrimary }}
+              fontWeight="bold"
             >
               Instructions for importing expense data
             </MyText>
             <MyText
               variant="bodyMedium"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
+              fontWeight="bold"
             >
               Make sure it contains:
             </MyText>
@@ -466,48 +468,48 @@ const FileUploadScreen = ({ navigation }) => {
           <View style={{ paddingTop: 10 }}>
             <MyText
               variant="bodyLarge"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
             >
               Please ensure the file is properly formatted before uploading
             </MyText>
             <MyText
               variant="bodyMedium"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
             >
               Below is an example for reference:
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"[\n{"}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"amount" : "100",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"date" : "YYYY/MM/DD",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"desc" : "It is optional",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"name" : "The name of expense",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {
@@ -515,7 +517,7 @@ const FileUploadScreen = ({ navigation }) => {
               }
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {
@@ -523,25 +525,25 @@ const FileUploadScreen = ({ navigation }) => {
               }
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"type" : "Income",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"},"}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"// and more ..."}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"]"}
@@ -563,13 +565,15 @@ const FileUploadScreen = ({ navigation }) => {
           <View style={{ paddingBottom: 10 }}>
             <MyText
               variant="bodyLarge"
-              style={{ fontWeight: "bold", color: allColors.textColorPrimary }}
+              style={{ color: allColors.textColorPrimary }}
+              fontWeight="bold"
             >
               Instructions for importing card data
             </MyText>
             <MyText
               variant="bodyMedium"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
+              fontWeight="bold"
             >
               Make sure it contains:
             </MyText>
@@ -615,48 +619,48 @@ const FileUploadScreen = ({ navigation }) => {
           <View style={{ paddingTop: 10 }}>
             <MyText
               variant="bodyLarge"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
             >
               Ensure the file is properly formatted
             </MyText>
             <MyText
               variant="bodyMedium"
-              style={{ fontWeight: "bold", color: allColors.universalColor }}
+              style={{ color: allColors.universalColor }}
             >
               Below is an example for reference:
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"[\n{"}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"cardHolderName" : "Daily Use",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"checked" : "debit",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"month" : "Optional (0 to 12)",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {'\t"year" : "Optional (valid year only)",'}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {
@@ -664,19 +668,19 @@ const FileUploadScreen = ({ navigation }) => {
               }
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"},"}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"// and more ..."}
             </MyText>
             <MyText
-              variant="bodyMedium"
+              variant="bodySmall"
               style={{ color: allColors.universalColor }}
             >
               {"]"}
@@ -869,7 +873,6 @@ const makeStyles = (allColors) =>
     },
     buttonText: {
       color: allColors.backgroundColorPrimary,
-      fontWeight: "700",
     },
     loaderContainer: {
       // flex: 1,

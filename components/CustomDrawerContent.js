@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Divider } from "react-native-paper";
 import appConfig from '../app.json'; 
 
@@ -32,12 +33,12 @@ const CustomDrawerContent = (props) => {
     >
       {/* Drawer Header */}
       <View style={styles.headerContainer}>
-        <MyText style={[styles.profileName, { color: allColors.textColorSecondary }]}>
+        <MyText style={[styles.profileName, { color: allColors.textColorSecondary }]} fontWeight="bold">
           Thrifty
         </MyText>
       </View>
 
-      <Divider style={{backgroundColor: allColors.backgroundColorSecondary}} bold={true}/>
+      <Divider style={{backgroundColor: allColors.addBtnColors }} bold={true}/>
 
       {/* Drawer Items */}
       <View style={styles.drawerItemsContainer}>
@@ -70,6 +71,13 @@ const CustomDrawerContent = (props) => {
           style={getDrawerItemStyle("Export Data")}          
         />
         <DrawerItem
+          label="Overview"
+          icon={({focused, color, size}) => <MaterialIcons name="insights" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10  }} />}
+          labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
+          onPress={() => props.navigation.navigate("Overview")}
+          style={getDrawerItemStyle("Overview")}
+        />
+        <DrawerItem
           label="Settings"
           icon={({focused, color, size}) => <Feather name="settings" size={20} color={allColors.textColorPrimary} style={{ marginLeft: 10 }} />}
           labelStyle={[styles.drawerLabel, { color: allColors.universalColor }]}
@@ -78,14 +86,14 @@ const CustomDrawerContent = (props) => {
         />
       </View>
 
-      <Divider style={{backgroundColor: allColors.backgroundColorSecondary}} bold={true}/>
+      <Divider style={{backgroundColor: allColors.addBtnColors}} bold={true}/>
 
       {/* Footer */}
       <View style={styles.footerContainer}>
         <TouchableOpacity
           style={styles.logoutButton}
         >
-          <MyText style={[styles.logoutText, { color: allColors.universalColor }]}>
+          <MyText style={[styles.logoutText, { color: allColors.universalColor }]} fontWeight="bold">
             v {appVersion}
           </MyText>
         </TouchableOpacity>
@@ -108,8 +116,7 @@ const makeStyles = allColors =>
     marginBottom: 10,
   },
   profileName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 18
   },
   drawerItemsContainer: {
     flex: 1,
@@ -117,7 +124,7 @@ const makeStyles = allColors =>
   },
   drawerLabel: {
     fontSize: 16,
-    fontFamily: "Karla_400Regular",
+    fontFamily: "Poppins_400Regular",
   },
   footerContainer: {
     padding: 20,
@@ -128,11 +135,9 @@ const makeStyles = allColors =>
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: "bold",
   },
   activeItem: {
     fontSize: 16,
-    fontWeight: "bold",
     color: 'white',
     backgroundColor: allColors.backgroundColorCard,
     borderRadius: 25,

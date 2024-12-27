@@ -21,8 +21,8 @@ const BackChip = ({ index, onPress, isClicked, text }) => {
             borderRadius: 6,
             justifyContent: "center",
             alignItems: "center",
-            alignSelf: "flex-start",
-            padding: 2,
+            alignSelf: "center",
+            // padding: 2,
             marginRight: 10,
           },
           isClicked && {
@@ -32,7 +32,7 @@ const BackChip = ({ index, onPress, isClicked, text }) => {
       >
         <MyText
           style={[
-            { padding: 10, color: allColors.universalColor },
+            { padding: 10, color: allColors.universalColor, alignSelf: "center", justifyContent: "center", alignItems: "center" },
             isClicked && { color: allColors.textColorPrimary },
           ]}
         >

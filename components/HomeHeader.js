@@ -1,8 +1,7 @@
-import { View, StyleSheet, Dimensions, Animated, Easing } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Tooltip } from "react-native-paper";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useDynamicColors from "../commons/useDynamicColors";
-import { LineChart } from "react-native-chart-kit";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -10,12 +9,7 @@ import Feather from "react-native-vector-icons/Feather";
 import MyText from "../components/MyText";
 import { getCurrencyFromStorage } from "../helper/constants";
 import formatNumberWithCurrency from "../helper/formatter";
-import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { loadTotalsFromStorage, storeData } from "../redux/actions";
-
-import { Text } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
 
 const makeStyles = (allColors) =>
   StyleSheet.create({
@@ -307,9 +301,9 @@ const DashboardCard = ({ currency }) => {
       <Card.Title
         title="Available Balance"
         titleStyle={{
-          color: allColors.textColorPrimary,
+          color: allColors.universalColor,
           fontSize: 20,
-          fontFamily: "Karla_400Regular",
+          fontFamily: "Poppins_400Regular",
         }}
       />
       <MyText
@@ -319,14 +313,14 @@ const DashboardCard = ({ currency }) => {
           padding: 16,
           paddingTop: 0,
           marginTop: -15,
-          color: allColors.textColorSecondary,
+          color: allColors.textColorPrimary,
         }}
       >
         {formatNumberWithCurrency(totalValue, currency)}
       </MyText>
       <Card.Content>
         <MyText
-          style={{ color: allColors.textColorPrimary, fontSize: 20 }}
+          style={{ color: allColors.universalColor, fontSize: 20 }}
         >
           Spending in {moment().format("MMMM")}
         </MyText>

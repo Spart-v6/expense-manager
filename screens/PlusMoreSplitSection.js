@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { addSections } from "../redux/actions";
 import { getUsernameFromStorage } from "../helper/constants";
 import SnackbarComponent from "../commons/snackbar";
-import DatePicker from 'react-native-neat-date-picker'
+import DatePicker from "react-native-neat-date-picker";
 import moment from "moment";
 import React from "react";
 
@@ -41,20 +41,26 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
   const [selectedItem, setSelectedItem] = React.useState(null);
 
   // for date
-  const [dateValue, setDateValue] = React.useState(moment().format("DD/MM/YYYY"));
+  const [dateValue, setDateValue] = React.useState(
+    moment().format("DD/MM/YYYY")
+  );
 
   const [date, setDate] = React.useState(moment().format("YYYY/MM/DD"));
-  const [showDatePickerSingle, setShowDatePickerSingle] = React.useState(false)
+  const [showDatePickerSingle, setShowDatePickerSingle] = React.useState(false);
 
-  const openDatePickerSingle = () => setShowDatePickerSingle(true)
+  const openDatePickerSingle = () => setShowDatePickerSingle(true);
 
   const onCancelSingle = () => setShowDatePickerSingle(false);
 
   const onConfirmSingle = (output) => {
-    setShowDatePickerSingle(false)
-    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
-    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
-  }
+    setShowDatePickerSingle(false);
+    setDateValue(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY")
+    );
+    setDate(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD")
+    );
+  };
 
   const [currentGroupMembers, setCurrentGroupMembers] = React.useState(
     route.params.currGrpMems.sort()
@@ -95,7 +101,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         selectionColor={allColors.textSelectionColor}
         placeholder={label === "Paid by" && "You paid? Leave it blank"}
         activeUnderlineColor={allColors.textColorPrimary}
-        contentStyle={{ fontFamily: "Karla_400Regular" }}
+        contentStyle={{ fontFamily: "Poppins_400Regular" }}
         value={value}
         onChangeText={handleTextCheck}
         keyboardType={keyboardType}
@@ -131,7 +137,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
               width: "100%",
             }}
             cursorColor={allColors.universalColor}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
+            contentStyle={{ fontFamily: "Poppins_400Regular" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
             underlineColor={"transparent"}
@@ -485,7 +491,7 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
                     keyboardType="number-pad"
                     textColor={allColors.universalColor}
                     selectionColor={allColors.textSelectionColor}
-                    contentStyle={{ fontFamily: "Karla_400Regular" }}
+                    contentStyle={{ fontFamily: "Poppins_400Regular" }}
                     underlineColor={allColors.textColorPrimary}
                     activeUnderlineColor={allColors.textColorPrimary}
                     scrollEnabled={true}
@@ -506,21 +512,22 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
         <Button
           onPress={handleSubmit}
           mode="contained"
-          labelStyle={{ fontSize: 15 }}
+          labelStyle={{ fontSize: 20 }}
           textColor={"black"}
           style={{
             borderColor: "transparent",
             backgroundColor: allColors.addBtnColors,
-            borderRadius: 15,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
+            borderRadius: 20,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
           }}
         >
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Karla_400Regular",
-              fontSize: 18,
+              fontFamily: "Poppins_400Regular",
+              fontSize: 20,
+              lineHeight: 35,
             }}
           >
             Add section
@@ -531,19 +538,19 @@ const PlusMoreSplitSection = ({ navigation, route }) => {
 
       <DatePicker
         isVisible={showDatePickerSingle}
-        mode={'single'}
+        mode={"single"}
         onCancel={onCancelSingle}
         onConfirm={onConfirmSingle}
         colorOptions={{
-          backgroundColor: allColors.backgroundColorLessPrimary, 
-          changeYearModalColor: allColors.selectedDateColor, 
+          backgroundColor: allColors.backgroundColorLessPrimary,
+          changeYearModalColor: allColors.selectedDateColor,
           headerColor: allColors.calendarTopColor,
           weekDaysColor: allColors.selectedDateColor,
           dateTextColor: allColors.universalColor,
           selectedDateBackgroundColor: allColors.textColorFive,
           selectedDateTextColor: allColors.universalColorInverted,
-          headerTextColor: allColors.textColorFive,
-          confirmButtonColor: allColors.textColorFive
+          headerTextColor: allColors.backgroundColorQuaternary,
+          confirmButtonColor: allColors.textColorFive,
         }}
       />
     </SafeAreaView>

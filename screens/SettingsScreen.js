@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, SafeAreaView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, SafeAreaView, TouchableOpacity } from "react-native";
 import {
   TouchableRipple,
   Dialog,
@@ -66,6 +66,7 @@ const SettingsScreen = ({ navigation }) => {
   const [isLockEnabled, setIsLockEnabled] = useState(false);
   const [biometricWarning, setBiometricWarning] = useState("");
   const [openLockAppDialog, setOpenLockAppDialog] = useState(false);
+  const [shouldLockImmediately, setShouldLockImmediately] = useState(false);
 
   const [notification, setNotification] = React.useState(false);
   const notificationListener = React.useRef();
@@ -178,6 +179,22 @@ const SettingsScreen = ({ navigation }) => {
 
   // #region Biometrics
 
+  useEffect(() => {
+    const retrieveImmediateLockState = async () => {
+      try {
+        const lockState = await AsyncStorage.getItem("shouldLockImmediately");
+        setShouldLockImmediately(JSON.parse(lockState));
+      } catch (error) {}
+    };
+    retrieveImmediateLockState();
+  }, []);
+
+  const toggleImmediateLock = async () => {
+    const newState = !shouldLockImmediately;
+    setShouldLockImmediately(newState);
+    await AsyncStorage.setItem("shouldLockImmediately", JSON.stringify(newState));
+  };
+
   React.useEffect(() => {
     const retrieveLockState = async () => {
       try {
@@ -191,7 +208,9 @@ const SettingsScreen = ({ navigation }) => {
   const lockAppHandler = async () => {
     if (isLockEnabled) {
       setIsLockEnabled(false);
+      setShouldLockImmediately(false);
       await AsyncStorage.setItem("isLockEnabled", JSON.stringify(false));
+      await AsyncStorage.setItem("shouldLockImmediately", JSON.stringify(false)); // seting immediate lock to false also
       return;
     }
     try {
@@ -326,12 +345,13 @@ const SettingsScreen = ({ navigation }) => {
         <View
           style={{
             flexDirection: "row",
-            gap: 2,
+            alignItems: "center",
             justifyContent: "space-between",
+            padding: 10,
           }}
         >
-          <View style={{ flexDirection: "row", padding: 9 }}>
-            <View style={{ paddingRight: 10, paddingLeft: 0, paddingTop: 3 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+            <View>
               <IconComponent
                 name={"notifications"}
                 category={"Ionicons"}
@@ -339,14 +359,8 @@ const SettingsScreen = ({ navigation }) => {
                 color={allColors.textColorPrimary}
               />
             </View>
-            <View
-              style={{
-                flexDirection: "column",
-                gap: 2,
-                marginLeft: 13,
-                maxWidth: 200,
-              }}
-            >
+
+            <View style={{ flexDirection: "column", gap: 2, maxWidth: 200 }}>
               <MyText
                 variant="bodyLarge"
                 style={{ color: allColors.textColorSecondary }}
@@ -373,12 +387,13 @@ const SettingsScreen = ({ navigation }) => {
         <View
           style={{
             flexDirection: "row",
-            gap: 2,
+            alignItems: "center",
             justifyContent: "space-between",
+            padding: 10,
           }}
         >
-          <View style={{ flexDirection: "row", padding: 10 }}>
-            <View style={{ paddingRight: 12, paddingLeft: 0, paddingTop: 3 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 24 }}>
+            <View>
               <IconComponent
                 name={"lock"}
                 category={"Octicons"}
@@ -386,14 +401,8 @@ const SettingsScreen = ({ navigation }) => {
                 color={allColors.textColorPrimary}
               />
             </View>
-            <View
-              style={{
-                flexDirection: "column",
-                gap: 2,
-                marginLeft: 13,
-                maxWidth: 250,
-              }}
-            >
+
+            <View style={{ flexDirection: "column", gap: 2, maxWidth: 250 }}>
               <MyText
                 variant="bodyLarge"
                 style={{ color: allColors.textColorSecondary }}
@@ -408,6 +417,7 @@ const SettingsScreen = ({ navigation }) => {
               </MyText>
             </View>
           </View>
+
           <Switch
             value={isLockEnabled}
             onValueChange={lockAppHandler}
@@ -416,6 +426,52 @@ const SettingsScreen = ({ navigation }) => {
             style={{ marginRight: 10 }}
           />
         </View>
+
+        {isLockEnabled && 
+          (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: 10,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+                <View>
+                  <IconComponent
+                    name={"shield-lock"}
+                    category={"Octicons"}
+                    size={20}
+                    color={allColors.textColorPrimary}
+                  />
+                </View>
+
+                <View style={{ flexDirection: "column", gap: 2, maxWidth: 250 }}>
+                  <MyText
+                    variant="bodyLarge"
+                    style={{ color: allColors.textColorSecondary }}
+                  >
+                    Enable immediate lock
+                  </MyText>
+                  <MyText
+                    variant="bodySmall"
+                    style={{ color: allColors.textColorSecondary }}
+                  >
+                    This will lock the app immediately
+                  </MyText>
+                </View>
+              </View>
+
+              <Switch
+                value={shouldLockImmediately}
+                onValueChange={toggleImmediateLock}
+                thumbColor={allColors.textColorPrimary}
+                trackColor={allColors.textColorFive}
+                style={{ marginRight: 10 }}
+              />
+            </View>
+          )}
       </View>
 
       <Portal>
@@ -432,21 +488,40 @@ const SettingsScreen = ({ navigation }) => {
           <Dialog.Title
             style={{
               color: allColors.textColorSecondary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
             }}
           >
             Update name
           </Dialog.Title>
           <Dialog.Content>
             <View>
-              <View style={{marginBottom: 20}}>
-                <MyText variant="bodyMedium" style={{ color: allColors.universalColor, marginTop: 10 }}>
-                    <MyText style={{ fontWeight: 'bold', color: allColors.universalColor }}>Note:</MyText> Updating your username will only change your profile name moving forward.
+              <View style={{ marginBottom: 20 }}>
+                <MyText
+                  variant="bodyMedium"
+                  style={{ color: allColors.universalColor, marginTop: 10 }}
+                >
+                  <MyText
+                    style={{
+                      color: allColors.universalColor,
+                    }}
+                    fontWeight="bold"
+                  >
+                    Note:
+                  </MyText>{" "}
+                  Updating your username will only change your profile name
+                  moving forward.
                 </MyText>
-                <MyText variant="bodySmall" style={{ marginTop: 10, color: allColors.universalColor }}>
-                  1. Your old username will remain unchanged in existing groups or expenses to maintain data consistency.
+                <MyText
+                  variant="bodySmall"
+                  style={{ marginTop: 10, color: allColors.universalColor }}
+                >
+                  1. Your old username will remain unchanged in existing groups
+                  or expenses to maintain data consistency.
                 </MyText>
-                <MyText variant="bodySmall" style={{ marginTop: 10, color: allColors.universalColor }}>
+                <MyText
+                  variant="bodySmall"
+                  style={{ marginTop: 10, color: allColors.universalColor }}
+                >
                   2. Any new groups or expenses will use your updated username.
                 </MyText>
               </View>
@@ -461,7 +536,7 @@ const SettingsScreen = ({ navigation }) => {
                 textColor={allColors.universalColor}
                 underlineColor={allColors.textColorFive}
                 selectionColor={allColors.textSelectionColor}
-                contentStyle={{ fontFamily: "Karla_400Regular" }}
+                contentStyle={{ fontFamily: "Poppins_400Regular" }}
                 activeUnderlineColor={allColors.textColorPrimary}
                 onChangeText={(text) => setUpdatedUsername(text)}
                 autoFocus
@@ -494,7 +569,7 @@ const SettingsScreen = ({ navigation }) => {
           <Dialog.Title
             style={{
               color: allColors.textColorSecondary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
             }}
           >
             Alert

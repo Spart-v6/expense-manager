@@ -34,6 +34,7 @@ import { processColor, PlatformColor } from 'react-native';
 import CustomDrawerContent from "../components/CustomDrawerContent";
 import { isVersionLessThan } from "../helper/versionCheck";
 import appConfig from '../app.json'; 
+import OverviewScreen from "../screens/OverviewScreen";
 
 const Stack = createStackNavigator();
 const StackApp = createStackNavigator();
@@ -131,7 +132,7 @@ const TabButton = (props) => {
               size={20}
             />
           </Animated.View>
-          <MyText style={[{ color: allColors.universalColor }, focused && {fontFamily: "Karla_400Regular"}]}>{item.label}</MyText>
+          <MyText style={[{ color: allColors.universalColor }, focused && {fontFamily: "Poppins_400Regular"}]}>{item.label}</MyText>
         </View>
       </View>
     </TouchableOpacity>
@@ -191,6 +192,9 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Notifications" component={NotificationsScreen} />
       <Drawer.Screen name="Import Data" component={FileUploadScreen} />
       <Drawer.Screen name="Export Data" component={ExportFileScreen} />
+      <Drawer.Screen name="Overview" component={OverviewScreen} />
+      {/* TODO: Refurbish recureence screen, change name to subscritpions, check design from bookmark chrome, fix the reurrnece coming 2 times instead of one */}
+      {/* TODO: Add a overview screen with grpah comapring income and expense together in bar chart for monthly, yearly and weekly */}
     </Drawer.Navigator>
   );
 };

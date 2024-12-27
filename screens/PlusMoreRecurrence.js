@@ -32,7 +32,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import SnackbarComponent from "../commons/snackbar";
-import DatePicker from 'react-native-neat-date-picker'
+import DatePicker from "react-native-neat-date-picker";
 
 const datesObj = [
   { id: 0, text: "Daily" },
@@ -66,7 +66,6 @@ const makeStyles = (allColors) =>
       backgroundColor: allColors.backgroundColorDatesSelected,
       text: {
         color: allColors.textColorPrimary,
-        fontWeight: 700,
       },
     },
     commonStyles: {
@@ -206,7 +205,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           underlineColor="transparent"
           activeUnderlineColor="transparent"
           placeholderTextColor={allColors.placeholderTextColor}
-          contentStyle={{ fontFamily: "Karla_400Regular" }}
+          contentStyle={{ fontFamily: "Poppins_400Regular" }}
           autoComplete="off"
           textContentType="none"
           value={name}
@@ -235,17 +234,21 @@ const PlusMoreRecurrence = ({ navigation }) => {
   const [dateValue, setDateValue] = useState(moment().format("DD/MM/YYYY"));
 
   const [date, setDate] = useState(moment().format("YYYY/MM/DD"));
-  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false)
+  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false);
 
-  const openDatePickerSingle = () => setShowDatePickerSingle(true)
+  const openDatePickerSingle = () => setShowDatePickerSingle(true);
 
   const onCancelSingle = () => setShowDatePickerSingle(false);
 
   const onConfirmSingle = (output) => {
-    setShowDatePickerSingle(false)
-    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
-    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
-  }
+    setShowDatePickerSingle(false);
+    setDateValue(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY")
+    );
+    setDate(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD")
+    );
+  };
 
   const dateInput = (name) => {
     // converting date to human-readable format
@@ -286,7 +289,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               }}
               cursorColor={allColors.universalColor}
               placeholderTextColor={allColors.textColorSecondary}
-              contentStyle={{ fontFamily: "Karla_400Regular" }}
+              contentStyle={{ fontFamily: "Poppins_400Regular" }}
               disabled
               underlineColor={"transparent"}
               activeUnderlineColor={"transparent"}
@@ -298,7 +301,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
         </TouchableRipple>
       </View>
     );
-  }
+  };
   // #endregion
 
   const handleFrequencyChange = (e) => {
@@ -398,7 +401,11 @@ const PlusMoreRecurrence = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         <ScrollView
           style={{ margin: 20 }}
-          contentContainerStyle={{ gap: 10, flexGrow: 1, justifyContent: 'flex-end' }}
+          contentContainerStyle={{
+            gap: 10,
+            flexGrow: 1,
+            justifyContent: "flex-end",
+          }}
           showsVerticalScrollIndicator={false}
         >
           <View
@@ -561,21 +568,22 @@ const PlusMoreRecurrence = ({ navigation }) => {
             <Button
               onPress={handleAddRecurrence}
               mode="contained"
-              labelStyle={{ fontSize: 15 }}
+              labelStyle={{ fontSize: 20 }}
               textColor={"black"}
               style={{
                 borderColor: "transparent",
                 backgroundColor: allColors.addBtnColors,
-                borderRadius: 15,
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
+                borderRadius: 20,
+                borderTopRightRadius: 20,
+                borderTopLeftRadius: 20,
               }}
             >
               <MyText
                 style={{
                   color: allColors.backgroundColorPrimary,
-                  fontFamily: "Karla_400Regular",
-                  fontSize: 18,
+                  fontFamily: "Poppins_400Regular",
+                  fontSize: 20,
+                  lineHeight: 35,
                 }}
               >
                 Add Recurrence
@@ -587,20 +595,22 @@ const PlusMoreRecurrence = ({ navigation }) => {
       {
         <DatePicker
           isVisible={showDatePickerSingle}
-          mode={'single'}
+          mode={"single"}
           onCancel={onCancelSingle}
           onConfirm={onConfirmSingle}
-          minDate={new Date(moment().subtract(1, 'months').format('YYYY-MM-DD'))} // u can set date till 1 month before
+          minDate={
+            new Date(moment().subtract(1, "months").format("YYYY-MM-DD"))
+          } // u can set date till 1 month before
           colorOptions={{
-            backgroundColor: allColors.backgroundColorLessPrimary, 
-            changeYearModalColor: allColors.selectedDateColor, 
+            backgroundColor: allColors.backgroundColorLessPrimary,
+            changeYearModalColor: allColors.selectedDateColor,
             headerColor: allColors.calendarTopColor,
             weekDaysColor: allColors.selectedDateColor,
             dateTextColor: allColors.universalColor,
             selectedDateBackgroundColor: allColors.textColorFive,
             selectedDateTextColor: allColors.universalColorInverted,
-            headerTextColor: allColors.textColorFive,
-            confirmButtonColor: allColors.textColorFive
+            headerTextColor: allColors.backgroundColorQuaternary,
+            confirmButtonColor: allColors.textColorFive,
           }}
         />
       }
@@ -620,7 +630,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
           <Dialog.Title
             style={{
               color: allColors.textColorSecondary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
             }}
           >
             Add new recurrence type
@@ -640,7 +650,7 @@ const PlusMoreRecurrence = ({ navigation }) => {
               underlineColor={allColors.textColorPrimary}
               selectionColor={allColors.textSelectionColor}
               activeUnderlineColor={allColors.textColorPrimary}
-              contentStyle={{ fontFamily: "Karla_400Regular" }}
+              contentStyle={{ fontFamily: "Poppins_400Regular" }}
               keyboardType="default"
               autoFocus
             />

@@ -224,7 +224,7 @@ const AllExpensesScreen = ({ navigation }) => {
             dateTextColor: allColors.universalColor,
             selectedDateBackgroundColor: allColors.textColorFive,
             selectedDateTextColor: allColors.universalColorInverted,
-            headerTextColor: allColors.textColorFive,
+            headerTextColor: allColors.backgroundColorQuaternary,
             confirmButtonColor: allColors.textColorFive
           }}
         />

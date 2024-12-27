@@ -36,7 +36,7 @@ import IconPickerModal from "../components/IconPickerModal";
 import { IconComponent } from "../components/IconPickerModal";
 import DeleteDialog from "../components/DeleteDialog";
 import Chip from "../components/Chip";
-import DatePicker from 'react-native-neat-date-picker'
+import DatePicker from "react-native-neat-date-picker";
 
 const FrequentCategories = ({ handleSelectedCategory }) => {
   const allColors = useDynamicColors();
@@ -85,7 +85,7 @@ const makeStyles = (allColors) =>
       backgroundColor: allColors.backgroundColorDatesSelected,
       text: {
         color: allColors.textColorPrimary,
-        fontFamily: "Karla_400Regular",
+        fontFamily: "Poppins_400Regular",
       },
     },
     centeredView: {
@@ -154,7 +154,7 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(() => {
     if (route.params) {
-      if (route.params.updateItem){
+      if (route.params.updateItem) {
         return route.params.updateItem.selectedCategory;
       }
     }
@@ -193,12 +193,14 @@ const PlusMoreHome = ({ navigation, route }) => {
   });
 
   const [selectedButton, setSelectedButton] = useState(() => {
-    if (route.params){
+    if (route.params) {
       if (route.params.updateItem) {
         return route.params.updateItem.type;
       }
-      if (route.params.sms){
-        return route.params.sms.transactionType === "debited" ? "Expense" : "Income";
+      if (route.params.sms) {
+        return route.params.sms.transactionType === "debited"
+          ? "Expense"
+          : "Income";
       }
     }
     return "Expense";
@@ -210,7 +212,7 @@ const PlusMoreHome = ({ navigation, route }) => {
         return route.params.updateItem.desc;
       }
       if (route.params.sms) {
-        return 'Transaction via ' + route.params.sms.bank;
+        return "Transaction via " + route.params.sms.bank;
       }
     }
     return "";
@@ -228,7 +230,7 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   const [selectedCardID, setSelectedCardID] = useState(() => {
     if (route.params) {
-      if (route.params.updateItem) { 
+      if (route.params.updateItem) {
         return route.params.updateItem.accCardSelected;
       }
     }
@@ -262,7 +264,9 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [dateValue, setDateValue] = useState(() => {
     if (route.params) {
       if (route.params.updateItem) {
-        return moment(route.params.updateItem.date, "YYYY/MM/DD").format("DD/MM/YYYY");
+        return moment(route.params.updateItem.date, "YYYY/MM/DD").format(
+          "DD/MM/YYYY"
+        );
       }
       if (route.params.sms) {
         return moment(route.params.sms.date, "YYYY-MM-DD").format("DD/MM/YYYY");
@@ -283,17 +287,21 @@ const PlusMoreHome = ({ navigation, route }) => {
     return moment().format("YYYY/MM/DD");
   });
 
-  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false)
+  const [showDatePickerSingle, setShowDatePickerSingle] = useState(false);
 
-  const openDatePickerSingle = () => setShowDatePickerSingle(true)
+  const openDatePickerSingle = () => setShowDatePickerSingle(true);
 
   const onCancelSingle = () => setShowDatePickerSingle(false);
 
   const onConfirmSingle = (output) => {
-    setShowDatePickerSingle(false)
-    setDateValue(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY"))
-    setDate(moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD"));
-  }
+    setShowDatePickerSingle(false);
+    setDateValue(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("DD/MM/YYYY")
+    );
+    setDate(
+      moment(output.dateString, "ddd MMM DD YYYY HH:mm:ss").format("YYYY/MM/DD")
+    );
+  };
 
   // Getting msgId (from notifications screen) so that current notification will be deleted that got recently added to expense screen
   const [msgIdFrmNotiScreen, setMsgIdFrmNotiScreen] = useState(() => {
@@ -396,7 +404,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           autoComplete="off"
           textContentType="none"
           value={name}
-          contentStyle={{ fontFamily: "Karla_400Regular" }}
+          contentStyle={{ fontFamily: "Poppins_400Regular" }}
           placeholder={resolvedPlaceholder}
           onChangeText={handleTextCheck}
           keyboardType={keyboardType}
@@ -452,7 +460,7 @@ const PlusMoreHome = ({ navigation, route }) => {
               height: 20,
               width: "100%",
             }}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
+            contentStyle={{ fontFamily: "Poppins_400Regular" }}
             placeholderTextColor={allColors.textColorSecondary}
             disabled
             underlineColor={"transparent"}
@@ -666,21 +674,22 @@ const PlusMoreHome = ({ navigation, route }) => {
             <Button
               onPress={handleAddOrUpdateExpense}
               mode="contained"
-              labelStyle={{ fontSize: 15 }}
+              labelStyle={{ fontSize: 20 }}
               textColor={"black"}
               style={{
                 borderColor: "transparent",
                 backgroundColor: allColors.addBtnColors,
-                borderRadius: 15,
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
+                borderRadius: 20,
+                borderTopRightRadius: 20,
+                borderTopLeftRadius: 20,
               }}
             >
               <MyText
                 style={{
                   color: allColors.backgroundColorPrimary,
-                  fontFamily: "Karla_400Regular",
-                  fontSize: 18,
+                  fontFamily: "Poppins_400Regular",
+                  fontSize: 20,
+                  lineHeight: 35,
                 }}
               >
                 {btnName}
@@ -692,20 +701,21 @@ const PlusMoreHome = ({ navigation, route }) => {
 
       <DatePicker
         isVisible={showDatePickerSingle}
-        mode={'single'}
+        mode={"single"}
         onCancel={onCancelSingle}
         onConfirm={onConfirmSingle}
-        maxDate={new Date(moment().format('YYYY-MM-DD'))} // locking till today's date
+        initialDate={moment(date, "YYYY/MM/DD").toDate()}
+        maxDate={new Date(moment().format("YYYY-MM-DD"))} // locking till today's date
         colorOptions={{
-            backgroundColor: allColors.backgroundColorLessPrimary, 
-            changeYearModalColor: allColors.selectedDateColor, 
-            headerColor: allColors.calendarTopColor,
-            weekDaysColor: allColors.selectedDateColor,
-            dateTextColor: allColors.universalColor,
-            selectedDateBackgroundColor: allColors.textColorFive,
-            selectedDateTextColor: allColors.universalColorInverted,
-            headerTextColor: allColors.textColorFive,
-            confirmButtonColor: allColors.textColorFive
+          backgroundColor: allColors.backgroundColorLessPrimary,
+          changeYearModalColor: allColors.selectedDateColor,
+          headerColor: allColors.calendarTopColor,
+          weekDaysColor: allColors.selectedDateColor,
+          dateTextColor: allColors.universalColor,
+          selectedDateBackgroundColor: allColors.textColorFive,
+          selectedDateTextColor: allColors.universalColorInverted,
+          headerTextColor: allColors.backgroundColorQuaternary,
+          confirmButtonColor: allColors.textColorFive,
         }}
       />
 
@@ -738,7 +748,7 @@ const PlusMoreHome = ({ navigation, route }) => {
           <Dialog.Title
             style={{
               color: allColors.universalColor,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
             }}
           >
             Choose a category

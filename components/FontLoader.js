@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, SafeAreaView, StatusBar } from "react-native";
-import { useFonts, Karla_400Regular } from "@expo-google-fonts/karla";
+import { useFonts, Poppins_400Regular, Poppins_700Bold  } from "@expo-google-fonts/poppins";
 import * as Font from "expo-font";
 
 export default function FontLoader({ children }) {
@@ -9,8 +9,8 @@ export default function FontLoader({ children }) {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        Karla_400Regular,
-        Karla_400Regular,
+        Poppins_400Regular,
+        Poppins_700Bold
       });
 
       setFontsLoaded(true);

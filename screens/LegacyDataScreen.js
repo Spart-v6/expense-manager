@@ -154,7 +154,7 @@ const LegacyDataScreen = ({ navigation }) => {
           <Dialog.Title
             style={{
               color: allColors.textColorSecondary,
-              fontFamily: "Karla_400Regular",
+              fontFamily: "Poppins_400Regular",
             }}
           >
             Delete everything?

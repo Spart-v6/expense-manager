@@ -6,9 +6,12 @@ const withContent = (WrappedComponent) => {
   };
 };
 
-const MyText = ({ style, content, ...rest }) => {
+const MyText = ({ style, content, fontWeight = "normal", ...rest }) => {
+  const fontFamily =
+    fontWeight === "bold" ? "Poppins_700Bold" : "Poppins_400Regular";
+
   return (
-    <Text style={[{ fontFamily: "Karla_400Regular" }, style]} {...rest}>
+    <Text style={[{ fontFamily }, style]} {...rest}>
       {content}
     </Text>
   );

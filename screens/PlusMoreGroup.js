@@ -144,7 +144,7 @@ const PlusMoreGroup = ({ navigation }) => {
             cursorColor={allColors.universalColor}
             underlineColor="transparent"
             placeholderTextColor={allColors.placeholderTextColor}
-            contentStyle={{ fontFamily: "Karla_400Regular" }}
+            contentStyle={{ fontFamily: "Poppins_400Regular" }}
             autoCompleteType="off"
             value={groupName}
             placeholder="Group name"
@@ -153,7 +153,7 @@ const PlusMoreGroup = ({ navigation }) => {
           />
         </View>
 
-        <Divider style={styles.line}/>
+        <Divider style={styles.line} />
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <MyText style={{ color: allColors.universalColor }}>Add names</MyText>
@@ -164,7 +164,7 @@ const PlusMoreGroup = ({ navigation }) => {
               textColor={allColors.universalColor}
               cursorColor={allColors.universalColor}
               placeholderTextColor={allColors.placeholderTextColor}
-              contentStyle={{ fontFamily: "Karla_400Regular" }}
+              contentStyle={{ fontFamily: "Poppins_400Regular" }}
               underlineColorAndroid="transparent"
               activeUnderlineColor="transparent"
               underlineColor="transparent"
@@ -184,7 +184,7 @@ const PlusMoreGroup = ({ navigation }) => {
                 underlineColor="transparent"
                 autoFocus={index > 0}
                 placeholderTextColor={allColors.placeholderTextColor}
-                contentStyle={{ fontFamily: "Karla_400Regular" }}
+                contentStyle={{ fontFamily: "Poppins_400Regular" }}
                 autoCompleteType="off"
                 value={input.value}
                 placeholder={`Enter name #${index + 1}`}
@@ -224,20 +224,21 @@ const PlusMoreGroup = ({ navigation }) => {
         <Button
           onPress={handleAddGroups}
           mode="contained"
-          labelStyle={{ fontSize: 15 }}
+          labelStyle={{ fontSize: 20 }}
           style={{
             borderColor: "transparent",
             backgroundColor: allColors.addBtnColors,
-            borderRadius: 15,
-            borderTopRightRadius: 15,
-            borderTopLeftRadius: 15,
+            borderRadius: 20,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
           }}
         >
           <MyText
             style={{
               color: allColors.backgroundColorPrimary,
-              fontFamily: "Karla_400Regular",
-              fontSize: 18,
+              fontFamily: "Poppins_400Regular",
+              fontSize: 20,
+              lineHeight: 35,
             }}
           >
             Add Group

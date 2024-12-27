@@ -68,18 +68,29 @@ const SearchScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const loadData = async () => {
-      const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
-      const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
-      const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
-      const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
-      const allExpenses = JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
-    
+      const totalIncome =
+        JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+      const totalExpense =
+        JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+      const totalIncomeForMonth =
+        JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+      const totalExpenseForMonth =
+        JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+      const allExpenses =
+        JSON.parse(await AsyncStorage.getItem("ALL_EXPENSES")) || [];
+
       dispatch({
         type: "SET_INITIAL_TOTALS",
-        payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses },
+        payload: {
+          totalIncome,
+          totalExpense,
+          totalIncomeForMonth,
+          totalExpenseForMonth,
+          allExpenses,
+        },
       });
     };
-  
+
     loadData();
   }, []);
 
@@ -95,8 +106,10 @@ const SearchScreen = ({ navigation, route }) => {
       const res = await AsyncStorage.getItem("ALL_EXPENSES");
       let newData = JSON.parse(res);
       if (newData !== null) dispatch(storeData(newData));
-    } catch (e) {}
-    finally { setLoading(false) }
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   // #endregion
@@ -138,7 +151,7 @@ const SearchScreen = ({ navigation, route }) => {
               value={text}
               underlineColor={allColors.backgroundColorQuaternary}
               activeUnderlineColor={allColors.backgroundColorQuaternary}
-              contentStyle={{ fontFamily: "Karla_400Regular" }}
+              contentStyle={{ fontFamily: "Poppins_400Regular" }}
               onChangeText={setText}
               autoFocus
             />
