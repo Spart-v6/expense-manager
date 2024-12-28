@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Animated, Easing } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, Animated, Easing, Dimensions } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import useDynamicColors from "../commons/useDynamicColors";
-import { SafeAreaView } from "react-native";
-import { StatusBar } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -11,44 +10,42 @@ const SplashScreen = ({ setAnimationDone }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
 
+  const { width: screenWidth } = Dimensions.get("window");
+  const startOffset = -screenWidth * 4; // Start far left
+  const centerOffset = 0; // Center of the screen
+  const endOffset = screenWidth * 4; // Far right
+
   const path1Opacity = useRef(new Animated.Value(0)).current;
-  const path1Translate = useRef(new Animated.Value(-900)).current;
+  const path1Translate = useRef(new Animated.Value(startOffset)).current;
 
   const path2Opacity = useRef(new Animated.Value(0)).current;
-  const path2Translate = useRef(new Animated.Value(-900)).current;
+  const path2Translate = useRef(new Animated.Value(startOffset)).current;
 
   const path3Opacity = useRef(new Animated.Value(0)).current;
-  const path3Translate = useRef(new Animated.Value(-900)).current;
-
-  // const [isAnimationDone, setIsAnimationDone] = useState(false);
+  const path3Translate = useRef(new Animated.Value(startOffset)).current;
 
   useEffect(() => {
     const createPathAnimation = (pathTranslate, pathOpacity) => {
       return Animated.sequence([
-        // Fade in as the path enters
         Animated.timing(pathOpacity, {
           toValue: 1,
           duration: 100,
           easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
-        // Animate to the center of the screen
         Animated.timing(pathTranslate, {
-          toValue: 800,
+          toValue: centerOffset,
           duration: 1000,
           easing: Easing.inOut(Easing.exp),
           useNativeDriver: true,
         }),
-        // Pause in the center for 2 seconds
         Animated.delay(500),
-        // Continue to the right side of the screen
         Animated.timing(pathTranslate, {
-          toValue: 2000,
+          toValue: endOffset,
           duration: 500,
           easing: Easing.in(Easing.exp),
           useNativeDriver: true,
         }),
-        // Fade out as the path exits
         Animated.timing(pathOpacity, {
           toValue: 0,
           duration: 0,
@@ -58,21 +55,17 @@ const SplashScreen = ({ setAnimationDone }) => {
       ]);
     };
 
-    // Create animations for each path
     const path1Animation = createPathAnimation(path1Translate, path1Opacity);
     const path2Animation = createPathAnimation(path2Translate, path2Opacity);
     const path3Animation = createPathAnimation(path3Translate, path3Opacity);
 
-    // Run the animations in a staggered fashion
-    Animated.stagger(5, [
-      path1Animation,
-      path2Animation,
-      path3Animation,
-    ]).start(() => {
-      setTimeout(() => {
-        setAnimationDone(true);
-      }, 200);
-    });
+    Animated.stagger(5, [path1Animation, path2Animation, path3Animation]).start(
+      () => {
+        setTimeout(() => {
+          setAnimationDone(true);
+        }, 200);
+      }
+    );
   }, []);
 
   const animatedStyle3 = {

@@ -118,8 +118,6 @@ const expenseReducer = (state = initialState, action) => {
       AsyncStorage.setItem("MONTHLY_INCOME", JSON.stringify(totalIncomeForMonth));
       AsyncStorage.setItem("MONTHLY_EXPENSE", JSON.stringify(totalExpenseForMonth));
       AsyncStorage.setItem("CHART_DATA", JSON.stringify(chartData));
-
-      console.log("Chart data when added data ", chartData);
       
     
       return {
@@ -147,7 +145,6 @@ const expenseReducer = (state = initialState, action) => {
 
         const chartData = calculateChartData(updatedObjects);
         
-      console.log("Chart data when updated data ", chartData);
 
         // Save the updated expenses and totals to AsyncStorage
         AsyncStorage.setItem("ALL_EXPENSES", JSON.stringify(updatedObjects));
@@ -172,8 +169,6 @@ const expenseReducer = (state = initialState, action) => {
     case types.DELETE_DATA : {
       const id = action.payload;
       const updatedArray = state.allExpenses?.filter((obj) => obj.id !== id);
-
-      console.log("Updated array ", updatedArray);
       
     
       // Calculate the new totals after deletion
@@ -181,8 +176,6 @@ const expenseReducer = (state = initialState, action) => {
       const { totalIncome: totalIncomeForMonth, totalExpense: totalExpenseForMonth } = calculateTotals(updatedArray, true);
 
       const chartData = calculateChartData(updatedArray);
-
-      console.log("Chart data when delted data ", chartData);
 
 
       // Save the updated expenses and totals to AsyncStorage
@@ -212,7 +205,7 @@ const expenseReducer = (state = initialState, action) => {
       };
     }
 
-    case types.SET_INITIAL_TOTALS: {
+    case types.SET_INITIAL_TOTALS: {      
       return {
         ...state,
         totalIncome: action.payload.totalIncome,
@@ -220,6 +213,7 @@ const expenseReducer = (state = initialState, action) => {
         allExpenses: action.payload.allExpenses || [],
         totalIncomeForMonth: action.payload.totalIncomeForMonth || 0,
         totalExpenseForMonth: action.payload.totalExpenseForMonth || 0,
+        chartData: action.payload.chartData || {},
       };
     }
     default:

@@ -3,51 +3,187 @@ import MyText from "../components/MyText";
 import { Dimensions, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import useDynamicColors from '../commons/useDynamicColors';
 import AppHeader from '../components/AppHeader';
-
+import moment from 'moment';
+import { Button, Menu, Divider, TouchableRipple } from 'react-native-paper';
+import Octicons from "react-native-vector-icons/Octicons";
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storeData } from '../redux/actions';
 
 const AppHeaderMemoized = React.memo(AppHeader);
-const data=[ {value:50}, {value:80}, {value:90}, {value:70} ]
 
 const OverviewScreen = ({navigation}) => {
+    const dispatch = useDispatch();
     const allColors = useDynamicColors();
-    const chartData = useSelector(data => data.expenseReducer.chartData);
-    // console.log("Chart data: " + chartData["2024"].expense.daily);
+
+    React.useEffect(() => {      
+      const loadData = async () => {
+        const totalIncome = JSON.parse(await AsyncStorage.getItem("TOTAL_INCOME")) || 0;
+        const totalExpense = JSON.parse(await AsyncStorage.getItem("TOTAL_EXPENSE")) || 0;
+        const totalIncomeForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_INCOME")) || 0;
+        const totalExpenseForMonth = JSON.parse(await AsyncStorage.getItem("MONTHLY_EXPENSE")) || 0;
+        const allExpenses = JSON.parse(await AsyncStorage.getItem("CHART_DATA")) || [];
+        const chartData = JSON.parse(await AsyncStorage.getItem("CHART_DATA")) || {};
+        
+        dispatch({
+          type: "SET_INITIAL_TOTALS",
+          payload: { totalIncome, totalExpense, totalIncomeForMonth, totalExpenseForMonth, allExpenses, chartData },
+        });
+      };
+    
+      loadData();
+    }, []);
+
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchCharts();
+      }, [])
+    );
+  
+    const fetchCharts = async () => {
+      try {
+        const res = await AsyncStorage.getItem("CHART_DATA");
+        let chartData = JSON.parse(res);
+        
+        if (chartData !== null) dispatch(storeData(chartData));
+      } catch (e) {}
+    };
+
+    
+    const chartData = useSelector(data => data.expenseReducer.chartData || {});
+    
     // todo: make a button to select, year, month and week to see daily chart
     // select None in daily to see for week chart,
     // select None in weekly to see for month chart,
     // select None in month to see for year chart,
 
+    // #region Set Menus Openings and Closings
+    const [visibleYear, setVisibleYear] = React.useState(false);
+    const openYearMenu = () => setVisibleYear(true);
+    const closeYearMenu = () => setVisibleYear(false);
+
+    const [visibleMonth, setVisibleMonth] = React.useState(false);
+    const openMonthMenu = () => setVisibleMonth(true);
+    const closeMonthMenu = () => setVisibleMonth(false);
+
+
+    const [visibleWeek, setVisibleWeek] = React.useState(false);
+    const openWeekMenu = () => setVisibleWeek(true);
+    const closeWeekMenu = () => setVisibleWeek(false);
+
+    const [visibleDaily, setVisibleDaily] = React.useState(false);
+    const openDailyMenu = () => setVisibleDaily(true);
+    const closeDailyMenu = () => setVisibleDaily(false);
+
+    // #endregion
+
+    // #region Setting the Menu Items for Year only and making constants for rest
+    const [years, setYears] = React.useState([]);
+
+    React.useEffect(() => {
+      if (chartData && Object.keys(chartData).length > 0) {
+        const yearKeys = Object.keys(chartData);
+        setYears(yearKeys);
+      }
+    }, [chartData]);
+
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov","Dec"];
+    const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+    const daily = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    // #endregion
+
+    // #region Selecting default values for drop-down menus
+    const [selectedYear, setSelectedYear] = React.useState(() => {
+      const keys = Object.keys(chartData);
+      return keys.length > 0 ? keys[0] : null; 
+    });
+
+    React.useEffect(() => {
+      if (chartData) {
+        const keys = Object.keys(chartData);
+        setSelectedYear(keys[0]);
+      }
+      setSelectedYear("2024");
+    }, [chartData]);
+
+    const [selectedMonth, setSelectedMonth] = React.useState("Jan");
+    const [selectedWeek, setSelectedWeek] = React.useState("Week 1");
+    const [selectedDaily, setSelectedDaily] = React.useState("Sun");
+
+    const [selectedAllYears, setSelectedAllYears] = React.useState(false);
     
-    // TODO: make chart data , i mean store chart data based on weekly, monthly and yearly.. so there should be a reducer for storing weekly, monthly and yearly data.. 
-    //  causing less overhead in fetching chart data
+    // #endregion
 
-    const data = [
-      {value: 2500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Jan'},
-      {value: 2400, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-  
-      {value: 3500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Feb'},
-      {value: 3000, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-  
-      {value: 4500, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Mar'},
-      {value: 4000, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-  
-      {value: 5200, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'Apr'},
-      {value: 4900, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
-  
-      {value: 3000, frontColor: '#006DFF', gradientColor: '#009FFF', spacing: 6, label:'May'},
-      {value: 2800, frontColor: '#3BE9DE', gradientColor: '#93FCF8'},
 
-    ];
+    // #region Populating data
+
+    const generateYearData = (chartData) => {
+      return Object.keys(chartData).flatMap((year) => [
+        {
+          value: Number(chartData[year]?.expense?.yearly || 0),
+          frontColor: '#006DFF',
+          gradientColor: '#009FFF',
+          spacing: 6,
+          label: year,
+        },
+        {
+          value: Number(chartData[year]?.income?.yearly || 0),
+          frontColor: '#3BE9DE',
+          gradientColor: '#93FCF8',
+        },
+      ]);
+    };
+    
+    const generateMonthWiseData = (chartData, selectedYear) => {      
+      if (!chartData[selectedYear]) {
+        return [];
+      }
+    
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      ];
+      const yearData = chartData[selectedYear];
+      return months.flatMap((month, index) => [
+        {
+          value: Number(yearData.expense?.monthly[index] || 0),
+          frontColor: '#006DFF',
+          gradientColor: '#009FFF',
+          spacing: 6,
+          label: month,
+        },
+        {
+          value: Number(yearData.income?.monthly[index] || 0),
+          frontColor: '#3BE9DE',
+          gradientColor: '#93FCF8',
+        },
+      ]);
+    };
+    
+    // #endregion
+
+    const getData = () => {
+      if (selectedAllYears) {
+        return generateYearData(chartData);
+      }
+      if (selectedYear) {
+        return generateMonthWiseData(chartData, selectedYear);
+      }
+      return [];
+    };
+    
+
     // TODO: for daily, show Sunday to saturday bar graphs
     // TODO: for weekly, show week wise for a month, like week 23 of june, week 25 of july etc..
     // TODO: for monthly, show Jan to Dec month wise
     // TODO: for yearly, yearly like 2023 whole, 2022 whole like that
     // todo: bug in recent transacstion date at left side 
-    // bug: in total expenses amount and in icnome and expense as well and in cards as well.. wrongly shown the amount (done)
-    // todo: bug, when updating the date for a expense, it does not replicate the given date in dateText field rather the calendar shows today's date instead
     // todo: for susbscription page: manage all your subcriptions here
+    // TODO: try adding a disabled state, sos month, week and daily will be disabled until user selects a year, month or day.. one by one
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
@@ -57,16 +193,104 @@ const OverviewScreen = ({navigation}) => {
         isMenuNeeded={false}
         isParent={true}
       />
-      <View style={{ margin: 20, padding: 10, borderRadius: 20, backgroundColor: allColors.backgroundColorLessPrimary}}>
-        <MyText style={{color: 'white', fontSize: 16, }}>
-          Income vs Expense
-        </MyText>
-        <View style={{padding: 20, alignItems: 'center'}}>
+
+      <MyText style={{color: 'white', fontSize: 16, marginLeft: 25, marginBottom: 10, marginTop: 10 }}>
+        Income vs Expense
+      </MyText>
+
+      <View style={{backgroundColor: allColors.backgroundColorCard, marginLeft: 20, marginRight: 20, borderRadius: 20}}>
+      {Object.keys(chartData).length !== 0 ?
+        <>
+        <View style={{ flexDirection: "row", margin: 20, padding: 10, justifyContent: "space-between", borderRadius: 20, backgroundColor: allColors.backgroundColorLessPrimary}}>
+
+          {/* Select Year */}
+          <View style={{ flexDirection: 'row', paddingRight: 0, paddingLeft: 0, alignSelf: "flex-end" }}>
+            <Menu
+              anchorPosition="bottom"
+              contentStyle={{right: 0, top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
+              visible={visibleYear}
+              onDismiss={closeYearMenu}
+              anchor={
+                <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
+                <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openYearMenu}>
+                  <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
+                    <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">Year</MyText>
+                    <Octicons
+                      name="filter"
+                      size={20}
+                      color={allColors.addBtnColors}
+                      style={{ alignSelf: "center" }}
+                    />
+                  </View>
+                </TouchableRipple>
+                </View>
+            }>
+              {years.length > 0 ? (
+                <>
+                  {years.map((year, index) => (
+                    <Menu.Item
+                      onPress={() => {
+                        setSelectedYear(year);
+                        setSelectedAllYears(false);
+                        closeYearMenu();
+                      }}
+                      title={year}
+                      titleStyle={{ color: allColors.universalColor }}
+                      key={index}
+                    />
+                  ))}
+                  <Menu.Item
+                    onPress={() => {
+                      setSelectedAllYears(true);
+                      setSelectedYear(null);
+                      closeYearMenu();
+                    }}
+                    title={"All"}
+                    titleStyle={{ color: allColors.universalColor }}
+                  />
+                </>
+              ) : (
+                <Menu.Item title="No data" disabled />
+              )}
+            </Menu>
+          </View>
+
+          {/* Select Month */}
+          <View style={{ flexDirection: 'row', paddingRight: 0, paddingLeft: 0, alignSelf: "flex-end" }}>
+            <Menu
+              anchorPosition="bottom"
+              contentStyle={{right: 0, top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
+              visible={visibleMonth}
+              onDismiss={closeMonthMenu}
+              anchor={
+                <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
+                <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openMonthMenu}>
+                  <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
+                    <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">Month</MyText>
+                    <Octicons
+                      name="filter"
+                      size={20}
+                      color={allColors.addBtnColors}
+                      style={{ alignSelf: "center" }}
+                    />
+                  </View>
+                </TouchableRipple>
+                </View>
+            }>
+              {months.map((month, index) =>
+                  <Menu.Item onPress={() => {setSelectedMonth(month); closeMonthMenu()}} title={month} titleStyle={{color: allColors.universalColor}} key={index}/>
+              )}
+            </Menu>
+          </View>
+
+        </View>
+
+        <View style={{ margin: 20, padding: 20, alignItems: 'center'}}>
           <BarChart
-            data={data}
+            data={getData()}
             barWidth={16}
             initialSpacing={10}
-            spacing={14}
+            spacing={24}
             barBorderRadius={4}
             showGradient
             yAxisThickness={0}
@@ -91,6 +315,14 @@ const OverviewScreen = ({navigation}) => {
 
           />
         </View>
+        </>
+      :
+        <View>
+          <MyText>
+            wait
+          </MyText>
+        </View>
+      }
       </View>
     </SafeAreaView>
   )
