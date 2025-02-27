@@ -201,28 +201,31 @@ const OverviewScreen = ({navigation}) => {
       <View style={{backgroundColor: allColors.backgroundColorCard, marginLeft: 20, marginRight: 20, borderRadius: 20}}>
       {Object.keys(chartData).length !== 0 ?
         <>
-        <View style={{ flexDirection: "row", margin: 20, padding: 10, justifyContent: "space-between", borderRadius: 20, backgroundColor: allColors.backgroundColorLessPrimary}}>
+        <View style={{ flexDirection: "row", margin: 20, padding: 10, justifyContent: "flex-end", borderRadius: 20, backgroundColor: allColors.backgroundColorLessPrimary}}>
 
           {/* Select Year */}
           <View style={{ flexDirection: 'row', paddingRight: 0, paddingLeft: 0, alignSelf: "flex-end" }}>
             <Menu
               anchorPosition="bottom"
-              contentStyle={{right: 0, top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
+              contentStyle={{top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
               visible={visibleYear}
               onDismiss={closeYearMenu}
               anchor={
-                <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
-                <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openYearMenu}>
-                  <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
-                    <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">Year</MyText>
-                    <Octicons
-                      name="filter"
-                      size={20}
-                      color={allColors.addBtnColors}
-                      style={{ alignSelf: "center" }}
-                    />
-                  </View>
-                </TouchableRipple>
+                <View style={{flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 10, width: "100%", alignItems: "center"}}>
+                  <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openYearMenu}>
+                    <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
+                      <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">
+                        { selectedAllYears && !selectedYear ? "All" : selectedYear }
+                      </MyText>
+                      <Octicons
+                        name="filter"
+                        size={20}
+                        color={allColors.addBtnColors}
+                        style={{ alignSelf: "center" }}
+                      />
+                    </View>
+                  </TouchableRipple>
+                  <MyText>{ selectedAllYears && !selectedYear ? "Showing avaible data" : "Showing data from Jan - Dec"}</MyText>
                 </View>
             }>
               {years.length > 0 ? (
@@ -255,40 +258,12 @@ const OverviewScreen = ({navigation}) => {
             </Menu>
           </View>
 
-          {/* Select Month */}
-          <View style={{ flexDirection: 'row', paddingRight: 0, paddingLeft: 0, alignSelf: "flex-end" }}>
-            <Menu
-              anchorPosition="bottom"
-              contentStyle={{right: 0, top: 70, backgroundColor: allColors.backgroundColorLessPrimary}}
-              visible={visibleMonth}
-              onDismiss={closeMonthMenu}
-              anchor={
-                <View style={{flexDirection: "row", justifyContent: "flex-end", alignContent: "center", alignItems: "center"}}>
-                <TouchableRipple style={{padding: 10}} rippleColor="rgba(0, 0, 0, .22)" onPress={openMonthMenu}>
-                  <View style={{flexDirection: "row", gap: 20, alignItems: "center"}}>
-                    <MyText variant="bodyLarge" style={{ color: allColors.universalColor}} fontWeight= "bold">Month</MyText>
-                    <Octicons
-                      name="filter"
-                      size={20}
-                      color={allColors.addBtnColors}
-                      style={{ alignSelf: "center" }}
-                    />
-                  </View>
-                </TouchableRipple>
-                </View>
-            }>
-              {months.map((month, index) =>
-                  <Menu.Item onPress={() => {setSelectedMonth(month); closeMonthMenu()}} title={month} titleStyle={{color: allColors.universalColor}} key={index}/>
-              )}
-            </Menu>
-          </View>
-
         </View>
 
         <View style={{ margin: 20, padding: 20, alignItems: 'center'}}>
           <BarChart
             data={getData()}
-            barWidth={16}
+            barWidth={15}
             initialSpacing={10}
             spacing={24}
             barBorderRadius={4}
@@ -297,8 +272,8 @@ const OverviewScreen = ({navigation}) => {
             xAxisType={'dashed'}
             xAxisColor={'lightgray'}
             yAxisTextStyle={{color: 'lightgray'}}
-            stepValue={1000}
-            maxValue={6000}
+            stepValue={20000}
+            maxValue={100000}
             noOfSections={6}
             // yAxisLabelTexts={['0', '2k', '3k', '4k', '5k', '6k']}
             labelWidth={40}
@@ -312,7 +287,14 @@ const OverviewScreen = ({navigation}) => {
               shiftY: 20,
               initialSpacing: -30,
             }}
-
+            scrollAnimation={true}
+            isAnimated={true}
+            animationDuration={2}
+            // hideYAxis={false}
+            // hideRulesBelowChart={false} 
+            // rulesColor="#E0E0E0"
+            // rulesPadding={10}
+            parentWidth={6}
           />
         </View>
         </>

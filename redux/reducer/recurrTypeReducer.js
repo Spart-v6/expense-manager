@@ -2,8 +2,8 @@ import { constants as types } from "../actionTypes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
-  recurrTypes: [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }],
-  allRecurrTypes: [{ name: "Subscriptions" }, { name: "Income" }, { name: "Rent" }],
+  recurrTypes: [{ name: "Rent" }, { name: "Income" }, { name: "Spotify" }],
+  allRecurrTypes: [{ name: "Rent" }, { name: "Income" }, { name: "Spotify" }],
 };
 
 const recurrTypeReducer = (state = initialState, action) => {

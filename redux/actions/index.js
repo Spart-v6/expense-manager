@@ -56,12 +56,10 @@ export const addRecurrences = payload => ({
   payload
 });
 
-export const updateRecurrences = (sameId, updatedRecurrence) => {
-  return {
-    type: types.UPDATE_RECURRENCE,
-    payload: {sameId, updatedRecurrence}
-  }
-};
+export const updateRecurrences = (sameId, updatedRecurrence, updatedLastProcessedDate) => ({
+  type: types.UPDATE_RECURRENCE,
+  payload: { sameId, updatedRecurrence, updatedLastProcessedDate },
+});
 
 export const deleteRecurrences = payload => ({
   type: types.DELETE_RECURRENCE,

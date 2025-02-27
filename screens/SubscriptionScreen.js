@@ -37,7 +37,7 @@ const RightSideSVG = () => (
   </svg>
 
 );
-const RecurrenceScreen = ({ navigation }) => {
+const SubscriptionScreen = ({ navigation }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
   const [currency, setCurrency] = React.useState({
@@ -131,6 +131,7 @@ const RecurrenceScreen = ({ navigation }) => {
   const recurrencesData = useSelector(
     (state) => state.recurrenceReducer.allRecurrences
   );
+  
 
   recurrencesData.sort((a,b) => {
     const dateA = moment(`${a.recurrenceStartDate} ${a.time}`, "DD MM YY HH:mm:ss");
@@ -148,7 +149,7 @@ const RecurrenceScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar translucent backgroundColor={"transparent"} barStyle={allColors.barStyle}/>
       <AppHeader
-        title="Recurring Expenses"
+        title="Subscriptions"
         isParent={true}
         navigation={navigation}
       />
@@ -165,7 +166,7 @@ const RecurrenceScreen = ({ navigation }) => {
           : 
           <View style={{justifyContent: "center", alignItems: 'center', flex: 1, marginBottom: 100}}>
             <MaterialCommunityIcons name={'repeat-off'} size={60} color={allColors.textColorPrimary}/>
-            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>You haven't added any recurring payment.</MyText>
+            <MyText variant="titleMedium" style={{color: allColors.universalColor}}>Manage all your subscriptions here</MyText>
           </View>
         }
       </AnimatedEntryScreen>
@@ -173,7 +174,7 @@ const RecurrenceScreen = ({ navigation }) => {
         animated
         icon="repeat"
         color={allColors.universalColor}
-        onPress={() => navigation.navigate("PlusMoreRecurrence")}
+        onPress={() => navigation.navigate("PlusMoreSubscriptions")}
         mode="elevated"
         style={{
           position: "absolute",
@@ -221,4 +222,4 @@ const makeStyles = allColors => StyleSheet.create({
     paddingHorizontal: 5,
   }
 });
-export default RecurrenceScreen;
+export default SubscriptionScreen;

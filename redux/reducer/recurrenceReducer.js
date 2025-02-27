@@ -10,24 +10,31 @@ const recurrenceReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ADD_RECURRENCE:
       const allRecurrences = state.allRecurrences || [];
+      const newRecurrence = { ...action.payload, processedDates: [] }; // Add processedDates
       AsyncStorage.setItem(
         "ALL_RECURRENCES",
-        JSON.stringify([...allRecurrences, action.payload])
+        JSON.stringify([...allRecurrences, newRecurrence])
       );
       return {
         ...state,
-        allRecurrences: [...allRecurrences, action.payload],
+        allRecurrences: [...allRecurrences, newRecurrence],
       };
+    
     case types.UPDATE_RECURRENCE:
-      const { sameId, updatedRecurrence } = action.payload;
-      const updatedObjects = state.allRecurrences.map((obj) => {
-        if (obj.id === sameId) {
-          return { ...obj, recurrenceStartDate: updatedRecurrence };
+      const { sameId, updatedRecurrence, updatedLastProcessedDate } = action.payload;
+      const updatedRecurrences = state.allRecurrences.map((recurrence) => {
+        if (recurrence.id === sameId) {
+          return {
+            ...recurrence,
+            recurrenceStartDate: updatedRecurrence,
+            processedDates: [...(recurrence.processedDates || []), updatedLastProcessedDate],
+          };
         }
-        return obj;
+        return recurrence;
       });
-      AsyncStorage.setItem("ALL_RECURRENCES", JSON.stringify(updatedObjects));
-      return { ...state, allRecurrences: updatedObjects };
+    
+      AsyncStorage.setItem("ALL_RECURRENCES", JSON.stringify(updatedRecurrences));
+      return { ...state, allRecurrences: updatedRecurrences };
 
     case types.DELETE_RECURRENCE:
       const id = action.payload;
@@ -35,11 +42,13 @@ const recurrenceReducer = (state = initialState, action) => {
 
       AsyncStorage.setItem("ALL_RECURRENCES", JSON.stringify(updatedArray));
       return { ...state, allRecurrences: updatedArray || [] };
+
     case types.STORE_RECURRENCE:
       return {
         ...state,
         allRecurrences: action.payload || [],
       };
+
     default:
       return state;
   }

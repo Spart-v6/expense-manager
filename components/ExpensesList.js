@@ -232,12 +232,17 @@ const ExpensesList = ({ filter }) => {
     (state) => state.recurrenceReducer.allRecurrences
   );
 
-  const addRecurringExpenses = useCallback(() => {
-    const expense = [];
+  const [isProcessing, setIsProcessing] = useState(false);
 
+  const addRecurringExpenses = useCallback(() => {
+    if (isProcessing) return; // Prevent duplicate processing
+    setIsProcessing(true);
+  
+    const expenses = [];
     const currentDate = moment().format("DD MM YY");
+  
     recurrencesData.forEach((obj) => {
-      const { recurrenceStartDate, frequency } = obj;
+      const { recurrenceStartDate, frequency, processedDates } = obj;
       const frequencyDays = {
         Daily: 1,
         Weekly: 7,
@@ -245,57 +250,62 @@ const ExpensesList = ({ filter }) => {
         Yearly: 365,
       };
       const daysToAdd = frequencyDays[frequency];
-      
+  
       const futureDate = moment(recurrenceStartDate, "DD MM YY")
         .add(daysToAdd, "days")
         .format("DD MM YY");
   
-      if (moment(futureDate, "DD MM YY").isSameOrBefore(moment(currentDate, "DD MM YY"))) {
-        const numOccurrences = Math.floor(moment(currentDate, "DD MM YY").diff(moment(recurrenceStartDate, "DD MM YY"), "days") / daysToAdd);
-  
-        for (let i = 0; i < numOccurrences; i++) {
-          const newObj = {
-            ...obj,
-            recurrenceStartDate: moment(recurrenceStartDate, "DD MM YY")
-              .add(daysToAdd * (i + 1), "days")
-              .format("DD MM YY"),
-          };
-          expense.push(newObj);
-        }
-
-        const updatedRecurrenceStartDate = moment(recurrenceStartDate, "DD MM YY")
-          .add(numOccurrences * daysToAdd, "days")
-          .format("DD MM YY");
-        dispatch(updateRecurrences(obj.id, updatedRecurrenceStartDate));
-      } else {
-        if (futureDate === currentDate) {
-          expense.push(obj);
-        }
+      // Skip if already processed or not due
+      if (
+        processedDates?.includes(currentDate) ||
+        moment(futureDate, "DD MM YY").isAfter(moment(currentDate, "DD MM YY"))
+      ) {
+        return;
       }
+  
+      const numOccurrences = Math.floor(
+        moment(currentDate, "DD MM YY").diff(
+          moment(recurrenceStartDate, "DD MM YY"),
+          "days"
+        ) / daysToAdd
+      );
+  
+      for (let i = 0; i < numOccurrences; i++) {
+        const newObj = {
+          ...obj,
+          recurrenceStartDate: moment(recurrenceStartDate, "DD MM YY")
+            .add(daysToAdd * (i + 1), "days")
+            .format("DD MM YY"),
+        };
+        expenses.push(newObj);
+      }
+  
+      const updatedRecurrenceStartDate = moment(recurrenceStartDate, "DD MM YY")
+        .add(numOccurrences * daysToAdd, "days")
+        .format("DD MM YY");
+  
+      dispatch(
+        updateRecurrences(obj.id, updatedRecurrenceStartDate, currentDate)
+      );
     });
-
-    const updatedExpenses = expense.map(ex => {
-      const { recurrenceAmount, recurrenceName, recurrenceStartDate, paymentNetwork, paymentType, time, accCardSelected, recurrenceType } = ex;
-    
-      return {
-        amount: recurrenceAmount,
-        desc: recurrenceType,
-        id: Math.random() * 10,
-        date: moment(recurrenceStartDate, "DD MM YY").format("YYYY/MM/DD"),
-        name: recurrenceName,
-        selectedCard: paymentNetwork,
-        selectedCategory: { iconCategory: "FontAwesome", iconName: "repeat" },
-        time: time,
-        type: paymentType,
-        accCardSelected
-      };
-    });
+  
+    const updatedExpenses = expenses.map((expense) => ({
+      ...expense,
+      date: moment(expense.recurrenceStartDate, "DD MM YY").format("YYYY/MM/DD"),
+      id: Math.random() * 10,
+      selectedCategory: { iconCategory: "FontAwesome", iconName: "repeat" },
+    }));
+  
     if (updatedExpenses.length > 0) dispatch(addData(updatedExpenses));
-  }, [recurrencesData, dispatch]);
+  
+    setIsProcessing(false); // Reset processing flag
+  }, [recurrencesData, dispatch, isProcessing]);
 
   useEffect(() => {
     addRecurringExpenses();
-  }, [addRecurringExpenses]);
+  }, [recurrencesData]);
+  
+  
   // #endregion
 
   return (

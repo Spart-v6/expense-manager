@@ -99,7 +99,7 @@ const makeStyles = (allColors) =>
     },
   });
 
-const PlusMoreRecurrence = ({ navigation }) => {
+const PlusMoreSubscriptions = ({ navigation }) => {
   const allColors = useDynamicColors();
   const styles = makeStyles(allColors);
   const dispatch = useDispatch();
@@ -679,6 +679,6 @@ const PlusMoreRecurrence = ({ navigation }) => {
   );
 };
 
-export default PlusMoreRecurrence;
+export default PlusMoreSubscriptions;
 
 // TODO: Add a date remover option, so if u select daily, show mon to sun and user can de-select a day where he doesn't want to reurrnece to be added. For weekly add one textinput asking user which week of this month to be des-selected .. this is only for daily and weekly

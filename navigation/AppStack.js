@@ -8,7 +8,7 @@ import AllExpensesScreen from "../screens/AllExpensesScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import PlusMoreHome from "../screens/PlusMoreHome";
 import PlusMoreAccount from "../screens/PlusMoreAccount";
-import PlusMoreRecurrence from "../screens/PlusMoreRecurrence";
+import PlusMoreSubscriptions from "../screens/PlusMoreSubscriptions";
 import SearchScreen from "../screens/SearchScreen";
 import CardDetailsScreen from "../screens/CardDetailsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
@@ -17,7 +17,7 @@ import SplitSection from "../screens/SplitSection";
 import PlusMoreSplitSection from "../screens/PlusMoreSplitSection";
 import SplitMoneyScreen from "../screens/SplitMoneyScreen";
 import SplitDetailScreen from "../screens/SplitDetailScreen";
-import RecurrenceScreen from "../screens/RecurrenceScreen";
+import SubscriptionScreen from "../screens/SubscriptionScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import WelcomeScreen1 from "../screens/WelcomeScreen1";
 import NotificationsScreen from "../screens/NotificationsScreen";
@@ -71,12 +71,12 @@ const TabArr = [
     component: SplitMoneyScreen,
   },
   {
-    route: "RecurrenceScreen",
-    label: "Recur",
+    route: "SubscriptionScreen",
+    label: "Subscriptions",
     icon: "repeat",
     focused: "repeat",
     category: "Feather",
-    component: RecurrenceScreen,
+    component: SubscriptionScreen,
   },
 ];
 
@@ -223,8 +223,8 @@ const TabNavigator = () => (
       options={navOptions}
     />
     <Stack.Screen
-      name="PlusMoreRecurrence"
-      component={PlusMoreRecurrence}
+      name="PlusMoreSubscriptions"
+      component={PlusMoreSubscriptions}
       options={navOptions}
     />
     <Stack.Screen
