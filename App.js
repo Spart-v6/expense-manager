@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <PaperProvider theme={paperTheme}>
-      <AppStack />
+        <AppStack /> 
     </PaperProvider>
   );
 }
