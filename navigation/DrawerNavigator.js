@@ -1,6 +1,5 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import BottomTabNavigator from "./BottomTabNavigator";
 import SettingsScreen from "../screens/SettingsScreen";
 import CustomDrawer from "../components/CustomDrawer";
@@ -13,16 +12,10 @@ export default function DrawerNavigator() {
     <Drawer.Navigator
       initialRouteName="Main"
       screenOptions={({ route, navigation }) => {
-        let activeRouteName = getFocusedRouteNameFromRoute(route);
-
-        if (!activeRouteName && route.name === "Main") activeRouteName = "Home";
-        if (route.name === "Settings") {
-          activeRouteName = "Settings";
-        }
 
         return {
           header: () => (
-            <CustomHeader navigation={navigation} currentRoute={activeRouteName} />
+            <CustomHeader navigation={navigation}  />
           ),
           drawerStyle: { width: 240 }
         };

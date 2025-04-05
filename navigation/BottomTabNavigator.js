@@ -28,7 +28,7 @@ export default function BottomTabNavigator() {
 
   useEffect(() => {
     if (colorScheme === "dark")
-      changeNavBarColor(theme.dark.onTertiaryContainer);
+      changeNavBarColor(theme.dark.surface);
     else changeNavBarColor(theme.light.onTertiaryContainer);
   }, [colorScheme]);
 
@@ -42,7 +42,7 @@ export default function BottomTabNavigator() {
       hapticFeedbackEnabled
       labeled
       sidebarAdaptable
-      disablePageAnimations
+      tabBarStyle={{backgroundColor: theme.dark.surface}}
     >
       <Tab.Screen
         name="Home"

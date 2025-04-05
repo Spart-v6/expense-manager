@@ -11,7 +11,6 @@ const CardsScreen = ({ navigation }) => {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "red",
         }}
       >
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Cards Screen</Text>

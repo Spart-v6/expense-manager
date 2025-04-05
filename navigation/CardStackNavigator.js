@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();
 
 export default function CardStackNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: {backgroundColor: 'red'} }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="CardsScreen" component={CardsScreen} />
       <Stack.Screen name="PlusMoreCard" component={PlusMoreCard} />
     </Stack.Navigator>
