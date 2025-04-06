@@ -53,46 +53,58 @@ const CustomDrawer = (props) => {
       <View style={styles.drawerItemsContainer}>
         <DrawerItem
           label="Home"
-          icon={({ focused, color, size }) => (
-            <FontAwesome
-              name="home"
-              size={20}
-              color={theme.dark.onTertiary}
-              style={{ marginLeft: 10 }}
-            />
-          )}
-          labelStyle={[styles.drawerLabel, { color: theme.dark.onTertiary }]}
+          icon={({ color, size }) => {
+            const isFocused = state?.routeNames[state.index] === "Main";
+            return (
+              <FontAwesome
+                name="home"
+                size={20}
+                color={isFocused ? theme.dark.onTertiaryContainer : theme.dark.secondary}
+                style={{ marginLeft: 10 }}
+              />
+            );
+          }}
+          labelStyle={{
+            color:
+              state?.routeNames[state.index] === "Main"
+                ? theme.dark.onTertiaryContainer
+                : theme.dark.secondary,
+            marginLeft: 5,
+          }}
           onPress={() => props.navigation.navigate("Main")}
-          style={getDrawerItemStyle("Main")}
+          style={[
+            styles.drawerItem,
+            state?.routeNames[state.index] === "Main" && styles.activeItem,
+          ]}
         />
-        {/* <DrawerItem
-          label="Overview"
-          icon={({ focused, color, size }) => (
-            <MaterialIcons
-              name="insights"
-              size={20}
-              color={theme.dark.onTertiary}
-              style={{ marginLeft: 10 }}
-            />
-          )}
-          labelStyle={[styles.drawerLabel, { color: theme.dark.onTertiary }]}
-          onPress={() => props.navigation.navigate("Overview")}
-          style={getDrawerItemStyle("Overview")}
-        /> */}
+
         <DrawerItem
           label="Settings"
-          icon={({ focused, color, size }) => (
-            <Feather
-              name="settings"
-              size={20}
-              color={theme.dark.onTertiary}
-              style={{ marginLeft: 10 }}
-            />
-          )}
-          labelStyle={[styles.drawerLabel, { color: theme.dark.onTertiary }]}
+          icon={({ color, size }) => {
+            const isFocused = state?.routeNames[state.index] === "Settings";
+            return (
+              <Feather
+                name="settings"
+                size={20}
+                color={isFocused ? theme.dark.onTertiaryContainer : theme.dark.secondary}
+                style={{ marginLeft: 10 }}
+              />
+            );
+          }}
+          labelStyle={{
+            color:
+              state?.routeNames[state.index] === "Settings"
+                ? theme.dark.onTertiaryContainer
+                : theme.dark.secondary,
+            marginLeft: 5,
+          }}
           onPress={() => props.navigation.navigate("Settings")}
-          style={getDrawerItemStyle("Settings")}
+          style={[
+            styles.drawerItem,
+            state?.routeNames[state.index] === "Settings" && styles.activeItem,
+          ]}
         />
+
       </View>
 
       <Divider
@@ -104,7 +116,7 @@ const CustomDrawer = (props) => {
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.logoutButton}>
           <Text
-            style={[styles.logoutText, { color: theme.dark.onTertiary }]}
+            style={[styles.logoutText, { color: theme.dark.tertiary }]}
             fontWeight="bold"
           >
             v {appVersion}
@@ -148,10 +160,12 @@ const makeStyles = (theme) =>
     logoutText: {
       fontSize: 16,
     },
+    drawerItem: {
+      marginHorizontal: 10,
+      borderRadius: 25,
+    },
     activeItem: {
-      fontSize: 16,
-      color: "white",
-      backgroundColor: theme.dark.onTertiaryContainer,
+      backgroundColor: theme.dark.primaryContainer,
       borderRadius: 25,
       elevation: 1,
     },

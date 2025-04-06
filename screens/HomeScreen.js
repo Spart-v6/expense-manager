@@ -14,7 +14,6 @@ const HomeScreen = ({ navigation }) => {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: theme.dark.background,
         }}
       >
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Homes Screen</Text>
@@ -22,6 +21,8 @@ const HomeScreen = ({ navigation }) => {
           icon="plus"
           style={styles.fab}
           onPress={() => navigation.navigate("PlusMoreHome")}
+          variant="tertiary"
+          mode="flat"
         />
       </View>
     </SafeAreaView>

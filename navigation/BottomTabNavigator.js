@@ -1,19 +1,17 @@
 import React from "react";
 import { createNativeBottomTabNavigator } from "@bottom-tabs/react-navigation";
-// import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
 import HomeStackNavigator from "./HomeStackNavigator";
 import CardStackNavigator from "./CardStackNavigator";
-import PaymentsScreen from "../screens/PaymentsScreen";
-import SplitScreen from "../screens/SplitScreen";
 import  { useEffect } from "react";
 import {
   useColorScheme,
   NativeModules,
 } from "react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
+import SplitStackNavigator from "./SplitStackNavigator";
+import PaymentStackNavigator from "./PaymentStackNavigator";
 
 const Tab = createNativeBottomTabNavigator();
-// const Tab = createMaterialBottomTabNavigator();
 
 
 const { NavigationBarModule } = NativeModules;
@@ -28,8 +26,8 @@ export default function BottomTabNavigator() {
 
   useEffect(() => {
     if (colorScheme === "dark")
-      changeNavBarColor(theme.dark.surface);
-    else changeNavBarColor(theme.light.onTertiaryContainer);
+      changeNavBarColor(theme[colorScheme].surfaceDim);
+    else changeNavBarColor(theme[colorScheme].onTertiaryContainer);
   }, [colorScheme]);
 
 
@@ -42,7 +40,7 @@ export default function BottomTabNavigator() {
       hapticFeedbackEnabled
       labeled
       sidebarAdaptable
-      tabBarStyle={{backgroundColor: theme.dark.surface}}
+      tabBarStyle={{backgroundColor: theme.dark.surfaceDim}}
     >
       <Tab.Screen
         name="Home"
@@ -60,14 +58,14 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="Split"
-        component={SplitScreen}
+        component={SplitStackNavigator}
         options={{
           tabBarIcon: () => require("../assets/share.svg"),
         }}
       />
       <Tab.Screen
         name="Payments"
-        component={PaymentsScreen}
+        component={PaymentStackNavigator}
         options={{
           tabBarIcon: () => require("../assets/loop.svg"),
         }}

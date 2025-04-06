@@ -1,6 +1,6 @@
 import React from "react";
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import { Text, FAB } from "react-native-paper";
 
 const PaymentsScreen = ({ navigation }) => {
   return (
@@ -9,9 +9,25 @@ const PaymentsScreen = ({ navigation }) => {
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>
           Payments Screen
         </Text>
+        <FAB
+          icon="plus"
+          style={styles.fab}
+          onPress={() => navigation.navigate("PlusMorePayment")}
+          variant="tertiary"
+          mode="flat"
+        />
       </View>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+});
 
 export default PaymentsScreen;

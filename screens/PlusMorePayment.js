@@ -1,16 +1,15 @@
 import React from "react";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const PlusMoreCard = ({ navigation }) => {
+const PlusMorePayment = ({ navigation }) => {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-        Plus more Card Screen
+        Plus more Payemtnss  Screen
       </Text>
     </View>
   );
 };
 
-export default PlusMoreCard;
+export default PlusMorePayment;
