@@ -19,7 +19,7 @@ const AppStack = () => {
   };
 
   // States
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false); // make this true
 
   if (showWelcome) {
     return (
