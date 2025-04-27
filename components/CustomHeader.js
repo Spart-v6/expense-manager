@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Appbar, Searchbar, Text, TextInput } from "react-native-paper";
 import { DrawerActions, useNavigationState } from "@react-navigation/native";
 import { getDeepestRouteName } from "../helper/getRouteNames";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { goBack } from "../navigation/RootNavigation";
-
 
 const routeConfig = {
   "Home": ['HomeScreen', 'Home'],
@@ -14,14 +13,12 @@ const routeConfig = {
   "Payments": ['PaymentsScreen', 'Payments'],
   "Split": ['SplitScreen', 'Split'],
   "Search": ['SearchScreen', 'Search'],
-  // All 'goBack()' screen cases
-  "Add expenses": ['PlusMoreHome'], 
-  "Add cards": ['PlusMoreCard'], 
+  "Add expenses": ['PlusMoreHome'],
+  "Add cards": ['PlusMoreCard'],
 };
 
 const getRouteInfo = (currentRoute) => {
   for (const [key, values] of Object.entries(routeConfig)) {
-    
     if (values.includes(currentRoute)) {
       return key;
     }
@@ -36,26 +33,103 @@ const CustomHeader = ({ navigation }) => {
   const navState = useNavigationState((state) => state);
   const currentRoute = getDeepestRouteName(navState);
 
-  
   const routeKey = getRouteInfo(currentRoute);
-  const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Search'].includes(routeKey); // these screens to show menu
-  const showBack = ['Add expenses', 'Add cards', 'Search'].includes(routeKey);  // these screens to show back button (should match with key in routeConfig)
-  const showSearch = routeKey === 'Home'; // show search icon only on Home screen
-  
-  // States
-  const [searchQuery, setSearchQuery] = React.useState('');
 
-  // Effects
-  React.useEffect(() => {
+  const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Search'].includes(routeKey);
+  const showBack = ['Add expenses', 'Add cards', 'Search'].includes(routeKey);
+  const showSearch = routeKey === 'Home';
+  const showGreeting = routeKey === 'Home';
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [displayTitle, setDisplayTitle] = useState('Search expenses');
+  const [greetingAlreadyShown, setGreetingAlreadyShown] = useState(false);
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (showGreeting && !greetingAlreadyShown) {
+      // First time landing on Home
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.delay(1500),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {        
+        setDisplayTitle('Search expenses');
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }).start();
+        setGreetingAlreadyShown(true);
+      });
+    } else {
+      // Normal behavior after first time
+      setDisplayTitle('Search expenses');
+      opacity.setValue(1);
+    }
+  }, [routeKey]);
+  
+
+  useEffect(() => {
     if (routeKey !== "Search") {
       setSearchQuery('');
     }
   }, [routeKey]);
 
-  // Searching logic
   const searchExpense = () => {
-    
+    // your search logic
   };
+
+  const showAppBarContent = () => {
+    if (routeKey !== "Search" && !showGreeting) {
+      return (
+        <Appbar.Content title={routeKey} />
+    )}
+    if (showGreeting) {
+      return (
+      <Animated.View style={{ flex: 1, opacity, alignItems: "center"}}>
+        <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center"}}/>
+      </Animated.View>
+    )}
+    else {
+      return (
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: "center" }}>
+        <Appbar.Content
+          title={
+            <TextInput
+              label={
+                <Text style={{ color: theme.dark.primary }}>
+                  {"Search your expenses"}
+                </Text>
+              }
+              style={{ backgroundColor: "transparent" }}
+              textColor={theme.dark.primary}
+              selectionColor={theme.dark.primaryContainer}
+              value={searchQuery}
+              underlineColor={theme.dark.primary}
+              activeUnderlineColor={theme.dark.primary}
+              onChangeText={setSearchQuery}
+              autoFocus
+            />
+          }
+        />
+        <Appbar.Action
+          icon="close"
+          onPress={() => {
+            setSearchQuery("");
+          }}
+          color={theme.dark.primary}
+        />
+      </View>
+    )}
+  }
 
   return (
     <Appbar.Header style={{ backgroundColor: theme.dark.surfaceDim }}>
@@ -69,39 +143,7 @@ const CustomHeader = ({ navigation }) => {
         <Appbar.Action icon="keyboard-backspace" onPress={goBack} />
       )}
 
-      {routeKey !== "Search" ? (
-        <Appbar.Content title={routeKey} />
-      ) : (
-        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: "center" }}>
-          <Appbar.Content
-            title={
-              <TextInput
-                label={
-                  <Text style={{ color: theme.dark.primary }}>
-                    {"Search your expenses"}
-                  </Text>
-                }
-                style={{ backgroundColor: "transparent" }}
-                textColor={theme.dark.primary}
-                selectionColor={theme.dark.primaryContainer}
-                value={searchQuery}
-                underlineColor={theme.dark.primary}
-                activeUnderlineColor={theme.dark.primary}
-                onChangeText={setSearchQuery}
-                autoFocus
-              />
-            }
-          />
-          <Appbar.Action
-            icon="close"
-            onPress={() => {
-              setSearchQuery("");
-            }}
-            color={theme.dark.primary}
-          />
-        </View>
-      )}
-
+      {showAppBarContent()}
 
       {showSearch && ( // inside Main > Home > SearchScreen
         <Appbar.Action
