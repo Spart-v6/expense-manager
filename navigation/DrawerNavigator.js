@@ -2,6 +2,7 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import BottomTabNavigator from "./BottomTabNavigator";
 import SettingsScreen from "../screens/SettingsScreen";
+import ReportsScreen from "../screens/ReportsScreen";
 import CustomDrawer from "../components/CustomDrawer";
 import CustomHeader from "../components/CustomHeader";
 
@@ -24,6 +25,7 @@ export default function DrawerNavigator() {
     >
       <Drawer.Screen name="Main" component={BottomTabNavigator} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
+      <Drawer.Screen name="Reports" component={ReportsScreen} />
     </Drawer.Navigator>
   );
 }
