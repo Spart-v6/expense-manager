@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Appbar, Searchbar, Text, TextInput } from "react-native-paper";
 import { DrawerActions, useNavigationState } from "@react-navigation/native";
-import { getDeepestRouteName } from "../helper/getRouteNames";
+import { getDeepestRoute } from "../helper/getRouteNames";
 import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { goBack } from "../navigation/RootNavigation";
@@ -12,9 +12,12 @@ const routeConfig = {
   "Cards": ['CardsScreen', 'Cards'],
   "Payments": ['PaymentsScreen', 'Payments'],
   "Split": ['SplitScreen', 'Split'],
+  "Reports" : ['Reports'],
   "Search": ['SearchScreen', 'Search'],
   "Add expenses": ['PlusMoreHome'],
   "Add cards": ['PlusMoreCard'],
+  "Split screen": ['PlusMoreSplit'],
+  "Add payments": ['PlusMorePayment'],
 };
 
 const getRouteInfo = (currentRoute) => {
@@ -31,12 +34,19 @@ const CustomHeader = ({ navigation }) => {
   const { theme } = useMaterial3Theme();
 
   const navState = useNavigationState((state) => state);
-  const currentRoute = getDeepestRouteName(navState);
+  // const currentRoute = getDeepestRouteName(navState);
 
+  // const routeKey = getRouteInfo(currentRoute);
+
+  const { name: currentRoute, params } = getDeepestRoute(navState);
   const routeKey = getRouteInfo(currentRoute);
 
-  const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Search'].includes(routeKey);
-  const showBack = ['Add expenses', 'Add cards', 'Search'].includes(routeKey);
+  // For custom titles use this (for static use routeConfig and place ur screen names there)
+  const title = params?.title || routeKey;
+
+
+  const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Reports'].includes(routeKey);
+  const showBack = ['Add expenses', 'Add cards', 'Search', 'IndividualCardScreen', 'Split screen', 'Add payments'].includes(routeKey);
   const showSearch = routeKey === 'Home';
   const showGreeting = routeKey === 'Home';
 
@@ -84,13 +94,13 @@ const CustomHeader = ({ navigation }) => {
   }, [routeKey]);
 
   const searchExpense = () => {
-    // your search logic
+    // TODO: your search logic
   };
 
   const showAppBarContent = () => {
     if (routeKey !== "Search" && !showGreeting) {
       return (
-        <Appbar.Content title={routeKey} />
+        <Appbar.Content title={title} />
     )}
     if (showGreeting) {
       return (

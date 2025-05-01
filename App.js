@@ -31,6 +31,7 @@ export default function App() {
       // Any setup logic like fonts or initial data loading
       // await new Promise((resolve) => setTimeout(resolve, 2000));
       // DO NOT hide splash here yet!
+      // load data from asyc storage here
     };
     prepare();
   }, []);

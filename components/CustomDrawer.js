@@ -8,6 +8,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { Divider, Text } from "react-native-paper";
 import appConfig from "../app.json";
@@ -37,7 +38,6 @@ const ThriftyLogo = () => {
     </View>
   );
 };
-
 
 const CustomDrawer = (props) => {
   const colorScheme = useColorScheme();
@@ -84,7 +84,11 @@ const CustomDrawer = (props) => {
               <FontAwesome
                 name="home"
                 size={20}
-                color={isFocused ? theme.dark.onTertiaryContainer : theme.dark.secondary}
+                color={
+                  isFocused
+                    ? theme.dark.onTertiaryContainer
+                    : theme.dark.secondary
+                }
                 style={{ marginLeft: 10 }}
               />
             );
@@ -111,7 +115,11 @@ const CustomDrawer = (props) => {
               <Feather
                 name="settings"
                 size={20}
-                color={isFocused ? theme.dark.onTertiaryContainer : theme.dark.secondary}
+                color={
+                  isFocused
+                    ? theme.dark.onTertiaryContainer
+                    : theme.dark.secondary
+                }
                 style={{ marginLeft: 10 }}
               />
             );
@@ -129,7 +137,36 @@ const CustomDrawer = (props) => {
             state?.routeNames[state.index] === "Settings" && styles.activeItem,
           ]}
         />
-
+        <DrawerItem
+          label="Reports"
+          icon={({ color, size }) => {
+            const isFocused = state?.routeNames[state.index] === "Reports";
+            return (
+              <Ionicons
+                name="stats-chart"
+                size={20}
+                color={
+                  isFocused
+                    ? theme.dark.onTertiaryContainer
+                    : theme.dark.secondary
+                }
+                style={{ marginLeft: 10 }}
+              />
+            );
+          }}
+          labelStyle={{
+            color:
+              state?.routeNames[state.index] === "Reports"
+                ? theme.dark.onTertiaryContainer
+                : theme.dark.secondary,
+            marginLeft: 5,
+          }}
+          onPress={() => props.navigation.navigate("Reports")}
+          style={[
+            styles.drawerItem,
+            state?.routeNames[state.index] === "Reports" && styles.activeItem,
+          ]}
+        />
       </View>
 
       <Divider
@@ -163,7 +200,7 @@ const makeStyles = (theme) =>
     profileName: {
       fontSize: 24,
       fontWeight: "bold",
-      marginRight: 10, 
+      marginRight: 10,
     },
     profileImage: {
       width: 80,

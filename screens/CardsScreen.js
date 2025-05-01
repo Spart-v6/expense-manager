@@ -7,6 +7,7 @@ import {
   Dimensions,
   Image,
   useColorScheme,
+  Pressable
 } from "react-native";
 import {
   useSharedValue,
@@ -15,13 +16,14 @@ import {
   interpolate,
   Extrapolate,
 } from "react-native-reanimated";
-import Animated from "react-native-reanimated";
+import Animated, { withTiming, withSequence } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
+import { FAB } from "react-native-paper";
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height, width } = Dimensions.get("window");
-
 const CARD_HEIGHT = height * 0.25;
 const SPACING = 10;
 
@@ -84,7 +86,7 @@ const cardsData = [
   },
 ];
 
-const CardItem = ({ item, index, scrollY }) => {
+const CardItem = ({ item, index, scrollY, navigation }) => {
   const colorScheme = useColorScheme();
   const { theme, updateTheme, resetTheme } = useMaterial3Theme();
 
@@ -100,7 +102,9 @@ const CardItem = ({ item, index, scrollY }) => {
   // Randomly pick one direction
   const randomDirection = gradientDirections[Math.floor(Math.random() * gradientDirections.length)];
 
-  const colors = ["#4c669f", "#3b5998", "#192f6a"];
+  const colors = [theme[colorScheme].primary, theme[colorScheme].surface];
+
+  const animatedCardScale = useSharedValue(1);
 
   const inputRange = [
     (index - 1) * (CARD_HEIGHT + SPACING),
@@ -109,63 +113,85 @@ const CardItem = ({ item, index, scrollY }) => {
   ];
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
+    const scrollScale = interpolate(
       scrollY.value,
       inputRange,
       [0.8, 1, 0.8],
       Extrapolate.CLAMP
     );
-    const opacity = interpolate(
+    const scrollOpacity = interpolate(
       scrollY.value,
       inputRange,
       [0.5, 1, 0.5],
       Extrapolate.CLAMP
     );
     return {
-      transform: [{ scale }],
-      opacity,
+      transform: [{ scale: scrollScale * animatedCardScale.value }],
+      opacity: scrollOpacity,
     };
   });
 
+  const handlePress = () => {
+    // Bounce Animation
+    animatedCardScale.value = 0.98;
+    animatedCardScale.value = withSequence(
+      // withTiming(0.98, { duration: 100 }),
+      withTiming(1.03, { duration: 100 }),
+      withTiming(1, { duration: 100 })
+    );
+    navigation.navigate("IndividualCardScreen", {
+      title: "HDFC", // IMP: change this dynamically (this is required *)
+      cardName: "Visa",
+      last4: "3534",
+      expiry: "29/4",
+      transactions: [
+        { title: "Amazon Purchase", amount: 1200 },
+        { title: "Swiggy", amount: 400 },
+        { title: "Uber", amount: 260 },
+        { title: "Uber", amount: 260 },
+        { title: "Uber", amount: 260 },
+        { title: "Uber", amount: 260 },
+        { title: "Uber", amount: 260 },
+        { title: "Uber", amount: 260 },
+      ],
+    });
+  };
+
   return (
-    <Animated.View style={[styles.card, animatedStyle]}>
+    <AnimatedPressable onPress={handlePress} style={[styles.card, animatedStyle]}>
       <LinearGradient
-        colors={['#4c669f', '#3b5998', '#192f6a']}
+        colors={colors}
         start={randomDirection.start}
         end={randomDirection.end}
         style={[StyleSheet.absoluteFillObject, { borderRadius: 20 }]}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text style={styles.type}>{item.type}</Text>
-        <Ionicons name="wifi-outline" size={24} color="#fff" />
+        <Icon name="contactless-payment" size={24} color="#fff" />
       </View>
-      <Text style={styles.number}>•••• {item.cardNumber}</Text>
-      <View style={styles.cardFooter}>
-        <View>
-          <Text style={styles.label}>Card Holder</Text>
-          <Text style={styles.value}>{item.holderName}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>Expires</Text>
-          <Text style={styles.value}>{item.expiry}</Text>
-        </View>
-        <Image
-          source={{ uri: item.logo }}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+      <View>
+        <Text style={styles.number}>•••• {item.cardNumber}</Text>
+          <View style={styles.cardFooter}>
+            <View>
+              <Text style={styles.label}>Card Holder</Text>
+              <Text style={styles.value}>{item.holderName}</Text>
+            </View>
+            <View>
+              <Text style={styles.label}>Expires</Text>
+              <Text style={styles.value}>{item.expiry}</Text>
+            </View>
+            <Image
+              source={{ uri: item.logo }}
+              style={styles.logo}
+              resizeMode="contain"
+              />
+          </View>
       </View>
-    </Animated.View>
+  </AnimatedPressable>
   );
 };
 
-export default function CardsScreen() {
+export default function CardsScreen({ navigation }) {
   const scrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -185,7 +211,7 @@ export default function CardsScreen() {
         }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <CardItem item={item} index={index} scrollY={scrollY} />
+          <CardItem item={item} index={index} scrollY={scrollY} navigation={navigation} />
         )}
         ListHeaderComponent={() => (
           <View style={{ alignItems: 'center', marginBottom: 20, paddingBottom: 130 }}>
@@ -202,11 +228,24 @@ export default function CardsScreen() {
         scrollEventThrottle={16}
         decelerationRate="fast"
       />
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => navigation.navigate("PlusMoreCard")}
+        variant="tertiary"
+        mode="flat"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
   container: {
     flex: 1,
   },

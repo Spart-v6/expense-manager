@@ -1,17 +1,16 @@
-export function getDeepestRouteName(navState) {
+export function getDeepestRoute(navState) {
   if (!navState) return null;
 
   const route = navState.routes[navState.index];
 
-  // If there's nested state, go deeper
   if (route.state) {
-    return getDeepestRouteName(route.state);
+    return getDeepestRoute(route.state);
   }
 
-  // Handle edge case: App just loaded & we're in "Main" with no nested state yet
+  // Special case for initial Main load
   if (route.name === 'Main' && !route.state) {
-    return 'HomeScreen';
+    return { name: 'HomeScreen', params: null };
   }
 
-  return route.name;
+  return { name: route.name, params: route.params || null };
 }
