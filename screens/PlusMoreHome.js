@@ -4,10 +4,12 @@ import { StyleSheet, useColorScheme, Keyboard, TouchableWithoutFeedback } from "
 import { View } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useThemeContext } from "../context/ThemeContext";
 
 const PlusMoreHome = ({ navigation }) => {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+  const { theme, initialized, themeColor } = useThemeContext();   
   const styles = makeStyles(theme, colorScheme);
 
   // States

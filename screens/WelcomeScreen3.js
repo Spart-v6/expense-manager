@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { IconComponent } from "../components/IconPicker";
+import { useThemeContext } from "../context/ThemeContext";
 
 const currencyObj = [
   { id: 1, name: "Indian Rupee (INR)", iconName: "rupee-sign", iconType: "FontAwesome5" },
@@ -29,7 +30,8 @@ const currencyObj = [
 
 const WelcomeScreen3 = ({ navigation, onFinish }) => {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
   const windowWidth = Dimensions.get("window").width;
   const itemSize = (windowWidth - 60) / 2; // square box with padding
 

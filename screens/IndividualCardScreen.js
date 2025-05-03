@@ -11,12 +11,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Svg, { Circle } from "react-native-svg";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { Text } from "react-native-paper";
+import { useThemeContext } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 
 const IndividualCardScreen = ({ route }) => {
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+  // const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
   const styles = makeStyles(theme);
 
   const {

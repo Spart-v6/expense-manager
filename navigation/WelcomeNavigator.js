@@ -5,13 +5,15 @@ import WelcomeScreen2 from "../screens/WelcomeScreen2";
 import WelcomeScreen3 from "../screens/WelcomeScreen3";
 import { NativeModules, useColorScheme } from "react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
+import { useThemeContext } from "../context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 const { NavigationBarModule } = NativeModules;
 
 export default function WelcomeNavigator({ onFinish }) {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   const changeNavBarColor = (color) => {
     NavigationBarModule.setNavigationBarColor(color);

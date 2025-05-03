@@ -5,6 +5,7 @@ import { getDeepestRoute } from "../helper/getRouteNames";
 import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { goBack } from "../navigation/RootNavigation";
+import { useThemeContext } from "../context/ThemeContext";
 
 const routeConfig = {
   "Home": ['HomeScreen', 'Home'],
@@ -31,17 +32,15 @@ const getRouteInfo = (currentRoute) => {
 
 const CustomHeader = ({ navigation }) => {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   const navState = useNavigationState((state) => state);
-  // const currentRoute = getDeepestRouteName(navState);
-
-  // const routeKey = getRouteInfo(currentRoute);
 
   const { name: currentRoute, params } = getDeepestRoute(navState);
   const routeKey = getRouteInfo(currentRoute);
 
-  // For custom titles use this (for static use routeConfig and place ur screen names there)
+  // For custom titles use this below (for static use routeConfig and place ur screen names there)
   const title = params?.title || routeKey;
 
 
@@ -105,7 +104,9 @@ const CustomHeader = ({ navigation }) => {
     if (showGreeting) {
       return (
       <Animated.View style={{ flex: 1, opacity, alignItems: "center"}}>
-        <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center"}}/>
+        <TouchableOpacity onPress={() => navigation.navigate("Main", { screen: "Home", params: { screen: "SearchScreen", },})}>
+          <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center"}}/>
+        </TouchableOpacity>
       </Animated.View>
     )}
     else {

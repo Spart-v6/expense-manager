@@ -7,7 +7,7 @@ import {
   Dimensions,
   Image,
   useColorScheme,
-  Pressable
+  Pressable,
 } from "react-native";
 import {
   useSharedValue,
@@ -21,6 +21,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { FAB } from "react-native-paper";
+import { useThemeContext } from "../context/ThemeContext";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height, width } = Dimensions.get("window");
@@ -88,7 +89,8 @@ const cardsData = [
 
 const CardItem = ({ item, index, scrollY, navigation }) => {
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+  const { theme, initialized, themeColor } = useThemeContext();
+  const styles = makeStyles(theme);
 
   const gradientDirections = [
     { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } }, // Top-left ➔ Bottom-right
@@ -100,7 +102,8 @@ const CardItem = ({ item, index, scrollY, navigation }) => {
   ];
 
   // Randomly pick one direction
-  const randomDirection = gradientDirections[Math.floor(Math.random() * gradientDirections.length)];
+  const randomDirection =
+    gradientDirections[Math.floor(Math.random() * gradientDirections.length)];
 
   const colors = [theme[colorScheme].primary, theme[colorScheme].surface];
 
@@ -158,41 +161,53 @@ const CardItem = ({ item, index, scrollY, navigation }) => {
   };
 
   return (
-    <AnimatedPressable onPress={handlePress} style={[styles.card, animatedStyle]}>
+    <AnimatedPressable
+      onPress={handlePress}
+      style={[styles.card, animatedStyle]}
+    >
       <LinearGradient
         colors={colors}
         start={randomDirection.start}
         end={randomDirection.end}
         style={[StyleSheet.absoluteFillObject, { borderRadius: 20 }]}
       />
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Text style={styles.type}>{item.type}</Text>
         <Icon name="contactless-payment" size={24} color="#fff" />
       </View>
       <View>
         <Text style={styles.number}>•••• {item.cardNumber}</Text>
-          <View style={styles.cardFooter}>
-            <View>
-              <Text style={styles.label}>Card Holder</Text>
-              <Text style={styles.value}>{item.holderName}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>Expires</Text>
-              <Text style={styles.value}>{item.expiry}</Text>
-            </View>
-            <Image
-              source={{ uri: item.logo }}
-              style={styles.logo}
-              resizeMode="contain"
-              />
+        <View style={styles.cardFooter}>
+          <View>
+            <Text style={styles.label}>Card Holder</Text>
+            <Text style={styles.value}>{item.holderName}</Text>
           </View>
+          <View>
+            <Text style={styles.label}>Expires</Text>
+            <Text style={styles.value}>{item.expiry}</Text>
+          </View>
+          <Image
+            source={{ uri: item.logo }}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
       </View>
-  </AnimatedPressable>
+    </AnimatedPressable>
   );
 };
 
 export default function CardsScreen({ navigation }) {
   const scrollY = useSharedValue(0);
+  const colorScheme = useColorScheme();
+  const { theme, initialized, themeColor } = useThemeContext();
+  const styles = makeStyles(theme);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -211,15 +226,28 @@ export default function CardsScreen({ navigation }) {
         }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <CardItem item={item} index={index} scrollY={scrollY} navigation={navigation} />
+          <CardItem
+            item={item}
+            index={index}
+            scrollY={scrollY}
+            navigation={navigation}
+          />
         )}
         ListHeaderComponent={() => (
-          <View style={{ alignItems: 'center', marginBottom: 20, paddingBottom: 130 }}>
-            <Text style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              color: "#fff",
-            }}>
+          <View
+            style={{
+              alignItems: "center",
+              marginBottom: 20,
+              paddingBottom: 130,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: "bold",
+                color: "#fff",
+              }}
+            >
               Manage all your cards here
             </Text>
           </View>
@@ -234,65 +262,68 @@ export default function CardsScreen({ navigation }) {
         onPress={() => navigation.navigate("PlusMoreCard")}
         variant="tertiary"
         mode="flat"
+        color={theme.dark.onPrimaryContainer}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
-  container: {
-    flex: 1,
-  },
-  card: {
-    height: CARD_HEIGHT,
-    marginBottom: SPACING,
-    marginHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: "#1f1f1f",
-    padding: 20,
-    justifyContent: "space-between",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 10,
+const makeStyles = (theme) =>
+  StyleSheet.create({
+    fab: {
+      backgroundColor: theme.dark.primaryContainer,
+      position: "absolute",
+      margin: 16,
+      right: 0,
+      bottom: 0,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  type: {
-    color: "#ccc",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  number: {
-    color: "#fff",
-    fontSize: 22,
-    letterSpacing: 2,
-    marginVertical: 10,
-  },
-  cardFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  label: {
-    color: "#888",
-    fontSize: 12,
-  },
-  value: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  logo: {
-    width: 50,
-    height: 30,
-  },
-});
+    container: {
+      flex: 1,
+    },
+    card: {
+      height: CARD_HEIGHT,
+      marginBottom: SPACING,
+      marginHorizontal: 20,
+      borderRadius: 20,
+      backgroundColor: "#1f1f1f",
+      padding: 20,
+      justifyContent: "space-between",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 10,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 10,
+      elevation: 5,
+    },
+    type: {
+      color: "#ccc",
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    number: {
+      color: "#fff",
+      fontSize: 22,
+      letterSpacing: 2,
+      marginVertical: 10,
+    },
+    cardFooter: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    label: {
+      color: "#888",
+      fontSize: 12,
+    },
+    value: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    logo: {
+      width: 50,
+      height: 30,
+    },
+  });

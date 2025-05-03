@@ -14,10 +14,11 @@ import { Divider, Text } from "react-native-paper";
 import appConfig from "../app.json";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import Svg, { Path } from "react-native-svg";
+import { useThemeContext } from "../context/ThemeContext";
 
 const ThriftyLogo = () => {
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+  const { theme, initialized, themeColor } = useThemeContext();
 
   return (
     <View style={{ width: 40, height: 40 }}>
@@ -41,17 +42,12 @@ const ThriftyLogo = () => {
 
 const CustomDrawer = (props) => {
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+  const { theme, initialized, themeColor } = useThemeContext();
   const styles = makeStyles(theme);
 
   const appVersion = appConfig.expo.version;
 
   const { state, navigation } = props;
-
-  const getDrawerItemStyle = (routeName) => {
-    const currentRoute = state?.routeNames[state?.index];
-    return routeName === currentRoute ? styles.activeItem : styles.inactiveItem;
-  };
 
   return (
     <DrawerContentScrollView
@@ -70,7 +66,7 @@ const CustomDrawer = (props) => {
       </View>
 
       <Divider
-        style={{ backgroundColor: theme.dark.onTertiaryContainer }}
+        style={{ backgroundColor: theme.dark.onSecondaryContainer }}
         bold={true}
       />
 
@@ -170,7 +166,7 @@ const CustomDrawer = (props) => {
       </View>
 
       <Divider
-        style={{ backgroundColor: theme.dark.onTertiaryContainer }}
+        style={{ backgroundColor: theme.dark.onSecondaryContainer }}
         bold={true}
       />
 

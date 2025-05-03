@@ -1,8 +1,12 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, useColorScheme } from "react-native";
 import { Text, FAB } from "react-native-paper";
+import { useThemeContext } from "../context/ThemeContext";
 
 const PaymentsScreen = ({ navigation }) => {
+  const colorScheme = useColorScheme();
+  const { theme, initialized, themeColor } = useThemeContext();
+  const styles = makeStyles(theme);
   return (
     <>
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -15,19 +19,22 @@ const PaymentsScreen = ({ navigation }) => {
           onPress={() => navigation.navigate("PlusMorePayment")}
           variant="tertiary"
           mode="flat"
+          color={theme.dark.onPrimaryContainer}
         />
       </View>
     </>
   );
 };
 
-const styles = StyleSheet.create({
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
-});
+const makeStyles = (theme) =>
+  StyleSheet.create({
+    fab: {
+      backgroundColor: theme.dark.primaryContainer,
+      position: "absolute",
+      margin: 16,
+      right: 0,
+      bottom: 0,
+    },
+  });
 
 export default PaymentsScreen;

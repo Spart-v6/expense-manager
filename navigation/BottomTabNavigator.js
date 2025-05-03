@@ -7,9 +7,9 @@ import {
   useColorScheme,
   NativeModules,
 } from "react-native";
-import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import SplitStackNavigator from "./SplitStackNavigator";
 import PaymentStackNavigator from "./PaymentStackNavigator";
+import { useThemeContext } from "../context/ThemeContext";
 
 const Tab = createNativeBottomTabNavigator();
 
@@ -22,13 +22,13 @@ export default function BottomTabNavigator() {
   };
 
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   useEffect(() => {
     if (colorScheme === "dark")
       changeNavBarColor(theme[colorScheme].surfaceDim);
     else changeNavBarColor(theme[colorScheme].onTertiaryContainer);
-  }, [colorScheme]);
+  }, [colorScheme, theme]);
 
 
 
@@ -41,6 +41,8 @@ export default function BottomTabNavigator() {
       labeled
       sidebarAdaptable
       tabBarStyle={{backgroundColor: theme.dark.surfaceDim}}
+      activeIndicatorColor={theme.dark.onPrimary}
+      tabBarInactiveTintColor={theme.dark.secondaryContainer}
     >
       <Tab.Screen
         name="Home"

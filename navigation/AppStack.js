@@ -5,10 +5,12 @@ import DrawerNavigator from "./DrawerNavigator";
 import { navigationRef } from './RootNavigation';
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import WelcomeNavigator  from "../navigation/WelcomeNavigator";
+import { useThemeContext } from "../context/ThemeContext";
 
 const AppStack = () => {
+  console.log("AppStack rendered= ============== ");
     const colorScheme = useColorScheme();
-    const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   const MyTheme = {
     ...DefaultTheme,
@@ -31,12 +33,12 @@ const AppStack = () => {
 
 
   return (
-    <NavigationContainer ref={navigationRef}  theme={MyTheme}>
+    <>
       <StatusBar backgroundColor="transparent" translucent />
       <View style={{ flex: 1 }}>
         <DrawerNavigator />
       </View>
-    </NavigationContainer>
+    </>
   );
 };
 

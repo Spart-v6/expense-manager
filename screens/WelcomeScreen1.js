@@ -8,10 +8,12 @@ import { Text, Button } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import React from "react";
+import { useThemeContext } from "../context/ThemeContext";
 
 const WelcomeScreen1 = ({ navigation }) => {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme[colorScheme].background }}>

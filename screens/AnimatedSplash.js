@@ -12,10 +12,12 @@ import {
 import Svg, { Path } from "react-native-svg";
 import * as SplashScreen from "expo-splash-screen";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
+import { useThemeContext } from "../context/ThemeContext";
 
 const AnimatedSplash = ({ onAnimationDone }) => {
+  console.log("AnimatedSplash rendered =============== ");
   const colorScheme = useColorScheme();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
 
   const styles = makeStyles(theme, colorScheme);
   const { width: screenWidth } = Dimensions.get("screen");
@@ -58,7 +60,7 @@ const AnimatedSplash = ({ onAnimationDone }) => {
     });
 
     const handleFinish = async () => {
-      await SplashScreen.hideAsync();
+      // await SplashScreen.hideAsync();
       onAnimationDone();
     };
   }, []);

@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useThemeContext } from "../context/ThemeContext";
 
 const WelcomeScreen2 = ({ navigation }) => {
   const colorScheme = useColorScheme();
-  const { theme } = useMaterial3Theme();
+  // const { theme } = useMaterial3Theme();
+    const { theme, initialized, themeColor } = useThemeContext(); 
   const [name, setName] = useState("");
 
   return (
