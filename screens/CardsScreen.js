@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -22,75 +22,28 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { FAB } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format, parseISO } from 'date-fns';
+import { useFocusEffect } from "@react-navigation/native";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height, width } = Dimensions.get("window");
 const CARD_HEIGHT = height * 0.25;
 const SPACING = 10;
 
-const cardsData = [
-  {
-    id: "1",
-    type: "Credit Card",
-    cardNumber: "1234",
-    expiry: "12/25",
-    holderName: "John Doe",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-  {
-    id: "2",
-    type: "Debit Card",
-    cardNumber: "5678",
-    expiry: "09/24",
-    holderName: "Jane Smith",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
-  },
-  {
-    id: "3",
-    type: "Credit Card",
-    cardNumber: "9101",
-    expiry: "03/26",
-    holderName: "Alice Johnson",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-  {
-    id: "4",
-    type: "Credit Card",
-    cardNumber: "9101",
-    expiry: "03/26",
-    holderName: "Alice Johnson",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-  {
-    id: "5",
-    type: "Credit Card",
-    cardNumber: "9101",
-    expiry: "03/26",
-    holderName: "Alice Johnson",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-  {
-    id: "6",
-    type: "Credit Card",
-    cardNumber: "9101",
-    expiry: "03/26",
-    holderName: "Alice Johnson",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-  {
-    id: "7",
-    type: "Credit Card",
-    cardNumber: "9101",
-    expiry: "03/26",
-    holderName: "Alice Johnson",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-  },
-];
-
-const CardItem = ({ item, index, scrollY, navigation }) => {
+const CardItem = ({ item, index, scrollY, navigation, allTransactions }) => {
   const colorScheme = useColorScheme();
   const { theme, initialized, themeColor } = useThemeContext();
   const styles = makeStyles(theme);
+
+  const filteredTransactions = allTransactions.filter(
+    (transaction) => transaction.cardId === item.id
+  );
+
+  const simplifiedTransactions = filteredTransactions.map(tx => ({
+    title: tx.title,
+    amount: tx.amount,
+  }));
 
   const gradientDirections = [
     { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } }, // Top-left ➔ Bottom-right
@@ -146,19 +99,12 @@ const CardItem = ({ item, index, scrollY, navigation }) => {
       title: "HDFC", // IMP: change this dynamically (this is required *)
       cardName: "Visa",
       last4: "3534",
-      expiry: "29/4",
-      transactions: [
-        { title: "Amazon Purchase", amount: 1200 },
-        { title: "Swiggy", amount: 400 },
-        { title: "Uber", amount: 260 },
-        { title: "Uber", amount: 260 },
-        { title: "Uber", amount: 260 },
-        { title: "Uber", amount: 260 },
-        { title: "Uber", amount: 260 },
-        { title: "Uber", amount: 260 },
-      ],
+      expiryDate: "29/4",
+      transactions: simplifiedTransactions,
     });
   };
+
+  const formattedExpiryDate = format(parseISO(item.expiryDate), "MM-yy");
 
   return (
     <AnimatedPressable
@@ -182,21 +128,21 @@ const CardItem = ({ item, index, scrollY, navigation }) => {
         <Icon name="contactless-payment" size={24} color="#fff" />
       </View>
       <View>
-        <Text style={styles.number}>•••• {item.cardNumber}</Text>
+        <Text style={styles.number}>•••• {item.last4Digits}</Text>
         <View style={styles.cardFooter}>
           <View>
             <Text style={styles.label}>Card Holder</Text>
-            <Text style={styles.value}>{item.holderName}</Text>
+            <Text style={styles.value}>{item.name}</Text>
           </View>
           <View>
             <Text style={styles.label}>Expires</Text>
-            <Text style={styles.value}>{item.expiry}</Text>
+            <Text style={styles.value}>{formattedExpiryDate}</Text>
           </View>
-          <Image
+          {/* <Image
             source={{ uri: item.logo }}
             style={styles.logo}
             resizeMode="contain"
-          />
+          /> */}
         </View>
       </View>
     </AnimatedPressable>
@@ -209,6 +155,38 @@ export default function CardsScreen({ navigation }) {
   const { theme, initialized, themeColor } = useThemeContext();
   const styles = makeStyles(theme);
 
+  const [cards, setCards] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCards = async () => {
+        try {
+          const data = await AsyncStorage.getItem("cards");
+          const parsedData = data ? JSON.parse(data) : [];
+          setCards(parsedData);
+        } catch (error) {
+          console.error("Failed to load cards:", error);
+        }
+      };
+
+      fetchCards();
+    }, [])
+  );
+
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        const data = await AsyncStorage.getItem("transactions");
+        const parsed = data ? JSON.parse(data) : [];
+        setTransactions(parsed);
+      } catch (error) {
+        console.error("Failed to load transactions", error);
+      }
+    };
+    loadTransactions();
+  }, []);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
@@ -218,7 +196,7 @@ export default function CardsScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Animated.FlatList
-        data={cardsData}
+        data={cards}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
           paddingTop: height / 2 - CARD_HEIGHT * 1.5,
@@ -231,6 +209,7 @@ export default function CardsScreen({ navigation }) {
             index={index}
             scrollY={scrollY}
             navigation={navigation}
+            allTransactions={transactions}
           />
         )}
         ListHeaderComponent={() => (

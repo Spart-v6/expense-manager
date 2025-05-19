@@ -105,7 +105,7 @@ const CustomHeader = ({ navigation }) => {
       return (
       <Animated.View style={{ flex: 1, opacity, alignItems: "center"}}>
         <TouchableOpacity onPress={() => navigation.navigate("Main", { screen: "Home", params: { screen: "SearchScreen", },})}>
-          <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center"}}/>
+          <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center", opacity: 0.8}}/>
         </TouchableOpacity>
       </Animated.View>
     )}

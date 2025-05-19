@@ -3,62 +3,66 @@ import {
   StatusBar,
   View,
   useColorScheme,
+  Dimensions,
 } from "react-native";
-import { Text, Button } from "react-native-paper";
-import LottieView from "lottie-react-native";
-import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
+import { Button, Text } from "react-native-paper";
 import React from "react";
 import { useThemeContext } from "../context/ThemeContext";
 
 const WelcomeScreen1 = ({ navigation }) => {
   const colorScheme = useColorScheme();
-  // const { theme } = useMaterial3Theme();
-    const { theme, initialized, themeColor } = useThemeContext(); 
+  const { theme } = useThemeContext(); 
+  const screenWidth = Dimensions.get("window").width;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme[colorScheme].background }}>
       <StatusBar backgroundColor="transparent" translucent />
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 20, paddingTop: 80 }}>
-        <LottieView
-          source={require("../assets/wallet_1.json")}
-          autoPlay
-          loop={false}
-          style={{ width: 250, height: 250 }}
-        />
+      <View style={{ flex: 1, justifyContent: "center", marginTop: 100, paddingHorizontal: 30 }}>
+        {/* Headline Centered */}
+        <Text
+          style={{
+            fontWeight: "600",
+            color: theme[colorScheme].primary,
+            textAlign: "left",
+            fontSize: 69
+          }}
+        >
+          Track Your{"\n"}Spending{"\n"}Effortlessly
+        </Text>
 
-        <View style={{ justifyContent: "center", alignItems: "center", marginTop: 50 }}>
-          <Text variant="headlineLarge" style={{ fontWeight: "bold" }}>Thrifty</Text>
-          <Text
-            style={{
-              color: theme[colorScheme].onBackground,
-              marginHorizontal: 50,
-              marginTop: 20,
-              textAlign: "center",
-            }}
-            variant="titleMedium"
-          >
-            An expense manager to track spending, manage income, handle multiple accounts, splits, and recurring payments — all in one place.
-          </Text>
-          <Text variant="titleMedium" style={{ marginTop: 20 }}>
-            Let’s get started on your journey to smarter spending!
-          </Text>
-        </View>
+        {/* Small Gap */}
+        <View style={{ height: 20 }} />
+
+        {/* Subtext */}
+        <Text
+          style={{
+            color: theme[colorScheme].secondary,
+            opacity: 0.8,
+            textAlign: "left",
+            fontSize: 18
+          }}
+        >
+          An expense manager to track spending, manage income,{"\n"}handle multiple accounts, splits, and recurring payments — all in one place.
+        </Text>
       </View>
 
-      <View style={{
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        paddingHorizontal: 20,
-        paddingBottom: 20,
-        paddingRight: 30
-      }}>
+      {/* Full Width Button at Bottom */}
+      <View style={{ paddingHorizontal: 30, paddingBottom: 30 }}>
         <Button
           icon="chevron-right"
           mode="contained"
+          contentStyle={{ height: 50 }}
+          style={{
+            borderRadius: 30,
+            width: "100%",
+          }}
+          labelStyle={{
+            fontSize: 16,
+          }}
           onPress={() => navigation.navigate("Welcome2")}
         >
-          Next
+          Get Started
         </Button>
       </View>
     </SafeAreaView>

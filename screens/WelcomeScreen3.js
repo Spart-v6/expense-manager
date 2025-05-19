@@ -120,12 +120,19 @@ const WelcomeScreen3 = ({ navigation, onFinish }) => {
         style={{
           flexDirection: "row",
           justifyContent: "flex-end",
-          paddingHorizontal: 20,
-          paddingBottom: 20,
           paddingRight: 30,
+          paddingHorizontal: 30, 
+          paddingBottom: 30
         }}
       >
-        <Button mode="contained" onPress={handleContinue}>
+        <Button mode="contained" onPress={handleContinue} contentStyle={{ height: 50 }}
+          style={{
+            borderRadius: 30,
+            width: "100%",
+          }}
+          labelStyle={{
+            fontSize: 16,
+          }}>
           Let's go
         </Button>
       </View>

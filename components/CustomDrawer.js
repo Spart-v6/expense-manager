@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { Divider, Text } from "react-native-paper";
 import appConfig from "../app.json";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
@@ -77,7 +77,7 @@ const CustomDrawer = (props) => {
           icon={({ color, size }) => {
             const isFocused = state?.routeNames[state.index] === "Main";
             return (
-              <FontAwesome
+              <AntDesign
                 name="home"
                 size={20}
                 color={
@@ -226,11 +226,11 @@ const makeStyles = (theme) =>
     },
     drawerItem: {
       marginHorizontal: 10,
-      borderRadius: 25,
+      borderRadius: 10,
     },
     activeItem: {
       backgroundColor: theme.dark.primaryContainer,
-      borderRadius: 25,
+      borderRadius: 10,
       elevation: 1,
     },
     inactiveItem: {

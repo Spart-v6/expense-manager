@@ -15,7 +15,6 @@ import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { useThemeContext } from "../context/ThemeContext";
 
 const AnimatedSplash = ({ onAnimationDone }) => {
-  console.log("AnimatedSplash rendered =============== ");
   const colorScheme = useColorScheme();
     const { theme, initialized, themeColor } = useThemeContext(); 
 

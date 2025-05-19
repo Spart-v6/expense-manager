@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
+import { Text, Button } from 'react-native-paper';
 import * as LocalAuthentication from "expo-local-authentication";
 
 const AuthScreen = ({ onAuthSuccess }) => {
-    console.log("AuthScreen rendered ================");
   const [authFailed, setAuthFailed] = useState(false);
 
   useEffect(() => {
@@ -25,10 +25,13 @@ const AuthScreen = ({ onAuthSuccess }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Authentication Required</Text>
-      {authFailed && <Button title="Try Again" onPress={authenticate} />}
-    </View>
+    <>
+      <StatusBar backgroundColor="transparent" translucent />  
+      <View style={styles.container}>
+        <Text style={styles.title} variant="headlineSmall">Authentication Required</Text>
+        {authFailed && <Button mode="contained"  onPress={authenticate}> Try again </Button>}
+      </View>
+    </>
   );
 };
 
@@ -40,7 +43,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontSize: 20,
     marginBottom: 20,
   },
 });

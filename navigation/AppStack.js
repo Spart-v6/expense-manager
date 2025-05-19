@@ -8,9 +8,8 @@ import WelcomeNavigator  from "../navigation/WelcomeNavigator";
 import { useThemeContext } from "../context/ThemeContext";
 
 const AppStack = () => {
-  console.log("AppStack rendered= ============== ");
     const colorScheme = useColorScheme();
-    const { theme, initialized, themeColor } = useThemeContext(); 
+    const { theme, initialized, themeColor } = useThemeContext();     
 
   const MyTheme = {
     ...DefaultTheme,
@@ -25,9 +24,7 @@ const AppStack = () => {
 
   if (showWelcome) {
     return (
-      <NavigationContainer ref={navigationRef} theme={MyTheme}>
-        <WelcomeNavigator onFinish={() => setShowWelcome(false)} />
-      </NavigationContainer>
+      <WelcomeNavigator onFinish={() => setShowWelcome(false)} />
     )
   }
 

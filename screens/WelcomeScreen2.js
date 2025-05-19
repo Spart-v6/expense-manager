@@ -27,7 +27,7 @@ const WelcomeScreen2 = ({ navigation }) => {
           extraScrollHeight={20}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ flex: 1, justifyContent: "space-between", padding: 24 }}>
+          <View style={{ flex: 1, justifyContent: "space-between" }}>
             
             <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
               <LottieView
@@ -42,7 +42,7 @@ const WelcomeScreen2 = ({ navigation }) => {
                   ]}
               />
 
-              <View style={{ width: "100%" }}>
+              <View style={{ width: "100%", padding: 24 }}>
                 <Text variant="titleMedium" style={{ marginBottom: 8 }}>
                   Your good name
                 </Text>
@@ -68,19 +68,17 @@ const WelcomeScreen2 = ({ navigation }) => {
             </View>
 
             {/* Bottom Buttons */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <Button
-                icon="chevron-left"
-                mode="outlined"
-                onPress={() => navigation.goBack()}
-              >
-                Back
-              </Button>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 30, paddingBottom: 30 }}>
               <Button
                 icon="chevron-right"
                 mode="contained"
                 onPress={() => navigation.navigate("Welcome3")}
                 disabled={!name.trim()}
+                contentStyle={{ height: 50 }}
+                style={{width: "100%", borderRadius: 30}}
+                labelStyle={{
+                  fontSize: 16,
+                }}
               >
                 Next
               </Button>

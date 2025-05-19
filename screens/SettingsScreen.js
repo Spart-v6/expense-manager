@@ -5,18 +5,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
-  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useThemeContext } from "../context/ThemeContext";
-import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dialog, Portal, Text, Switch, Button } from 'react-native-paper';
 import { setBiometricPreference, getBiometricPreference } from '../helper/biometricStorage';
+import * as Notifications from 'expo-notifications';
+import { requestNotificationPermission } from '../helper/notifications';
 
 const SettingsScreen = ({ navigation }) => {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+  const [turnNotificationsOn, setTurnNotificationsOn] = useState(false);
 
   const { theme, setThemeColor, resetThemeColor } = useThemeContext();
   const systemColorScheme = useColorScheme();
@@ -24,6 +25,11 @@ const SettingsScreen = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
+
+  const [biometricFail, setBiometricFail] = React.useState(false);
+  const [biometricFailMsg, setBiometricFailMsg] = React.useState('');
+  const showBiometricFailDialog = () => setBiometricFail(true);
+  const hideBiometricFailDialog = () => setBiometricFail(false);
 
   const [lockAppEnabled, setLockAppEnabled] = React.useState(false);
   const [lockImmediately, setLockImmediately] = React.useState(false);
@@ -40,13 +46,13 @@ const SettingsScreen = ({ navigation }) => {
       value: isBiometricEnabled,
       onToggle: handleAuthToggle,
     },
-    // {
-    //   title: 'Notifications',
-    //   icon: 'notifications-outline',
-    //   toggle: true,
-    //   value: false,
-    //   onToggle: () => {},
-    // },
+    {
+      title: 'Notifications',
+      icon: 'notifications-outline',
+      toggleNotifications: true,
+      value: turnNotificationsOn,
+      onToggle: handleNotificationToggle,
+    },
     {
       title: 'Theme',
       icon: 'color-palette-outline',
@@ -61,7 +67,8 @@ const SettingsScreen = ({ navigation }) => {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware || !isEnrolled) {
-        Alert.alert('Biometric not available', 'Your device does not support biometrics.');
+        showBiometricFailDialog();
+        setBiometricFailMsg('Biometric not available - Your device does not support biometrics.');
         return;
       }
 
@@ -73,7 +80,8 @@ const SettingsScreen = ({ navigation }) => {
         setIsBiometricEnabled(true);
         await setBiometricPreference(true);
       } else {
-        Alert.alert('Failed', 'Biometric auth was not successful.');
+        showBiometricFailDialog();
+        setBiometricFailMsg('Failed - Biometric auth was not successful.');
       }
     } else {
       setIsBiometricEnabled(false);
@@ -81,6 +89,53 @@ const SettingsScreen = ({ navigation }) => {
     }
   };
 
+  const handleNotificationToggle = async (newValue) => {
+    setTurnNotificationsOn(newValue);
+    await AsyncStorage.setItem('notifications_enabled', JSON.stringify(newValue));
+  
+    if (newValue) {
+      const granted = await requestNotificationPermission();
+      if (granted) {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+  
+        const now = new Date();
+        const target = new Date();
+        target.setHours(20);
+        target.setMinutes(15);
+        target.setSeconds(0);
+  
+        if (now < target) {
+          // If it's before 20:15, schedule one-time for today
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Time Test',
+              body: 'Scheduled for today at 20:15',
+            },
+            trigger: {
+              date: target,
+            },
+          });
+        }
+  
+        // Also schedule repeat from tomorrow onward
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Time Test',
+            body: 'This will show every day at 20:15',
+          },
+          trigger: {
+            hour: 20,
+            minute: 15,
+            repeats: true,
+          },
+        });
+      }
+    } else {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+    }
+  };
+  
+  
 
   const renderItem = ({ item }) => (
     <View>
@@ -113,7 +168,16 @@ const SettingsScreen = ({ navigation }) => {
               thumbColor={item.value ? theme.dark.primary : '#ccc'}
               trackColor={{ true: '#999', false: '#555' }}
             />
-          ) : (
+          ) : item.toggleNotifications ? (
+            <Switch 
+              value={turnNotificationsOn}
+              onValueChange={handleNotificationToggle}
+              thumbColor={item.value ? theme.dark.primary : '#ccc'}
+              trackColor={{ true: '#999', false: '#555' }}
+            />
+          )
+          
+          : (
             <TouchableOpacity onPress={item.onPress} style={styles.arrowWrapper}>
               <Icon name="chevron-forward" size={20} color="#aaa" />
             </TouchableOpacity>
@@ -140,6 +204,9 @@ const SettingsScreen = ({ navigation }) => {
     (async () => {
       const enabled = await getBiometricPreference();
       setIsBiometricEnabled(enabled);
+
+      const notif = await AsyncStorage.getItem('notifications_enabled');
+      setTurnNotificationsOn(JSON.parse(notif) || false);
     })();
   }, []);
 
@@ -151,6 +218,18 @@ const SettingsScreen = ({ navigation }) => {
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      {/* <Button onPress={async () => {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: '🚀 It works!',
+            body: 'Local notification test',
+          },
+          trigger: { seconds: 5 }, // Trigger after 5 seconds
+        });
+      }}>
+        Test Notification
+      </Button> */}
+      {/* Themeing options */}
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>Choose theme</Dialog.Title>
@@ -183,6 +262,19 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={hideDialog}>Done</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      {/* When biometric fails */}
+      <Portal>
+        <Dialog visible={biometricFail} onDismiss={hideBiometricFailDialog}>
+          <Dialog.Title>Biometric Authentication Failed</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">{biometricFailMsg}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideBiometricFailDialog}>OK</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
