@@ -19,6 +19,7 @@ const routeConfig = {
   "Add cards": ['PlusMoreCard'],
   "Split screen": ['PlusMoreSplit'],
   "Add payments": ['PlusMorePayment'],
+  "Transactions": ['TransactionsList']
 };
 
 const getRouteInfo = (currentRoute) => {
@@ -45,7 +46,7 @@ const CustomHeader = ({ navigation }) => {
 
 
   const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Reports'].includes(routeKey);
-  const showBack = ['Add expenses', 'Add cards', 'Search', 'IndividualCardScreen', 'Split screen', 'Add payments'].includes(routeKey);
+  const showBack = ['Add expenses', 'Add cards', 'Search', 'IndividualCardScreen', 'Split screen', 'Add payments', 'Transactions'].includes(routeKey);
   const showSearch = routeKey === 'Home';
   const showGreeting = routeKey === 'Home';
 

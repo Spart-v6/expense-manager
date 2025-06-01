@@ -121,14 +121,14 @@ const PlusMoreHome = ({ navigation }) => {
                         {
                           backgroundColor: isSelected
                             ? theme[colorScheme].primary
-                            : theme[colorScheme].surfaceContainerHighest,
+                            : theme[colorScheme].surfaceDim,
                           elevation: isSelected ? 4 : 2,
                         },
                       ]}
                     >
-                      <Text style={styles.cardTitle}>{card.name}</Text>
-                      <Text style={styles.cardDetails}>**** {card.last4Digits}</Text>
-                      <Text style={styles.cardDetails}>{formattedExpiryDate}</Text>
+                      <Text style={[isSelected ? styles.cardTitle : {color: theme.dark.primary }]}>{card.name}</Text>
+                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>**** {card.last4Digits}</Text>
+                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{formattedExpiryDate}</Text>
                     </View>
                   </TouchableWithoutFeedback>
                 );
@@ -288,12 +288,12 @@ const makeStyles = (theme, colorScheme) =>
       minWidth: 160,
     },
     cardTitle: {
-      color: "#000",
+      color: theme[colorScheme].surface,
       fontWeight: "600",
       marginBottom: 4,
     },
     cardDetails: {
-      color: "#555",
+      color: theme[colorScheme].shadow,
     },
     dateButton: {
       borderColor: theme[colorScheme].outline,

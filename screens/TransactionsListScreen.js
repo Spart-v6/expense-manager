@@ -1,13 +1,12 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   SectionList,
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
 import { parseISO, format } from 'date-fns';
 import { useThemeContext } from '../context/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -52,6 +51,7 @@ const TransactionsListScreen = () => {
   const styles = makeStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState('Daily');
   const [transactions, setTransactions] = useState([]);
+  const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -61,6 +61,10 @@ const TransactionsListScreen = () => {
         const data = await AsyncStorage.getItem("transactions");
         const parsed = data ? JSON.parse(data) : [];
         setTransactions(parsed);
+
+        const cardsData = await AsyncStorage.getItem("cards");
+        const parsedCards = cardsData ? JSON.parse(cardsData) : [];
+        setCards(parsedCards);
       } catch (error) {
         console.error("Failed to load transactions", error);
       }
@@ -88,11 +92,14 @@ const TransactionsListScreen = () => {
           <TouchableOpacity key={f} onPress={() => {
             setSelectedFilter(f);
             setPage(1);
-          }}>
+          }}
+          style={[{padding: 10, backgroundColor: theme.dark.surfaceDim, borderRadius: 15, width: 100}, selectedFilter === f && {backgroundColor: theme.dark.primaryContainer}]}
+          >
             <Text
               style={[
                 styles.filterText,
                 selectedFilter === f && styles.activeFilterText,
+                {textAlign: "center"}
               ]}
             >
               {f}
@@ -111,21 +118,51 @@ const TransactionsListScreen = () => {
           }
         }}
         onEndReachedThreshold={0.5}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>{title}</Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
+        renderSectionHeader={({ section: { title } }) => { 
+          const parts = title.split(" - ");
+          
+          return (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderText}>{parts[0]}</Text>
+              <Text style={styles.sectionHeaderText}>{parts[1]}</Text>
+            </View>
+        )}}
+        renderItem={({ item }) => { 
+          const cardName = (cards.find(card => card.id === item.cardId) || {}).name || "Unknown";
+
+          return (
           <Card style={styles.card}>
-            <Card.Content>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.description}>{item.description}</Text>
-              <Text style={[styles.amount, { color: item.amount >= 0 ? 'green' : 'red' }]}>₹ {item.amount}</Text>
-              <Text style={styles.metadata}>{item.date} • {item.card}</Text>
+            <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center'}}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 25,
+                    backgroundColor: theme.dark.surfaceDisabled,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
+                    {format(parseISO(item.date), "do")}
+                  </Text>
+                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
+                    {format(parseISO(item.date), "MMM")}
+                  </Text>
+                </View>
+              </View>
+              <View style={{flexDirection: "column", flex: 0.7}}>
+                <Text style={styles.name}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+              </View>
+              <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+                <Text style={[styles.amount, { color: item.amount >= 0 ? 'green' : 'red' }]}>₹ {item.amount}</Text>
+                <Text style={styles.metadata}>{cardName}</Text>
+              </View>
             </Card.Content>
           </Card>
-        )}
+        )}}
         ListFooterComponent={() => (
           <View style={styles.pagination}>
             <Text style={styles.pageText}>Page {page}</Text>
@@ -148,17 +185,19 @@ const makeStyles = (theme) =>
       flexDirection: 'row',
       justifyContent: 'space-around',
       paddingVertical: 10,
-      backgroundColor: theme.dark ? theme.dark.surface : '#f0f0f0',
     },
     filterText: {
       fontSize: 14,
-      color: theme.dark ? theme.dark.onSurfaceVariant : '#555',
+      color: theme.dark.onSurfaceVariant,
     },
     activeFilterText: {
       fontWeight: 'bold',
-      color: theme.dark ? theme.dark.primary : '#007BFF',
+      color: theme.dark.primary
     },
     sectionHeader: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       paddingVertical: 8,
       paddingHorizontal: 16,
       backgroundColor: theme.dark ? theme.dark.surface : '#eaeaea',
@@ -168,8 +207,10 @@ const makeStyles = (theme) =>
       color: theme.dark ? theme.dark.onSurface : '#333',
     },
     card: {
-      marginHorizontal: 16,
-      marginVertical: 4,
+      backgroundColor: theme.dark.surfaceDim,
+      marginLeft: 16,
+      marginRight: 16,
+      marginTop: 16
     },
     name: {
       fontWeight: '600',

@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   useColorScheme,
+  ScrollView,
 } from "react-native";
 import {
   TextInput,
@@ -15,10 +16,14 @@ import {
   Text,
   HelperText,
   Snackbar,
+  Chip
 } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const cardNetworks = [ 'Mastercard', 'Visa', 'RuPay', 'Amex', 'Discover', 'UnionPay' ];
+const paymentTypes = [ 'GPay', 'PhonePe', 'Paytm', 'CRED', 'UPI', 'PayPal' ];
 
 const PlusMoreCard = ({ navigation }) => {
   const colorScheme = useColorScheme();
@@ -32,16 +37,35 @@ const PlusMoreCard = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [paymentType, setPaymentType] = useState(null);
+  const [cardNetwork, setCardNetwork] = useState(null);
   
+  const handlePressCardNetwork = type => {
+    setCardNetwork(type);
+  }
+  const handlePressPaymentType = type => {
+    setPaymentType(type);
+  }
 
   const handleSave = async () => {
     if (!cardName.trim()) {
-      setSnackbarMessage("All fields must be filled out.");
+      setSnackbarMessage("All fields must be filled out");
       setSnackbarVisible(true);
       return;
     }
     if (cardNumber.length !== 4) {
       setSnackbarMessage("Please enter exactly 4 digits for card number");
+      setSnackbarVisible(true);
+      return;
+    }
+    if (cardNetwork === null) {
+      setSnackbarMessage("Please select a card network");
+      setSnackbarVisible(true);
+      return;
+    }
+    if (paymentType === null) {
+      setSnackbarMessage("Please select a payment type");
       setSnackbarVisible(true);
       return;
     }
@@ -51,6 +75,8 @@ const PlusMoreCard = ({ navigation }) => {
       name: cardName,
       type: cardType,
       last4Digits: cardNumber,
+      cardNetwork,
+      paymentType,
       expiryDate: expiryDate.toISOString(),
     };
 
@@ -97,13 +123,6 @@ const PlusMoreCard = ({ navigation }) => {
             mode="outlined"
             style={styles.input}
           />
-          {/* <TextInput
-            label="Card Type"
-            value={cardName}
-            onChangeText={setCardName}
-            mode="outlined"
-            style={styles.input}
-          /> */}
 
           <TextInput
             label="Last 4 Digits of Card"
@@ -112,11 +131,35 @@ const PlusMoreCard = ({ navigation }) => {
             keyboardType="number-pad"
             maxLength={4}
             mode="outlined"
-            style={styles.input}
           />
           <HelperText type="error" visible={hasCardNumberError}>
             Must be exactly 4 digits
           </HelperText>
+        <View style={{ flexDirection: "column", marginVertical: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
+            Card Network
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {cardNetworks.map((type, index) => (
+                <Chip mode={type === cardNetwork ? "flat" : "outlined"} key={index} onPress={() => handlePressCardNetwork(type)}>{type}</Chip>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={{ flexDirection: "column", marginVertical: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
+            Payment App
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {paymentTypes.map((type, index) => (
+                <Chip mode={type === paymentType ? "flat" : "outlined"} key={index} onPress={() => handlePressPaymentType(type)}>{type}</Chip>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
 
           <Text variant="titleMedium" style={styles.label}>
             Card Type
@@ -131,7 +174,7 @@ const PlusMoreCard = ({ navigation }) => {
             </View>
           </RadioButton.Group>
 
-          <Text variant="titleMedium" style={styles.label}>
+          <Text variant="titleMedium" style={[styles.label, {paddingBottom: 10, marginTop: 0}]}>
             Expiry Date
           </Text>
           <Button

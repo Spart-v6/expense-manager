@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
-  Text,
   FlatList,
   StyleSheet,
   Dimensions,
   Image,
   useColorScheme,
   Pressable,
+  Vibration
 } from "react-native";
 import {
   useSharedValue,
@@ -19,8 +19,8 @@ import {
 import Animated, { withTiming, withSequence } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
-import { FAB } from "react-native-paper";
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import { FAB, Dialog, Portal, Button, Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, parseISO } from 'date-fns';
@@ -31,7 +31,7 @@ const { height, width } = Dimensions.get("window");
 const CARD_HEIGHT = height * 0.25;
 const SPACING = 10;
 
-const CardItem = ({ item, index, scrollY, navigation, allTransactions }) => {
+const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPressCard }) => {
   const colorScheme = useColorScheme();
   const { theme, initialized, themeColor } = useThemeContext();
   const styles = makeStyles(theme);
@@ -94,15 +94,17 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions }) => {
       // withTiming(0.98, { duration: 100 }),
       withTiming(1.03, { duration: 100 }),
       withTiming(1, { duration: 100 })
-    );
-    navigation.navigate("IndividualCardScreen", {
-      title: "HDFC", // IMP: change this dynamically (this is required *)
-      cardName: "Visa",
-      last4: "3534",
-      expiryDate: "29/4",
+    );    
+    navigation.push("IndividualCardScreen", {
+      title: item.name, // IMP: change this dynamically (this is required *)
+      cardName: item.cardNetwork,
+      last4: item.last4Digits,
+      expiryDate: item.expiryDate,
       transactions: simplifiedTransactions,
     });
   };
+
+
 
   const formattedExpiryDate = format(parseISO(item.expiryDate), "MM-yy");
 
@@ -110,6 +112,10 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions }) => {
     <AnimatedPressable
       onPress={handlePress}
       style={[styles.card, animatedStyle]}
+      onLongPress={() => {
+        Vibration.vibrate(10);
+        onLongPressCard();
+      }}
     >
       <LinearGradient
         colors={colors}
@@ -155,43 +161,73 @@ export default function CardsScreen({ navigation }) {
   const { theme, initialized, themeColor } = useThemeContext();
   const styles = makeStyles(theme);
 
+  const [visible, setVisible] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(null);
+
   const [cards, setCards] = useState([]);
   const [transactions, setTransactions] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchCards = async () => {
+      const fetchData = async () => {
         try {
-          const data = await AsyncStorage.getItem("cards");
-          const parsedData = data ? JSON.parse(data) : [];
-          setCards(parsedData);
+          const cardsData = await AsyncStorage.getItem("cards");
+          const parsedCards = cardsData ? JSON.parse(cardsData) : [];
+          setCards(parsedCards);
+
+          const txData = await AsyncStorage.getItem("transactions");
+          const parsedTx = txData ? JSON.parse(txData) : [];
+          setTransactions(parsedTx);
         } catch (error) {
-          console.error("Failed to load cards:", error);
+          console.error("Failed to load data:", error);
         }
       };
 
-      fetchCards();
+      fetchData();
     }, [])
   );
-
-  useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        const data = await AsyncStorage.getItem("transactions");
-        const parsed = data ? JSON.parse(data) : [];
-        setTransactions(parsed);
-      } catch (error) {
-        console.error("Failed to load transactions", error);
-      }
-    };
-    loadTransactions();
-  }, []);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
     },
   });
+
+  const showDialog = (cardId) => {
+    setSelectedCardId(cardId);
+    setVisible(true);
+  };
+
+  const hideDialog = () => {
+    setVisible(false);
+    setSelectedCardId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (!selectedCardId) return;
+
+      // Delete card
+      const storedCards = await AsyncStorage.getItem("cards");
+      const parsedCards = storedCards ? JSON.parse(storedCards) : [];
+      const updatedCards = parsedCards.filter(card => card.id !== selectedCardId);
+      await AsyncStorage.setItem("cards", JSON.stringify(updatedCards));
+      setCards(updatedCards);
+
+      // Delete associated transactions
+      const storedTx = await AsyncStorage.getItem("transactions");
+      const parsedTx = storedTx ? JSON.parse(storedTx) : [];
+      const updatedTx = parsedTx.filter(tx => tx.cardId !== selectedCardId);
+      await AsyncStorage.setItem("transactions", JSON.stringify(updatedTx));
+      setTransactions(updatedTx);
+
+      hideDialog();
+    } catch (error) {
+      console.error("Error deleting card:", error);
+    }
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -210,6 +246,7 @@ export default function CardsScreen({ navigation }) {
             scrollY={scrollY}
             navigation={navigation}
             allTransactions={transactions}
+            onLongPressCard={() => showDialog(item.id)}
           />
         )}
         ListHeaderComponent={() => (
@@ -243,6 +280,18 @@ export default function CardsScreen({ navigation }) {
         mode="flat"
         color={theme.dark.onPrimaryContainer}
       />
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>Delete Card?</Dialog.Title>
+          <Dialog.Content>
+            <Text>This will delete the card and its transactions. Are you sure?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Cancel</Button>
+            <Button onPress={handleConfirmDelete} textColor="red">Delete</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 }

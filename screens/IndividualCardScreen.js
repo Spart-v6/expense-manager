@@ -12,6 +12,8 @@ import Svg, { Circle } from "react-native-svg";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
+import { parseISO, format } from 'date-fns';
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -24,9 +26,27 @@ const IndividualCardScreen = ({ route }) => {
   const {
     cardName = "Visa",
     last4 = "3534",
-    expiry = "29/4",
+    expiryDate = "29/4",
     transactions = [],
   } = route.params;
+
+  const [name, setName] = React.useState(cardName);
+  const [last4Digits, setLast4Digits] = React.useState(last4);
+  const [expiry, setExpiry] = React.useState(expiryDate);
+  const [txns, setTxns] = React.useState(transactions);
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      if (route.params) {
+        setName(route.params.cardName || "Visa");
+        setLast4Digits(route.params.last4 || "3534");
+        setExpiry(route.params.expiryDate || "29/4");
+        setTxns(route.params.transactions || []);
+      }
+    }, [route.params])
+  );
+
 
   return (
     <View style={styles.container}>
@@ -57,14 +77,14 @@ const IndividualCardScreen = ({ route }) => {
 
             <View style={styles.topContent}>
               <Icon name="contactless-payment" size={24} color="white" />
-              <Text style={styles.visaText}>{cardName}</Text>
+              <Text style={styles.visaText}>{name}</Text>
             </View>
           </View>
 
           {/* Bottom Section */}
           <View style={styles.bottomSection}>
-            <Text style={styles.cardNumber}>•••• {last4}</Text>
-            <Text style={styles.expiry}>{expiry}</Text>
+            <Text style={styles.cardNumber}>•••• {last4Digits}</Text>
+            <Text style={styles.expiry}>{format(parseISO(expiry), "MM/yy")}</Text>
           </View>
         </View>
       </View>
@@ -72,7 +92,7 @@ const IndividualCardScreen = ({ route }) => {
       {/* Transactions */}
       <Text style={{ margin: 20 }} variant="bodyLarge">Transactions</Text>
       <FlatList
-        data={transactions}
+        data={txns}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.transactions}
         renderItem={({ item }) => (

@@ -6,9 +6,10 @@ import {
   useColorScheme,
   FlatList,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Vibration
 } from "react-native";
-import { Text, Button, Card, FAB, Avatar, TouchableRipple } from "react-native-paper";
+import { Dialog, Portal, Button, Text, Card, FAB, Avatar, TouchableRipple } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeContext } from "../context/ThemeContext";
 import IconComponent from "../components/IconComponent";
@@ -38,6 +39,9 @@ const HomeScreen = ({ navigation }) => {
   const { theme } = useThemeContext();
   const styles = makeStyles(theme);
 
+  const [visible, setVisible] = useState(false);
+  const [selectedTxn, setSelectedTxn] = useState(null);
+
   const [transactions, setTransactions] = useState([]);
   useFocusEffect(
     useCallback(() => {
@@ -54,8 +58,32 @@ const HomeScreen = ({ navigation }) => {
     }, [])
   );
 
-  // console.log(transactions);
+  const showDialog = txn => {
+    setSelectedTxn(txn);
+    setVisible(true);
+  };
+
+  const hideDialog = () => {
+    setVisible(false);
+    setSelectedTxn(null);
+  };
   
+  const handleConfirmDelete = async () => {
+    try {
+      if (!selectedTxn) return;
+
+      const storedTx = await AsyncStorage.getItem("transactions");
+      const parsedTx = storedTx ? JSON.parse(storedTx) : [];
+      const updatedTx = parsedTx.filter(tx => tx.id !== selectedTxn);
+      await AsyncStorage.setItem("transactions", JSON.stringify(updatedTx));
+      setTransactions(updatedTx);
+
+      hideDialog();
+    } catch (error) {
+      console.error("Error deleting card:", error);
+    }
+  };
+
   
 
   // fidning height dynamically for scrolling the transactions list
@@ -69,7 +97,7 @@ const HomeScreen = ({ navigation }) => {
       {...props}
       icon="trending-down"
       size={36}
-      style={{ backgroundColor: "#411212", marginRight: 8 }}
+      style={{ backgroundColor: theme.dark.surface, marginRight: 8 }}
       color="#e62e44"
     />
   );
@@ -79,12 +107,12 @@ const HomeScreen = ({ navigation }) => {
       {...props}
       icon="trending-up"
       size={36}
-      style={{ backgroundColor: "#114211", marginRight: 8 }}
+      style={{ backgroundColor: theme.dark.surface, marginRight: 8 }}
       color="#1cba1c"
     />
   );
 
-  const TransactionItem = ({ item }) => {
+  const TransactionItem = ({ item, onLongPressTxn }) => {
     const iconStyle = iconStyles[item.iconName] || { backgroundColor: "#222", color: "#fff", };
     const date = new Date(item.date);
     let formattedDate;
@@ -98,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
 
 
     return (
-      <View style={styles.transactionCard}>
+      <TouchableOpacity style={styles.transactionCard}  onLongPress={() => {Vibration.vibrate(10);onLongPressTxn();}}>
         <IconComponent
           iconSet={"MaterialIcons"}
           iconName={"money-off"}
@@ -119,7 +147,7 @@ const HomeScreen = ({ navigation }) => {
           </Text>
           <Text style={styles.paymentType}>Cash</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -127,7 +155,7 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <View onLayout={(e) => setTopContentHeight(e.nativeEvent.layout.height)}>
        
-        <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+        <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20, paddingLeft: 16, paddingRight: 16 }}>
           <Card style={styles.welcomeCard}>
             <Card.Content>
               <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
@@ -143,7 +171,7 @@ const HomeScreen = ({ navigation }) => {
           </Card>
         </View>
 
-        <View style={{ padding: 16 }}>
+        <View style={{ paddingLeft: 16, paddingRight: 16, marginTop: 16 }}>
           <View style={styles.row}>
             <Card style={[styles.statCard, styles.expenseCard]}>
               <Card.Title title="Expenses" right={LeftContentExpense} />
@@ -166,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
     </View>
 
 
-    <View style={{ height: remainingHeight, paddingHorizontal: 16 }}>
+    <View style={{ height: remainingHeight, paddingHorizontal: 16, }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
         <Text variant="titleMedium" style={{padding: 8}}>Transactions</Text>
         <TouchableRipple onPress={() => navigation.navigate("TransactionsList")} style={{ padding: 8, borderRadius: 8 }}>
@@ -178,7 +206,7 @@ const HomeScreen = ({ navigation }) => {
         <FlatList
           data={transactions.slice(0, 10)}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TransactionItem item={item} />}
+          renderItem={({ item }) => <TransactionItem item={item} onLongPressTxn={() => showDialog(item.id)}/>}
           showsVerticalScrollIndicator={true}
           ListFooterComponent={<View style={{ marginBottom: 200 }} />}
         />
@@ -194,6 +222,18 @@ const HomeScreen = ({ navigation }) => {
         mode="flat"
         color={theme.dark.onPrimaryContainer}
       />
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>Delete transaction?</Dialog.Title>
+          <Dialog.Content>
+            <Text>This will delete the selected transaction. Are you sure?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Cancel</Button>
+            <Button onPress={handleConfirmDelete} textColor="red">Delete</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
 
   );
@@ -215,9 +255,9 @@ const makeStyles = (theme) =>
     },
     welcomeCard: {
       marginBottom: 5,
-      backgroundColor: "transparent",
+      backgroundColor: theme.dark.primaryContainer,
       borderColor: "transparent",
-      elevation: 0,
+      elevation: 5,
       shadowColor: "transparent",
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0,
@@ -247,10 +287,10 @@ const makeStyles = (theme) =>
       flex: 1,
     },
     expenseCard: {
-      backgroundColor: theme.dark.errorContainer,
+      backgroundColor: theme.dark.onSecondary,
     },
     incomeCard: {
-      backgroundColor: "#257b25",
+      backgroundColor: theme.dark.onSecondary,
     },
     fab: {
       backgroundColor: theme.dark.primaryContainer,
