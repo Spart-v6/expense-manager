@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   useColorScheme,
@@ -12,15 +12,14 @@ import { Button, Text, TextInput, Snackbar } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, parseISO } from 'date-fns';
-import IconComponent from "../components/IconComponent";
-
+import { useFocusEffect } from "@react-navigation/native";
 
 const PlusMoreHome = ({ navigation }) => {
   const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
   const styles = makeStyles(theme, colorScheme);
 
-  const [btnName, setBtnName] = useState("Add Expense");
+  const [btnName, setBtnName] = useState("Add ");
   const [selectedButton, setSelectedButton] = useState("Income");
   const [expenseTitle, setExpenseTitle] = useState("");
   const [amountTitle, setAmountTitle] = useState("");
@@ -34,19 +33,20 @@ const PlusMoreHome = ({ navigation }) => {
 
   const [cardsData, setCardsData] = useState([]);
 
-  useEffect(() => {
-    const loadCards = async () => {
-      try {
-        const data = await AsyncStorage.getItem("cards");
-        const parsedData = data ? JSON.parse(data) : [];
-        setCardsData(parsedData);
-      } catch (error) {
-        console.error("Failed to load cards", error);
-      }
-    };
-    loadCards();
-  },[]);
-  
+  useFocusEffect(
+    useCallback(() => {
+      const loadCards = async () => {
+        try {
+          const data = await AsyncStorage.getItem("cards");
+          const parsedData = data ? JSON.parse(data) : [];
+          setCardsData(parsedData);
+        } catch (error) {
+          console.error("Failed to load cards", error);
+        }
+      };
+      loadCards();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
@@ -110,7 +110,15 @@ const PlusMoreHome = ({ navigation }) => {
             {/* Card Selector */}
             <Text style={styles.sectionTitle}>Select Card</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cardScroll}>
-              {cardsData.map((card) => {
+              {cardsData.length <= 0 ? (
+                  <View>
+                    <Text style={{ color: theme[colorScheme].onSurface, textAlign: 'center' }}>
+                      No cards available. Please add a card first.
+                    </Text>
+
+                  </View>
+              ) : 
+              cardsData.map((card) => {
                 const isSelected = selectedCardId === card.id;
                 const formattedExpiryDate = format(parseISO(card.expiryDate), "MM-yy");
                 return (
@@ -165,7 +173,7 @@ const PlusMoreHome = ({ navigation }) => {
             <Button
               onPress={async () => {
                 // Validation
-                if (!expenseTitle.trim() || !amountTitle.trim() || !descriptionTitle.trim() || !selectedCardId) {
+                if (!expenseTitle.trim() || !amountTitle.trim() || !selectedCardId) {
                   setSnackbarMessage("All fields must be filled out.");
                   setSnackbarVisible(true);
                   return;
@@ -193,7 +201,7 @@ const PlusMoreHome = ({ navigation }) => {
                   const updatedData = [newTransaction, ...parsedData];
                   await AsyncStorage.setItem("transactions", JSON.stringify(updatedData));
 
-                  // Optional: Clear form fields after saving
+                  // Optional: Clear form fields after saving (why optional? coz u are navigating back anyways so new screen will be opened next time with empty values)
                   setExpenseTitle("");
                   setAmountTitle("");
                   setDescriptionTitle("");
@@ -202,9 +210,33 @@ const PlusMoreHome = ({ navigation }) => {
 
                   setSnackbarMessage("Transaction added successfully.");
                   setSnackbarVisible(true);
+
+
+                  // Adding/Keeping track of monthly summary expenses/income
+                  const monthlySummaryData = await AsyncStorage.getItem("monthlySummary");
+                  let summary = monthlySummaryData ? JSON.parse(monthlySummaryData) : {};
+
+                  const dateObj = new Date(newTransaction.date);
+                  const year = dateObj.getFullYear();
+                  const month = dateObj.getMonth(); // 0 = Jan, 7 = Aug
+
+                  // If year not in summary  initialize it
+                  if (!summary[year]) {
+                    summary[year] = Array(12).fill(null).map(() => ({ income: 0, expense: 0 }));
+                  }
+
+                  // Update corresponding month
+                  if (newTransaction.type === "Income") {
+                    summary[year][month].income += newTransaction.amount;
+                  } else {
+                    summary[year][month].expense += newTransaction.amount;
+                  }                 
+
+                  await AsyncStorage.setItem("monthlySummary", JSON.stringify(summary));
+
                   navigation.goBack();
                 } catch (error) {
-                  setSnackbarMessage("Failed to save transaction.");
+                  setSnackbarMessage("Failed to save transaction / monthly summary.");
                   setSnackbarVisible(true);
                   console.error("AsyncStorage Error: ", error);
                 }
@@ -212,7 +244,7 @@ const PlusMoreHome = ({ navigation }) => {
               mode="contained"
               style={styles.submitButton}
             >
-              <Text style={styles.submitButtonText}>{btnName}</Text>
+              <Text style={styles.submitButtonText}>{btnName + selectedButton}</Text>
             </Button>
           </View>
         </View>

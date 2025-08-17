@@ -1,11 +1,16 @@
 import React from "react";
-import { View, StyleSheet, useColorScheme, FlatList } from "react-native";
+import { View, StyleSheet, useColorScheme, FlatList, Dimensions } from "react-native";
 import { Text, FAB, Card, Avatar } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Portal, Dialog, Button } from "react-native-paper";
 
 const SplitScreen = ({ navigation }) => {
+  const screenHeight = Dimensions.get("window").height;
+  const cardHeight = 300; 
+  const initialSpacerHeight = screenHeight / 2 - cardHeight / 2;
+
+
   const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
   const styles = makeStyles(theme, colorScheme);
@@ -95,6 +100,22 @@ const SplitScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           renderItem={renderGroup}
           contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            <View style={{ 
+              height: initialSpacerHeight, 
+              justifyContent: "center", 
+              alignItems: "center" 
+            }}>
+              <Text style={{ 
+                fontSize: 18, 
+                fontWeight: "600", 
+                opacity: 0.6,
+                textAlign: "center"
+              }}>
+                Manage your groups here
+              </Text>
+            </View>
+          }
         />
       )}
 

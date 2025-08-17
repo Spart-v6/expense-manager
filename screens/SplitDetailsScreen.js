@@ -11,6 +11,7 @@ import {
   Card,
   Button,
 } from "react-native-paper";
+import Icon from "react-native-vector-icons/Octicons";
 import { useThemeContext } from "../context/ThemeContext";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -69,7 +70,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
       loadSplits();
     }, [])
   );
-
+  // TODO: Need to add deletion of a split logic 
 
   const ShowAllMembers = () => {
     return (
@@ -113,14 +114,22 @@ const SplitDetailsScreen = ({ route, navigation }) => {
           <Text style={{ fontWeight: "bold", fontSize: 16 }} numberOfLines={1} ellipsizeMode="tail" >
             ₹ {split.amount.toFixed(2)}
           </Text>
-          <Text style={{ color: split.paidBy === username ? "green" : "red", flexShrink: 1, textAlign: "right", }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {split.paidBy === username
-              ? `You receive: ${split.youAreOwedForThisSplit}`
-              : `You pay: ${split.youOweForThisSplit}`}
-          </Text>
+          {
+            split.youAreOwedForThisSplit !== 0 || split.youOweForThisSplit !== 0 ? (
+            <Text style={{ color: split.paidBy === username ? "green" : "red", flexShrink: 1, textAlign: "right", }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              >
+              {split.paidBy === username
+                ? `You receive: ${split.youAreOwedForThisSplit}`
+                : `You pay: ${split.youOweForThisSplit}`}
+            </Text>
+            ) : (
+              <View style={{marginRight: 10}}>
+                <Icon name="check" size={24} color={theme.dark.surfaceTint} />
+              </View>
+            )
+          }
         </View>
       </Card.Content>
     </Card>

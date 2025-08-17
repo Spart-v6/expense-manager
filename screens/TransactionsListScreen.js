@@ -145,7 +145,7 @@ const TransactionsListScreen = () => {
                   }}
                 >
                   <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
-                    {format(parseISO(item.date), "do")}
+                    {format(parseISO(item.date), "d")}
                   </Text>
                   <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
                     {format(parseISO(item.date), "MMM")}

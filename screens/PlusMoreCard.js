@@ -103,6 +103,11 @@ const PlusMoreCard = ({ navigation }) => {
     }
   };
 
+  const handleCardNumberChange = (text) => {
+    const onlyDigits = text.replace(/[^0-9]/g, ""); // replacing non-digit with empty string
+    setCardNumber(onlyDigits);
+  };
+
   const hasCardNumberError = cardNumber.length > 0 && cardNumber.length !== 4;
 
   const formatMonthYear = (date) => {
@@ -127,7 +132,7 @@ const PlusMoreCard = ({ navigation }) => {
           <TextInput
             label="Last 4 Digits of Card"
             value={cardNumber}
-            onChangeText={setCardNumber}
+            onChangeText={handleCardNumberChange}
             keyboardType="number-pad"
             maxLength={4}
             mode="outlined"

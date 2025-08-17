@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { FlatList, View } from "react-native";
-import { Text, TouchableRipple } from "react-native-paper";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Text, TouchableRipple, DataTable } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 
 const IndividualSplitScreen = ({ route }) => {
@@ -140,58 +140,92 @@ const IndividualSplitScreen = ({ route }) => {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableRipple
-        style={{
-          paddingVertical: 10,
-          paddingHorizontal: 15,
-          borderBottomWidth: 1,
-          borderColor: "#6e6e6eff",
-          marginLeft: 15,
-          marginRight: 15,
-          marginTop: 2,
-        }}
-        rippleColor={theme.dark.primaryContainer}
-        onPress={() => handleTappedMember(item.name, item.index)}
-      >
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text
-            style={[
-              { fontSize: 16, flex: 1 },
-              item.paid && {
-                textDecorationLine: "line-through",
-                textDecorationStyle: "solid",
-              },
-            ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {item.name}
-          </Text>
-          <Text
-            style={[
-              { fontWeight: "bold", fontSize: 18 },
-              item.paid && {
-                textDecorationLine: "line-through",
-                textDecorationStyle: "solid",
-              },
-            ]}
-          >
-            ₹ {item.amount.toFixed(2)}
-          </Text>
-        </View>
-      </TouchableRipple>
+    <DataTable.Row
+      onPress={() => handleTappedMember(item.name, item.index)}
+      style={{
+        borderBottomWidth: 1,
+        borderColor: "#6e6e6eff",
+        marginLeft: 15,
+        marginRight: 15,
+        marginTop: 0,
+      }}
+      rippleColor={theme.dark.primaryContainer}
+    >
+      <DataTable.Cell style={{ flex: 1 }}>
+        <Text
+          style={[
+            { fontSize: 16 },
+            item.paid && {
+              textDecorationLine: "line-through",
+              textDecorationStyle: "solid",
+            },
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.name}
+        </Text>
+      </DataTable.Cell>
+
+      <DataTable.Cell numeric>
+        <Text
+          style={[
+            { fontWeight: "bold", fontSize: 18 },
+            item.paid && {
+              textDecorationLine: "line-through",
+              textDecorationStyle: "solid",
+            },
+          ]}
+        >
+          ₹ {item.amount.toFixed(2)}
+        </Text>
+      </DataTable.Cell>
+    </DataTable.Row>
     );
   };
 
   return (
     <View>
       <View style={{ padding: 15 }}>
-        <Text>Total Amount: ₹ {split.amount.toFixed(2)}</Text>
         <Text>
-          {split.paidBy === username ? "You paid" : `${split.paidBy} paid`}
+          Total amount: ₹ {split.amount.toFixed(2)}, paid by{" "}
+          {split.paidBy === username ? "you" : split.paidBy}
         </Text>
-        <Text>You Are Owed: ₹ {(split.youAreOwedForThisSplit || 0).toFixed(2)}</Text>
-        <Text>You Owe: ₹ {(split.youOweForThisSplit || 0).toFixed(2)}</Text>
+
+
+      <View style={styles.container}>
+        <Text style={styles.heading}>Summary</Text>
+
+        <View style={styles.table}>
+          {/* Header Row */}
+          <View style={styles.row}>
+            <View style={styles.cell}>
+              <Text style={styles.headerText}>To receive</Text>
+            </View>
+            <View style={styles.cell}>
+              <Text style={styles.headerText}>To pay</Text>
+            </View>
+          </View>
+
+          {/* Values Row */}
+          <View style={styles.row}>
+            <View style={styles.cell}>
+              <Text>
+                ₹ {(split.youAreOwedForThisSplit || 0).toFixed(2)}
+              </Text>
+            </View>
+            <View style={styles.cell}>
+              <Text>
+                ₹ {(split.youOweForThisSplit || 0).toFixed(2)}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+
+
+
       </View>
 
       <FlatList
@@ -202,5 +236,38 @@ const IndividualSplitScreen = ({ route }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    margin: 16,
+  },
+  heading: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  table: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  row: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+  },
+  cell: {
+    flex: 1,
+    padding: 8,
+    borderRightWidth: 1,
+    borderColor: "#ccc",
+  },
+  headerText: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});
+
+
 
 export default IndividualSplitScreen;
