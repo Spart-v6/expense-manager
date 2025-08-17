@@ -3,7 +3,6 @@ import { Appbar, Searchbar, Text, TextInput } from "react-native-paper";
 import { DrawerActions, useNavigationState } from "@react-navigation/native";
 import { getDeepestRoute } from "../helper/getRouteNames";
 import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
-import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { goBack } from "../navigation/RootNavigation";
 import { useThemeContext } from "../context/ThemeContext";
 
@@ -17,7 +16,8 @@ const routeConfig = {
   "Search": ['SearchScreen', 'Search'],
   "Add expenses": ['PlusMoreHome'],
   "Add cards": ['PlusMoreCard'],
-  "Split screen": ['PlusMoreSplit'],
+  "Add group": ['PlusMoreSplit'],
+  "Add a new split": ['PlusMoreSplitDetailScreen'],
   "Add payments": ['PlusMorePayment'],
   "Transactions": ['TransactionsList']
 };
@@ -46,7 +46,7 @@ const CustomHeader = ({ navigation }) => {
 
 
   const showMenu = ['Home', 'Settings', 'Cards', 'Payments', 'Split', 'Reports'].includes(routeKey);
-  const showBack = ['Add expenses', 'Add cards', 'Search', 'IndividualCardScreen', 'Split screen', 'Add payments', 'Transactions'].includes(routeKey);
+  const showBack = ['Add expenses', 'Add cards', 'Search', 'IndividualCardScreen', 'Add group', 'Add a new split', 'Add payments', 'Transactions', 'SplitDetailsScreen', 'IndividualSplitScreen'].includes(routeKey); // add the screen name (doesn't matter if custom title is used or not - use original screen name for back button) 
   const showSearch = routeKey === 'Home';
   const showGreeting = routeKey === 'Home';
 
