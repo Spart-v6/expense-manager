@@ -6,6 +6,7 @@ import { navigationRef } from './RootNavigation';
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import WelcomeNavigator  from "../navigation/WelcomeNavigator";
 import { useThemeContext } from "../context/ThemeContext";
+import { SearchProvider } from "../context/SearchContext";
 
 const AppStack = () => {
     const colorScheme = useColorScheme();
@@ -33,7 +34,9 @@ const AppStack = () => {
     <>
       <StatusBar backgroundColor="transparent" translucent />
       <View style={{ flex: 1 }}>
-        <DrawerNavigator />
+        <SearchProvider>
+          <DrawerNavigator />
+        </SearchProvider>
       </View>
     </>
   );

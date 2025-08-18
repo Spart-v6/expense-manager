@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Appbar, Searchbar, Text, TextInput } from "react-native-paper";
 import { DrawerActions, useNavigationState } from "@react-navigation/native";
 import { getDeepestRoute } from "../helper/getRouteNames";
 import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
 import { goBack } from "../navigation/RootNavigation";
 import { useThemeContext } from "../context/ThemeContext";
+import { SearchContext } from "../context/SearchContext";
 
 const routeConfig = {
   "Home": ['HomeScreen', 'Home'],
@@ -32,6 +33,8 @@ const getRouteInfo = (currentRoute) => {
 };
 
 const CustomHeader = ({ navigation }) => {
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+
   const colorScheme = useColorScheme();
   // const { theme } = useMaterial3Theme();
     const { theme, initialized, themeColor } = useThemeContext(); 
@@ -50,7 +53,6 @@ const CustomHeader = ({ navigation }) => {
   const showSearch = routeKey === 'Home';
   const showGreeting = routeKey === 'Home';
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [displayTitle, setDisplayTitle] = useState('Search expenses');
   const [greetingAlreadyShown, setGreetingAlreadyShown] = useState(false);
   const opacity = useRef(new Animated.Value(0)).current;

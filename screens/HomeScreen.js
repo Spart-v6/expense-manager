@@ -118,7 +118,7 @@ const HomeScreen = ({ navigation }) => {
       const storedTx = await AsyncStorage.getItem("transactions");
       const parsedTx = storedTx ? JSON.parse(storedTx) : [];
 
-      const txnToDelete = parsedTx.find(tx => tx.id === selectedTxn); // finding the transaction to delete (storing it coz required later)
+      const txnToDelete = parsedTx.find(tx => tx.id === selectedTxn); // finding the transaction to delete (storing it - txnToDelete-  coz required later)
       if (!txnToDelete) return;
 
       const updatedTx = parsedTx.filter(tx => tx.id !== selectedTxn); // removing the transaction from the list
@@ -182,7 +182,7 @@ const HomeScreen = ({ navigation }) => {
     />
   );
 
-  const TransactionItem = ({ item, onLongPressTxn }) => {
+  const TransactionItem = ({ item, onLongPressTxn, onPressTxnUpdate }) => {
     const iconStyle = iconStyles[item.iconName] || { backgroundColor: "#222", color: "#fff", };
     const date = new Date(item.date);
     let formattedDate;
@@ -194,9 +194,10 @@ const HomeScreen = ({ navigation }) => {
       formattedDate = format(date, 'MMM dd, yyyy');
     }
 
+    // TODO: Update transcation pending
 
     return (
-      <TouchableOpacity style={styles.transactionCard}  onLongPress={() => {Vibration.vibrate(10);onLongPressTxn();}}>
+      <TouchableOpacity style={styles.transactionCard} onPress={onPressTxnUpdate}  onLongPress={() => {Vibration.vibrate(10);onLongPressTxn();}}>
         <IconComponent
           iconSet={"MaterialIcons"}
           iconName={"money-off"}
@@ -278,7 +279,8 @@ const HomeScreen = ({ navigation }) => {
         <FlatList
           data={transactions.slice(0, 10)}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TransactionItem item={item} onLongPressTxn={() => showDialog(item.id)}/>}
+          renderItem={({ item }) => <TransactionItem item={item} onLongPressTxn={() => showDialog(item.id)} 
+              onPressTxnUpdate={() => navigation.navigate("PlusMoreHome", {title: "Update Expenses", item})}/>}
           showsVerticalScrollIndicator={true}
           ListFooterComponent={<View style={{ marginBottom: 200 }} />}
         />
@@ -289,7 +291,7 @@ const HomeScreen = ({ navigation }) => {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate("PlusMoreHome")}
+        onPress={() => navigation.navigate("PlusMoreHome", { title: "Add Expenses", item: null })}
         variant="tertiary"
         mode="flat"
         color={theme.dark.onPrimaryContainer}

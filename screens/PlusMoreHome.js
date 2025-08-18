@@ -14,18 +14,54 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, parseISO } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
 
-const PlusMoreHome = ({ navigation }) => {
+const PlusMoreHome = ({ navigation, route }) => {
+  const { item } = route.params;
   const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
-  const styles = makeStyles(theme, colorScheme);
+  const styles = makeStyles(theme, colorScheme);  
 
-  const [btnName, setBtnName] = useState("Add ");
-  const [selectedButton, setSelectedButton] = useState("Income");
-  const [expenseTitle, setExpenseTitle] = useState("");
-  const [amountTitle, setAmountTitle] = useState("");
-  const [descriptionTitle, setDescriptionTitle] = useState("");
-  const [selectedCardId, setSelectedCardId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [btnName, setBtnName] = useState(() => {
+    if (item && item.id) { // this im writing for Update expenses (reusing the same component)
+      return "Update ";
+    }
+    return "Add ";
+  });
+  const [selectedButton, setSelectedButton] = useState(() => {
+    if (item && item.type) {
+      return item.type;
+    }
+    return "Expense";
+  });
+  const [expenseTitle, setExpenseTitle] = useState(() => {
+    if (item && item.title) {
+      return item.title;
+    }
+    return "";
+  });
+  const [amountTitle, setAmountTitle] = useState(() => {
+    if (item && item.amount) {
+      return item.amount.toString();
+    }
+    return "";
+  });
+  const [descriptionTitle, setDescriptionTitle] = useState(() => {
+    if (item && item.description) {
+      return item.description;
+    }
+    return "";
+  });
+  const [selectedCardId, setSelectedCardId] = useState(() => {
+    if (item && item.cardId) {
+      return item.cardId;
+    }
+    return null;
+  });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (item && item.date) {
+      return new Date(item.date);
+    }
+    return new Date();
+  });
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -75,7 +111,6 @@ const PlusMoreHome = ({ navigation }) => {
           </View>
 
 
-          {/* Input Fields */}
           <View style={styles.inputsContainer}>
             <TextInput
               mode="outlined"
@@ -107,7 +142,6 @@ const PlusMoreHome = ({ navigation }) => {
             />
           </View>
           <View>
-            {/* Card Selector */}
             <Text style={styles.sectionTitle}>Select Card</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cardScroll}>
               {cardsData.length <= 0 ? (
@@ -143,7 +177,6 @@ const PlusMoreHome = ({ navigation }) => {
               })}
             </ScrollView>
 
-            {/* Date Picker */}
             <Text style={styles.sectionTitle}>Select Date</Text>
             <Button
               onPress={() => setShowDatePicker(true)}
@@ -168,7 +201,6 @@ const PlusMoreHome = ({ navigation }) => {
             )}
           </View>
 
-          {/* Submit Button */}
           <View style={styles.bottomButton}>
             <Button
               onPress={async () => {
@@ -186,7 +218,7 @@ const PlusMoreHome = ({ navigation }) => {
                 }
 
                 const newTransaction = {
-                  id: Date.now().toString(),
+                  id: item && item.id ? item.id : Date.now().toString(),
                   type: selectedButton, // Income or Expense
                   title: expenseTitle,
                   amount: parseFloat(amountTitle),
@@ -198,7 +230,16 @@ const PlusMoreHome = ({ navigation }) => {
                 try {
                   const existingData = await AsyncStorage.getItem("transactions");
                   const parsedData = existingData ? JSON.parse(existingData) : [];
-                  const updatedData = [newTransaction, ...parsedData];
+                  let updatedData;
+                  if (item && item.id) {
+                    // Update case
+                    updatedData = parsedData.map((txn) =>
+                      txn.id === item.id ? newTransaction : txn
+                    );
+                  } else {
+                    // New transaction case
+                    updatedData = [newTransaction, ...parsedData];
+                  }
                   await AsyncStorage.setItem("transactions", JSON.stringify(updatedData));
 
                   // Optional: Clear form fields after saving (why optional? coz u are navigating back anyways so new screen will be opened next time with empty values)
@@ -226,11 +267,46 @@ const PlusMoreHome = ({ navigation }) => {
                   }
 
                   // Update corresponding month
-                  if (newTransaction.type === "Income") {
-                    summary[year][month].income += newTransaction.amount;
+                  // if (newTransaction.type === "Income") {
+                  //   summary[year][month].income += newTransaction.amount;
+                  // } else {
+                  //   summary[year][month].expense += newTransaction.amount;
+                  // }
+
+                  if (item && item.id) {
+                    // Update case
+
+                    // Get old transaction's date
+                    const oldDateObj = new Date(item.date);
+                    const oldYear = oldDateObj.getFullYear();
+                    const oldMonth = oldDateObj.getMonth();
+
+                    // Ensure old year is initialized
+                    if (!summary[oldYear]) {
+                      summary[oldYear] = Array(12).fill(null).map(() => ({ income: 0, expense: 0 }));
+                    }
+
+                    // Subtract old transaction
+                    if (item.type.toLowerCase() === "income") {
+                      summary[oldYear][oldMonth].income -= item.amount;
+                    } else {
+                      summary[oldYear][oldMonth].expense -= item.amount;
+                    }
+
+                    // Add new transaction
+                    if (newTransaction.type.toLowerCase() === "income") {
+                      summary[year][month].income += newTransaction.amount;
+                    } else {
+                      summary[year][month].expense += newTransaction.amount;
+                    }
                   } else {
-                    summary[year][month].expense += newTransaction.amount;
-                  }                 
+                    // New transaction case
+                    if (newTransaction.type.toLowerCase() === "income") {
+                      summary[year][month].income += newTransaction.amount;
+                    } else {
+                      summary[year][month].expense += newTransaction.amount;
+                    }
+                  }
 
                   await AsyncStorage.setItem("monthlySummary", JSON.stringify(summary));
 

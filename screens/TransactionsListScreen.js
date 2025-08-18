@@ -93,7 +93,7 @@ const TransactionsListScreen = () => {
             setSelectedFilter(f);
             setPage(1);
           }}
-          style={[{padding: 10, backgroundColor: theme.dark.surfaceDim, borderRadius: 15, width: 100}, selectedFilter === f && {backgroundColor: theme.dark.primaryContainer}]}
+          style={[{padding: 10, backgroundColor: theme.dark.surfaceDim, borderRadius: 15, width: 90}, selectedFilter === f && {backgroundColor: theme.dark.primaryContainer}]}
           >
             <Text
               style={[
@@ -185,6 +185,8 @@ const makeStyles = (theme) =>
       flexDirection: 'row',
       justifyContent: 'space-around',
       paddingVertical: 10,
+      marginRight: 10,
+      marginLeft: 10,
     },
     filterText: {
       fontSize: 14,

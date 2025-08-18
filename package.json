@@ -28,6 +28,7 @@
     "expo-secure-store": "~14.0.1",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
+    "fuse.js": "^7.1.0",
     "lottie-react-native": "^7.2.2",
     "react": "18.3.1",
     "react-native": "0.76.8",
