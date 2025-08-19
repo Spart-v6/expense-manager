@@ -276,14 +276,22 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View style={{ flex: 1 }}>
-        <FlatList
-          data={transactions.slice(0, 10)}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TransactionItem item={item} onLongPressTxn={() => showDialog(item.id)} 
+        {
+          transactions.length <= 0 ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginBottom: 150 }}>
+              <Text style={styles.subText}>Add your first transaction to get started!</Text>
+            </View>
+          ): (
+            <FlatList
+              data={transactions.slice(0, 10)}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <TransactionItem item={item} onLongPressTxn={() => showDialog(item.id)} 
               onPressTxnUpdate={() => navigation.navigate("PlusMoreHome", {title: "Update Expenses", item})}/>}
-          showsVerticalScrollIndicator={true}
-          ListFooterComponent={<View style={{ marginBottom: 200 }} />}
-        />
+              showsVerticalScrollIndicator={true}
+              ListFooterComponent={<View style={{ marginBottom: 200 }} />}
+            />
+          )
+        }
       </View>
     </View>
 
@@ -403,6 +411,19 @@ const makeStyles = (theme) =>
     paymentType: {
       fontSize: 12,
       color: "#888",
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    subText: {
+      textAlign: "center",
+      marginTop: 10,
+      marginBottom: 20,
+      fontSize: 14,
+      opacity: 0.7,
     },
   });
 

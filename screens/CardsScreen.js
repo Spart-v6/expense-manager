@@ -23,7 +23,7 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { FAB, Dialog, Portal, Button, Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { format, parseISO } from 'date-fns';
+import { format, getMonth, getYear, parseISO } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -217,9 +217,36 @@ export default function CardsScreen({ navigation }) {
       // Delete associated transactions
       const storedTx = await AsyncStorage.getItem("transactions");
       const parsedTx = storedTx ? JSON.parse(storedTx) : [];
+
+      // deletion logic for correctly updating monthly summary amounts
+      const txnToDelete = parsedTx.find(tx => tx.cardId === selectedCardId); // finding the transaction to delete via cardId (storing it - txnToDelete-  coz required later)
+      if (!txnToDelete) return;
+
+      console.log("Deleting transactions for card ID:", selectedCardId);
+      
+
       const updatedTx = parsedTx.filter(tx => tx.cardId !== selectedCardId);
       await AsyncStorage.setItem("transactions", JSON.stringify(updatedTx));
       setTransactions(updatedTx);
+
+      const monthlySummaryData = await AsyncStorage.getItem("monthlySummary");
+      let summary = monthlySummaryData ? JSON.parse(monthlySummaryData) : {};
+
+      const txnDate = parseISO(txnToDelete.date); // coz stored ISO string (txnToDelete required here)
+      const year = getYear(txnDate);
+      const month = getMonth(txnDate);
+
+      if (summary[year]) {
+        if (txnToDelete.type === "Income") { // txnToDelete required here
+          summary[year][month].income -= txnToDelete.amount;
+          if (summary[year][month].income < 0) summary[year][month].income = 0;
+        } else {
+          summary[year][month].expense -= txnToDelete.amount;
+          if (summary[year][month].expense < 0) summary[year][month].expense = 0;
+        }
+
+        await AsyncStorage.setItem("monthlySummary", JSON.stringify(summary));
+      }
 
       hideDialog();
     } catch (error) {
@@ -231,47 +258,54 @@ export default function CardsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Animated.FlatList
-        data={cards}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{
-          paddingTop: height / 2 - CARD_HEIGHT * 1.5,
-          paddingBottom: height / 2 - CARD_HEIGHT,
-        }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <CardItem
-            item={item}
-            index={index}
-            scrollY={scrollY}
-            navigation={navigation}
-            allTransactions={transactions}
-            onLongPressCard={() => showDialog(item.id)}
-          />
-        )}
-        ListHeaderComponent={() => (
-          <View
-            style={{
-              alignItems: "center",
-              marginBottom: 20,
-              paddingBottom: 130,
-            }}
-          >
-            <Text
+      {cards.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.heading}>No cards yet</Text>
+          <Text style={styles.subText}>Tap + to create one!</Text>
+        </View>
+      ) : (
+        <Animated.FlatList
+          data={cards}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingTop: height / 2 - CARD_HEIGHT * 1.5,
+            paddingBottom: height / 2 - CARD_HEIGHT,
+          }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, index }) => (
+            <CardItem
+              item={item}
+              index={index}
+              scrollY={scrollY}
+              navigation={navigation}
+              allTransactions={transactions}
+              onLongPressCard={() => showDialog(item.id)}
+            />
+          )}
+          ListHeaderComponent={() => (
+            <View
               style={{
-                fontSize: 24,
-                fontWeight: "bold",
-                color: "#fff",
+                alignItems: "center",
+                marginBottom: 20,
+                paddingBottom: 130,
               }}
             >
-              Manage all your cards here
-            </Text>
-          </View>
-        )}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        decelerationRate="fast"
-      />
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "bold",
+                  color: "#fff",
+                }}
+              >
+                Manage all your cards here
+              </Text>
+            </View>
+          )}
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          decelerationRate="fast"
+        />
+      )}
       <FAB
         icon="plus"
         style={styles.fab}
@@ -353,5 +387,28 @@ const makeStyles = (theme) =>
     logo: {
       width: 50,
       height: 30,
+    },
+
+    emptyState: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    heading: {
+      fontSize: 22,
+      fontWeight: "bold",
+      textAlign: "center",
+      marginBottom: 5,
+    },
+    highlight: {
+      color: theme.dark.primary,
+    },
+    subText: {
+      textAlign: "center",
+      marginTop: 10,
+      marginBottom: 20,
+      fontSize: 14,
+      opacity: 0.7,
     },
   });

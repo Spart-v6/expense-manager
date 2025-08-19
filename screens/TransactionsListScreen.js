@@ -107,13 +107,20 @@ const TransactionsListScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
-
-      <SectionList
-        sections={groupedSections}
-        keyExtractor={(item) => item.id}
-        stickySectionHeadersEnabled
-        onEndReached={() => {
-          if (page * itemsPerPage < transactions.length) {
+        {
+        groupedSections.length === 0 ? (
+          <View>
+            <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: theme.dark.onSurfaceVariant }}>
+              No transactions found yet.
+            </Text>
+          </View>
+        ) : (
+          <SectionList
+          sections={groupedSections}
+          keyExtractor={(item) => item.id}
+          stickySectionHeadersEnabled
+          onEndReached={() => {
+            if (page * itemsPerPage < transactions.length) {
             setPage(prev => prev + 1);
           }
         }}
@@ -131,7 +138,7 @@ const TransactionsListScreen = () => {
           const cardName = (cards.find(card => card.id === item.cardId) || {}).name || "Unknown";
 
           return (
-          <Card style={styles.card}>
+            <Card style={styles.card}>
             <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center'}}>
                 <View
@@ -143,7 +150,7 @@ const TransactionsListScreen = () => {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                >
+                  >
                   <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
                     {format(parseISO(item.date), "d")}
                   </Text>
@@ -168,7 +175,8 @@ const TransactionsListScreen = () => {
             <Text style={styles.pageText}>Page {page}</Text>
           </View>
         )}
-      />
+        />
+      )}
     </View>
   );
 };
