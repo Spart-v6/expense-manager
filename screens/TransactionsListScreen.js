@@ -10,6 +10,9 @@ import { Card, Text } from 'react-native-paper';
 import { parseISO, format } from 'date-fns';
 import { useThemeContext } from '../context/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatCurrency } from '../helper/formatCurrency';
+import currencyObj from '../helper/currencyObj';
+import { useFocusEffect } from '@react-navigation/native';
 
 const filters = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
 
@@ -54,6 +57,23 @@ const TransactionsListScreen = () => {
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState(currencyObj[0].id);
+
+  useFocusEffect(
+    useCallback(() => {
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      getCurrency();
+  }, []));
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -164,7 +184,11 @@ const TransactionsListScreen = () => {
                 <Text style={styles.description}>{item.description}</Text>
               </View>
               <View style={{flex: 0.2, alignItems: 'flex-end'}}>
-                <Text style={[styles.amount, { color: item.amount >= 0 ? 'green' : 'red' }]}>₹ {item.amount}</Text>
+                <Text style={[styles.amount, { color: item.type === "Income" ? 'green' : 'red' }]}> {/*TODO: Fix this color*/}
+                  {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                    iconSize: 10
+                  })}
+                </Text>
                 <Text style={styles.metadata}>{cardName}</Text>
               </View>
             </Card.Content>

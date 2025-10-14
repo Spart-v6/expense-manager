@@ -39,8 +39,8 @@ const SearchScreen = ({ navigation }) => {
 
     if (!searchQuery || searchQuery.length <= 3) {
       return (
-        <View>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+        <View style={{ flex: 1,justifyContent: "center", alignItems: "center", padding: 20, }}>
+          <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center"}}>
             Please enter a search query longer than 3 characters.
           </Text>
         </View>
@@ -49,9 +49,9 @@ const SearchScreen = ({ navigation }) => {
 
     if (searchQuery.length > 3 && filteredTransactions.length === 0) {
       return (
-        <View>
+        <View style={{ flex: 1,justifyContent: "center", alignItems: "center", padding: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            No transactions found for "{searchQuery}".
+            No transactions found.
           </Text>
         </View>
       );
@@ -98,9 +98,9 @@ const SearchScreen = ({ navigation }) => {
   }
 
   return (
-    <View>
+    <>
       {loadFilteredTransactions()}
-    </View>
+    </>
   );
 };
 

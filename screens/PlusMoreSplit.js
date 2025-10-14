@@ -1,18 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, StyleSheet, ScrollView, useColorScheme, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { Text, TextInput, Divider, FAB, IconButton, Button, Snackbar } from "react-native-paper";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeContext } from "../context/ThemeContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 const PlusMoreSplit = ({ navigation }) => {
-    const colorScheme = useColorScheme();
-    const { theme } = useThemeContext();
-    const styles = makeStyles(theme, colorScheme);
+  const colorScheme = useColorScheme();
+  const { theme } = useThemeContext();
+  const styles = makeStyles(theme, colorScheme);
+
+  const [selfName, setSelfName] = useState('');
 
   const [groupName, setGroupName] = useState("");
   const [members, setMembers] = useState([]);
   const [error, setError] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setSelfName(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      fetchData();
+    }, [])
+  );
 
   const addMember = () => {
     setMembers([...members, ""]);
@@ -40,7 +57,6 @@ const PlusMoreSplit = ({ navigation }) => {
       return showError('Group name cannot be empty.');
     }
 
-    const selfName = 'Happy'; // or await getUsername();
     const filteredMembers = members.filter(m => m.trim() && m !== selfName); // TODO: need to create this username function from async storage
     if (filteredMembers.length === 0) {
       return showError('Add at least one member other than yourself.');
@@ -88,7 +104,7 @@ const PlusMoreSplit = ({ navigation }) => {
               <TextInput
                 label="Member"
                 mode="outlined"
-                value="Happy"
+                value={selfName}
                 editable={false}
                 style={styles.fixedInput}
                 left={<TextInput.Icon icon="account-circle-outline" />}

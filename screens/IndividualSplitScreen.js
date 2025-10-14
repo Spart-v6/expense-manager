@@ -1,15 +1,45 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
+import React, { useCallback } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Text, TouchableRipple, DataTable } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
 
 const IndividualSplitScreen = ({ route }) => {
   const { splitId, groupId } = route.params;
   const { theme } = useThemeContext();
   const [group, setGroup] = React.useState(null);
   const [split, setSplit] = React.useState(null);
-  const username = "Happy"; // later fetch from AsyncStorage if needed
+  const [username, setUsername] = React.useState('');
+
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setUsername(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      getCurrency();
+      fetchData();
+    }, [])
+  );
 
   React.useEffect(() => {
     const loadGroup = async () => {
@@ -177,7 +207,10 @@ const IndividualSplitScreen = ({ route }) => {
             },
           ]}
         >
-          ₹ {item.amount.toFixed(2)}
+        {formatCurrency(item.amount, selectedCurrencyId, theme, {
+          iconSize: 12,
+          textVariant: "titleMedium",
+        })}
         </Text>
       </DataTable.Cell>
     </DataTable.Row>
@@ -188,7 +221,12 @@ const IndividualSplitScreen = ({ route }) => {
     <View>
       <View style={{ padding: 15 }}>
         <Text>
-          Total amount: ₹ {split.amount.toFixed(2)}, paid by{" "}
+          Total amount:
+          {formatCurrency(split.amount, selectedCurrencyId, theme, {
+            iconSize: 12,
+            textVariant: "titleMedium",
+          })},
+          paid by{" "}
           {split.paidBy === username ? "you" : split.paidBy}
         </Text>
 
@@ -211,12 +249,18 @@ const IndividualSplitScreen = ({ route }) => {
           <View style={styles.row}>
             <View style={styles.cell}>
               <Text>
-                ₹ {(split.youAreOwedForThisSplit || 0).toFixed(2)}
+                {formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, {
+                  iconSize: 12,
+                  textVariant: "titleMedium",
+                }) || 0}
               </Text>
             </View>
             <View style={styles.cell}>
               <Text>
-                ₹ {(split.youOweForThisSplit || 0).toFixed(2)}
+                {formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, {
+                  iconSize: 12,
+                  textVariant: "titleMedium",
+                }) || 0}
               </Text>
             </View>
           </View>

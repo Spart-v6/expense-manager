@@ -16,6 +16,8 @@ import IconComponent from "../components/IconComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, isToday, isYesterday, parseISO, getYear, getMonth } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
 
 // function that calculates the yearly balance from the monthly summary array
 const getYearlyBalance = (monthlySummary) => {
@@ -58,6 +60,8 @@ const HomeScreen = ({ navigation }) => {
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [monthlySummary, setMonthlySummary] = useState(null);
 
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState(currencyObj[0].id);
+  
   useFocusEffect(
     useCallback(() => {
       const loadTransactions = async () => {
@@ -96,8 +100,21 @@ const HomeScreen = ({ navigation }) => {
         }
       };
 
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+
+
       loadTransactions();
       getMonthlySummary();
+      getCurrency();
     }, [])
   );
 
@@ -194,8 +211,6 @@ const HomeScreen = ({ navigation }) => {
       formattedDate = format(date, 'MMM dd, yyyy');
     }
 
-    // TODO: Update transcation pending
-
     return (
       <TouchableOpacity style={styles.transactionCard} onPress={onPressTxnUpdate}  onLongPress={() => {Vibration.vibrate(10);onLongPressTxn();}}>
         <IconComponent
@@ -214,15 +229,15 @@ const HomeScreen = ({ navigation }) => {
             styles.amount,
             { color: item.type === "Income" ? "#00ff7f" : "#ff4d4d" }
           ]}>
-            {item.type === "Income" ? "+" : "-"}${Math.abs(item.amount).toFixed(2)}
+            {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+              iconSize: 10
+            })}
           </Text>
-          <Text style={styles.paymentType}>Cash</Text>
+          {/* <Text style={styles.paymentType}>{item.title}</Text>  TODO: Need to fix this, get card details here */}
         </View>
       </TouchableOpacity>
     );
   };
-
-  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -238,7 +253,10 @@ const HomeScreen = ({ navigation }) => {
               </View>
 
               <View style={{ alignItems: "center", marginTop: 10 }}>
-                <Text variant="displaySmall">${getYearlyBalance(monthlySummary)}</Text>
+                {formatCurrency(getYearlyBalance(monthlySummary), selectedCurrencyId, theme, {
+                  textVariant: "displaySmall",
+                  iconSize: 22,
+                })}
               </View>
             </Card.Content>
           </Card>
@@ -249,7 +267,12 @@ const HomeScreen = ({ navigation }) => {
             <Card style={[styles.statCard, styles.expenseCard]}>
               <Card.Title title="Expenses" right={LeftContentExpense} />
               <Card.Content>
-                <Text variant="titleLarge">${monthlyExpense}</Text>
+                <Text variant="titleLarge">  
+                  {formatCurrency(monthlyExpense, selectedCurrencyId, theme, {
+                    iconSize: 15,
+                    textVariant: "titleLarge",
+                  })}
+                </Text>
                 <Text variant="bodySmall">{format(new Date(), "MMMM")}</Text>
               </Card.Content>
             </Card>
@@ -257,7 +280,12 @@ const HomeScreen = ({ navigation }) => {
             <Card style={[styles.statCard, styles.incomeCard]}>
               <Card.Title title="Income" right={RightContentIncome} />
               <Card.Content>
-                <Text variant="titleLarge">${monthlyIncome}</Text>
+                <Text variant="titleLarge">
+                  {formatCurrency(monthlyIncome, selectedCurrencyId, theme, {
+                    iconSize: 15,
+                    textVariant: "titleLarge",
+                  })}
+                </Text>
                 <Text variant="bodySmall">{format(new Date(), "MMMM")}</Text>
               </Card.Content>
             </Card>

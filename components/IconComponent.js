@@ -8,7 +8,7 @@ const IconComponent = ({ iconSet, iconName, backgroundColor, color, size = 30 })
   return (
     <View style={{
       backgroundColor: backgroundColor || "#eee",
-      padding: 10,
+      padding: 2,
       borderRadius: 50,
       justifyContent: "center",
       alignItems: "center",

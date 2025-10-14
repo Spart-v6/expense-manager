@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { Text, TextInput, RadioButton, Button, ToggleButton, Snackbar } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import IconComponent from "../components/IconComponent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
 
-const updateOwedAggregates = async (split) => {
+
+const updateOwedAggregates = async (split, username) => {
   try {
     // const username = await AsyncStorage.getItem('username'); // e.g. "Happy"
-    const username = "Happy";
     const [owedRaw, oweRaw] = await Promise.all([
       AsyncStorage.getItem('youAreOwed'),
       AsyncStorage.getItem('youOwe'),
@@ -40,7 +43,6 @@ const updateOwedAggregates = async (split) => {
   }
 };
 
-
 const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
   const { groupId, members } = route.params;
   const { theme } = useThemeContext();
@@ -53,6 +55,34 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
   const [memberAmounts, setMemberAmounts] = useState([]);
   const [error, setError] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [username, setUsername] = useState('');
+
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setUsername(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      fetchData();
+      getCurrency();
+    }, [])
+  );
   
 
   useEffect(() => {
@@ -75,9 +105,11 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
     return (
       <View style={{marginBottom: 10, marginTop: 10}}>
         <Text style={{ color: "white" }}>
-          {""}Pending amount: ₹{" "}
+          {""}Pending amount: {""}
           <Text style={pendingAmount < 0 ? { color: "red" } : { color: "green" }}>
-            {pendingAmount} 
+            {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
+              iconSize: 12,
+            })}
           </Text>
         </Text>
       </View>
@@ -97,9 +129,12 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
           <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
             {pendingPercent}%
           </Text>
-          {"\t\t | \t\t"}Pending amount: ₹{" "}
+          {"\t\t | \t\t"}Pending amount:
           <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
-            {pendingAmount.toFixed(2)}
+            {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
+              iconSize: 12,
+              // textVariant: "titleMedium",
+            })}
           </Text>
         </Text>
       </View>
@@ -147,7 +182,6 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
 
     // IMP: adding youOweForThisSplit and youAreOwedForThisSplit 
     // const username = await AsyncStorage.getItem('username'); // e.g. "Happy"
-    const username = "Happy";
     let youAreOwedForThisSplit = 0;
     let youOweForThisSplit = 0;
 
@@ -185,7 +219,7 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
     };
 
     // NOTE: Creating "You are owed", and "You owe" amounts for you (total aggregates)
-    await updateOwedAggregates(newSplit);
+    await updateOwedAggregates(newSplit, username);
 
     try {
       const storedSplits = await AsyncStorage.getItem('splits');

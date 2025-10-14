@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useContext, useCallback } from "react";
 import { Appbar, Searchbar, Text, TextInput } from "react-native-paper";
-import { DrawerActions, useNavigationState } from "@react-navigation/native";
+import { DrawerActions, useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { getDeepestRoute } from "../helper/getRouteNames";
 import { TouchableOpacity, useColorScheme, View, Animated } from "react-native";
 import { goBack } from "../navigation/RootNavigation";
 import { useThemeContext } from "../context/ThemeContext";
 import { SearchContext } from "../context/SearchContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const routeConfig = {
   "Home": ['HomeScreen', 'Home'],
@@ -33,6 +34,8 @@ const getRouteInfo = (currentRoute) => {
 };
 
 const CustomHeader = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
 
   const colorScheme = useColorScheme();
@@ -87,8 +90,21 @@ const CustomHeader = ({ navigation }) => {
       opacity.setValue(1);
     }
   }, [routeKey]);
-  
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setUsername(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      fetchData();
+    }, [])
+  );
+  
   useEffect(() => {
     if (routeKey !== "Search") {
       setSearchQuery('');
@@ -106,11 +122,36 @@ const CustomHeader = ({ navigation }) => {
     )}
     if (showGreeting) {
       return (
-      <Animated.View style={{ flex: 1, opacity, alignItems: "center"}}>
-        <TouchableOpacity onPress={() => navigation.navigate("Main", { screen: "Home", params: { screen: "SearchScreen", },})}>
-          <Appbar.Content title={greetingAlreadyShown ? displayTitle : "Good evening, John!"} style={{alignContent: "center", justifyContent: "center", opacity: 0.8}}/>
-        </TouchableOpacity>
-      </Animated.View>
+        <Animated.View style={{ flex: 1, opacity, alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Main", {
+                screen: "Home",
+                params: { screen: "SearchScreen" },
+              })
+            }
+          >
+            <Appbar.Content
+              title={
+                greetingAlreadyShown
+                  ? displayTitle
+                  : "Good evening, " + username + "!"
+              }
+              style={{
+                alignContent: "center",
+                justifyContent: "center",
+                opacity: 0.8,
+              }}
+              titleStyle={{
+                width: 250,
+                textAlign: "center",
+                numberOfLines: 1,
+                ellipsizeMode: "tail",
+              }}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+
     )}
     else {
       return (

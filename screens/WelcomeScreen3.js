@@ -12,6 +12,7 @@ import {
 import { Button, Text } from "react-native-paper";
 import { IconComponent } from "../components/IconPicker";
 import { useThemeContext } from "../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const currencyObj = [
   { id: 1, name: "Indian Rupee (INR)", iconName: "rupee-sign", iconType: "FontAwesome5" },
@@ -37,7 +38,8 @@ const WelcomeScreen3 = ({ navigation, onFinish }) => {
 
   const [selectedCurrencyId, setSelectedCurrencyId] = useState(currencyObj[0].id);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    await AsyncStorage.setItem("currencyId", selectedCurrencyId.toString());
     onFinish();
   };
 

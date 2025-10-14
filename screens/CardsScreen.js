@@ -47,11 +47,11 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPre
 
   const gradientDirections = [
     { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } }, // Top-left ➔ Bottom-right
-    { start: { x: 1, y: 0 }, end: { x: 0, y: 1 } }, // Top-right ➔ Bottom-left
-    { start: { x: 0, y: 1 }, end: { x: 1, y: 0 } }, // Bottom-left ➔ Top-right
-    { start: { x: 1, y: 1 }, end: { x: 0, y: 0 } }, // Bottom-right ➔ Top-left
-    { start: { x: 0.5, y: 0 }, end: { x: 0.5, y: 1 } }, // Top ➔ Bottom
-    { start: { x: 0, y: 0.5 }, end: { x: 1, y: 0.5 } }, // Left ➔ Right
+    // { start: { x: 1, y: 0 }, end: { x: 0, y: 1 } }, // Top-right ➔ Bottom-left
+    // { start: { x: 0, y: 1 }, end: { x: 1, y: 0 } }, // Bottom-left ➔ Top-right
+    // { start: { x: 1, y: 1 }, end: { x: 0, y: 0 } }, // Bottom-right ➔ Top-left
+    // { start: { x: 0.5, y: 0 }, end: { x: 0.5, y: 1 } }, // Top ➔ Bottom
+    // { start: { x: 0, y: 0.5 }, end: { x: 1, y: 0.5 } }, // Left ➔ Right
   ];
 
   // Randomly pick one direction

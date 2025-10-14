@@ -15,6 +15,8 @@ import Icon from "react-native-vector-icons/Octicons";
 import { useThemeContext } from "../context/ThemeContext";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
 
 const SplitDetailsScreen = ({ route, navigation }) => {
   const { groupId } = route.params;
@@ -26,9 +28,35 @@ const SplitDetailsScreen = ({ route, navigation }) => {
   const [splits, setSplits] = React.useState([]);
   const [youAreOwed, setYouAreOwed] = React.useState(0);
   const [youOwe, setYouOwe] = React.useState(0);
+  const [username, setUsername] = React.useState('');
 
-    // const username = await AsyncStorage.getItem('username'); 
-  const username = "Happy";
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setUsername(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      getCurrency();
+      fetchData();
+    }, [])
+  );
 
 
   React.useEffect(() => {
@@ -112,18 +140,42 @@ const SplitDetailsScreen = ({ route, navigation }) => {
 
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontWeight: "bold", fontSize: 16 }} numberOfLines={1} ellipsizeMode="tail" >
-            ₹ {split.amount.toFixed(2)}
+            {formatCurrency(split.amount, selectedCurrencyId, theme, {
+              iconSize: 12,
+              textVariant: "titleMedium",
+            })}
           </Text>
           {
             split.youAreOwedForThisSplit !== 0 || split.youOweForThisSplit !== 0 ? (
-            <Text style={{ color: split.paidBy === username ? "green" : "red", flexShrink: 1, textAlign: "right", }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Text
+                style={{
+                  color: split.paidBy === username ? "green" : "red",
+                  textAlign: "right",
+                }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
+                {split.paidBy === username ? "You receive: " : "You pay: "}
+              </Text>
+
               {split.paidBy === username
-                ? `You receive: ${split.youAreOwedForThisSplit}`
-                : `You pay: ${split.youOweForThisSplit}`}
-            </Text>
+                ? formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, {
+                    iconSize: 12,
+                    textVariant: "titleMedium",
+                  })
+                : formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, {
+                    iconSize: 12,
+                    textVariant: "titleMedium",
+                  })}
+            </View>
+
             ) : (
               <View style={{marginRight: 10}}>
                 <Icon name="check" size={24} color={theme.dark.surfaceTint} />
@@ -141,11 +193,21 @@ const SplitDetailsScreen = ({ route, navigation }) => {
       <View style={styles.summaryRow}>
         <Card style={[styles.summaryCard, { backgroundColor: "#1d581dff" }]}>
           <Text style={styles.summaryTitle}>Others owe you</Text>
-          <Text style={styles.summaryAmount}>₹ {youAreOwed}</Text>
+          <Text style={styles.summaryAmount}>
+            {formatCurrency(youAreOwed, selectedCurrencyId, theme, {
+              iconSize: 12,
+              textVariant: "titleMedium",
+            })}
+          </Text>
         </Card>
         <Card style={[styles.summaryCard, { backgroundColor: "#631212ff" }]}>
           <Text style={styles.summaryTitle}>You owe others</Text>
-          <Text style={styles.summaryAmount}>₹ {youOwe}</Text>
+          <Text style={styles.summaryAmount}>
+            {formatCurrency(youOwe, selectedCurrencyId, theme, {
+              iconSize: 12,
+              textVariant: "titleMedium",
+            })}
+          </Text>
         </Card>
       </View>
 

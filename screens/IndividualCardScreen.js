@@ -14,6 +14,9 @@ import { Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import { parseISO, format } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -22,6 +25,8 @@ const IndividualCardScreen = ({ route }) => {
   // const { theme, updateTheme, resetTheme } = useMaterial3Theme();
     const { theme, initialized, themeColor } = useThemeContext(); 
   const styles = makeStyles(theme);
+
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
 
   const {
     cardName = "Visa",
@@ -44,26 +49,25 @@ const IndividualCardScreen = ({ route }) => {
         setExpiry(route.params.expiryDate || "29/4");
         setTxns(route.params.transactions || []);
       }
+
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+
+      getCurrency();
     }, [route.params])
   );
 
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          margin: 20,
-          paddingTop: 20,
-        }}
-      >
-        <Text variant="displayLarge">$2,800</Text>
-        <Text variant="titleSmall" style={{ paddingTop: 10 }}>
-          Available Balance
-        </Text>
-      </View>
-
       <View>
         <View style={styles.card}>
           {/* Top Section */}
@@ -98,7 +102,11 @@ const IndividualCardScreen = ({ route }) => {
         renderItem={({ item }) => (
           <View style={styles.transactionItem}>
             <Text style={styles.txnTitle}>{item.title}</Text>
-            <Text style={styles.txnAmount}>₹{item.amount}</Text>
+            <Text style={styles.txnAmount}>
+              {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                  iconSize: 10
+                })}
+            </Text>
           </View>
         )}
       />

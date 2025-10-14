@@ -1,21 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useThemeContext } from "../context/ThemeContext";
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Dialog, Portal, Text, Switch, Button } from 'react-native-paper';
+import { Dialog, Portal, Text, Switch, Button, TextInput } from 'react-native-paper';
 import { setBiometricPreference, getBiometricPreference } from '../helper/biometricStorage';
 import * as Notifications from 'expo-notifications';
 import { requestNotificationPermission } from '../helper/notifications';
+import { useFocusEffect } from '@react-navigation/native';
+import { IconComponent } from "../components/IconPicker";
+
+const currencyObj = [
+  { id: 1, name: "Indian Rupee (INR)", iconName: "rupee-sign", iconType: "FontAwesome5" },
+  { id: 2, name: "Euro (EUR)", iconName: "euro", iconType: "FontAwesome" },
+  { id: 3, name: "British Pound Sterling (GBP)", iconName: "pound-sign", iconType: "FontAwesome5" },
+  { id: 5, name: "Japanese Yen (JPY)", iconName: "yen", iconType: "FontAwesome" },
+  { id: 6, name: "United States Dollar (USD)", iconName: "dollar", iconType: "FontAwesome" },
+  { id: 7, name: "South Korean Won (KRW)", iconName: "won", iconType: "FontAwesome" },
+  { id: 8, name: "Russian Ruble (RUB)", iconName: "ruble", iconType: "FontAwesome" },
+  { id: 9, name: "Turkish Lira (TRY)", iconName: "turkish-lira", iconType: "FontAwesome" },
+  { id: 10, name: "Ukrainian Hryvnia (UAH)", iconName: "hryvnia", iconType: "FontAwesome5" },
+  { id: 11, name: "Swiss Franc (CHF)", iconName: "currency-franc", iconType: "MaterialIcons" },
+  { id: 12, name: "Brazilian Real (BRL)", iconName: "brazilian-real-sign", iconType: "FontAwesome6" },
+  { id: 13, name: "Mexican Peso (MXN)", iconName: "peso-sign", iconType: "FontAwesome6" },
+];
 
 const SettingsScreen = ({ navigation }) => {
+  const [newName, setNewName] = useState('');
+  const [nameError, setNameError] = useState("");
+  const [nameDialogVisible, setNameDialogVisible] = useState(false);
+  const showNameDialog = () => setNameDialogVisible(true);
+  const hideNameDialog = () => setNameDialogVisible(false);
+  const validateName = (text) => {
+    const regex = /^[A-Za-z0-9_-]+$/;
+    if (text.trim().length === 0) {
+      setNameError("Name cannot be empty.");
+      return false;
+    } else if (!regex.test(text)) {
+      setNameError(
+        "Only letters, numbers, underscores (_) and hyphens (-) are allowed."
+      );
+      return false;
+    } else {
+      setNameError("");
+      return true;
+    }
+  };
+
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [turnNotificationsOn, setTurnNotificationsOn] = useState(false);
 
@@ -36,9 +75,50 @@ const SettingsScreen = ({ navigation }) => {
 
   const themeColors = ['#FF1744', '#F50057', '#D500F9', '#2979FF', '#00B0FF', '#C6FF00', '#FFC400', '#FF3D00'];
 
+  const [currencyChangeDialog, setCurrencyChangeDialog] = useState(false);
+  const showCurrencyChangeDialog = () => setCurrencyChangeDialog(true);
+  const hideCurrencyChangeDialog = () => setCurrencyChangeDialog(false);
+  const [selectedCurrencyId, setSelectedCurrencyId] = useState(currencyObj[0].id);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const name = await AsyncStorage.getItem("username");
+          setNewName(name);
+        } catch (error) {
+          console.error("Failed to load data:", error);
+        }
+      };
+      fetchData();
+    }, [])
+  );
+
+  const handleNameChange = () => {
+    showNameDialog();
+  }
+
+  const saveUpdatedName = async () => {
+    const isValid = validateName(newName);
+    if (!isValid) return;
+
+    await AsyncStorage.setItem("username", newName);
+    setNewName('');
+    hideNameDialog();
+  }
+
+  const handleCurrencyChange = () => {
+    showCurrencyChangeDialog();
+  }
+
+  const saveUpdatedCurrency = async () => {
+    await AsyncStorage.setItem("currencyId", selectedCurrencyId.toString());
+    hideCurrencyChangeDialog();
+  }
+
   const settingsItems = [
-    { title: 'Change name', icon: 'person-outline', onPress: () => {} },
-    { title: 'Currency Change', icon: 'cash-outline', onPress: () => {} },
+    { title: 'Change name', icon: 'person-outline', onPress: handleNameChange },
+    { title: 'Currency Change', icon: 'cash-outline', onPress: handleCurrencyChange },
     {
       title: 'Lock App',
       icon: 'lock-closed-outline',
@@ -138,7 +218,11 @@ const SettingsScreen = ({ navigation }) => {
   
 
   const renderItem = ({ item }) => (
-    <View>
+   <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={item.onPress}
+      disabled={item.toggleLock || item.toggleNotifications} // disable touch for toggles
+    >
       <View style={styles.itemContainer}>
         <View
           style={{
@@ -178,9 +262,7 @@ const SettingsScreen = ({ navigation }) => {
           )
           
           : (
-            <TouchableOpacity onPress={item.onPress} style={styles.arrowWrapper}>
-              <Icon name="chevron-forward" size={20} color="#aaa" />
-            </TouchableOpacity>
+            <Icon name="chevron-forward" size={20} color="#aaa" />
           )}
         </View>
       </View>
@@ -197,8 +279,51 @@ const SettingsScreen = ({ navigation }) => {
           />
         </View>
       )} */}
-    </View>
+    </TouchableOpacity>
   );
+
+  const renderCurrencyItem = ({ item }) => {
+    const windowWidth = Dimensions.get("window").width;
+    const itemSize = (windowWidth - 60) / 3; // square box with padding
+    const isSelected = item.id === selectedCurrencyId;
+
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => setSelectedCurrencyId(item.id)}
+          activeOpacity={0.9}
+          style={{
+            width: itemSize,
+            height: itemSize,
+            margin: 10,
+            borderRadius: 20,
+            borderWidth: isSelected ? 5 : 1,
+            borderColor: isSelected ? theme.dark.primary : theme.dark.tertiaryContainer,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ padding: 10, gap: 10, alignItems: "center" }}>
+            <IconComponent
+              name={item.iconName}
+              category={item.iconType}
+              size={20}
+              color={theme.dark.primaryContainer}
+            />
+            <Text
+              variant="titleSmall"
+              style={{ textAlign: "center", padding: 10 }}
+              allowFontScaling={false}
+              ellipsizeMode="tail"
+              numberOfLines={3}
+            >
+              {item.name}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   useEffect(() => {
     (async () => {
@@ -278,6 +403,67 @@ const SettingsScreen = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      {/* Name change dialog box */}
+      <Portal>
+        <Dialog visible={nameDialogVisible} onDismiss={hideNameDialog}>
+          <Dialog.Title>Change Name</Dialog.Title>
+          <Text variant="bodySmall" style={{ paddingHorizontal: 24 }}>Note: Old name in splits will still be used.</Text>
+          <Dialog.Content>
+            <TextInput
+              label={
+                <Text style={{ color: theme.dark.primary }}>
+                  {"Update name"}
+                </Text>
+              }
+              style={{ backgroundColor: "transparent" }}
+              textColor={theme.dark.primary}
+              selectionColor={theme.dark.primaryContainer}
+              value={newName}
+              underlineColor={theme.dark.primary}
+              activeUnderlineColor={theme.dark.primary}
+              onChangeText={setNewName}
+              autoFocus
+            />
+            {nameError ? (
+              <Text
+                style={{
+                  color: "#ff4d4d",
+                  fontSize: 13,
+                  marginTop: 6,
+                }}
+              >
+                {nameError}
+              </Text>
+            ) : null}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideNameDialog}>Cancel</Button>
+            <Button onPress={saveUpdatedName}>Save</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      {/* Currency change menu */}
+      <Portal>
+        <Dialog visible={currencyChangeDialog} onDismiss={hideCurrencyChangeDialog}>
+          <Dialog.Title>Select Currency</Dialog.Title>
+          <Dialog.Content>
+            <FlatList
+              data={currencyObj}
+              renderItem={renderCurrencyItem}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={2}
+              style={{height: 500}}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideCurrencyChangeDialog}>Cancel</Button>
+            <Button onPress={saveUpdatedCurrency}>Save</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
     </View>
   );
 };
