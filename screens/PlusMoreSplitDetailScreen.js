@@ -104,14 +104,14 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
     let pendingAmount = amount - total;
     return (
       <View style={{marginBottom: 10, marginTop: 10}}>
-        <Text style={{ color: "white" }}>
-          {""}Pending amount: {""}
+        <View style={{ flexDirection: "row" }}>
+          <Text> Pending amount: {""} </Text>
           <Text style={pendingAmount < 0 ? { color: "red" } : { color: "green" }}>
             {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
               iconSize: 12,
             })}
           </Text>
-        </Text>
+        </View>
       </View>
     );
   };
@@ -124,19 +124,24 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
 
     return (
       <View style={{ marginBottom: 10, marginTop: 10 }}>
-        <Text style={{ color: "white" }}>
-          Pending percentage:{" "}
-          <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
-            {pendingPercent}%
-          </Text>
-          {"\t\t | \t\t"}Pending amount:
-          <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
-            {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
-              iconSize: 12,
-              // textVariant: "titleMedium",
-            })}
-          </Text>
-        </Text>
+        <View>
+          <View style={{ flexDirection: "row" }}>
+            <Text> Pending percentage:{" "} </Text>
+            <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>{pendingPercent}%</Text>
+          </View>
+
+
+          <View style={{ flexDirection: "row" }}>
+            <Text> Pending amount:{" "} </Text>
+            <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
+              {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
+                iconSize: 12,
+                // textVariant: "titleMedium",
+              })}
+            </Text>
+          </View>
+
+        </View>
       </View>
 
     );
@@ -329,7 +334,7 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
         data={members}
         keyExtractor={(item, index) => index.toString()}
         ListHeaderComponent={() => (
-          <View style={[styles.memberRow, { marginBottom: 5 }]}>
+          <View style={[styles.memberRow, { marginBottom: 5, marginLeft: 5 }]}>
             <Text style={[styles.headerText, { flex: 0.25 }]}>Paid by</Text>
             <Text style={[styles.headerText, { flex: 1 }]}>Name</Text>
             <Text style={[styles.headerText, { width: 100 }]}>Amount</Text>
@@ -398,6 +403,7 @@ const makeStyles = (theme) =>
       flexDirection: "row",
       alignItems: "center",
       marginBottom: 8,
+      marginLeft: 6
     },
     memberName: { flex: 1, fontSize: 16, marginLeft: 20 },
     amountInput: { width: 100, height: 40 },

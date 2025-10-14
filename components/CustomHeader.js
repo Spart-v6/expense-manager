@@ -8,6 +8,21 @@ import { useThemeContext } from "../context/ThemeContext";
 import { SearchContext } from "../context/SearchContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const getGreeting = () => {
+  const currentHour = new Date().getHours();
+
+  if (currentHour >= 5 && currentHour < 12) {
+    return "Good morning";
+  } else if (currentHour >= 12 && currentHour < 17) {
+    return "Good afternoon";
+  } else if (currentHour >= 17 && currentHour < 21) {
+    return "Good evening";
+  } else {
+    return "Good night";
+  }
+};
+
+
 const routeConfig = {
   "Home": ['HomeScreen', 'Home'],
   "Settings": ['SettingsScreen', 'Settings'],
@@ -135,7 +150,7 @@ const CustomHeader = ({ navigation }) => {
               title={
                 greetingAlreadyShown
                   ? displayTitle
-                  : "Good evening, " + username + "!"
+                  : `${getGreeting()}, ${username}!`
               }
               style={{
                 alignContent: "center",

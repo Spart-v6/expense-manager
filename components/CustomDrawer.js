@@ -133,7 +133,7 @@ const CustomDrawer = (props) => {
             state?.routeNames[state.index] === "Settings" && styles.activeItem,
           ]}
         />
-        <DrawerItem
+        {/* <DrawerItem
           label="Reports"
           icon={({ color, size }) => {
             const isFocused = state?.routeNames[state.index] === "Reports";
@@ -162,7 +162,7 @@ const CustomDrawer = (props) => {
             styles.drawerItem,
             state?.routeNames[state.index] === "Reports" && styles.activeItem,
           ]}
-        />
+        /> */}
       </View>
 
       <Divider

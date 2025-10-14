@@ -17,6 +17,7 @@ import * as Notifications from 'expo-notifications';
 import { requestNotificationPermission } from '../helper/notifications';
 import { useFocusEffect } from '@react-navigation/native';
 import { IconComponent } from "../components/IconPicker";
+import { colorNames } from '../helper/colorNames';
 
 const currencyObj = [
   { id: 1, name: "Indian Rupee (INR)", iconName: "rupee-sign", iconType: "FontAwesome5" },
@@ -73,7 +74,7 @@ const SettingsScreen = ({ navigation }) => {
   const [lockAppEnabled, setLockAppEnabled] = React.useState(false);
   const [lockImmediately, setLockImmediately] = React.useState(false);
 
-  const themeColors = ['#FF1744', '#F50057', '#D500F9', '#2979FF', '#00B0FF', '#C6FF00', '#FFC400', '#FF3D00'];
+  const themeColors = ['#FF1744', '#F50057', '#AF52DE', '#2979FF', '#33beffff', '#C6FF00', '#FFC400', '#FF3D00'];
 
   const [currencyChangeDialog, setCurrencyChangeDialog] = useState(false);
   const showCurrencyChangeDialog = () => setCurrencyChangeDialog(true);
@@ -359,23 +360,34 @@ const SettingsScreen = ({ navigation }) => {
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>Choose theme</Dialog.Title>
           <Dialog.Content>
-            {themeColors.map((color, index) => (
-              <View key={color}>
-                <Text variant="bodyMedium">{color}</Text>
-                <TouchableOpacity
-                  onPress={async () => {
-                    await setThemeColor(color);
-                    hideDialog();
-                  }}
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+              {themeColors.map((color) => (
+                <View
+                  key={color}
                   style={{
-                    backgroundColor: color,
-                    height: 50,
-                    marginVertical: 5,
-                    borderRadius: 5,
+                    alignItems: "center",
+                    margin: 10,
                   }}
-                />
+                >
+                  <TouchableOpacity
+                    onPress={async () => {
+                      await setThemeColor(color);
+                      hideDialog();
+                    }}
+                    style={{
+                      backgroundColor: color,
+                      height: 50,
+                      width: 50,
+                      borderRadius: 10,
+                    }}
+                  />
+                  <Text style={{ marginTop: 5, color: "white" }}>
+                    {colorNames[color] || color}
+                  </Text>
+                </View>
+              ))}
             </View>
-            ))}
+
             <Button
                 onPress={async () => {
                   await resetThemeColor();

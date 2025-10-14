@@ -65,13 +65,13 @@ export default function BottomTabNavigator() {
           tabBarIcon: () => require("../assets/share.svg"),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Payments"
         component={PaymentStackNavigator}
         options={{
           tabBarIcon: () => require("../assets/loop.svg"),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 }

@@ -1,10 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { View, FlatList } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { SearchContext } from "../context/SearchContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, parseISO } from "date-fns";
 import Fuse from "fuse.js"; // for fuzzy searching (can type anything and it will find matches)
+import currencyObj from "../helper/currencyObj";
+import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import { useThemeContext } from "../context/ThemeContext";
 
 const options = {
   keys: ["title"],   // search inside `transaction.title`
@@ -12,8 +16,10 @@ const options = {
 };
 
 const SearchScreen = ({ navigation }) => {
+  const { theme } = useThemeContext();
   const { searchQuery } = useContext(SearchContext);
   const [transactions, setTransactions] = useState([]);
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
 
   useEffect(() => {
     const loadTransactions = async () => {
@@ -27,6 +33,23 @@ const SearchScreen = ({ navigation }) => {
     };
     loadTransactions();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      getCurrency();
+    }, [])
+  );
+  
 
   const fuse = new Fuse(transactions, options);
 
@@ -83,7 +106,9 @@ const SearchScreen = ({ navigation }) => {
                         {format(new Date(transaction.date), "PPP")}
                       </Text>
                       <Text variant="titleMedium" style={{ fontWeight: "600", color: transaction.amount < 0 ? "red" : "green", }}>
-                        ₹{transaction.amount}
+                        {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                          iconSize: 10
+                        })}
                       </Text>
                     </View>
                   </Card.Content>

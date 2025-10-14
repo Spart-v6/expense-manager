@@ -154,7 +154,6 @@ const PlusMoreHome = ({ navigation, route }) => {
               ) : 
               cardsData.map((card) => {
                 const isSelected = selectedCardId === card.id;
-                const formattedExpiryDate = format(parseISO(card.expiryDate), "MM-yy");
                 return (
                   <TouchableWithoutFeedback key={card.id} onPress={() => setSelectedCardId(card.id)}>
                     <View
@@ -165,12 +164,12 @@ const PlusMoreHome = ({ navigation, route }) => {
                             ? theme[colorScheme].primary
                             : theme[colorScheme].surfaceDim,
                           elevation: isSelected ? 4 : 2,
+                          gap: 10
                         },
                       ]}
                     >
                       <Text style={[isSelected ? styles.cardTitle : {color: theme.dark.primary }]}>{card.name}</Text>
-                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>**** {card.last4Digits}</Text>
-                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{formattedExpiryDate}</Text>
+                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.last4Digits}</Text>
                     </View>
                   </TouchableWithoutFeedback>
                 );

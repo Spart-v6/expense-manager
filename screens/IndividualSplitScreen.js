@@ -220,13 +220,19 @@ const IndividualSplitScreen = ({ route }) => {
   return (
     <View>
       <View style={{ padding: 15 }}>
-        <Text>
-          Total amount:
-          {formatCurrency(split.amount, selectedCurrencyId, theme, {
-            iconSize: 12,
-            textVariant: "titleMedium",
-          })},
-          paid by{" "}
+        <View style={{ justifyContent: "center", flexDirection: 'row'}}>
+          <Text variant="titleMedium">
+            Total amount: {" "}
+          </Text>
+          <Text>
+            {formatCurrency(split.amount, selectedCurrencyId, theme, {
+              iconSize: 12,
+              textVariant: "titleMedium",
+            })}
+          </Text>
+        </View>
+        <Text style={{ justifyContent: "center", alignSelf: "center"}}>
+          Paid by{" "}
           {split.paidBy === username ? "you" : split.paidBy}
         </Text>
 
