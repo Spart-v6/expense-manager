@@ -79,6 +79,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
         const storedSplits = await AsyncStorage.getItem("splits");
         const youAreOwedAmount = await AsyncStorage.getItem("youAreOwed");
         const youOweAmount = await AsyncStorage.getItem("youOwe");
+        
         if (storedSplits) {
           const parsedSplits = JSON.parse(storedSplits);
           const groupSplits = parsedSplits.filter(
@@ -192,7 +193,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.summaryRow}>
         <Card style={[styles.summaryCard, { backgroundColor: "#1d581dff" }]}>
-          <Text style={styles.summaryTitle}>Others owe you</Text>
+          <Text style={styles.summaryTitle}>Others owe you (Total)</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youAreOwed, selectedCurrencyId, theme, {
               iconSize: 12,
@@ -201,7 +202,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
           </Text>
         </Card>
         <Card style={[styles.summaryCard, { backgroundColor: "#631212ff" }]}>
-          <Text style={styles.summaryTitle}>You owe others</Text>
+          <Text style={styles.summaryTitle}>You owe others (Total)</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youOwe, selectedCurrencyId, theme, {
               iconSize: 12,
@@ -216,9 +217,12 @@ const SplitDetailsScreen = ({ route, navigation }) => {
         {splits.length > 0 ? (
           splits.map((split) => renderSplitCard(split))
         ) : (
-          <Text style={{ textAlign: "center", marginTop: 20 }}>
-            No splits yet. Add one using the + button.
-          </Text>
+          <View style={styles.emptyState}>
+            <Text style={styles.heading}>No splits yet</Text>
+            <Text style={styles.heading}>
+              <Text style={styles.highlight}>Add one</Text> using the + button 
+            </Text>
+          </View>
         )}
       </View>
 
@@ -268,7 +272,7 @@ StyleSheet.create({
         alignItems: "center",
     },
     summaryTitle: { fontSize: 14, fontWeight: "bold" },
-    summaryAmount: { fontSize: 18, fontWeight: "bold" },
+    summaryAmount: { fontSize: 18, fontWeight: "bold", justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center", textAlign: "center" },
     fab: {
         backgroundColor: theme.dark.primaryContainer,
         position: "absolute",
@@ -281,6 +285,27 @@ StyleSheet.create({
         paddingVertical: 2,
         borderRadius: 0,
         backgroundColor: theme[colorScheme].primaryContainer
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    heading: {
+      fontSize: 18,
+      textAlign: "center",
+      marginBottom: 5,
+    },
+    highlight: {
+      color: theme.dark.primary,
+    },
+    subText: {
+      textAlign: "center",
+      marginTop: 10,
+      marginBottom: 20,
+      fontSize: 14,
+      opacity: 0.7,
     },
 });
 

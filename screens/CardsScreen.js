@@ -100,6 +100,7 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPre
       cardName: item.cardNetwork,
       last4: item.last4Digits,
       expiryDate: item.expiryDate,
+      paymentType: item.paymentType,
       transactions: simplifiedTransactions,
     });
   };
@@ -260,8 +261,10 @@ export default function CardsScreen({ navigation }) {
     <View style={styles.container}>
       {cards.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.heading}>No cards yet</Text>
-          <Text style={styles.subText}>Tap + to create one!</Text>
+          <Text style={styles.heading}>You haven’t created any cards.</Text>
+          <Text style={styles.heading}>
+            Tap + to <Text style={styles.highlight}>create one!</Text>
+          </Text>
         </View>
       ) : (
         <Animated.FlatList
@@ -396,7 +399,7 @@ const makeStyles = (theme) =>
       paddingHorizontal: 20,
     },
     heading: {
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: "bold",
       textAlign: "center",
       marginBottom: 5,

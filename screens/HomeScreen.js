@@ -306,8 +306,16 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         {
           transactions.length <= 0 ? (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", marginBottom: 150 }}>
-              <Text style={styles.subText}>Add your first transaction to get started!</Text>
+            <View style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 150
+            }}>
+              <Text style={styles.heading}>Add your first transaction to get started!</Text>
+              <Text style={styles.heading}>
+                Tap <Text style={styles.highlight}>+</Text> to add one now.
+              </Text>
             </View>
           ): (
             <FlatList
@@ -452,6 +460,15 @@ const makeStyles = (theme) =>
       marginBottom: 20,
       fontSize: 14,
       opacity: 0.7,
+    },
+    heading: {
+      fontSize: 18,
+      fontWeight: "bold",
+      textAlign: "center",
+      marginBottom: 5,
+    },
+    highlight: {
+      color: theme.dark.primary,
     },
   });
 

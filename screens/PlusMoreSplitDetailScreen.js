@@ -231,7 +231,6 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
       const splits = storedSplits ? JSON.parse(storedSplits) : [];
       splits.push(newSplit);
       await AsyncStorage.setItem('splits', JSON.stringify(splits));
-      console.log('Split saved successfully!', splits);
       navigation.goBack();
     } catch (err) {
       console.error('Error saving Split', err);

@@ -39,6 +39,7 @@ const IndividualCardScreen = ({ route }) => {
   const [last4Digits, setLast4Digits] = React.useState(last4);
   const [expiry, setExpiry] = React.useState(expiryDate);
   const [txns, setTxns] = React.useState(transactions);
+  const [paymentType, setPaymentType] = React.useState("");
 
   useFocusEffect(
     React.useCallback(() => {
@@ -48,6 +49,7 @@ const IndividualCardScreen = ({ route }) => {
         setLast4Digits(route.params.last4 || "3534");
         setExpiry(route.params.expiryDate || "29/4");
         setTxns(route.params.transactions || []);
+        setPaymentType(route.params.paymentType || "");
       }
 
       const getCurrency = async () => {
@@ -81,7 +83,10 @@ const IndividualCardScreen = ({ route }) => {
 
             <View style={styles.topContent}>
               <Icon name="contactless-payment" size={24} color="white" />
-              <Text style={styles.visaText}>{name}</Text>
+              <View style={{flexDirection: "column", justifyContent: "space-between", alignItems: "flex-end"}}>
+                <Text style={styles.visaText}>{name}</Text>
+                <Text style={styles.paymentText}>{paymentType}</Text>
+              </View>
             </View>
           </View>
 
@@ -95,21 +100,29 @@ const IndividualCardScreen = ({ route }) => {
 
       {/* Transactions */}
       <Text style={{ margin: 20 }} variant="bodyLarge">Transactions</Text>
-      <FlatList
-        data={txns}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.transactions}
-        renderItem={({ item }) => (
-          <View style={styles.transactionItem}>
-            <Text style={styles.txnTitle}>{item.title}</Text>
-            <Text style={styles.txnAmount}>
-              {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
-                  iconSize: 10
-                })}
-            </Text>
-          </View>
-        )}
-      />
+      { txns.length === 0 ? (
+        <View style={{flex: 1, justifyContent: "center", alignItems: "center",}}>
+          <Icon name="credit-card-off" size={64} color={theme.dark.onSurface} />
+          <Text variant="bodyMedium" style={{marginTop: 10, color: theme.dark.onSurface}}>No transactions available</Text>
+          <Text>All expenses related to this card will be shown here</Text> 
+        </View>
+      ) : (
+        <FlatList
+          data={txns}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.transactions}
+          renderItem={({ item }) => (
+            <View style={styles.transactionItem}>
+              <Text style={styles.txnTitle}>{item.title}</Text>
+              <Text style={styles.txnAmount}>
+                {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                    iconSize: 10
+                  })}
+              </Text>
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -146,6 +159,10 @@ const makeStyles = (theme) =>
       color: "white",
       fontSize: 20,
       fontWeight: "bold",
+    },
+    paymentText: {
+      color: "grey",
+      fontSize: 20,
     },
     bottomSection: {
       flex: 1,

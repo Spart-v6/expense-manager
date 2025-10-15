@@ -74,7 +74,6 @@ const PlusMoreSplit = ({ navigation }) => {
       const groups = storedGroups ? JSON.parse(storedGroups) : [];
       groups.push(newGroup);
       await AsyncStorage.setItem('groups', JSON.stringify(groups));
-      console.log('Group saved successfully!', groups);
       navigation.goBack();
 
     } catch (err) {

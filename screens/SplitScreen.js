@@ -88,9 +88,9 @@ const SplitScreen = ({ navigation }) => {
     <View style={styles.container}>
       {groups.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.heading}>Split and share expenses</Text>
+          <Text style={styles.heading}>Keep track of shared costs</Text>
           <Text style={styles.heading}>
-            with <Text style={styles.highlight}>friends and family</Text>
+            for <Text style={styles.highlight}>trips, bills, or anything!</Text>
           </Text>
           <Text style={styles.subText}>Tap + to create a group</Text>
         </View>
@@ -163,7 +163,7 @@ const makeStyles = (theme, colorScheme) =>
       paddingHorizontal: 20,
     },
     heading: {
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: "bold",
       textAlign: "center",
       marginBottom: 5,

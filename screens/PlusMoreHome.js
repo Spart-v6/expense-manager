@@ -13,6 +13,9 @@ import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { format, parseISO } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
+import { formatCurrency } from "../helper/formatCurrency";
+import currencyObj from "../helper/currencyObj";
+import IconComponent from "../components/IconComponent";
 
 const PlusMoreHome = ({ navigation, route }) => {
   const { item } = route.params;
@@ -69,6 +72,8 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   const [cardsData, setCardsData] = useState([]);
 
+  const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
+
   useFocusEffect(
     useCallback(() => {
       const loadCards = async () => {
@@ -80,9 +85,20 @@ const PlusMoreHome = ({ navigation, route }) => {
           console.error("Failed to load cards", error);
         }
       };
+      const getCurrency = async () => {
+        try {
+          const storedId = await AsyncStorage.getItem("currencyId");
+          if (storedId) {
+            setSelectedCurrencyId(parseInt(storedId));
+          }
+        } catch (error) {
+          console.error("Failed to load currency:", error);
+        }
+      };
+      getCurrency();
       loadCards();
     }, [])
-  );
+  );  
 
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
@@ -129,7 +145,19 @@ const PlusMoreHome = ({ navigation, route }) => {
               onChangeText={setAmountTitle}
               style={styles.input}
               keyboardType="numeric"
-              left={<TextInput.Icon icon="currency-inr" />}
+              left={
+                  <TextInput.Icon
+                    icon={() => (
+                      <IconComponent
+                        iconSet={currencyObj[selectedCurrencyId - 1].iconType}
+                        iconName={currencyObj[selectedCurrencyId - 1].iconName}
+                        backgroundColor="transparent"
+                        color={theme.dark.onSurface}
+                        size={18}
+                      />
+                    )}
+                  />
+                }
             />
             <TextInput
               mode="outlined"
@@ -169,7 +197,10 @@ const PlusMoreHome = ({ navigation, route }) => {
                       ]}
                     >
                       <Text style={[isSelected ? styles.cardTitle : {color: theme.dark.primary }]}>{card.name}</Text>
-                      <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.last4Digits}</Text>
+                      <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                        <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.paymentType}</Text>
+                        <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.last4Digits}</Text>
+                      </View>
                     </View>
                   </TouchableWithoutFeedback>
                 );
