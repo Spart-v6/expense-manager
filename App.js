@@ -61,6 +61,17 @@ const AppContent = () => {
     if (initialized) checkBiometric();
   }, [initialized]);
 
+  useEffect(() => {
+    (async () => {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Default',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    })();
+  }, []);
+
 
   return (
     <PaperProvider theme={paperTheme}>

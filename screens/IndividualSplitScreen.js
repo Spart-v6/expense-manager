@@ -87,29 +87,32 @@ const IndividualSplitScreen = ({ route }) => {
         await AsyncStorage.setItem("splits", JSON.stringify(parsedSplits));
 
         // fetch global values
-        const [owedRaw, oweRaw] = await Promise.all([
-          AsyncStorage.getItem("youAreOwed"),
-          AsyncStorage.getItem("youOwe"),
-        ]);
+        const owedDataRaw = await AsyncStorage.getItem("groupOwedData");
+        let owedData = owedDataRaw ? JSON.parse(owedDataRaw) : {};
 
-        let youAreOwed = owedRaw ? JSON.parse(owedRaw) : 0;
-        let youOwe = oweRaw ? JSON.parse(oweRaw) : 0;
+        // Ensure the group exists
+        if (!owedData[groupId]) {
+          owedData[groupId] = { youAreOwed: 0, youOwe: 0 };
+        }
 
+        let { youAreOwed, youOwe } = owedData[groupId];
+
+        // Adjust values for this group only
         if (oldSplit) {
-          // remove old split contribution
+          // Remove old split’s contribution
           youAreOwed -= oldSplit.youAreOwedForThisSplit || 0;
           youOwe -= oldSplit.youOweForThisSplit || 0;
         }
 
-        // add new split contribution
+        // Add updated split’s contribution
         youAreOwed += updatedSplit.youAreOwedForThisSplit || 0;
         youOwe += updatedSplit.youOweForThisSplit || 0;
 
-        // save new totals
-        await Promise.all([
-          AsyncStorage.setItem("youAreOwed", JSON.stringify(youAreOwed)),
-          AsyncStorage.setItem("youOwe", JSON.stringify(youOwe)),
-        ]);
+        // Update back in the group object
+        owedData[groupId] = { youAreOwed, youOwe };
+
+        // Save all groupsdata
+        await AsyncStorage.setItem("groupOwedData", JSON.stringify(owedData));
       } catch (error) {
         console.error("Error updating split in storage:", error);
       }
@@ -144,10 +147,10 @@ const IndividualSplitScreen = ({ route }) => {
   const handleTappedMember = async (memberName, index) => {
     // Rules:
     if (split.paidBy === username) {
-      // you paid → can toggle others, but not yourself
+      // you paid -> can toggle others, but not yourself
       if (memberName === username) return;
     } else {
-      // you didn’t pay → can toggle only yourself
+      // you didn’t pay -> can toggle only yourself
       if (memberName !== username) return;
     }
 

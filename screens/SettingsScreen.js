@@ -178,31 +178,12 @@ const SettingsScreen = ({ navigation }) => {
       const granted = await requestNotificationPermission();
       if (granted) {
         await Notifications.cancelAllScheduledNotificationsAsync();
-  
-        const now = new Date();
-        const target = new Date();
-        target.setHours(20);
-        target.setMinutes(15);
-        target.setSeconds(0);
-  
-        if (now < target) {
-          // If it's before 20:15, schedule one-time for today
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: 'Time Test',
-              body: 'Scheduled for today at 20:15',
-            },
-            trigger: {
-              date: target,
-            },
-          });
-        }
-  
-        // Also schedule repeat from tomorrow onward
+
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: 'Time Test',
+            title: 'Daily Reminder',
             body: 'This will show every day at 20:15',
+            channelId: 'default',
           },
           trigger: {
             hour: 20,

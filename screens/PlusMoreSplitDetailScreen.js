@@ -8,35 +8,36 @@ import { useFocusEffect } from "@react-navigation/native";
 import { formatCurrency } from "../helper/formatCurrency";
 import currencyObj from "../helper/currencyObj";
 
-
-const updateOwedAggregates = async (split, username) => {
+const updateOwedAggregates = async (split, username, groupId) => {
   try {
-    // const username = await AsyncStorage.getItem('username'); // e.g. "Happy"
-    const [owedRaw, oweRaw] = await Promise.all([
-      AsyncStorage.getItem('youAreOwed'),
-      AsyncStorage.getItem('youOwe'),
-    ]);
+    const owedDataRaw = await AsyncStorage.getItem('groupOwedData');
+    let owedData = owedDataRaw ? JSON.parse(owedDataRaw) : {};
 
-    let youAreOwed = owedRaw ? JSON.parse(owedRaw) : 0;
-    let youOwe     = oweRaw ? JSON.parse(oweRaw) : 0;
-
-    const total     = Number(split.amount) || 0;
-    const yourShare = Number(split.memberAmounts?.[0]) || 0;
-
-    if (split.paidBy === username) {
-      // You paid → others owe you = total - your share
-      youAreOwed += (total - yourShare);
-    } else {
-      // Someone else paid → you owe your share
-      youOwe += yourShare;
+    // Ensure group entry exists
+    if (!owedData[groupId]) {
+      owedData[groupId] = { youAreOwed: 0, youOwe: 0 };
     }
 
-    await Promise.all([
-      AsyncStorage.setItem('youAreOwed', JSON.stringify(youAreOwed)),
-      AsyncStorage.setItem('youOwe', JSON.stringify(youOwe)),
-    ]);
+    const { youAreOwed, youOwe } = owedData[groupId];
 
-    return { youAreOwed, youOwe };
+    // Calculate new values
+    const total = Number(split.amount) || 0;
+    const yourShare = Number(split.memberAmounts?.[0]) || 0;
+
+    let newYouAreOwed = youAreOwed;
+    let newYouOwe = youOwe;
+
+    if (split.paidBy === username) {
+      newYouAreOwed += (total - yourShare);
+    } else {
+      newYouOwe += yourShare;
+    }
+    // Update the group's data
+    owedData[groupId] = { youAreOwed: newYouAreOwed, youOwe: newYouOwe };
+
+    await AsyncStorage.setItem('groupOwedData', JSON.stringify(owedData));
+
+    return owedData[groupId];
   } catch (e) {
     console.error('Failed updating owed aggregates', e);
     return null;
@@ -223,8 +224,8 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
       hasPaid // an array to keep track of who has paid in boolean values (since all index (in all diffferent arr) matches their names - amounts and has paid or not)
     };
 
-    // NOTE: Creating "You are owed", and "You owe" amounts for you (total aggregates)
-    await updateOwedAggregates(newSplit, username);
+    // NOTE: Creating "You are owed", and "You owe" amounts for you (total aggregates - for indivvidual groups)
+    await updateOwedAggregates(newSplit, username, groupId);
 
     try {
       const storedSplits = await AsyncStorage.getItem('splits');

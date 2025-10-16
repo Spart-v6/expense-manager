@@ -77,27 +77,30 @@ const SplitDetailsScreen = ({ route, navigation }) => {
     React.useCallback(() => {
       const loadSplits = async () => {
         const storedSplits = await AsyncStorage.getItem("splits");
-        const youAreOwedAmount = await AsyncStorage.getItem("youAreOwed");
-        const youOweAmount = await AsyncStorage.getItem("youOwe");
-        
+        const owedDataRaw = await AsyncStorage.getItem("groupOwedData");
         if (storedSplits) {
           const parsedSplits = JSON.parse(storedSplits);
           const groupSplits = parsedSplits.filter(
             (split) => split.groupId === groupId
           );
           setSplits(groupSplits);
-        };
-        if (youAreOwedAmount) {
-          const parsedYouAreOwed = JSON.parse(youAreOwedAmount);     
-          setYouAreOwed(Number(parsedYouAreOwed));
-        };
-        if (youOweAmount) {
-          const parsedYouOwe = JSON.parse(youOweAmount);
-          setYouOwe(Number(parsedYouOwe));
-        };
+        }
+
+        if (owedDataRaw) {
+          const owedData = JSON.parse(owedDataRaw);
+          const groupData = owedData[groupId] || { youAreOwed: 0, youOwe: 0 };
+
+          setYouAreOwed(Number(groupData.youAreOwed));
+          setYouOwe(Number(groupData.youOwe));
+        } else {
+          // if nothing stored yet
+          setYouAreOwed(0);
+          setYouOwe(0);
+        }
       };
+
       loadSplits();
-    }, [])
+    }, [groupId])
   );
   // TODO: Need to add deletion of a split logic 
 
@@ -193,7 +196,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.summaryRow}>
         <Card style={[styles.summaryCard, { backgroundColor: "#1d581dff" }]}>
-          <Text style={styles.summaryTitle}>Others owe you (Total)</Text>
+          <Text style={styles.summaryTitle}>Others owe you</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youAreOwed, selectedCurrencyId, theme, {
               iconSize: 12,
@@ -202,7 +205,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
           </Text>
         </Card>
         <Card style={[styles.summaryCard, { backgroundColor: "#631212ff" }]}>
-          <Text style={styles.summaryTitle}>You owe others (Total)</Text>
+          <Text style={styles.summaryTitle}>You owe others</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youOwe, selectedCurrencyId, theme, {
               iconSize: 12,
