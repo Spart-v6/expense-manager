@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   StyleSheet,
   useColorScheme,
@@ -16,6 +16,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { formatCurrency } from "../helper/formatCurrency";
 import currencyObj from "../helper/currencyObj";
 import IconComponent from "../components/IconComponent";
+import { DatePicker } from "@s77rt/react-native-date-picker";
+import DatePickerHandle from "@s77rt/react-native-date-picker";
 
 const PlusMoreHome = ({ navigation, route }) => {
   const { item } = route.params;
@@ -73,6 +75,9 @@ const PlusMoreHome = ({ navigation, route }) => {
   const [cardsData, setCardsData] = useState([]);
 
   const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
+
+  const datePicker = useRef<DatePickerHandle>(null);
+	const [selectedDate1, setSelectedDate1] = useState<Date | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -217,7 +222,7 @@ const PlusMoreHome = ({ navigation, route }) => {
             >
               {selectedDate.toDateString()}
             </Button>
-            {showDatePicker && (
+            {/* {showDatePicker && (
               <DateTimePicker
                 value={selectedDate}
                 mode="date"
@@ -228,7 +233,22 @@ const PlusMoreHome = ({ navigation, route }) => {
                 }}
                 textColor="red"
               />
-            )}
+            )} */}
+            <>
+            <Text>Selected date: {selectedDate1?.toLocaleDateString()}</Text>
+            <View>
+              <Button
+                title="Select date 📅"
+                onPress={() => datePicker.current?.showPicker()}
+              />
+              <DatePicker
+                ref={datePicker}
+                type="date"
+                value={selectedDate1}
+                onChange={setSelectedDate1}
+              />
+            </View>
+          </>
           </View>
 
           <View style={styles.bottomButton}>

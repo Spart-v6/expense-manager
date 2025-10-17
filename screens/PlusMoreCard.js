@@ -18,7 +18,7 @@ import {
   Snackbar,
   Chip
 } from "react-native-paper";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -190,14 +190,14 @@ const PlusMoreCard = ({ navigation }) => {
             {formatMonthYear(expiryDate)}
           </Button>
 
-          {showDatePicker && (
+          {/* {showDatePicker && (
             <DateTimePicker
               value={expiryDate}
               mode="date"
               display="spinner"
               onChange={onChangeDate}
             />
-          )}
+          )} */}
 
           <View style={styles.saveButtonContainer}>
             <Button
