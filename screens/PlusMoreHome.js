@@ -61,12 +61,7 @@ const PlusMoreHome = ({ navigation, route }) => {
     }
     return null;
   });
-  const [selectedDate, setSelectedDate] = useState(() => {
-    if (item && item.date) {
-      return new Date(item.date);
-    }
-    return new Date();
-  });
+
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -76,8 +71,14 @@ const PlusMoreHome = ({ navigation, route }) => {
 
   const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
 
-  const datePicker = useRef<DatePickerHandle>(null);
-	const [selectedDate1, setSelectedDate1] = useState<Date | null>(null);
+  const datePicker = useRef(null);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (item && item.date) {
+      return new Date(item.date);
+    }
+    return new Date();
+  });
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -211,41 +212,40 @@ const PlusMoreHome = ({ navigation, route }) => {
                 );
               })}
             </ScrollView>
-
-            <Text style={styles.sectionTitle}>Select Date</Text>
-            <Button
-              onPress={() => setShowDatePicker(true)}
-              mode="outlined"
-              icon="calendar"
-              textColor={theme[colorScheme].primary}
-              style={styles.dateButton}
-            >
-              {selectedDate.toDateString()}
-            </Button>
-            {/* {showDatePicker && (
-              <DateTimePicker
-                value={selectedDate}
-                mode="date"
-                display="default"
-                onChange={(event, date) => {
-                  setShowDatePicker(false);
-                  if (date) setSelectedDate(date);
-                }}
-                textColor="red"
-              />
-            )} */}
             <>
-            <Text>Selected date: {selectedDate1?.toLocaleDateString()}</Text>
             <View>
+              <Text style={styles.sectionTitle}>Select Date</Text>
               <Button
-                title="Select date 📅"
                 onPress={() => datePicker.current?.showPicker()}
-              />
+                mode="outlined"
+                icon="calendar"
+                textColor={theme[colorScheme].primary}
+                style={styles.dateButton}
+              >
+                {selectedDate?.toDateString()}
+              </Button>
               <DatePicker
                 ref={datePicker}
                 type="date"
-                value={selectedDate1}
-                onChange={setSelectedDate1}
+                value={selectedDate}
+                onChange={setSelectedDate}
+                styles={{
+                  containerColor: theme.dark.surface, 
+                  yearContentColor: theme.dark.tertiary,
+                  currentYearContentColor: theme.dark.onTertiaryContainer,
+                  dayContentColor: theme.dark.tertiary,
+                  dividerColor: theme.dark.outline,
+                  headlineContentColor: theme.dark.primary,
+                  navigationContentColor: theme.dark.primary,
+                  titleContentColor: theme.dark.onPrimaryContainer,
+                  todayContentColor: theme.dark.secondary,
+                  todayDateBorderColor: theme.dark.onSecondaryContainer,
+                  selectedYearContentColor: theme.dark.onPrimary,
+                  selectedYearContainerColor: theme.dark.primary,
+                  selectedDayContentColor: theme.dark.onPrimary,
+                  selectedDayContainerColor: theme.dark.primary
+                }}
+                options={{showModeToggle: false}}
               />
             </View>
           </>

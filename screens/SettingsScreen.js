@@ -7,7 +7,7 @@ import {
   useColorScheme,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useThemeContext } from "../context/ThemeContext";
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -216,7 +216,7 @@ const SettingsScreen = ({ navigation }) => {
             alignItems: 'center',
           }}
         >
-          <Icon name={item.icon} size={22} color={theme.dark.primary} />
+          <Ionicons name={item.icon} size={22} color={theme.dark.primary} />
         </View>
         <View
           style={{
@@ -244,7 +244,7 @@ const SettingsScreen = ({ navigation }) => {
           )
           
           : (
-            <Icon name="chevron-forward" size={20} color="#aaa" />
+            <Ionicons name="chevron-forward" size={20} color="#aaa" />
           )}
         </View>
       </View>

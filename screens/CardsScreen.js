@@ -18,7 +18,7 @@ import {
 } from "react-native-reanimated";
 import Animated, { withTiming, withSequence } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { FAB, Dialog, Portal, Button, Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
@@ -132,7 +132,7 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPre
         }}
       >
         <Text style={styles.type}>{item.type}</Text>
-        <Icon name="contactless-payment" size={24} color="#fff" />
+        <MaterialCommunityIcons name="contactless-payment" size={24} color="#fff" />
       </View>
       <View>
         <Text style={styles.number}>•••• {item.last4Digits}</Text>

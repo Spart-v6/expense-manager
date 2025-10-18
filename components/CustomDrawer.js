@@ -7,9 +7,8 @@ import {
   useColorScheme,
   SafeAreaView,
 } from "react-native";
-import Feather from "react-native-vector-icons/Feather";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import AntDesign from "react-native-vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { Divider, Text } from "react-native-paper";
 import appConfig from "../app.json";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";

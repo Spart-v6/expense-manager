@@ -5,5 +5,10 @@ const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro
 // Get the default Expo config
 const config = getDefaultConfig(__dirname);
 
+// Ignore watching gradle plugin folders
+config.watchFolders = config.watchFolders.filter(
+  folder => !folder.includes("@react-native/gradle-plugin")
+);
+
 // Wrap it with Reanimated's metro config
 module.exports = wrapWithReanimatedMetroConfig(config);

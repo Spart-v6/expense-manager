@@ -15,6 +15,8 @@ export const formatCurrency = (
   const selectedCurrency =
     currencyObj.find((c) => c.id === selectedCurrencyId) || currencyObj[0];
 
+  // console.log("selectedCurrency", selectedCurrency);
+
   const isNegative = amount < 0;
   const absAmount = Math.abs(amount);
 
@@ -36,8 +38,8 @@ export const formatCurrency = (
       )}
 
       <IconComponent
-        iconSet={selectedCurrency.iconType}
-        iconName={selectedCurrency.iconName}
+        iconSet={"FontAwesome5"}
+        iconName={"rupee-sign"}
         backgroundColor="transparent"
         color={theme.dark.onSurface}
         size={iconSize}

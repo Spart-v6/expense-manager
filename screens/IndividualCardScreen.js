@@ -7,7 +7,7 @@ import {
   useColorScheme,
   ScrollView,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Svg, { Circle } from "react-native-svg";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { Text } from "react-native-paper";
@@ -82,7 +82,7 @@ const IndividualCardScreen = ({ route }) => {
             </Svg>
 
             <View style={styles.topContent}>
-              <Icon name="contactless-payment" size={24} color="white" />
+              <MaterialCommunityIcons name="contactless-payment" size={24} color="white" />
               <View style={{flexDirection: "column", justifyContent: "space-between", alignItems: "flex-end"}}>
                 <Text style={styles.visaText}>{name}</Text>
                 <Text style={styles.paymentText}>{paymentType}</Text>
@@ -102,7 +102,7 @@ const IndividualCardScreen = ({ route }) => {
       <Text style={{ margin: 20 }} variant="bodyLarge">Transactions</Text>
       { txns.length === 0 ? (
         <View style={{flex: 1, justifyContent: "center", alignItems: "center",}}>
-          <Icon name="credit-card-off" size={64} color={theme.dark.onSurface} />
+          <MaterialCommunityIcons name="credit-card-off" size={64} color={theme.dark.onSurface} />
           <Text variant="bodyMedium" style={{marginTop: 10, color: theme.dark.onSurface}}>No transactions available</Text>
           <Text>All expenses related to this card will be shown here</Text> 
         </View>

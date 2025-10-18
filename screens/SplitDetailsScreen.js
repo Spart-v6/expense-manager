@@ -11,7 +11,7 @@ import {
   Card,
   Button,
 } from "react-native-paper";
-import Icon from "react-native-vector-icons/Octicons";
+import Octicons from "@expo/vector-icons/Octicons";
 import { useThemeContext } from "../context/ThemeContext";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -182,7 +182,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
 
             ) : (
               <View style={{marginRight: 10}}>
-                <Icon name="check" size={24} color={theme.dark.surfaceTint} />
+                <Octicons name="check" size={24} color={theme.dark.surfaceTint} />
               </View>
             )
           }
