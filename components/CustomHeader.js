@@ -55,7 +55,7 @@ const CustomHeader = ({ navigation }) => {
 
   const colorScheme = useColorScheme();
   // const { theme } = useMaterial3Theme();
-    const { theme, initialized, themeColor } = useThemeContext(); 
+  const { theme, initialized, themeColor } = useThemeContext(); 
 
   const navState = useNavigationState((state) => state);
 
@@ -175,16 +175,16 @@ const CustomHeader = ({ navigation }) => {
           title={
             <TextInput
               label={
-                <Text style={{ color: theme.dark.primary }}>
+                <Text style={{ color: theme[colorScheme].primary }}>
                   {"Search your expenses"}
                 </Text>
               }
               style={{ backgroundColor: "transparent" }}
-              textColor={theme.dark.primary}
-              selectionColor={theme.dark.primaryContainer}
+              textColor={theme[colorScheme].primary}
+              selectionColor={theme[colorScheme].primaryContainer}
               value={searchQuery}
-              underlineColor={theme.dark.primary}
-              activeUnderlineColor={theme.dark.primary}
+              underlineColor={theme[colorScheme].primary}
+              activeUnderlineColor={theme[colorScheme].primary}
               onChangeText={setSearchQuery}
               autoFocus
             />
@@ -195,14 +195,14 @@ const CustomHeader = ({ navigation }) => {
           onPress={() => {
             setSearchQuery("");
           }}
-          color={theme.dark.primary}
+          color={theme[colorScheme].primary}
         />
       </View>
     )}
   }
 
   return (
-    <Appbar.Header style={{ backgroundColor: theme.dark.surfaceDim }}>
+    <Appbar.Header style={{ backgroundColor: theme[colorScheme].surfaceDim }}>
       {showMenu && !showBack && (
         <Appbar.Action
           icon="menu"

@@ -107,10 +107,11 @@ const SplitScreen = ({ navigation }) => {
               alignItems: "center" 
             }}>
               <Text style={{ 
-                fontSize: 18, 
-                fontWeight: "600", 
-                opacity: 0.6,
-                textAlign: "center"
+                fontSize: 20, 
+                fontWeight: "bold", 
+                opacity: 0.8,
+                textAlign: "center",
+                color: theme[colorScheme].tertiary,
               }}>
                 Manage your groups here
               </Text>

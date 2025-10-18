@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
 import { Text, TouchableRipple, DataTable } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import { format, parseISO } from "date-fns";
 
 const IndividualSplitScreen = ({ route }) => {
   const { splitId, groupId, createdAt } = route.params;
+  const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
   const [group, setGroup] = React.useState(null);
   const [split, setSplit] = React.useState(null);
@@ -212,7 +213,7 @@ const IndividualSplitScreen = ({ route }) => {
             },
           ]}
         >
-        {formatCurrency(item.amount, selectedCurrencyId, theme, {
+        {formatCurrency(item.amount, selectedCurrencyId, theme, colorScheme, "", {
           iconSize: 12,
           textVariant: "titleMedium",
         })}
@@ -230,7 +231,7 @@ const IndividualSplitScreen = ({ route }) => {
             Total amount: {" "}
           </Text>
           <Text>
-            {formatCurrency(split.amount, selectedCurrencyId, theme, {
+            {formatCurrency(split.amount, selectedCurrencyId, theme, colorScheme, "", {
               iconSize: 12,
               textVariant: "titleMedium",
             })}
@@ -260,7 +261,7 @@ const IndividualSplitScreen = ({ route }) => {
           <View style={styles.row}>
             <View style={styles.cell}>
               <Text>
-                {formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, {
+                {formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, colorScheme, "", {
                   iconSize: 12,
                   textVariant: "titleMedium",
                 }) || 0}
@@ -268,7 +269,7 @@ const IndividualSplitScreen = ({ route }) => {
             </View>
             <View style={styles.cell}>
               <Text>
-                {formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, {
+                {formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, colorScheme, "", {
                   iconSize: 12,
                   textVariant: "titleMedium",
                 }) || 0}

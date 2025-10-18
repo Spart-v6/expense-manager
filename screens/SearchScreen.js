@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { View, FlatList } from "react-native";
+import { View, FlatList, useColorScheme } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { SearchContext } from "../context/SearchContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,6 +17,7 @@ const options = {
 
 const SearchScreen = ({ navigation }) => {
   const { theme } = useThemeContext();
+  const colorScheme = useColorScheme();
   const { searchQuery } = useContext(SearchContext);
   const [transactions, setTransactions] = useState([]);
   const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
@@ -106,7 +107,9 @@ const SearchScreen = ({ navigation }) => {
                         {format(new Date(transaction.date), "PPP")}
                       </Text>
                       <Text variant="titleMedium" style={{ fontWeight: "600", color: transaction.amount < 0 ? "red" : "green", }}>
-                        {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                        {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, colorScheme, 
+                        transaction.amount < 0 && "#ff4d4d",
+                        {
                           iconSize: 10
                         })}
                       </Text>

@@ -8,6 +8,8 @@ export const formatCurrency = (
   amount,
   selectedCurrencyId,
   theme,
+  colorScheme,
+  textColor = "",
   options = {}
 ) => {
   const { showSign = true, textVariant = "bodyMedium", iconSize = 18 } = options;
@@ -32,7 +34,7 @@ export const formatCurrency = (
   return (
     <View style={{ flexDirection: "row", alignItems: "baseline",  }}>
       {showSign && isNegative && (
-        <Text variant={textVariant} style={{ marginRight: 2 }}>
+        <Text variant={textVariant} style={[ textColor && {color: textColor} ,{ marginRight: 2 }]}>
           -
         </Text>
       )}
@@ -41,12 +43,12 @@ export const formatCurrency = (
         iconSet={"FontAwesome5"}
         iconName={"rupee-sign"}
         backgroundColor="transparent"
-        color={theme.dark.onSurface}
+        color={theme[colorScheme].onSurface}
         size={iconSize}
         style={{ marginRight: 1 }}
       />
 
-      <Text variant={textVariant}>{formattedAmount}</Text>
+      <Text variant={textVariant} style={[textColor && {color: textColor}]}>{formattedAmount}</Text>
     </View>
   );
 };

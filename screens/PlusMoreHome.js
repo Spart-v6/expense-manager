@@ -7,7 +7,6 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { Button, Text, TextInput, Snackbar } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,7 +16,6 @@ import { formatCurrency } from "../helper/formatCurrency";
 import currencyObj from "../helper/currencyObj";
 import IconComponent from "../components/IconComponent";
 import { DatePicker } from "@s77rt/react-native-date-picker";
-import DatePickerHandle from "@s77rt/react-native-date-picker";
 
 const PlusMoreHome = ({ navigation, route }) => {
   const { item } = route.params;
@@ -158,7 +156,7 @@ const PlusMoreHome = ({ navigation, route }) => {
                         iconSet={currencyObj[selectedCurrencyId - 1].iconType}
                         iconName={currencyObj[selectedCurrencyId - 1].iconName}
                         backgroundColor="transparent"
-                        color={theme.dark.onSurface}
+                        color={theme[colorScheme].onSurface}
                         size={18}
                       />
                     )}
@@ -196,16 +194,15 @@ const PlusMoreHome = ({ navigation, route }) => {
                         {
                           backgroundColor: isSelected
                             ? theme[colorScheme].primary
-                            : theme[colorScheme].surfaceDim,
-                          elevation: isSelected ? 4 : 2,
+                            : theme[colorScheme].surfaceContainerLowest,
                           gap: 10
                         },
                       ]}
                     >
-                      <Text style={[isSelected ? styles.cardTitle : {color: theme.dark.primary }]}>{card.name}</Text>
+                      <Text style={[isSelected ? styles.cardTitle : {color: theme[colorScheme].primary }]}>{card.name}</Text>
                       <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                        <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.paymentType}</Text>
-                        <Text style={[isSelected ? styles.cardDetails : {color: theme.dark.primary }]}>{card.last4Digits}</Text>
+                        <Text style={[isSelected ? styles.cardDetails : {color: theme[colorScheme].primary }]}>{card.paymentType}</Text>
+                        <Text style={[isSelected ? styles.cardDetails : {color: theme[colorScheme].primary }]}>{card.last4Digits}</Text>
                       </View>
                     </View>
                   </TouchableWithoutFeedback>
@@ -230,20 +227,20 @@ const PlusMoreHome = ({ navigation, route }) => {
                 value={selectedDate}
                 onChange={setSelectedDate}
                 styles={{
-                  containerColor: theme.dark.surface, 
-                  yearContentColor: theme.dark.tertiary,
-                  currentYearContentColor: theme.dark.onTertiaryContainer,
-                  dayContentColor: theme.dark.tertiary,
-                  dividerColor: theme.dark.outline,
-                  headlineContentColor: theme.dark.secondary,
-                  navigationContentColor: theme.dark.secondary,
-                  titleContentColor: theme.dark.onPrimaryContainer,
-                  todayContentColor: theme.dark.secondary,
-                  todayDateBorderColor: theme.dark.onSecondaryContainer,
-                  selectedYearContentColor: theme.dark.onPrimary,
-                  selectedYearContainerColor: theme.dark.primary,
-                  selectedDayContentColor: theme.dark.onPrimary,
-                  selectedDayContainerColor: theme.dark.primary
+                  containerColor: theme[colorScheme].surface, 
+                  yearContentColor: theme[colorScheme].tertiary,
+                  currentYearContentColor: theme[colorScheme].onTertiaryContainer,
+                  dayContentColor: theme[colorScheme].tertiary,
+                  dividerColor: theme[colorScheme].outline,
+                  headlineContentColor: theme[colorScheme].secondary,
+                  navigationContentColor: theme[colorScheme].secondary,
+                  titleContentColor: theme[colorScheme].onPrimaryContainer,
+                  todayContentColor: theme[colorScheme].secondary,
+                  todayDateBorderColor: theme[colorScheme].onSecondaryContainer,
+                  selectedYearContentColor: theme[colorScheme].onPrimary,
+                  selectedYearContainerColor: theme[colorScheme].primary,
+                  selectedDayContentColor: theme[colorScheme].onPrimary,
+                  selectedDayContainerColor: theme[colorScheme].primary
                 }}
                 options={{showModeToggle: false}}
               />
@@ -451,7 +448,7 @@ const makeStyles = (theme, colorScheme) =>
       marginBottom: 4,
     },
     cardDetails: {
-      color: theme[colorScheme].shadow,
+      color: theme[colorScheme].surfaceBright,
     },
     dateButton: {
       borderColor: theme[colorScheme].outline,

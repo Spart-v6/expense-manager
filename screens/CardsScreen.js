@@ -43,6 +43,7 @@ const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPre
   const simplifiedTransactions = filteredTransactions.map(tx => ({
     title: tx.title,
     amount: tx.amount,
+    type: tx.type
   }));
 
   const gradientDirections = [
@@ -295,9 +296,10 @@ export default function CardsScreen({ navigation }) {
             >
               <Text
                 style={{
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: "bold",
-                  color: "#fff",
+                  opacity: 0.8,
+                  color: theme[colorScheme].tertiary,
                 }}
               >
                 Manage all your cards here

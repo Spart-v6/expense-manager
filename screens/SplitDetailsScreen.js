@@ -145,7 +145,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
 
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontWeight: "bold", fontSize: 16 }} numberOfLines={1} ellipsizeMode="tail" >
-            {formatCurrency(split.amount, selectedCurrencyId, theme, {
+            {formatCurrency(split.amount, selectedCurrencyId, theme, colorScheme, "", {
               iconSize: 12,
               textVariant: "titleMedium",
             })}
@@ -171,11 +171,11 @@ const SplitDetailsScreen = ({ route, navigation }) => {
               </Text>
 
               {split.paidBy === username
-                ? formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, {
+                ? formatCurrency(split.youAreOwedForThisSplit, selectedCurrencyId, theme, colorScheme, "",{
                     iconSize: 12,
                     textVariant: "titleMedium",
                   })
-                : formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, {
+                : formatCurrency(split.youOweForThisSplit, selectedCurrencyId, theme, colorScheme, "", {
                     iconSize: 12,
                     textVariant: "titleMedium",
                   })}
@@ -199,7 +199,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
         <Card style={[styles.summaryCard, { backgroundColor: "#1d581dff" }]}>
           <Text style={styles.summaryTitle}>Others owe you</Text>
           <Text style={styles.summaryAmount}>
-            {formatCurrency(youAreOwed, selectedCurrencyId, theme, {
+            {formatCurrency(youAreOwed, selectedCurrencyId, theme, colorScheme, "", {
               iconSize: 12,
               textVariant: "titleMedium",
             })}
@@ -208,7 +208,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
         <Card style={[styles.summaryCard, { backgroundColor: "#631212ff" }]}>
           <Text style={styles.summaryTitle}>You owe others</Text>
           <Text style={styles.summaryAmount}>
-            {formatCurrency(youOwe, selectedCurrencyId, theme, {
+            {formatCurrency(youOwe, selectedCurrencyId, theme, colorScheme, "", {
               iconSize: 12,
               textVariant: "titleMedium",
             })}

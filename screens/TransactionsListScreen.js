@@ -5,6 +5,7 @@ import {
   SectionList,
   StyleSheet,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { parseISO, format } from 'date-fns';
@@ -51,6 +52,7 @@ const groupTransactions = (transactions, filter) => {
 
 const TransactionsListScreen = () => {
   const { theme } = useThemeContext();
+  const colorScheme = useColorScheme();
   const styles = makeStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState('Daily');
   const [transactions, setTransactions] = useState([]);
@@ -185,7 +187,9 @@ const TransactionsListScreen = () => {
               </View>
               <View style={{flex: 0.2, alignItems: 'flex-end'}}>
                 <Text style={[styles.amount, { color: item.type === "Income" ? 'green' : 'red' }]}> {/*TODO: Fix this color*/}
-                  {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+                  {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, colorScheme, 
+                  item.type !== "Income" && "#ff4d4d",
+                  {
                     iconSize: 10
                   })}
                 </Text>

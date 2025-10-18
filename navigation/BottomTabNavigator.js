@@ -35,14 +35,14 @@ export default function BottomTabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: theme.dark.primary,
+        tabBarActiveTintColor: theme[colorScheme].primary,
       }}
       hapticFeedbackEnabled
       labeled
       sidebarAdaptable
-      tabBarStyle={{backgroundColor: theme.dark.surfaceDim}}
-      activeIndicatorColor={theme.dark.onPrimary}
-      tabBarInactiveTintColor={theme.dark.secondaryContainer}
+      tabBarStyle={{backgroundColor: theme[colorScheme].surfaceDim}}
+      activeIndicatorColor={theme[colorScheme].onPrimary}
+      tabBarInactiveTintColor={theme[colorScheme].secondary}
     >
       <Tab.Screen
         name="Home"

@@ -50,7 +50,7 @@ const HomeScreen = ({ navigation }) => {
   // AsyncStorage.clear();
   const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
 
   const [visible, setVisible] = useState(false);
   const [selectedTxn, setSelectedTxn] = useState(null);
@@ -216,8 +216,8 @@ const HomeScreen = ({ navigation }) => {
         <IconComponent
           iconSet={"MaterialIcons"}
           iconName={"money-off"}
-          backgroundColor={theme.dark.surface}
-          color={theme.dark.surfaceTint}
+          backgroundColor={theme[colorScheme].surface}
+          color={theme[colorScheme].surfaceTint}
           size={24}
         />
         <View style={styles.transactionDetails}>
@@ -229,7 +229,9 @@ const HomeScreen = ({ navigation }) => {
             styles.amount,
             { color: item.type === "Income" ? "#00ff7f" : "#ff4d4d" }
           ]}>
-            {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
+            {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, colorScheme, 
+            item.type !== "Income" && "#ff4d4d",
+            {
               iconSize: 10
             })}
           </Text>
@@ -247,13 +249,13 @@ const HomeScreen = ({ navigation }) => {
           <Card style={styles.welcomeCard}>
             <Card.Content>
               <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }}>
-                <Text style={{ flex: 1, textAlign: "center", fontSize: 16, color: theme.dark.primary }}>
+                <Text style={{ flex: 1, textAlign: "center", fontSize: 16, color: theme[colorScheme].primary }}>
                   Total Balance - {getYear(new Date())}
                 </Text>
               </View>
 
               <View style={{ alignItems: "center", marginTop: 10 }}>
-                {formatCurrency(getYearlyBalance(monthlySummary), selectedCurrencyId, theme, {
+                {formatCurrency(getYearlyBalance(monthlySummary), selectedCurrencyId, theme, colorScheme, "", {
                   textVariant: "displaySmall",
                   iconSize: 22,
                 })}
@@ -268,7 +270,7 @@ const HomeScreen = ({ navigation }) => {
               <Card.Title title="Expenses" right={LeftContentExpense} />
               <Card.Content>
                 <Text variant="titleLarge">  
-                  {formatCurrency(monthlyExpense, selectedCurrencyId, theme, {
+                  {formatCurrency(monthlyExpense, selectedCurrencyId, theme, colorScheme, "", {
                     iconSize: 15,
                     textVariant: "titleLarge",
                   })}
@@ -281,7 +283,7 @@ const HomeScreen = ({ navigation }) => {
               <Card.Title title="Income" right={RightContentIncome} />
               <Card.Content>
                 <Text variant="titleLarge">
-                  {formatCurrency(monthlyIncome, selectedCurrencyId, theme, {
+                  {formatCurrency(monthlyIncome, selectedCurrencyId, theme, colorScheme, "", {
                     iconSize: 15,
                     textVariant: "titleLarge",
                   })}
@@ -299,7 +301,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
         <Text variant="titleMedium" style={{padding: 8}}>Transactions</Text>
         <TouchableRipple onPress={() => navigation.navigate("TransactionsList")} style={{ padding: 8, borderRadius: 8 }}>
-          <Text variant="titleMedium" style={{color: theme.dark.primary}}>Show All</Text>
+          <Text variant="titleMedium" style={{color: theme[colorScheme].primary}}>Show All</Text>
         </TouchableRipple>
       </View>
 
@@ -338,7 +340,7 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("PlusMoreHome", { title: "Add Expenses", item: null })}
         variant="tertiary"
         mode="flat"
-        color={theme.dark.onPrimaryContainer}
+        color={theme[colorScheme].onPrimaryContainer}
       />
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -357,11 +359,11 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-const makeStyles = (theme) =>
+const makeStyles = (theme, colorScheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.dark.background,
+      backgroundColor: theme[colorScheme].background,
     },
     innerContainer: {
       flex: 1,
@@ -373,7 +375,7 @@ const makeStyles = (theme) =>
     },
     welcomeCard: {
       marginBottom: 5,
-      backgroundColor: theme.dark.primaryContainer,
+      backgroundColor: theme[colorScheme].primaryContainer,
       borderColor: "transparent",
       elevation: 5,
       shadowColor: "transparent",
@@ -405,13 +407,13 @@ const makeStyles = (theme) =>
       flex: 1,
     },
     expenseCard: {
-      backgroundColor: theme.dark.onSecondary,
+      backgroundColor: theme[colorScheme].onSecondary,
     },
     incomeCard: {
-      backgroundColor: theme.dark.onSecondary,
+      backgroundColor: theme[colorScheme].onSecondary,
     },
     fab: {
-      backgroundColor: theme.dark.primaryContainer,
+      backgroundColor: theme[colorScheme].primaryContainer,
       position: "absolute",
       margin: 16,
       right: 0,
@@ -420,7 +422,7 @@ const makeStyles = (theme) =>
      transactionCard: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#111",
+      backgroundColor: theme[colorScheme].backdrop,
       padding: 16,
       borderRadius: 12,
       marginBottom: 12,
@@ -431,11 +433,11 @@ const makeStyles = (theme) =>
     },
     title: {
       fontSize: 16,
-      color: "#fff",
+      color: theme[colorScheme].primary,
     },
     date: {
       fontSize: 12,
-      color: "#aaa",
+      color: 'gray',
     },
     transactionAmount: {
       alignItems: "flex-end",
@@ -468,7 +470,7 @@ const makeStyles = (theme) =>
       marginBottom: 5,
     },
     highlight: {
-      color: theme.dark.primary,
+      color: theme[colorScheme].primary,
     },
   });
 

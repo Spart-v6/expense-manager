@@ -10,7 +10,7 @@ import {
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Svg, { Circle } from "react-native-svg";
 import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
-import { Text } from "react-native-paper";
+import { Divider, Text } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import { parseISO, format } from 'date-fns';
 import { useFocusEffect } from "@react-navigation/native";
@@ -100,6 +100,7 @@ const IndividualCardScreen = ({ route }) => {
 
       {/* Transactions */}
       <Text style={{ margin: 20 }} variant="bodyLarge">Transactions</Text>
+      <Divider style={{width: "80%", alignSelf: "center" }} bold />
       { txns.length === 0 ? (
         <View style={{flex: 1, justifyContent: "center", alignItems: "center",}}>
           <MaterialCommunityIcons name="credit-card-off" size={64} color={theme.dark.onSurface} />
@@ -115,9 +116,11 @@ const IndividualCardScreen = ({ route }) => {
             <View style={styles.transactionItem}>
               <Text style={styles.txnTitle}>{item.title}</Text>
               <Text style={styles.txnAmount}>
-                {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, {
-                    iconSize: 10
-                  })}
+                {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme,  colorScheme,
+                item.type !== "Income" && "#ff4d4d",
+                {
+                  iconSize: 10
+                })}
               </Text>
             </View>
           )}

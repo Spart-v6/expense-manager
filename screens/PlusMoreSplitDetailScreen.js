@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, useColorScheme } from "react-native";
 import { Text, TextInput, RadioButton, Button, ToggleButton, Snackbar } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext";
 import IconComponent from "../components/IconComponent";
@@ -47,6 +47,7 @@ const updateOwedAggregates = async (split, username, groupId) => {
 const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
   const { groupId, members } = route.params;
   const { theme } = useThemeContext();
+  const colorScheme = useColorScheme();
   const styles = makeStyles(theme);
 
   const [splitName, setSplitName] = useState("");
@@ -108,7 +109,9 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
         <View style={{ flexDirection: "row" }}>
           <Text> Pending amount: {""} </Text>
           <Text style={pendingAmount < 0 ? { color: "red" } : { color: "green" }}>
-            {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
+            {formatCurrency(pendingAmount, selectedCurrencyId, theme, colorScheme, 
+            pendingAmount < 0 && "#ff4d4d",
+            {
               iconSize: 12,
             })}
           </Text>
@@ -135,7 +138,9 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
           <View style={{ flexDirection: "row" }}>
             <Text> Pending amount:{" "} </Text>
             <Text style={pendingPercent < 0 ? { color: "red" } : { color: "green" }}>
-              {formatCurrency(pendingAmount, selectedCurrencyId, theme, {
+              {formatCurrency(pendingAmount, selectedCurrencyId, theme, colorScheme, 
+              pendingPercent < 0  && "#ff4d4d",
+              {
                 iconSize: 12,
                 // textVariant: "titleMedium",
               })}
