@@ -128,6 +128,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
           splitId: split.id,
           groupId: groupId,
           title: split.name,
+          createdAt: split.createdAt,
         })
     }>
       <Card.Content>

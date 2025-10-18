@@ -6,14 +6,16 @@ import { useThemeContext } from "../context/ThemeContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { formatCurrency } from "../helper/formatCurrency";
 import currencyObj from "../helper/currencyObj";
+import { format, parseISO } from "date-fns";
 
 const IndividualSplitScreen = ({ route }) => {
-  const { splitId, groupId } = route.params;
+  const { splitId, groupId, createdAt } = route.params;
   const { theme } = useThemeContext();
   const [group, setGroup] = React.useState(null);
   const [split, setSplit] = React.useState(null);
   const [username, setUsername] = React.useState('');
-
+  const tempCreatedDt = parseISO(createdAt);
+  const createdAtDate = format(tempCreatedDt, "do MMM, yyyy 'at' h:mm a");
   const [selectedCurrencyId, setSelectedCurrencyId] = React.useState(currencyObj[0].id);
 
   useFocusEffect(
@@ -274,10 +276,11 @@ const IndividualSplitScreen = ({ route }) => {
             </View>
           </View>
         </View>
+
+        <Text variant="bodySmall" style={{ color: 'gray', marginTop: 10, textAlign: 'center' }}>
+          Created at: {createdAtDate}
+        </Text>
       </View>
-
-
-
 
       </View>
 

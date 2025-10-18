@@ -310,7 +310,7 @@ const HomeScreen = ({ navigation }) => {
               flex: 1,
               justifyContent: "center",
               alignItems: "center",
-              marginBottom: 150
+              marginBottom: 200
             }}>
               <Text style={styles.heading}>Add your first transaction to get started!</Text>
               <Text style={styles.heading}>

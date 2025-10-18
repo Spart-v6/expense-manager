@@ -266,11 +266,11 @@ const SettingsScreen = ({ navigation }) => {
 
   const renderCurrencyItem = ({ item }) => {
     const windowWidth = Dimensions.get("window").width;
-    const itemSize = (windowWidth - 60) / 3; // square box with padding
+    const itemSize = (windowWidth - 10) / 3; // square box with padding
     const isSelected = item.id === selectedCurrencyId;
 
     return (
-      <View>
+      <View style={{justifyContent: 'space-between', flex: 1, alignItems: 'center' }}>
         <TouchableOpacity
           onPress={() => setSelectedCurrencyId(item.id)}
           activeOpacity={0.9}
@@ -279,7 +279,7 @@ const SettingsScreen = ({ navigation }) => {
             height: itemSize,
             margin: 10,
             borderRadius: 20,
-            borderWidth: isSelected ? 5 : 1,
+            borderWidth: isSelected ? 2 : 1,
             borderColor: isSelected ? theme.dark.primary : theme.dark.tertiaryContainer,
             justifyContent: "center",
             alignItems: "center",
@@ -290,7 +290,7 @@ const SettingsScreen = ({ navigation }) => {
               name={item.iconName}
               category={item.iconType}
               size={20}
-              color={theme.dark.primaryContainer}
+              color={theme.dark.tertiary}
             />
             <Text
               variant="titleSmall"

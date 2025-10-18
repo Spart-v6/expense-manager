@@ -55,7 +55,7 @@ const WelcomeScreen3 = ({ navigation, onFinish }) => {
           height: itemSize,
           margin: 10,
           borderRadius: 20,
-          borderWidth: isSelected ? 5 : 1,
+          borderWidth: isSelected ? 2 : 1,
           borderColor: isSelected ? theme.dark.primary : theme.dark.tertiaryContainer,
           justifyContent: "center",
           alignItems: "center",
@@ -66,7 +66,7 @@ const WelcomeScreen3 = ({ navigation, onFinish }) => {
             name={item.iconName}
             category={item.iconType}
             size={40}
-            color={theme.dark.primaryContainer}
+            color={theme.dark.tertiary}
           />
           <Text
             variant="titleMedium"
