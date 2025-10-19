@@ -103,8 +103,8 @@ const IndividualCardScreen = ({ route }) => {
       <Divider style={{width: "80%", alignSelf: "center" }} bold />
       { txns.length === 0 ? (
         <View style={{flex: 1, justifyContent: "center", alignItems: "center",}}>
-          <MaterialCommunityIcons name="credit-card-off" size={64} color={theme.dark.onSurface} />
-          <Text variant="bodyMedium" style={{marginTop: 10, color: theme.dark.onSurface}}>No transactions available</Text>
+          <MaterialCommunityIcons name="credit-card-off" size={64} color={theme[colorScheme].onSurface} />
+          <Text variant="bodyMedium" style={{marginTop: 10, color: theme[colorScheme].onSurface}}>No transactions available</Text>
           <Text>All expenses related to this card will be shown here</Text> 
         </View>
       ) : (

@@ -53,7 +53,7 @@ const groupTransactions = (transactions, filter) => {
 const TransactionsListScreen = () => {
   const { theme } = useThemeContext();
   const colorScheme = useColorScheme();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
   const [selectedFilter, setSelectedFilter] = useState('Daily');
   const [transactions, setTransactions] = useState([]);
   const [cards, setCards] = useState([]);
@@ -115,7 +115,7 @@ const TransactionsListScreen = () => {
             setSelectedFilter(f);
             setPage(1);
           }}
-          style={[{padding: 10, backgroundColor: theme.dark.surfaceDim, borderRadius: 15, width: 90}, selectedFilter === f && {backgroundColor: theme.dark.primaryContainer}]}
+          style={[{padding: 10, backgroundColor: theme[colorScheme].surfaceDim, borderRadius: 15, width: 90}, selectedFilter === f && {backgroundColor: theme[colorScheme].primaryContainer}]}
           >
             <Text
               style={[
@@ -132,7 +132,7 @@ const TransactionsListScreen = () => {
         {
         groupedSections.length === 0 ? (
           <View>
-            <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: theme.dark.onSurfaceVariant }}>
+            <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 16, color: theme[colorScheme].onSurfaceVariant }}>
               No transactions found yet.
             </Text>
           </View>
@@ -168,15 +168,15 @@ const TransactionsListScreen = () => {
                     width: 40,
                     height: 40,
                     borderRadius: 25,
-                    backgroundColor: theme.dark.surfaceDisabled,
+                    backgroundColor: theme[colorScheme].surfaceDisabled,
                     justifyContent: "center",
                     alignItems: "center",
                   }}
                   >
-                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
+                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme[colorScheme].primary }}>
                     {format(parseISO(item.date), "d")}
                   </Text>
-                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme.dark.primary }}>
+                  <Text style={{ fontSize: 12, lineHeight: 14, fontWeight: "bold", color: theme[colorScheme].primary }}>
                     {format(parseISO(item.date), "MMM")}
                   </Text>
                 </View>
@@ -211,11 +211,11 @@ const TransactionsListScreen = () => {
 
 
 
-const makeStyles = (theme) =>
+const makeStyles = (theme, colorScheme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.dark ? theme.dark.background : '#fff',
+      backgroundColor: theme.dark ? theme[colorScheme].background : '#fff',
     },
     filterBar: {
       flexDirection: 'row',
@@ -226,11 +226,11 @@ const makeStyles = (theme) =>
     },
     filterText: {
       fontSize: 14,
-      color: theme.dark.onSurfaceVariant,
+      color: theme[colorScheme].onSurfaceVariant,
     },
     activeFilterText: {
       fontWeight: 'bold',
-      color: theme.dark.primary
+      color: theme[colorScheme].primary
     },
     sectionHeader: {
       flex: 1,
@@ -238,14 +238,14 @@ const makeStyles = (theme) =>
       justifyContent: 'space-between',
       paddingVertical: 8,
       paddingHorizontal: 16,
-      backgroundColor: theme.dark ? theme.dark.surface : '#eaeaea',
+      backgroundColor: theme.dark ? theme[colorScheme].surface : '#eaeaea',
     },
     sectionHeaderText: {
       fontWeight: 'bold',
-      color: theme.dark ? theme.dark.onSurface : '#333',
+      color: theme.dark ? theme[colorScheme].onSurface : '#333',
     },
     card: {
-      backgroundColor: theme.dark.surfaceDim,
+      backgroundColor: theme[colorScheme].surfaceDim,
       marginLeft: 16,
       marginRight: 16,
       marginTop: 16
@@ -253,11 +253,11 @@ const makeStyles = (theme) =>
     name: {
       fontWeight: '600',
       fontSize: 16,
-      color: theme.dark ? theme.dark.onBackground : '#000',
+      color: theme.dark ? theme[colorScheme].onBackground : '#000',
     },
     description: {
       fontSize: 13,
-      color: theme.dark ? theme.dark.onSurfaceVariant : '#555',
+      color: theme.dark ? theme[colorScheme].onSurfaceVariant : '#555',
     },
     amount: {
       fontSize: 14,
@@ -265,7 +265,7 @@ const makeStyles = (theme) =>
     },
     metadata: {
       fontSize: 12,
-      color: theme.dark ? theme.dark.outline : '#888',
+      color: theme.dark ? theme[colorScheme].outline : '#888',
       marginTop: 4,
     },
     pagination: {

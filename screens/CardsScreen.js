@@ -34,7 +34,7 @@ const SPACING = 10;
 const CardItem = ({ item, index, scrollY, navigation, allTransactions, onLongPressCard }) => {
   const colorScheme = useColorScheme();
   const { theme, initialized, themeColor } = useThemeContext();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
 
   const filteredTransactions = allTransactions.filter(
     (transaction) => transaction.cardId === item.id
@@ -161,7 +161,7 @@ export default function CardsScreen({ navigation }) {
   const scrollY = useSharedValue(0);
   const colorScheme = useColorScheme();
   const { theme, initialized, themeColor } = useThemeContext();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
 
   const [visible, setVisible] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -317,7 +317,7 @@ export default function CardsScreen({ navigation }) {
         onPress={() => navigation.navigate("PlusMoreCard")}
         variant="tertiary"
         mode="flat"
-        color={theme.dark.onPrimaryContainer}
+        color={theme[colorScheme].onPrimaryContainer}
       />
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -335,10 +335,10 @@ export default function CardsScreen({ navigation }) {
   );
 }
 
-const makeStyles = (theme) =>
+const makeStyles = (theme, colorScheme) =>
   StyleSheet.create({
     fab: {
-      backgroundColor: theme.dark.primaryContainer,
+      backgroundColor: theme[colorScheme].primaryContainer,
       position: "absolute",
       margin: 16,
       right: 0,
@@ -381,11 +381,10 @@ const makeStyles = (theme) =>
       alignItems: "center",
     },
     label: {
-      color: "#888",
       fontSize: 12,
     },
     value: {
-      color: "#fff",
+      color: colorScheme === "light" ? theme.light.onPrimaryContainer : "#fff",
       fontSize: 16,
       fontWeight: "bold",
     },
@@ -407,7 +406,7 @@ const makeStyles = (theme) =>
       marginBottom: 5,
     },
     highlight: {
-      color: theme.dark.primary,
+      color: theme[colorScheme].primary,
     },
     subText: {
       textAlign: "center",

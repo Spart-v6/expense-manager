@@ -113,7 +113,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
           labelStyle={{ fontSize: 15 }}
           onPress={() => setMembersVisible(true)}
         >
-          <Text style={{ color: "white", textAlign: "center" }}>
+          <Text style={{ textAlign: "center" }}>
             Show all members
           </Text>
         </Button>
@@ -183,7 +183,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
 
             ) : (
               <View style={{marginRight: 10}}>
-                <Octicons name="check" size={24} color={theme.dark.surfaceTint} />
+                <Octicons name="check" size={24} color={theme[colorScheme].surfaceTint} />
               </View>
             )
           }
@@ -196,7 +196,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.summaryRow}>
-        <Card style={[styles.summaryCard, { backgroundColor: "#1d581dff" }]}>
+        <Card style={[styles.summaryCard, { backgroundColor: "#37a137ff" }]}>
           <Text style={styles.summaryTitle}>Others owe you</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youAreOwed, selectedCurrencyId, theme, colorScheme, "", {
@@ -205,7 +205,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
             })}
           </Text>
         </Card>
-        <Card style={[styles.summaryCard, { backgroundColor: "#631212ff" }]}>
+        <Card style={[styles.summaryCard, { backgroundColor: "#c72424ff" }]}>
           <Text style={styles.summaryTitle}>You owe others</Text>
           <Text style={styles.summaryAmount}>
             {formatCurrency(youOwe, selectedCurrencyId, theme, colorScheme, "", {
@@ -254,7 +254,7 @@ const SplitDetailsScreen = ({ route, navigation }) => {
         }
         variant="tertiary"
         mode="flat"
-        color={theme.dark.onPrimaryContainer}
+        color={theme[colorScheme].onPrimaryContainer}
       />
     </View>
   );
@@ -278,7 +278,7 @@ StyleSheet.create({
     summaryTitle: { fontSize: 14, fontWeight: "bold" },
     summaryAmount: { fontSize: 18, fontWeight: "bold", justifyContent: "center", alignContent: "center", alignItems: "center", alignSelf: "center", textAlign: "center" },
     fab: {
-        backgroundColor: theme.dark.primaryContainer,
+        backgroundColor: theme[colorScheme].primaryContainer,
         position: "absolute",
         margin: 16,
         right: 0,
@@ -302,7 +302,7 @@ StyleSheet.create({
       marginBottom: 5,
     },
     highlight: {
-      color: theme.dark.primary,
+      color: theme[colorScheme].primary,
     },
     subText: {
       textAlign: "center",

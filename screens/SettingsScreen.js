@@ -61,6 +61,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const { theme, setThemeColor, resetThemeColor } = useThemeContext();
   const systemColorScheme = useColorScheme();
+  const styles = makeStyles(theme, systemColorScheme);
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
@@ -208,7 +209,7 @@ const SettingsScreen = ({ navigation }) => {
       <View style={styles.itemContainer}>
         <View
           style={{
-            backgroundColor: theme.dark.onPrimary,
+            backgroundColor: theme[systemColorScheme].onPrimaryContainer,
             borderRadius: 5,
             width: 40,
             height: 40,
@@ -216,7 +217,7 @@ const SettingsScreen = ({ navigation }) => {
             alignItems: 'center',
           }}
         >
-          <Ionicons name={item.icon} size={22} color={theme.dark.primary} />
+          <Ionicons name={item.icon} size={22} color={theme[systemColorScheme].onSecondary} />
         </View>
         <View
           style={{
@@ -231,14 +232,14 @@ const SettingsScreen = ({ navigation }) => {
             <Switch
               value={isBiometricEnabled}
               onValueChange={handleAuthToggle}
-              thumbColor={item.value ? theme.dark.primary : '#ccc'}
+              thumbColor={item.value ? theme[systemColorScheme].primary : '#ccc'}
               trackColor={{ true: '#999', false: '#555' }}
             />
           ) : item.toggleNotifications ? (
             <Switch 
               value={turnNotificationsOn}
               onValueChange={handleNotificationToggle}
-              thumbColor={item.value ? theme.dark.primary : '#ccc'}
+              thumbColor={item.value ? theme[systemColorScheme].primary : '#ccc'}
               trackColor={{ true: '#999', false: '#555' }}
             />
           )
@@ -280,7 +281,7 @@ const SettingsScreen = ({ navigation }) => {
             margin: 10,
             borderRadius: 20,
             borderWidth: isSelected ? 2 : 1,
-            borderColor: isSelected ? theme.dark.primary : theme.dark.tertiaryContainer,
+            borderColor: isSelected ? theme[systemColorScheme].primary : theme[systemColorScheme].tertiaryContainer,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -290,7 +291,7 @@ const SettingsScreen = ({ navigation }) => {
               name={item.iconName}
               category={item.iconType}
               size={20}
-              color={theme.dark.tertiary}
+              color={theme[systemColorScheme].tertiary}
             />
             <Text
               variant="titleSmall"
@@ -362,7 +363,7 @@ const SettingsScreen = ({ navigation }) => {
                       borderRadius: 10,
                     }}
                   />
-                  <Text style={{ marginTop: 5, color: "white" }}>
+                  <Text style={{ marginTop: 5 }}>
                     {colorNames[color] || color}
                   </Text>
                 </View>
@@ -405,16 +406,16 @@ const SettingsScreen = ({ navigation }) => {
           <Dialog.Content>
             <TextInput
               label={
-                <Text style={{ color: theme.dark.primary }}>
+                <Text style={{ color: theme[systemColorScheme].primary }}>
                   {"Update name"}
                 </Text>
               }
               style={{ backgroundColor: "transparent" }}
-              textColor={theme.dark.primary}
-              selectionColor={theme.dark.primaryContainer}
+              textColor={theme[systemColorScheme].primary}
+              selectionColor={theme[systemColorScheme].primaryContainer}
               value={newName}
-              underlineColor={theme.dark.primary}
-              activeUnderlineColor={theme.dark.primary}
+              underlineColor={theme[systemColorScheme].primary}
+              activeUnderlineColor={theme[systemColorScheme].primary}
               onChangeText={setNewName}
               autoFocus
             />
@@ -463,7 +464,8 @@ const SettingsScreen = ({ navigation }) => {
 
 export default SettingsScreen;
 
-const styles = StyleSheet.create({
+const makeStyles = (theme, colorScheme) =>
+StyleSheet.create({
   container: {
     flex: 1,
     margin: 10,
@@ -484,7 +486,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: '#fff',
+    color: theme[colorScheme].secondary,
     fontSize: 16,
   },
   arrowWrapper: {

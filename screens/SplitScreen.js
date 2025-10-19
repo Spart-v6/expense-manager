@@ -126,7 +126,7 @@ const SplitScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("PlusMoreSplit")}
         variant="tertiary"
         mode="flat"
-        color={theme.dark.onPrimaryContainer}
+        color={theme[colorScheme].onPrimaryContainer}
       />
       <Portal>
         <Dialog
@@ -170,7 +170,7 @@ const makeStyles = (theme, colorScheme) =>
       marginBottom: 5,
     },
     highlight: {
-      color: theme.dark.primary,
+      color: theme[colorScheme].primary,
     },
     subText: {
       textAlign: "center",
@@ -199,7 +199,7 @@ const makeStyles = (theme, colorScheme) =>
       backgroundColor: theme.dark.primaryContainer,
     },
     fab: {
-      backgroundColor: theme.dark.primaryContainer,
+      backgroundColor: theme[colorScheme].primaryContainer,
       position: "absolute",
       margin: 16,
       right: 0,

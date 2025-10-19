@@ -43,7 +43,7 @@ export const formatCurrency = (
         iconSet={"FontAwesome5"}
         iconName={"rupee-sign"}
         backgroundColor="transparent"
-        color={theme[colorScheme].onSurface}
+        color={textColor ? textColor : theme[colorScheme].onSurface}
         size={iconSize}
         style={{ marginRight: 1 }}
       />

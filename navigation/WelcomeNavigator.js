@@ -19,7 +19,7 @@ export default function WelcomeNavigator({ onFinish }) {
     NavigationBarModule.setNavigationBarColor(color);
   };
 
-  changeNavBarColor(theme.dark.background);
+  changeNavBarColor(theme[colorScheme].background);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

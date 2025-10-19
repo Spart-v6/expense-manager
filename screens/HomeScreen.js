@@ -422,7 +422,7 @@ const makeStyles = (theme, colorScheme) =>
      transactionCard: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: theme[colorScheme].backdrop,
+      backgroundColor: theme[colorScheme].surfaceDim,
       padding: 16,
       borderRadius: 12,
       marginBottom: 12,

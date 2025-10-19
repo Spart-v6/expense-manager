@@ -42,7 +42,7 @@ const ThriftyLogo = () => {
 const CustomDrawer = (props) => {
   const colorScheme = useColorScheme();
   const { theme, initialized, themeColor } = useThemeContext();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
 
   const appVersion = appConfig.expo.version;
 
@@ -53,19 +53,19 @@ const CustomDrawer = (props) => {
       {...props}
       contentContainerStyle={{
         flex: 1,
-        backgroundColor: theme.dark.surfaceContainer,
+        backgroundColor: theme[colorScheme].surfaceContainer,
       }}
     >
       {/* Drawer Header */}
       <View style={styles.headerContainer}>
-        <Text style={[styles.profileName, { color: theme.dark.tertiary }]}>
+        <Text style={[styles.profileName, { color: theme[colorScheme].tertiary }]}>
           Thrifty
         </Text>
         <ThriftyLogo />
       </View>
 
       <Divider
-        style={{ backgroundColor: theme.dark.onSecondaryContainer }}
+        style={{ backgroundColor: theme[colorScheme].onSecondaryContainer }}
         bold={true}
       />
 
@@ -81,8 +81,8 @@ const CustomDrawer = (props) => {
                 size={20}
                 color={
                   isFocused
-                    ? theme.dark.onTertiaryContainer
-                    : theme.dark.secondary
+                    ? theme[colorScheme].onTertiaryContainer
+                    : theme[colorScheme].secondary
                 }
                 style={{ marginLeft: 10 }}
               />
@@ -91,8 +91,8 @@ const CustomDrawer = (props) => {
           labelStyle={{
             color:
               state?.routeNames[state.index] === "Main"
-                ? theme.dark.onTertiaryContainer
-                : theme.dark.secondary,
+                ? theme[colorScheme].onTertiaryContainer
+                : theme[colorScheme].secondary,
             marginLeft: 5,
           }}
           onPress={() => props.navigation.navigate("Main")}
@@ -112,8 +112,8 @@ const CustomDrawer = (props) => {
                 size={20}
                 color={
                   isFocused
-                    ? theme.dark.onTertiaryContainer
-                    : theme.dark.secondary
+                    ? theme[colorScheme].onTertiaryContainer
+                    : theme[colorScheme].secondary
                 }
                 style={{ marginLeft: 10 }}
               />
@@ -122,8 +122,8 @@ const CustomDrawer = (props) => {
           labelStyle={{
             color:
               state?.routeNames[state.index] === "Settings"
-                ? theme.dark.onTertiaryContainer
-                : theme.dark.secondary,
+                ? theme[colorScheme].onTertiaryContainer
+                : theme[colorScheme].secondary,
             marginLeft: 5,
           }}
           onPress={() => props.navigation.navigate("Settings")}
@@ -165,7 +165,7 @@ const CustomDrawer = (props) => {
       </View>
 
       <Divider
-        style={{ backgroundColor: theme.dark.onSecondaryContainer }}
+        style={{ backgroundColor: theme[colorScheme].onSecondaryContainer }}
         bold={true}
       />
 
@@ -173,7 +173,7 @@ const CustomDrawer = (props) => {
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.logoutButton}>
           <Text
-            style={[styles.logoutText, { color: theme.dark.tertiary }]}
+            style={[styles.logoutText, { color: theme[colorScheme].tertiary }]}
             fontWeight="bold"
           >
             v {appVersion}
@@ -184,7 +184,7 @@ const CustomDrawer = (props) => {
   );
 };
 
-const makeStyles = (theme) =>
+const makeStyles = (theme, colorScheme) =>
   StyleSheet.create({
     headerContainer: {
       padding: 20,
@@ -228,7 +228,7 @@ const makeStyles = (theme) =>
       borderRadius: 10,
     },
     activeItem: {
-      backgroundColor: theme.dark.primaryContainer,
+      backgroundColor: theme[colorScheme].primaryContainer,
       borderRadius: 10,
       elevation: 1,
     },

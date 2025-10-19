@@ -48,7 +48,7 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
   const { groupId, members } = route.params;
   const { theme } = useThemeContext();
   const colorScheme = useColorScheme();
-  const styles = makeStyles(theme);
+  const styles = makeStyles(theme, colorScheme);
 
   const [splitName, setSplitName] = useState("");
   const [amount, setAmount] = useState("");
@@ -297,11 +297,11 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
             <IconComponent
               iconSet={"FontAwesome6"}
               iconName={"equals"}
-              backgroundColor={theme.dark.surface}
-              color={theme.dark.surfaceTint}
+              backgroundColor={theme[colorScheme].surface}
+              color={theme[colorScheme].surfaceTint}
               size={15}
             />
-            <Text style={{ color: "white", marginLeft: 5 }}>Equal</Text>
+            <Text style={{ marginLeft: 5 }}>Equal</Text>
           </View>
         )} value="equal" style={{flex: 1, borderWidth: 2}}/>
 
@@ -310,11 +310,11 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
               <IconComponent
                 iconSet={"MaterialIcons"}
                 iconName={"percent"}
-                backgroundColor={theme.dark.surface}
-                color={theme.dark.surfaceTint}
+                backgroundColor={theme[colorScheme].surface}
+                color={theme[colorScheme].surfaceTint}
                 size={15}
               />
-            <Text style={{ color: "white", marginLeft: 5 }}>Percent</Text>
+            <Text style={{ marginLeft: 5 }}>Percent</Text>
           </View>
         )} value="percent"  style={{flex: 1, borderWidth: 2}} />
 
@@ -323,11 +323,11 @@ const PlusMoreSplitDetailScreen = ({ route, navigation }) => {
               <IconComponent
                 iconSet={"Ionicons"}
                 iconName={"calculator-outline"}
-                backgroundColor={theme.dark.surface}
-                color={theme.dark.surfaceTint}
+                backgroundColor={theme[colorScheme].surface}
+                color={theme[colorScheme].surfaceTint}
                 size={15}
               />
-            <Text style={{ color: "white", marginLeft: 5 }}>Manual</Text>
+            <Text style={{ marginLeft: 5 }}>Manual</Text>
           </View>
         )} value="manual"  style={{flex: 1, borderWidth: 2}} />
       </ToggleButton.Row>
@@ -415,7 +415,6 @@ const makeStyles = (theme) =>
     saveBtn: { marginTop: 20 },
     headerText: {
       fontWeight: "bold",
-      color: "white",
       fontSize: 14
     }
   });

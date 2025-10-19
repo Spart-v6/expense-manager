@@ -148,7 +148,7 @@ const PlusMoreSplit = ({ navigation }) => {
             onPress={addMember}
             variant="tertiary"
             mode="flat"
-            color={theme.dark.onPrimaryContainer}
+            color={theme[colorScheme].onPrimaryContainer}
           />
           <Snackbar
             style={{
@@ -209,7 +209,7 @@ StyleSheet.create({
     marginLeft: 8,
   },
   fab: {
-    backgroundColor: theme.dark.primaryContainer,
+    backgroundColor: theme[colorScheme].primaryContainer,
     position: "absolute",
     right: 24,
     bottom: 80, 
