@@ -17,7 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const filters = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
 
-const groupTransactions = (transactions, filter) => {
+const groupTransactions = (transactions, filter, selectedCurrencyId, colorScheme, theme) => {
   const grouped = {};
 
   transactions.forEach(txn => {
@@ -42,9 +42,13 @@ const groupTransactions = (transactions, filter) => {
   });
 
   return Object.entries(grouped).map(([key, txns]) => {
-    const total = txns.reduce((sum, txn) => sum + txn.amount, 0);
+    const total = txns.reduce((sum, txn) => {
+      const sign = txn.type === "Expense" ? -1 : 1;
+      return sum + sign * txn.amount;
+    }, 0);
     return {
-      title: `${key} - Total: ${total}`,
+      title: key,
+      total: total,
       data: txns,
     };
   });
@@ -103,9 +107,8 @@ const TransactionsListScreen = () => {
   }, [transactions, page]);
 
   const groupedSections = useMemo(() => {
-    return groupTransactions(paginatedTransactions, selectedFilter);
-  }, [paginatedTransactions, selectedFilter]);
-
+    return groupTransactions(paginatedTransactions, selectedFilter, selectedCurrencyId, colorScheme, theme);
+  }, [paginatedTransactions, selectedFilter, selectedCurrencyId]);
 
   return (
     <View style={styles.container}>
@@ -147,13 +150,20 @@ const TransactionsListScreen = () => {
           }
         }}
         onEndReachedThreshold={0.5}
-        renderSectionHeader={({ section: { title } }) => { 
-          const parts = title.split(" - ");
-          
+        renderSectionHeader={({ section: { title, total } }) => { 
+  
           return (
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>{parts[0]}</Text>
-              <Text style={styles.sectionHeaderText}>{parts[1]}</Text>
+              <Text style={styles.sectionHeaderText}>{title}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.sectionHeaderText}> Total:{" "}
+                </Text>
+                <Text>
+                  {
+                    formatCurrency(total, selectedCurrencyId, theme, colorScheme, "", { iconSize: 10 })
+                  }
+                </Text>
+              </View>
             </View>
         )}}
         renderItem={({ item }) => { 
@@ -162,7 +172,7 @@ const TransactionsListScreen = () => {
           return (
             <Card style={styles.card}>
             <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center'}}>
+              <View style={{flex: 0.1, alignItems: 'center', justifyContent: 'center' }}>
                 <View
                   style={{
                     width: 40,
@@ -181,11 +191,13 @@ const TransactionsListScreen = () => {
                   </Text>
                 </View>
               </View>
-              <View style={{flexDirection: "column", flex: 0.7}}>
+              <View style={{flexDirection: "column", flex: 0.5 }}>
                 <Text style={styles.name}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
+                { item.description !== "" &&
+                  <Text style={styles.description}>{item.description}</Text>
+                }
               </View>
-              <View style={{flex: 0.2, alignItems: 'flex-end'}}>
+              <View style={{flex: 0.4, alignItems: 'flex-end' }}>
                 <Text style={[styles.amount, { color: item.type === "Income" ? 'green' : 'red' }]}> {/*TODO: Fix this color*/}
                   {formatCurrency(item.type === "Income" ? item.amount : -item.amount, selectedCurrencyId, theme, colorScheme, 
                   item.type !== "Income" && "#ff4d4d",
@@ -246,9 +258,9 @@ const makeStyles = (theme, colorScheme) =>
     },
     card: {
       backgroundColor: theme[colorScheme].surfaceDim,
-      marginLeft: 16,
-      marginRight: 16,
-      marginTop: 16
+      marginLeft: 10,
+      marginRight: 10,
+      marginTop: 10
     },
     name: {
       fontWeight: '600',
@@ -260,8 +272,8 @@ const makeStyles = (theme, colorScheme) =>
       color: theme.dark ? theme[colorScheme].onSurfaceVariant : '#555',
     },
     amount: {
-      fontSize: 14,
-      fontWeight: 'bold',
+      // fontSize: 44,
+      // fontWeight: 'bold',
     },
     metadata: {
       fontSize: 12,
